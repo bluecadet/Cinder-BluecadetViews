@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<block
+	name="BluecadetViews"
+	id="com.bluecadet.cinder.views"
+	git="git@github.com:bluecadet/Cinder-BluecadetViews.git"
+	author="Bluecadet"
+	summary=""
+	license="MIT"
+	>
+	<sourcePattern>src/*.cpp</sourcePattern>
+	<headerPattern>src/*.h</headerPattern>
+	<includePath>src</includePath>
+</block>
+</cinder>
