@@ -8,6 +8,9 @@
 	summary=""
 	license="MIT"
 	>
+
+	<requires>com.bluecadet.cinder.touch</requires>
+
 	<sourcePattern>src/*.cpp</sourcePattern>
 	<headerPattern>src/*.h</headerPattern>
 	<includePath>src</includePath>
