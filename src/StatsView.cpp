@@ -16,7 +16,7 @@ mFontColor(ColorA(1.0f, 1.0f, 1.0f, 0.75f))
 StatsView::~StatsView() {
 }
 
-void StatsView::drawContent() {
+void StatsView::draw() {
 	vec2 pos(0);
 	const float rowHeight = mFont.getSize();
 	for (auto& name : mAllStats) {

@@ -59,7 +59,7 @@ public:
 	}
 
 protected:
-	void drawContent() override;
+	virtual void draw() override;
 	std::string getValueString(const std::string& name) const;
 
 	ci::Font mFont;
