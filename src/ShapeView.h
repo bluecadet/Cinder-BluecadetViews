@@ -34,13 +34,11 @@ private:
 
 	virtual void draw() override;
 
-
 	// Properties
 	ci::gl::BatchRef	mLine;
 	float				mLineWidth;
 
 	ci::gl::BatchRef	mSolidCircle;
-
 };
 
 }
