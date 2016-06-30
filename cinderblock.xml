@@ -10,6 +10,7 @@
 	>
 
 	<requires>com.bluecadet.cinder.touch</requires>
+	<requires>com.bluecadet.cinder.text</requires>
 
 	<sourcePattern>src/*.cpp</sourcePattern>
 	<headerPattern>src/*.h</headerPattern>
