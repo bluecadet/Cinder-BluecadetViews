@@ -9,8 +9,8 @@
 #include "cinder/gl/gl.h"
 
 #include "BaseView.h"
-#include "MainContent/Heading.h"
-#include "SubContent/DetailImage.h"
+#include "content/Header.h"
+#include "content/DetailImage.h"
 
 typedef std::shared_ptr<class ContentController> ContentControllerRef;
 
@@ -28,6 +28,6 @@ private:
 	virtual void draw() override;
 
 	//! Views
-	HeadingRef		mHeading;
-	DetailImageRef	mDetailImage;
+	HeaderRef mHeader;
+	std::vector<DetailImageRef> mDetailImages;
 };

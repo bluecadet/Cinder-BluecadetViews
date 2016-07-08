@@ -18,21 +18,24 @@ void ContentController::setup() {
 	// Preload assets in "testImages" folder
 	ImageManager::getInstance()->loadAllImagesInDirectory("testImages");
 
-	// Create heading
-	mHeading = HeadingRef(new Heading());
-	mHeading->setup();
+	// Create one header
+	mHeader = HeaderRef(new Header());
+	mHeader->setup();
 	
-	// Create detail views
+	// Create several detail views
 	for (int i = 0; i < 10; i++) {
-		mDetailImage = DetailImageRef(new DetailImage());
-		mDetailImage->setup(i);
-		
-		// Add each detail image
-		addChild(mDetailImage);
+		DetailImageRef detail = DetailImageRef(new DetailImage());
+		detail->setup(i);
+
+		// Add the individual detail to a container that holds all the detalis
+		mDetailImages.push_back(detail);
+
+		// Add each detail as a child
+		addChild(detail);
 	}
 
-	// Add heading above images
-	addChild(mHeading);
+	// Add heading (will display above images because we added it after we added each detail as a child)
+	addChild(mHeader);
 }
 
 void ContentController::update(double deltaTime) {

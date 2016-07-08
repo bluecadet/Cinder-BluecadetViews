@@ -103,7 +103,8 @@
   <ItemGroup />
   <ItemGroup>
     <ClCompile Include="..\src\ContentController.cpp" />
-    <ClCompile Include="..\src\MainContent\Heading.cpp" />
+    <ClCompile Include="..\src\Content\DetailImage.cpp" />
+    <ClCompile Include="..\src\Content\Header.cpp" />
     <ClCompile Include="..\src\NestedViewsSampleApp.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\FontManager.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextLayout.cpp" />
@@ -123,7 +124,6 @@
     <ClCompile Include="..\..\..\src\TouchView.cpp" />
     <ClCompile Include="..\..\..\..\OSC\src\Osc.cpp" />
     <ClCompile Include="..\..\..\..\TUIO\src\Tuio.cpp" />
-    <ClCompile Include="..\src\SubContent\DetailImage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h" />
@@ -147,8 +147,8 @@
     <ClInclude Include="..\..\..\..\OSC\src\Osc.h" />
     <ClInclude Include="..\..\..\..\TUIO\src\Tuio.h" />
     <ClInclude Include="..\src\ContentController.h" />
-    <ClInclude Include="..\src\MainContent\Heading.h" />
-    <ClInclude Include="..\src\SubContent\DetailImage.h" />
+    <ClInclude Include="..\src\Content\DetailImage.h" />
+    <ClInclude Include="..\src\Content\Header.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

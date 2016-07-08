@@ -1,4 +1,4 @@
-#include "Heading.h"
+#include "Header.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -9,13 +9,13 @@ using namespace bluecadet::views;
 // Class Lifecycle
 // 
 
-Heading::Heading() : BaseView() {
+Header::Header() : BaseView() {
 }
 
-Heading::~Heading(){
+Header::~Header(){
 }
 
-void Heading::setup() {
+void Header::setup() {
 
 	float lineThickness = 6.0f;
 	float lineWidth = 600.0f;
@@ -49,9 +49,9 @@ void Heading::setup() {
 
 }
 
-void Heading::update() {
+void Header::update() {
 }
 
-void Heading::draw() {
+void Header::draw() {
 
 }

@@ -12,13 +12,13 @@
 #include "ShapeView.h"
 #include "TextView.h"
 
-typedef std::shared_ptr<class Heading> HeadingRef;
+typedef std::shared_ptr<class Header> HeaderRef;
 
-class Heading : public bluecadet::views::BaseView {
+class Header : public bluecadet::views::BaseView {
 
 public:
-	Heading();
-	~Heading();
+	Header();
+	~Header();
 
 	virtual void	setup();
 	virtual void	update();

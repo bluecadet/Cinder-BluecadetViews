@@ -55,11 +55,8 @@
     <Filter Include="Blocks\TUIO\src">
       <UniqueIdentifier>{2EE82CDE-E477-4681-8FCC-157F6347A149}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\MainContent">
+    <Filter Include="Source Files\Content">
       <UniqueIdentifier>{974a3443-d550-4ecb-8243-45786a57c172}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\SubContent">
-      <UniqueIdentifier>{03aec795-e819-403c-9d8f-0919eaab36f9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -186,11 +183,11 @@
     <ClCompile Include="..\src\ContentController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\MainContent\Heading.cpp">
-      <Filter>Source Files\MainContent</Filter>
+    <ClCompile Include="..\src\Content\DetailImage.cpp">
+      <Filter>Source Files\Content</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\SubContent\DetailImage.cpp">
-      <Filter>Source Files\SubContent</Filter>
+    <ClCompile Include="..\src\Content\Header.cpp">
+      <Filter>Source Files\Content</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -200,11 +197,11 @@
     <ClInclude Include="..\src\ContentController.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\MainContent\Heading.h">
-      <Filter>Source Files\MainContent</Filter>
+    <ClInclude Include="..\src\Content\DetailImage.h">
+      <Filter>Source Files\Content</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\SubContent\DetailImage.h">
-      <Filter>Source Files\SubContent</Filter>
+    <ClInclude Include="..\src\Content\Header.h">
+      <Filter>Source Files\Content</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
