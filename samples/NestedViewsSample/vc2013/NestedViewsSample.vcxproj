@@ -102,6 +102,7 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\Cinder-BluecadetUtils\src\SettingsManager.cpp" />
     <ClCompile Include="..\src\ContentController.cpp" />
     <ClCompile Include="..\src\Content\DetailImage.cpp" />
     <ClCompile Include="..\src\Content\Header.cpp" />
@@ -126,6 +127,7 @@
     <ClCompile Include="..\..\..\..\TUIO\src\Tuio.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\Cinder-BluecadetUtils\src\SettingsManager.h" />
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\FontManager.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextLayout.h" />

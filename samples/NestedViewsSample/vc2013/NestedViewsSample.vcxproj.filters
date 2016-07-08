@@ -189,6 +189,9 @@
     <ClCompile Include="..\src\Content\Header.cpp">
       <Filter>Source Files\Content</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\Cinder-BluecadetUtils\src\SettingsManager.cpp">
+      <Filter>Blocks\BluecadetUtils\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
@@ -202,6 +205,9 @@
     </ClInclude>
     <ClInclude Include="..\src\Content\Header.h">
       <Filter>Source Files\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Cinder-BluecadetUtils\src\SettingsManager.h">
+      <Filter>Blocks\BluecadetUtils\src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
