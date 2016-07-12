@@ -11,33 +11,41 @@ using namespace bluecadet::views;
 using namespace bluecadet::text;
 
 class TextViewSampleApp : public App {
-  public:
+public:
 	void setup() override;
-	void mouseDown( MouseEvent event ) override;
+	void mouseDown(MouseEvent event) override;
 	void update() override;
 	void draw() override;
 
 private:
-
-	// Text
 	TextViewRef	mTitle;
 	int count;
 };
 
-void TextViewSampleApp::setup(){
+void TextViewSampleApp::setup() {
 
 	count = 0;
 
 	mTitle = TextViewRef(new TextView());
-	mTitle->setup("Sample Title " + toString(count));
-	mTitle->setPosition(vec2(100, 300));
+
 	// Since it's a view, we have access to properties like this (animation help)
 	mTitle->setAlpha(0.75f);
-	// You can set the color of the view, but this will not change the color of the text (because it's based on the style)
-	mTitle->setColor(ColorA(1.0f, 0.0f, 0.0f, mTitle->getAlpha()));
+	
+	// The view color affects the overal tint of the view, but not the actual text color
+	// Text + tint color get multiplied (i.e. final color = tintColor * textColor)
+	mTitle->setColor(Color(1.0f, 0.0f, 0.0f));
+
+	// This is what actually changes the text color; Gets multiplied with tint color
+	mTitle->setTextColor(Color(1.0f, 1.0f, 1.0f));
+
+	// Change font size
+	mTitle->setFontSize(64.0f);
+	
+	// All styles will be applied to text now
+	mTitle->setText("Sample Title " + toString(count));
 }
 
-void TextViewSampleApp::mouseDown( MouseEvent event ){
+void TextViewSampleApp::mouseDown(MouseEvent event) {
 
 	// Increase count to be displayed
 	count++;
@@ -45,17 +53,27 @@ void TextViewSampleApp::mouseDown( MouseEvent event ){
 	// Clear and reset the text
 	mTitle->setText("Sample Title " + toString(count));
 
-	if (count % 2)	mTitle->setScale(vec2(1.5));
-	else			mTitle->setScale(vec2(1));
+	vec2 padding = vec2(16.f, 16.f);
+
+	// top left plus padding
+	vec2 pos = vec2(0) + padding;
+	
+	if (count % 2) {
+		// bottom right minus padding
+		pos = vec2(getWindowSize() - mTitle->getSize()) - padding;
+	}
+
+	mTitle->getTimeline()->apply(&mTitle->getPosition(), pos, 0.33f, EaseInOutQuad());
+	//mTitle->setPosition(pos);
 }
 
-void TextViewSampleApp::update(){
+void TextViewSampleApp::update() {
+	mTitle->updateScene(0);
 }
 
-void TextViewSampleApp::draw(){
-	gl::clear( Color( .5, .5, 0 ) ); 
-
+void TextViewSampleApp::draw() {
+	gl::clear(Color(0.2f, 0.2f, 0.2f));
 	mTitle->drawScene();
 }
 
-CINDER_APP( TextViewSampleApp, RendererGl )
+CINDER_APP(TextViewSampleApp, RendererGl)
