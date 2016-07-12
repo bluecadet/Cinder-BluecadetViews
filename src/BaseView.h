@@ -37,10 +37,10 @@ public:
 	BaseView();
 	virtual ~BaseView();
 
-	//! Called once every frame; Make sure to call super to update children when overriding.
+	//! Updates this view and all of its children. Call this method on root views that don't have a parent.
 	virtual void			updateScene(double deltaTime);
 
-	//! Called once every frame and sets up transforms before calling drawSelf().
+	//! Applies tint color, alpha and matrices and then draws itself and all children. Validates transforms internally.
 	virtual void			drawScene(const ci::ColorA& parentColor = ci::ColorA(1.0f, 1.0f, 1.0, 1.0f)) final;
 
 	//! Used for all internal animations
@@ -84,22 +84,22 @@ public:
 
 	//! Local position relative to parent view
 	virtual ci::Anim<ci::vec2>&			getPosition() { return mPosition; };
-	virtual void						setPosition(const ci::vec2 &position) { mPosition = position; markTransformDirty(); }
-	virtual void						setPosition(const ci::vec3 &position) { mPosition = ci::vec2(position.x, position.y); markTransformDirty(); }
+	virtual void						setPosition(const ci::vec2 &position) { mPosition = position; invalidateTransforms(); }
+	virtual void						setPosition(const ci::vec3 &position) { mPosition = ci::vec2(position.x, position.y); invalidateTransforms(); }
 
 	//! Local scale relative to parent view
 	virtual ci::Anim<ci::vec2>&			getScale() { return mScale; };
-	virtual void						setScale(const ci::vec2 &scale) { mScale = scale;  markTransformDirty(); };
-	virtual void						setScale(const ci::vec3 &scale) { mScale = ci::vec2(scale.x, scale.y);  markTransformDirty(); };
+	virtual void						setScale(const ci::vec2 &scale) { mScale = scale;  invalidateTransforms(); };
+	virtual void						setScale(const ci::vec3 &scale) { mScale = ci::vec2(scale.x, scale.y);  invalidateTransforms(); };
 
 	//! Local rotation relative to parent view
 	virtual ci::Anim<ci::quat>&			getRotation() { return mRotation; };
-	virtual void						setRotation(const float radians) { mRotation = glm::angleAxis(radians, ci::vec3(0, 0, 1)); markTransformDirty(); };
-	virtual void						setRotation(const ci::quat &rotation) { mRotation = rotation; markTransformDirty(); };
+	virtual void						setRotation(const float radians) { mRotation = glm::angleAxis(radians, ci::vec3(0, 0, 1)); invalidateTransforms(); };
+	virtual void						setRotation(const ci::quat &rotation) { mRotation = rotation; invalidateTransforms(); };
 
-	virtual void						updateTransform(const bool clearDirtyFlag = true);
-	virtual const ci::mat4&				getTransform() { if (mDirtyTransform) { updateTransform(); }; return mTransform; }
-	virtual const ci::mat4&				getGlobalTransform() { if (mDirtyTransform) { updateTransform(); }; return mGlobalTransform; }
+	virtual void						validateTransforms(const bool clearInvalidFlag = true);
+	virtual const ci::mat4&				getTransform() { if (mHasInvalidTransforms) { validateTransforms(); }; return mTransform; }
+	virtual const ci::mat4&				getGlobalTransform() { if (mHasInvalidTransforms) { validateTransforms(); }; return mGlobalTransform; }
 
 	//! Applied before each draw together with mAlpha; Defaults to white
 	virtual ci::Anim<ci::Color>&		getColor() { return mColor; }
@@ -141,7 +141,7 @@ public:
 
 protected:
 
-	virtual void markTransformDirty() { mDirtyTransform = true; };
+	virtual void invalidateTransforms() { mHasInvalidTransforms = true; };
 
 	virtual void update(const double deltaTime);
 
@@ -173,7 +173,7 @@ private:
 
 	ci::mat4 mTransform;
 	ci::mat4 mGlobalTransform;
-	bool mDirtyTransform;
+	bool mHasInvalidTransforms;
 
 	BaseViewList::iterator getChildIt(BaseViewRef child);
 	BaseViewList::iterator getChildIt(BaseView* childPtr);

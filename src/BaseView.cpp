@@ -16,7 +16,7 @@ BaseView::BaseView() :
 	mRotation(quat()),
 	mTransform(mat4()),
 	mGlobalTransform(mat4()),
-	mDirtyTransform(true),
+	mHasInvalidTransforms(true),
 
 	mColor(Color(1.0f, 1.0f, 1.0f)),
 	mColorA(ColorA(1.0f, 1.0f, 1.0f, 1.0f)),
@@ -43,7 +43,7 @@ void BaseView::reset() {
 	mRotation = quat();
 	mTransform = mat4();
 	mGlobalTransform = mat4();
-	mDirtyTransform = true;
+	mHasInvalidTransforms = true;
 	mColor = Color(1.0f, 1.0f, 1.0f);
 	mColorA = ColorA(1.0f, 1.0f, 1.0f, 1.0f);
 	mAlpha = 1.0;
@@ -91,7 +91,7 @@ void BaseView::addChild(BaseViewRef child, size_t index) {
 		mChildren.insert(it, child);
 	}
 
-	child->updateTransform();
+	child->validateTransforms();
 	child->didMoveToView(this);
 }
 
@@ -109,7 +109,7 @@ void BaseView::removeChild(BaseViewRef child) {
 	child->willMoveFromView(this);
 	child->mParent = nullptr;
 	mChildren.remove(child);
-	child->updateTransform();
+	child->validateTransforms();
 }
 
 void BaseView::removeChild(BaseView* childPtr) {
@@ -227,11 +227,11 @@ void BaseView::drawScene(const ci::ColorA& parentColor) {
 
 	// recalculate transforms if marked as dirty or while animations are happening
 	// this way children will also know that their parent transform has changed
-	mDirtyTransform = mDirtyTransform || (mParent && mParent->mDirtyTransform) ||
+	mHasInvalidTransforms = mHasInvalidTransforms || (mParent && mParent->mHasInvalidTransforms) ||
 		!mPosition.isComplete() || !mScale.isComplete() || !mRotation.isComplete();
 
-	if (mDirtyTransform) {
-		updateTransform(false);
+	if (mHasInvalidTransforms) {
+		validateTransforms(false);
 	}
 
 	mColorA.r = mColor.value().r * parentColor.r;
@@ -254,7 +254,7 @@ void BaseView::drawScene(const ci::ColorA& parentColor) {
 	}
 
 	// clear dirty flag at end so that children know that things have changed
-	mDirtyTransform = false;
+	mHasInvalidTransforms = false;
 }
 
 void BaseView::willDraw() {
@@ -279,13 +279,13 @@ void BaseView::didDraw() {
 // Local/Global Transforms
 // 
 
-void BaseView::updateTransform(const bool clearDirtyFlag) {
+void BaseView::validateTransforms(const bool clearInvalidFlag) {
 	mTransform = glm::translate(vec3(mPosition.value(), 0.0f));
 	mTransform *= glm::scale(vec3(mScale.value(), 1.0f));
 	mTransform *= glm::toMat4(mRotation.value());
 	mGlobalTransform = mParent ? mParent->mGlobalTransform * mTransform : mTransform;
-	if (clearDirtyFlag) {
-		mDirtyTransform = true;
+	if (clearInvalidFlag) {
+		mHasInvalidTransforms = false;
 	}
 }
 
