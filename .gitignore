@@ -5,13 +5,14 @@
 
 # Build results
 
-[Dd]ebug/
-[Rr]elease/
-[Pp]roduction/
-x64/
-build/
-[Bb]in/
-[Oo]bj/
+**/vc201[35]/**/[Dd]ebug/
+**/vc201[35]/**/[Rr]elease/
+**/vc201[35]/**/[Pp]roduction/
+**/vc201[35]/**/x32/
+**/vc201[35]/**/x64/
+**/vc201[35]/**/build/
+**/vc201[35]/**/[Bb]in/
+**/vc201[35]/**/[Oo]bj/
 
 # Enable "build/" folder in the NuGet Packages folder since NuGet packages use it for MSBuild targets
 !packages/*/build/
