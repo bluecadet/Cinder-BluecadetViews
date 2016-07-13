@@ -105,13 +105,13 @@ void TouchView::createShape(const std::vector<cinder::vec2> &coordinates) {
 // Touch Management
 //
 
-void TouchView::touchesBeganHandler(int touchID, const ci::vec2 &touchPnt, TouchType touchType) {
-	mObjectTouchIDs.push_back(touchID);
+void TouchView::touchesBeganHandler(const touch::TouchEvent& touchEvent) {
+	mObjectTouchIDs.push_back(touchEvent.id);
 
-	mPrevTouchPos = touchPnt; // Set to current touchPnt, otherwise prevtouch pos may be anywhere
-	mCurTouchPos = touchPnt;
-	mInitialRelTouchPos = touchPnt;
-	mInitialAbsTouchPos = convertLocalToGlobal(touchPnt);
+	mPrevTouchPos = touchEvent.position; // Set to current touchPnt, otherwise prevtouch pos may be anywhere
+	mCurTouchPos = touchEvent.position;
+	mInitialRelTouchPos = touchEvent.position;
+	mInitialAbsTouchPos = convertLocalToGlobal(touchEvent.position);
 	mInitialPosWhenTouched = getGlobalPosition();
 	mInitialTouchTime = getElapsedSeconds();
 	mIsDragging = getNumTouches() == 1 ? false : mIsDragging;
@@ -120,8 +120,8 @@ void TouchView::touchesBeganHandler(int touchID, const ci::vec2 &touchPnt, Touch
 	mDidBeginTouch(shared_from_this());
 }
 
-void TouchView::touchesMovedHandler(int touchID, const ci::vec2 &touchPnt, TouchType touchType) {
-	if (mObjectTouchIDs.empty() || mObjectTouchIDs.front() != touchID) {
+void TouchView::touchesMovedHandler(const touch::TouchEvent& touchEvent) {
+	if (mObjectTouchIDs.empty() || mObjectTouchIDs.front() != touchEvent.id) {
 		return;
 	}
 
@@ -132,20 +132,20 @@ void TouchView::touchesMovedHandler(int touchID, const ci::vec2 &touchPnt, Touch
 	}
 
 	mPrevTouchPos = mCurTouchPos;
-	mCurTouchPos = touchPnt;
+	mCurTouchPos = touchEvent.position;
 
 	if (!mIsDragging) {
-		const float dragDistance2 = glm::distance2(mInitialAbsTouchPos, convertLocalToGlobal(touchPnt));
+		const float dragDistance2 = glm::distance2(mInitialAbsTouchPos, convertLocalToGlobal(mCurTouchPos));
 		mIsDragging = dragDistance2 > mDragThreshold * mDragThreshold;
 	}
 
 	mDidMoveTouch(shared_from_this());
 }
 
-void TouchView::touchesEndedHandler(int touchID, const ci::vec2 &touchPnt, TouchType touchType) {
+void TouchView::touchesEndedHandler(const touch::TouchEvent& touchEvent) {
 	mDidEndTouch(shared_from_this());
 
-	bool didTap = mAllowsTapReleaseOutside || hasTouchPoint(touchPnt);
+	bool didTap = mAllowsTapReleaseOutside || hasTouchPoint(touchEvent.position);
 
 	// Only allow taps within a certain time
 	if (didTap) {

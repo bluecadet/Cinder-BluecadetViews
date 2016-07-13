@@ -16,6 +16,7 @@ Comments:
 #include <boost/signals2.hpp>
 
 #include "BaseView.h"
+#include "Touch.h"
 
 namespace bluecadet {
 namespace views {
@@ -23,9 +24,6 @@ namespace views {
 typedef std::shared_ptr<class TouchView>		TouchViewRef;
 typedef std::shared_ptr<const class TouchView>	TouchViewConstRef;
 typedef std::weak_ptr<class TouchView>			TouchViewWeakRef;
-
-//! TouchType options. Object could be a fiducial.
-enum TouchType { TOUCH, OBJECT, MOUSE, SIMULATOR };
 
 class TouchView : public BaseView, public std::enable_shared_from_this<TouchView> {
 
@@ -65,9 +63,9 @@ public:
 	virtual bool                hasTouchPoint(const ci::vec2 &pnt);	//! Returns whether or not this object should accept the touch point
 	bool						canAcceptTouch() const;	//! Will return whether this touch object can accept a new touch based on its current state.
 
-	virtual	void				touchesBeganHandler(int touchID, const ci::vec2 &touchPnt, TouchType touchType);
-	virtual void				touchesMovedHandler(int touchID, const ci::vec2 &touchPnt, TouchType touchType);
-	virtual void				touchesEndedHandler(int touchID, const ci::vec2 &touchPnt, TouchType touchType);
+	virtual	void				touchesBeganHandler(const bluecadet::touch::TouchEvent& touch);
+	virtual void				touchesMovedHandler(const bluecadet::touch::TouchEvent& touch);
+	virtual void				touchesEndedHandler(const bluecadet::touch::TouchEvent& touch);
 
 
 	//! Getters/Setters
@@ -93,8 +91,7 @@ public:
 	//! True if this object has any moving touches, even if they are below the drag threshold
 	bool			hasMovingTouches() const { return mHasMovingTouches; };
 
-	void			setCurTouchPosition(ci::vec2 pos) { mCurTouchPos = pos; };
-	ci::vec2&		getCurTouchPosition() { return mCurTouchPos; };
+	const ci::vec2&	getCurTouchPosition() { return mCurTouchPos; };
 
 	//! Maximum allowed distance to move a touch up to which it's considered a tap
 	float			getDragThreshold() const { return mDragThreshold; }
