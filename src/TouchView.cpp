@@ -71,7 +71,7 @@ void TouchView::setup(float radius) {
 
 	// Touchable area of each circle is created from 50 points. This number may be adjusted.
 	int points = 30;
-	double slice = 2 * M_PI / points;
+	double slice = 2.0 * M_PI / points;
 	vector<cinder::vec2> coordinates;
 	for (int i = 0; i < points; i++) {
 		double angle = slice * i;

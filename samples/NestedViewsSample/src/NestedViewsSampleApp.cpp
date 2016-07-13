@@ -4,13 +4,14 @@
 
 #include "ContentController.h"
 #include "TouchManager.h"
-#include "touch_drivers/TuioDriver.h"
-#include "touch_drivers/Mouse.h"
+#include "drivers/TuioDriver.h"
+#include "drivers/MouseDriver.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 using namespace bluecadet::touch;
+using namespace bluecadet::touch::drivers;
 
 class NestedViewsSampleApp : public App {
 public:
@@ -23,7 +24,7 @@ public:
 private:
 	// Touches
 	TouchManagerRef			mTouchManager;
-	Mouse					mMouseDriver;
+	MouseDriver				mMouseDriver;
 	TuioDriver				mTuioDriver;	
 
 	// Views and content
