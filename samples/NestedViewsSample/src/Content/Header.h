@@ -28,7 +28,6 @@ private:
 	virtual void draw() override;
 
 	//! Properties
-//	bluecadet::views::TextViewRef	mTitle; // SM :: Currently not working with latest Cinder - fixing
-	bluecadet::views::ShapeViewRef	mLine1;
-	bluecadet::views::ShapeViewRef	mLine2;
+	bluecadet::views::TextViewRef	mTitle;
+	bluecadet::views::ShapeViewRef	mUnderline;
 };

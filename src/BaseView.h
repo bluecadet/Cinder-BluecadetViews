@@ -41,7 +41,7 @@ public:
 	virtual void			updateScene(double deltaTime);
 
 	//! Applies tint color, alpha and matrices and then draws itself and all children. Validates transforms internally.
-	virtual void			drawScene(const ci::ColorA& parentColor = ci::ColorA(1.0f, 1.0f, 1.0, 1.0f)) final;
+	virtual void			drawScene(const ci::ColorA& parentTint = ci::ColorA(1.0f, 1.0f, 1.0, 1.0f)) final;
 
 	//! Used for all internal animations
 	ci::TimelineRef			getTimeline();
@@ -102,11 +102,11 @@ public:
 	virtual const ci::mat4&				getGlobalTransform() { if (mHasInvalidTransforms) { validateTransforms(); }; return mGlobalTransform; }
 
 	//! Applied before each draw together with mAlpha; Defaults to white
-	virtual ci::Anim<ci::Color>&		getColor() { return mColor; }
-	virtual void						setColor(const ci::Color color) { mColor = color; }
-	virtual void						setColor(const ci::ColorA color) { mColor = color; mAlpha = color.a; } //! Sets mColor and mAlpha properties
+	virtual ci::Anim<ci::Color>&		getTint() { return mTint; }
+	virtual void						setTint(const ci::Color tint) { mTint = tint; }
+	virtual void						setTint(const ci::ColorA tint) { mTint = tint; mAlpha = tint.a; } //! Sets mTint and mAlpha properties
 
-	//! Applied before each draw together with mColor; Gets multiplied with parent alpha; Defaults to 1.0f
+	//! Applied before each draw together with mTint; Gets multiplied with parent alpha; Defaults to 1.0f
 	virtual ci::Anim<float>&			getAlpha() { return mAlpha; }
 	virtual void						setAlpha(const float alpha) { mAlpha = alpha; }
 
@@ -147,13 +147,13 @@ protected:
 
 	virtual void willDraw();		//! Called by drawScene before draw()
 	virtual void draw();			//! Called by drawScene and allows for drawing content for this node
-	virtual void drawChildren(const ci::ColorA& parentColor);	//! Called by drawScene() after draw() and before didDraw()
+	virtual void drawChildren(const ci::ColorA& parentTint);	//! Called by drawScene() after draw() and before didDraw()
 	virtual void didDraw();			//! Called by drawScene after draw()
 
 	virtual void didMoveToView(BaseView* parent);		//! Called when moved to a parent
 	virtual void willMoveFromView(BaseView* parent);	//! Called when removed from a parent
 
-	const ci::ColorA& getColorA() const { return mColorA; }
+	const ci::ColorA& getTintA() const { return mTintA; }
 
 private:
 
@@ -161,7 +161,7 @@ private:
 	BaseViewList mChildren;
 
 	ci::TimelineRef mTimeline;
-	ci::Anim<ci::Color> mColor;
+	ci::Anim<ci::Color> mTint;
 	ci::Anim<float> mAlpha;
 	bool mIsHidden;
 	bool mShouldForceRedraw;
@@ -169,7 +169,7 @@ private:
 	ci::Anim<ci::vec2> mPosition;
 	ci::Anim<ci::vec2> mScale;
 	ci::Anim<ci::quat> mRotation;
-	ci::ColorA mColorA; //! For internal use only; Merges mAlpha and mColor for faster draw
+	ci::ColorA mTintA; //! For internal use only; Merges mAlpha and mColor for faster draw
 
 	ci::mat4 mTransform;
 	ci::mat4 mGlobalTransform;
