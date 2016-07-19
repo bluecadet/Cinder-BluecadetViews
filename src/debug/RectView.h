@@ -23,7 +23,7 @@ class RectView : public BaseView {
 
 public:
 
-	RectView(const ci::vec2& size, const ci::ColorA& color = ci::ColorA(1, 0, 0, 0.5));
+	RectView(const ci::vec2& size, const ci::ColorA& tint = ci::ColorA(1, 0, 0, 0.5));
 	virtual ~RectView();
 
 protected:

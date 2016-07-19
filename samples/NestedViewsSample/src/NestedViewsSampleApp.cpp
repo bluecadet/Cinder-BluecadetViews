@@ -61,7 +61,7 @@ void NestedViewsSampleApp::draw() {
 	gl::clear(Color(0, 0, 0));
 
 	// Draw touches (debugging)
-	mTouchManager->draw();
+	mTouchManager->debugDrawTouches();
 
 	// Draw views & content
 	mContentController->drawScene();

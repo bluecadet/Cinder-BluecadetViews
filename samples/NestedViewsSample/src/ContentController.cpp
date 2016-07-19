@@ -21,6 +21,7 @@ void ContentController::setup() {
 	// Create one header
 	mHeader = HeaderRef(new Header());
 	mHeader->setup();
+	mHeader->setPosition(vec2(getWindowWidth()*0.5f, 40.0f));
 	
 	// Create several detail views
 	for (int i = 0; i < 10; i++) {

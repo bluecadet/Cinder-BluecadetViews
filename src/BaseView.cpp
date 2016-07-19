@@ -18,8 +18,8 @@ BaseView::BaseView() :
 	mGlobalTransform(mat4()),
 	mHasInvalidTransforms(true),
 
-	mColor(Color(1.0f, 1.0f, 1.0f)),
-	mColorA(ColorA(1.0f, 1.0f, 1.0f, 1.0f)),
+	mTint(Color(1.0f, 1.0f, 1.0f)),
+	mTintA(ColorA(1.0f, 1.0f, 1.0f, 1.0f)),
 	mAlpha(1.0),
 	mIsHidden(false),
 	mShouldForceRedraw(false),
@@ -42,8 +42,8 @@ void BaseView::reset() {
 	mTransform = mat4();
 	mGlobalTransform = mat4();
 	mHasInvalidTransforms = true;
-	mColor = Color(1.0f, 1.0f, 1.0f);
-	mColorA = ColorA(1.0f, 1.0f, 1.0f, 1.0f);
+	mTint = Color(1.0f, 1.0f, 1.0f);
+	mTintA = ColorA(1.0f, 1.0f, 1.0f, 1.0f);
 	mAlpha = 1.0;
 }
 
@@ -218,7 +218,7 @@ void BaseView::update(const double deltaTime) {
 
 }
 
-void BaseView::drawScene(const ci::ColorA& parentColor) {
+void BaseView::drawScene(const ci::ColorA& parentTint) {
 	if (!mShouldForceRedraw && (mIsHidden || mAlpha <= 0.0f)) {
 		return;
 	}
@@ -232,10 +232,10 @@ void BaseView::drawScene(const ci::ColorA& parentColor) {
 		validateTransforms(false);
 	}
 
-	mColorA.r = mColor.value().r * parentColor.r;
-	mColorA.g = mColor.value().g * parentColor.g;
-	mColorA.b = mColor.value().b * parentColor.b;
-	mColorA.a = mAlpha.value() * parentColor.a;
+	mTintA.r = mTint.value().r * parentTint.r;
+	mTintA.g = mTint.value().g * parentTint.g;
+	mTintA.b = mTint.value().b * parentTint.b;
+	mTintA.a = mAlpha.value() * parentTint.a;
 
 	{
 		gl::ScopedModelMatrix scopedModelMatrix;
@@ -243,11 +243,11 @@ void BaseView::drawScene(const ci::ColorA& parentColor) {
 		//gl::ScopedBlendAlpha scopedBlendAlpha; // bb: no real need for this at this point since we're not changing blend modes a lot
 
 		gl::multModelMatrix(mTransform);
-		gl::color(mColorA);
+		gl::color(mTintA);
 
 		willDraw();
 		draw();
-		drawChildren(mColorA);
+		drawChildren(mTintA);
 		didDraw();
 	}
 
@@ -263,9 +263,9 @@ void BaseView::draw() {
 	// override this method
 }
 
-void BaseView::drawChildren(const ci::ColorA& parentColor) {
+void BaseView::drawChildren(const ci::ColorA& parentTint) {
 	for (auto child : mChildren) {
-		child->drawScene(parentColor);
+		child->drawScene(parentTint);
 	}
 }
 
@@ -315,7 +315,7 @@ void BaseView::resetAnimations() {
 	mPosition.stop();
 	mRotation.stop();
 	mScale.stop();
-	mColor.stop();
+	mTint.stop();
 	mAlpha.stop();
 }
 
