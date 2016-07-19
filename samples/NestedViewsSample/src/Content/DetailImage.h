@@ -31,7 +31,7 @@ private:
 	bluecadet::views::ImageViewRef	mBgImage;
 	
 	//! Callbacks
-	void	handleBeginTouch(bluecadet::views::TouchViewRef button);
-	void	handleEndTouch(bluecadet::views::TouchViewRef button);
-	void	handleCancelTouch(bluecadet::views::TouchViewRef button);
+	virtual	void	handleTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) override;
+	virtual void	handleTouchCanceled(const bluecadet::touch::TouchEvent& touchEvent) override;
+	virtual void	handleTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) override;
 };

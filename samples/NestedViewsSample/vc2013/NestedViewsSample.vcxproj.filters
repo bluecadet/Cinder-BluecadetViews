@@ -224,6 +224,9 @@
     <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\TuioDriver.h">
       <Filter>Blocks\BluecadetTouch\src\drivers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\Touch.h">
+      <Filter>Blocks\BluecadetTouch\src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources.rc">

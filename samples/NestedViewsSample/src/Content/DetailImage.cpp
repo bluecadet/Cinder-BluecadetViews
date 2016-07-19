@@ -16,11 +16,6 @@ DetailImage::~DetailImage(){
 }
 
 void DetailImage::setup(int id) {
-
-	// Set callbacks
-	mDidBeginTouch.connect(std::bind(&DetailImage::handleBeginTouch, this, std::placeholders::_1));
-	mDidEndTouch.connect(std::bind(&DetailImage::handleEndTouch, this, std::placeholders::_1));
-	mDidCancelTouch.connect(std::bind(&DetailImage::handleCancelTouch, this, std::placeholders::_1));
 	
 	mBgImageContainer = BaseViewRef( new BaseView() );
 
@@ -74,17 +69,17 @@ void DetailImage::draw() {
 // Callbacks
 // 
 
-void DetailImage::handleBeginTouch(TouchViewRef button) {
+void DetailImage::handleTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) {
 	// Set hit state immediately on touch down
 	mBgImageContainer->setScale(vec2(1.25f));
 }
 
-void DetailImage::handleEndTouch(TouchViewRef button) {
+void DetailImage::handleTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) {
 	// Remove hit state gradually on touch up
 	getTimeline()->apply(&mBgImageContainer->getScale(), vec2(1), 0.25f, easeOutQuad);
 }
 
-void DetailImage::handleCancelTouch(TouchViewRef button) {
+void DetailImage::handleTouchCanceled(const bluecadet::touch::TouchEvent& touchEvent) {
 	// Remove hit state immediately on cancel
 	getTimeline()->removeTarget(&mBgImageContainer->getScale());
 	mBgImage->setScale(vec2(1.0f));

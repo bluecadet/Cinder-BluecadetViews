@@ -133,6 +133,7 @@
     <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\NativeTouchDriver.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\SimulatedTouchDriver.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\TuioDriver.h" />
+    <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\Touch.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetUtils\src\SettingsManager.h" />
     <ClInclude Include="..\..\..\src\debug\RectButton.h" />
     <ClInclude Include="..\..\..\src\debug\RectView.h" />
