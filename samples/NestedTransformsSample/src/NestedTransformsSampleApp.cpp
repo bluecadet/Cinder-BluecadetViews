@@ -54,21 +54,21 @@ void NestedTransformsSampleApp::setup() {
 	// Create centered root view that rotates around its center
 	mRootView = BaseViewRef(new BaseView());
 	mRootView->setPosition(vec2(getWindowCenter()));
-	mRootView->getTimeline()->apply(&mRootView->getRotation(), glm::angleAxis(0.25f * (float)M_PI, vec3(0, 0, 1)), 8, EaseInOutQuad()).pingPong(true).loop(true);
-	mRootView->getTimeline()->apply(&mRootView->getScale(), vec2(1.5, 1.5), 4.0, EaseInOutQuad()).pingPong(true).loop(true);
+	//mRootView->getTimeline()->apply(&mRootView->getRotation(), glm::angleAxis(0.25f * (float)M_PI, vec3(0, 0, 1)), 8, EaseInOutQuad()).pingPong(true).loop(true);
+	mRootView->getTimeline()->apply(&mRootView->getScale(), vec2(2.0, 2.0), 4.0, EaseInOutQuad()).pingPong(true).loop(true);
 
 	mContainer = BaseViewRef(new RectView(vec2(400, 400), red));
 	mContainer->setPosition(vec2(-200, -200));
 	mRootView->addChild(mContainer);
-	timeline().apply(&mContainer->getPosition(), mContainer->getPosition().value() + vec2(50, -50), 3.0, EaseInOutQuad()).pingPong(true).loop(true);
+	//timeline().apply(&mContainer->getPosition(), mContainer->getPosition().value() + vec2(50, -50), 3.0, EaseInOutQuad()).pingPong(true).loop(true);
 
 	auto button = RectButtonRef(new RectButton());
 	button->setup(vec2(50, 50));
 	button->setPosition(vec2(0, 50));
 	mContainer->addChild(button);
-	timeline().apply(&button->getPosition(), button->getPosition().value() + vec2(10, 10), 2.5, EaseInOutQuad()).pingPong(true).loop(true);
-	timeline().apply(&button->getScale(), vec2(1.5, 1.5), 2.5, EaseInOutQuad()).pingPong(true).loop(true);
-	timeline().apply(&button->getRotation(), glm::angleAxis(0.25f * (float)M_PI, vec3(0, 0, 1)), 4, EaseInOutQuad()).pingPong(true).loop(true);
+	//timeline().apply(&button->getPosition(), button->getPosition().value() + vec2(10, 10), 2.5, EaseInOutQuad()).pingPong(true).loop(true);
+	//timeline().apply(&button->getScale(), vec2(1.5, 1.5), 2.5, EaseInOutQuad()).pingPong(true).loop(true);
+	//timeline().apply(&button->getRotation(), glm::angleAxis(0.25f * (float)M_PI, vec3(0, 0, 1)), 4, EaseInOutQuad()).pingPong(true).loop(true);
 
 	auto moveToFrontFn = [&](TouchViewRef view) {
 		view->moveToFront();

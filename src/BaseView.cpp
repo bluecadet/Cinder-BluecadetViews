@@ -24,7 +24,6 @@ BaseView::BaseView() :
 	mIsHidden(false),
 	mShouldForceRedraw(false),
 
-	//mTimeline(nullptr),
 	mTimeline(ci::Timeline::create()),
 
 	mChildren(),
@@ -33,7 +32,6 @@ BaseView::BaseView() :
 }
 
 BaseView::~BaseView() {
-	mChildren.clear();
 	mParent = nullptr;
 }
 

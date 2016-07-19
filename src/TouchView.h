@@ -29,11 +29,11 @@ class TouchView : public BaseView, public std::enable_shared_from_this<TouchView
 
 public:
 
-	boost::signals2::signal<void(TouchViewRef)>	mDidBeginTouch;		//! Triggered for first touch when touch begins and for subsequent touches if multi-touch is enabled
-	boost::signals2::signal<void(TouchViewRef)>	mDidMoveTouch;		//! Triggered for moving touches after touch began
-	boost::signals2::signal<void(TouchViewRef)>	mDidEndTouch;		//! Triggered when touch ends and when touch is canceled
-	boost::signals2::signal<void(TouchViewRef)>	mDidCancelTouch;	//! Triggered after mDidEndTouch when cancelTouches() is called
-	boost::signals2::signal<void(TouchViewRef)>	mDidTap;			//! Triggered after mDidEndTouch if the touch fits the parameters for tapping
+	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidBeginTouch;		//! Triggered for first touch when touch begins and for subsequent touches if multi-touch is enabled
+	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidMoveTouch;		//! Triggered for moving touches after touch began
+	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidEndTouch;		//! Triggered when touch ends and when touch is canceled
+	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidCancelTouch;	//! Triggered after mDidEndTouch when cancelTouches() is called
+	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidTap;			//! Triggered after mDidEndTouch if the touch fits the parameters for tapping
 
 
 	//! Setup/Destruction
@@ -63,10 +63,11 @@ public:
 	virtual bool                hasTouchPoint(const ci::vec2 &pnt);	//! Returns whether or not this object should accept the touch point
 	bool						canAcceptTouch() const;	//! Will return whether this touch object can accept a new touch based on its current state.
 
-	virtual	void				touchesBeganHandler(const bluecadet::touch::TouchEvent& touch);
-	virtual void				touchesMovedHandler(const bluecadet::touch::TouchEvent& touch);
-	virtual void				touchesEndedHandler(const bluecadet::touch::TouchEvent& touch);
-
+	// Used by the touch manager and should not be overriden
+	virtual	void				processTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) final;
+	virtual	void				processTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) final;
+	virtual	void				processTouchCanceled(const bluecadet::touch::TouchEvent& touchEvent) final;
+	virtual	void				processTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) final;
 
 	//! Getters/Setters
 
@@ -108,17 +109,18 @@ public:
 	bool			isActive() const { return mIsActive; };
 	void			setActive(bool activeState) { mIsActive = activeState; };
 
-
-	//! Debugging
-
-	//! Returns the unique ID tag that is set upon creation of the touch object
-	const int		getUniqueID() const { return mUniqueID; }
-
 	//! Draws an the outer box of the object, and the objects to string in the center, helpful for debugging pourposes.
 	virtual void	drawDebugShape() const;
 
 protected:
-	void			resetTouchState();
+	// Override these boilerplate methods to react to touch events
+	virtual	void	handleTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) {};
+	virtual void	handleTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) {};
+	virtual void	handleTouchCanceled(const bluecadet::touch::TouchEvent& touchEvent) {};
+	virtual void	handleTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) {};
+
+	//! Resets all touch-state related variables to a non-touched state
+	virtual void	resetTouchState();
 
 	ci::vec2		mCurTouchPos;
 	ci::vec2		mPrevTouchPos;
@@ -145,16 +147,6 @@ private:
 
 	float			mDragThreshold;
 	double			mMaxTapDuration;
-
-
-	//! Internal static members
-
-	//! TotalObjectCount is used to count the number of Object instances for debugging purposes
-	//! Total object count is a value that is incremented when an object is created and decremented when an object is destroyed. This way we always know how many objects exist.
-	static int		TotalObjectCount;
-
-	//! ObjectID is used to generate new unique ID's anytime an object is created. 
-	static int		ObjectID;
 };
 
 }

@@ -5,15 +5,14 @@
 #include "boost/lexical_cast.hpp"
 #include <math.h>
 
+#include "TouchManager.h"
+
 using namespace std;
 using namespace ci;
 using namespace ci::app;
 
 namespace bluecadet {
 namespace views {
-
-int	TouchView::TotalObjectCount = 0;
-int	TouchView::ObjectID = 0;
 
 //==================================================
 // Setup/Destruction
@@ -22,7 +21,6 @@ int	TouchView::ObjectID = 0;
 TouchView::TouchView(bool dragEnabled) :
 	BaseView(),
 	mSize(0.0f),
-	mUniqueID(ObjectID),
 	mDragEnabled(dragEnabled),
 	mTouchEnabled(true),
 	mMultiTouchEnabled(false),
@@ -39,14 +37,11 @@ TouchView::TouchView(bool dragEnabled) :
 	mInitialPosWhenTouched(0, 0),
 	mInitialTouchTime(0)
 {
-	TotalObjectCount++;
-	ObjectID++;
 }
 
 TouchView::~TouchView() {
-	// Call to unregister should be made BEFORE you destroy your touchable object
 	mPath.clear();
-	TotalObjectCount--;
+	cancelTouches();
 }
 
 void TouchView::reset() {
@@ -105,7 +100,7 @@ void TouchView::createShape(const std::vector<cinder::vec2> &coordinates) {
 // Touch Management
 //
 
-void TouchView::touchesBeganHandler(const touch::TouchEvent& touchEvent) {
+void TouchView::processTouchBegan(const touch::TouchEvent& touchEvent) {
 	mObjectTouchIDs.push_back(touchEvent.id);
 
 	mPrevTouchPos = touchEvent.position; // Set to current touchPnt, otherwise prevtouch pos may be anywhere
@@ -117,10 +112,11 @@ void TouchView::touchesBeganHandler(const touch::TouchEvent& touchEvent) {
 	mIsDragging = getNumTouches() == 1 ? false : mIsDragging;
 	mHasMovingTouches = getNumTouches() == 1 ? false : mHasMovingTouches;
 
-	mDidBeginTouch(shared_from_this());
+	handleTouchBegan(touchEvent);
+	mDidBeginTouch(touchEvent);
 }
 
-void TouchView::touchesMovedHandler(const touch::TouchEvent& touchEvent) {
+void TouchView::processTouchMoved(const touch::TouchEvent& touchEvent) {
 	if (mObjectTouchIDs.empty() || mObjectTouchIDs.front() != touchEvent.id) {
 		return;
 	}
@@ -139,11 +135,18 @@ void TouchView::touchesMovedHandler(const touch::TouchEvent& touchEvent) {
 		mIsDragging = dragDistance2 > mDragThreshold * mDragThreshold;
 	}
 
-	mDidMoveTouch(shared_from_this());
+	handleTouchMoved(touchEvent);
+	mDidMoveTouch(touchEvent);
 }
 
-void TouchView::touchesEndedHandler(const touch::TouchEvent& touchEvent) {
-	mDidEndTouch(shared_from_this());
+void TouchView::processTouchCanceled(const bluecadet::touch::TouchEvent& touchEvent) {
+	handleTouchCanceled(touchEvent);
+	mDidCancelTouch(touchEvent);
+}
+
+void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
+	handleTouchEnded(touchEvent);
+	mDidEndTouch(touchEvent);
 
 	bool didTap = mAllowsTapReleaseOutside || hasTouchPoint(touchEvent.position);
 
@@ -160,15 +163,16 @@ void TouchView::touchesEndedHandler(const touch::TouchEvent& touchEvent) {
 
 	// Trigger tap if we had one
 	if (didTap) {
-		mDidTap(shared_from_this());
+		mDidTap(touchEvent);
 	}
 
 	resetTouchState();
 }
 
 void TouchView::cancelTouches() {
-	/*
-	std::shared_ptr<TouchManager> manager = TouchManager::getInstance();
+	// TODO: Move this logic to the touch manager
+
+	/*std::shared_ptr<touch::TouchManager> manager = touch::TouchManager::getInstance();
 
 	const auto sharedPtr = shared_from_this();
 	const auto touchIds = vector<int>(mObjectTouchIDs.begin(), mObjectTouchIDs.end());
@@ -178,8 +182,7 @@ void TouchView::cancelTouches() {
 		mDidCancelTouch(sharedPtr);
 	}
 
-	mObjectTouchIDs.clear();
-	*/
+	mObjectTouchIDs.clear();*/
 }
 
 void TouchView::resetTouchState() {
@@ -195,6 +198,10 @@ void TouchView::resetTouchState() {
 }
 
 bool TouchView::hasTouchPoint(const vec2 &pnt) {
+	// do we have a path?
+	// yes: is within path?
+	// no: is within size?
+
 	vec2 localPoint = convertGlobalToLocal(pnt);
 	return mPath.contains(localPoint);
 }
