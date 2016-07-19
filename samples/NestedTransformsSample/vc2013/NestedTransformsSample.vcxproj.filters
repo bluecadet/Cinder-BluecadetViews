@@ -203,6 +203,9 @@
     <ClInclude Include="..\..\..\src\debug\RectView.h">
       <Filter>Blocks\BluecadetViews\src\debug</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\Touch.h">
+      <Filter>Blocks\BluecadetTouch\src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources.rc">

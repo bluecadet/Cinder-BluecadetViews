@@ -44,7 +44,8 @@ void NestedTransformsSampleApp::setup() {
 
 	mMouseConnection.connect();
 	mTouchConnection.connect();
-
+	
+	// Helper colors
 	ci::ColorA red(1.0f, 0.6f, 0.6f, 0.9f);
 	ci::ColorA green(0.6f, 1.0f, 0.6f, 0.9f);
 	ci::ColorA blue(0.6f, 0.6f, 1.0f, 0.9f);
@@ -60,18 +61,14 @@ void NestedTransformsSampleApp::setup() {
 	mContainer = BaseViewRef(new RectView(vec2(400, 400), red));
 	mContainer->setPosition(vec2(-200, -200));
 	mRootView->addChild(mContainer);
-	//timeline().apply(&mContainer->getPosition(), mContainer->getPosition().value() + vec2(50, -50), 3.0, EaseInOutQuad()).pingPong(true).loop(true);
 
 	auto button = RectButtonRef(new RectButton());
 	button->setup(vec2(50, 50));
 	button->setPosition(vec2(0, 50));
 	mContainer->addChild(button);
-	//timeline().apply(&button->getPosition(), button->getPosition().value() + vec2(10, 10), 2.5, EaseInOutQuad()).pingPong(true).loop(true);
-	//timeline().apply(&button->getScale(), vec2(1.5, 1.5), 2.5, EaseInOutQuad()).pingPong(true).loop(true);
-	//timeline().apply(&button->getRotation(), glm::angleAxis(0.25f * (float)M_PI, vec3(0, 0, 1)), 4, EaseInOutQuad()).pingPong(true).loop(true);
 
-	auto moveToFrontFn = [&](TouchViewRef view) {
-		view->moveToFront();
+	auto moveToFrontFn = [&](const bluecadet::touch::TouchEvent& touchEvent) {
+		touchEvent.target->moveToFront();
 	};
 
 	{ // overlapping buttons
