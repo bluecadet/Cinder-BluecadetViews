@@ -30,8 +30,8 @@ void ShapeViewSampleApp::setup() {
 		ShapeViewRef circle = ShapeViewRef(new ShapeView());
 		// The ShapeView has the option of being a variety of shapes - this is how we tell it we want it to be a circle. Pass the position and radius.
 		circle->createSolidCircle(vec2(xPos, yPos), radius);
-		// Set the color of this one circle.
-		circle->setColor(ColorA(1.0f, 0.0f, 0.0f, 0.5f));
+		// Set the tint color of this one circle
+		circle->setTint(ColorA(1.0f, 0.0f, 0.0f, 0.5f));
 		// Play around with other properties you can set
 		circle->setAlpha(0.25f);		// You could set a new alpha (without setting the entire color) = animation helper
 		circle->setScale(vec2(1.2));	// Set the scale (hit states perhaps, or animating on/off). 

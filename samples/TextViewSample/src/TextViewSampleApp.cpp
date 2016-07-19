@@ -31,9 +31,9 @@ void TextViewSampleApp::setup() {
 	// Since it's a view, we have access to properties like this (animation help)
 	mTitle->setAlpha(0.75f);
 	
-	// The view color affects the overal tint of the view, but not the actual text color
+	// The view tint color affects the overal tint of the view, but not the actual text color
 	// Text + tint color get multiplied (i.e. final color = tintColor * textColor)
-	mTitle->setColor(Color(1.0f, 0.0f, 0.0f));
+	mTitle->setTint(Color(1.0f, 0.0f, 0.0f));
 
 	// This is what actually changes the text color; Gets multiplied with tint color
 	mTitle->setTextColor(Color(1.0f, 1.0f, 1.0f));

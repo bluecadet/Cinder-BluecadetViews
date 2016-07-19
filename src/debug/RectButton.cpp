@@ -28,7 +28,7 @@ void RectButton::setup(const vec2& size, const ci::ColorA& touchUpColor, const c
 }
 
 void RectButton::update(double deltaTime) {
-	setColor((getNumTouches() > 0) ? mTouchDownColor : mTouchUpColor);
+	setTint((getNumTouches() > 0) ? mTouchDownColor : mTouchUpColor);
 }
 
 void RectButton::draw() {

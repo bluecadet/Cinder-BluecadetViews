@@ -17,36 +17,27 @@ Header::~Header(){
 
 void Header::setup() {
 
-	float lineThickness = 6.0f;
-	float lineWidth = 600.0f;
-	float yPos = 100.0f;
-
-	// Create line above text
-	mLine1 = ShapeViewRef(new ShapeView());
-	vec2 startPos = vec2(getWindowWidth()*.5f - lineWidth*0.5f, yPos);
-	vec2 endPos = vec2(getWindowWidth()*.5f + lineWidth*0.5f, yPos);
-	mLine1->createLine(startPos, endPos, lineThickness);
-	mLine1->setColor(ColorA(1.0f, 0.0f, 0.0f, 1.0f));
-
-	// Create line below text
-	mLine2 = ShapeViewRef(new ShapeView());
-	yPos += 100.0f;
-	startPos = vec2(getWindowWidth()*.5f - lineWidth*0.5f, yPos);
-	endPos = vec2(getWindowWidth()*.5f + lineWidth*0.5f, yPos);
-	mLine2->createLine(startPos, endPos, lineThickness);
-	mLine2->setColor(ColorA(1.0f, 0.0f, 0.0f, 1.0f));
-
-	// Add views
-	addChild(mLine1);
-	addChild(mLine2);
+	const ci::ColorA red = ColorA(1.0f, 0.0f, 0.0f, 1.0f);
 
 	// Create title
-	//mTitle = TextViewRef(new TextView());
-	//mTitle->setup(toString("Testing Title"));
-	// Position between lines
-	
-	//addChild(mTitle);
+	mTitle = TextViewRef(new TextView());
+	mTitle->setTextColor(red);
+	mTitle->setFontSize(40.0f, false);
+	mTitle->setText(toString("Testing Title"));
+	mTitle->setPosition(vec2(-mTitle->getWidth()*0.5f, 0.0f)); // Center title within header view horizontally
 
+	// Create underline
+	mUnderline = ShapeViewRef(new ShapeView());
+	float lineThickness = 4.0f;
+	float yPos = mTitle->getPosition().value().y + mTitle->getHeight() + 10.0f;
+	const vec2 startPos = vec2(mTitle->getPosition().value().x, yPos);
+	const vec2 endPos = vec2(startPos.x + mTitle->getWidth(), yPos);
+	mUnderline->createLine(startPos, endPos, lineThickness);
+	mUnderline->setTint(red);
+
+	// Add views
+	addChild(mTitle);
+	addChild(mUnderline);
 }
 
 void Header::update() {

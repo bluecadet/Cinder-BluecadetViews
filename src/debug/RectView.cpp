@@ -12,8 +12,8 @@ namespace debug {
 // Lifecycle
 // 
 
-RectView::RectView(const vec2& size, const ci::ColorA& color) : views::BaseView() {
-	setColor(color);
+RectView::RectView(const vec2& size, const ci::ColorA& tint) : views::BaseView() {
+	setTint(tint);
 	Rectf rect = Rectf(0.0f, 0.0f, size.x, size.y);
 	auto shaderDef = gl::ShaderDef().color();
 	gl::GlslProgRef shader = gl::getStockShader(shaderDef);
