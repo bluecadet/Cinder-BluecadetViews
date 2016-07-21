@@ -1,13 +1,10 @@
 #include "ScreenLayoutView.h"
-#include "SettingsManager.h"
 #include "debug/RectView.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 using namespace bluecadet::views;
-using namespace bluecadet::utils;
-
 
 namespace bluecadet {
 namespace views {
@@ -25,18 +22,28 @@ ScreenLayoutView::ScreenLayoutView() :
 ScreenLayoutView::~ScreenLayoutView() {
 }
 
-void ScreenLayoutView::setup() {
+void ScreenLayoutView::setup(BaseViewRef baseRootView, const int displayWidth, const int displayHeight, const int rows, const int columns) {
+
+	mBaseRootView = baseRootView;
+
+	// Get key input
+	ci::app::getWindow()->getSignalKeyDown().connect(std::bind(&ScreenLayoutView::keyDown, this, std::placeholders::_1));
+
 	// Load display settings
-	mDisplayWidth = SettingsManager::getInstance()->getField<int>("settings.display.width");
-	mDisplayHeight = SettingsManager::getInstance()->getField<int>("settings.display.height");
-	mDisplayTotalRows = SettingsManager::getInstance()->getField<int>("settings.display.totalRows");
-	mDisplayTotalColumns = SettingsManager::getInstance()->getField<int>("settings.display.totalColumns");
+	mDisplayWidth = displayWidth;
+	mDisplayHeight = displayHeight;
+	mDisplayTotalRows = rows;
+	mDisplayTotalColumns = columns;
+
+	// Set app width and height based on screen layout //move appWidth/height to screenLayout
+	mAppWidth = mDisplayWidth*mDisplayTotalRows;
+	mAppHeight = mDisplayHeight*mDisplayTotalColumns;
 
 	// Setup the outlines that will draw for each display
 	int screenId = 1;
 	for (int row = 0; row < mDisplayTotalRows; ++row) {
 		for (int col = 0; col < mDisplayTotalColumns; ++col) {
-			
+
 			ci::Rectf displayBounds = getDisplayBounds(col, row);
 			mDisplayOutlines.push_back(std::make_pair(screenId, displayBounds));
 			screenId++;
@@ -76,7 +83,7 @@ void ScreenLayoutView::draw() {
 	ci::gl::color(mBorderColor);
 	ci::gl::lineWidth(mBorderWidth);
 
-	for (auto &displayOutline : mDisplayOutlines){
+	for (auto &displayOutline : mDisplayOutlines) {
 		ci::gl::drawStrokedRect(displayOutline.second);
 	}
 }
@@ -101,6 +108,66 @@ const ci::vec2 ScreenLayoutView::getTranslateToCenterBounds(ci::Rectf bounds, ci
 		((float)maxSize.x - bounds.getWidth()) * 0.5f - bounds.x1,
 		((float)maxSize.y - bounds.getHeight()) * 0.5f - bounds.y1
 	);
+}
+
+void ScreenLayoutView::zoomToScreen(const int& screenId) {
+	ci::Rectf bounds = ScreenLayoutView::getInstance()->getDisplayBounds(screenId);
+	ci::vec2 winSize = getWindowSize();
+
+	mBaseRootView->setScale(vec2(ScreenLayoutView::getInstance()->getScaleToFitBounds(bounds, winSize)));
+	mBaseRootView->setPosition(ScreenLayoutView::getInstance()->getTranslateToCenterBounds(bounds, winSize / mBaseRootView->getScale().value().x));
+}
+
+void ScreenLayoutView::scaleRootViewCentered(const float& targetScale) {
+	const float currentScale = mBaseRootView->getScale().value().x;
+
+	vec2 windowSize = vec2(getWindowSize());
+	vec2 currentSize = windowSize / currentScale;
+	vec2 targetSize = windowSize / targetScale;
+
+	mBaseRootView->setScale(vec2(targetScale));
+	mBaseRootView->setPosition(mBaseRootView->getPosition().value() += (targetSize - currentSize) * 0.5f);
+}
+
+void ScreenLayoutView::keyDown(KeyEvent event) {
+
+	switch (event.getCode()) {
+
+	case KeyEvent::KEY_KP_PLUS:
+	case KeyEvent::KEY_KP_MINUS:
+	case KeyEvent::KEY_PLUS:
+	case KeyEvent::KEY_EQUALS:
+	case KeyEvent::KEY_MINUS: {
+		const auto code = event.getCode();
+		const float dir = (code == KeyEvent::KEY_KP_PLUS || code == KeyEvent::KEY_PLUS || code == KeyEvent::KEY_EQUALS) ? 1.0f : -1.0f;
+		const float speed = event.isShiftDown() ? 0.25f : 0.1f;
+		const float targetScale = mBaseRootView->getScale().value().x * (1.0f + dir * speed);
+		scaleRootViewCentered(targetScale);
+		break;
+	}
+	case KeyEvent::KEY_KP1: case KeyEvent::KEY_KP2: case KeyEvent::KEY_KP3: case KeyEvent::KEY_KP4: case KeyEvent::KEY_KP5: case KeyEvent::KEY_KP6: case KeyEvent::KEY_KP7:
+	case KeyEvent::KEY_1: case KeyEvent::KEY_2: case KeyEvent::KEY_3: case KeyEvent::KEY_4: case KeyEvent::KEY_5: case KeyEvent::KEY_6: case KeyEvent::KEY_7: {
+		int screenId = (event.getChar() - (int)'0') - 1; // parse int from char, make 0-based
+		zoomToScreen(screenId);
+		break;
+	}
+	case KeyEvent::KEY_UP: {
+		mBaseRootView->setPosition(vec2(mBaseRootView->getPosition().value().x, mBaseRootView->getPosition().value().y += getWindowHeight() * (event.isShiftDown() ? 1.0f : 0.25f)));
+		break;
+	}
+	case KeyEvent::KEY_DOWN: {
+		mBaseRootView->setPosition(vec2(mBaseRootView->getPosition().value().x, mBaseRootView->getPosition().value().y -= getWindowHeight() * (event.isShiftDown() ? 1.0f : 0.25f)));
+		break;
+	}
+	case KeyEvent::KEY_LEFT: {
+		mBaseRootView->setPosition(vec2(mBaseRootView->getPosition().value().x += getWindowWidth() * (event.isShiftDown() ? 1.0f : 0.25f), mBaseRootView->getPosition().value().y));
+		break;
+	}
+	case KeyEvent::KEY_RIGHT: {
+		mBaseRootView->setPosition(vec2(mBaseRootView->getPosition().value().x -= getWindowWidth() * (event.isShiftDown() ? 1.0f : 0.25f), mBaseRootView->getPosition().value().y));
+		break;
+	}
+	}
 }
 
 

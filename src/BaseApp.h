@@ -9,8 +9,6 @@
 #include "drivers/TuioDriver.h"
 #include "TouchManager.h"
 
-#include "ScreenLayoutView.h"
-
 namespace bluecadet {
 namespace views {
 
@@ -28,9 +26,8 @@ public:
 	virtual void draw() override;
 	virtual void keyDown(ci::app::KeyEvent event) override;
 
-	void		zoomToScreen(const int& screenId = 1);
-	void		scaleRootViewCentered(const float& targetScale);
-
+//	void		zoomToScreen(const int& screenId = 1);
+//	void		scaleRootViewCentered(const float& targetScale);
 
 	static void prepareSettings(ci::app::App::Settings *settings);
 
@@ -40,9 +37,6 @@ protected:
 	touch::drivers::TuioDriver	mTuioDriver;
 
 	double						mLastFrameTime;
-
-	ScreenLayoutViewRef			mScreenLayout;
-
 };
 
 }
