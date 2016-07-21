@@ -36,8 +36,8 @@ void ScreenLayoutView::setup(BaseViewRef baseRootView, const int displayWidth, c
 	mDisplayTotalColumns = columns;
 
 	// Set app width and height based on screen layout //move appWidth/height to screenLayout
-	mAppWidth = mDisplayWidth*mDisplayTotalRows;
-	mAppHeight = mDisplayHeight*mDisplayTotalColumns;
+	mAppWidth = mDisplayWidth*mDisplayTotalColumns;
+	mAppHeight = mDisplayHeight*mDisplayTotalRows;
 
 	// Setup the outlines that will draw for each display
 	int screenId = 1;
