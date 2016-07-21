@@ -28,7 +28,7 @@ public:
 	RectButton();
 	virtual ~RectButton();
 
-	virtual void setup(const ci::vec2& size, const ci::ColorA& touchUpColor = ci::ColorA(1, 1, 0.5, 1.0), const ci::ColorA& touchDownColor = ci::ColorA(0.5, 1, 1, 1.0));
+	virtual void setup(const ci::vec2 size, const ci::ColorA& touchUpColor = ci::ColorA(1, 1, 0.5, 1.0), const ci::ColorA& touchDownColor = ci::ColorA(0.5, 1, 1, 1.0));
 	virtual void update(const double deltaTime) override;
 
 	ci::Anim<ci::ColorA> mTouchUpColor;
