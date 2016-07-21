@@ -8,57 +8,46 @@ namespace bluecadet {
 namespace views {
 namespace debug {
 
-StatsView::StatsView() : BaseView(),
-mFont("Arial", 80.0f),
-mFontColor(ColorA(1.0f, 1.0f, 1.0f, 0.75f))
+StatsView::StatsView() : StatsView(ci::Font("Arial", 16.0f)) {}
+
+StatsView::StatsView(ci::Font font) : BaseView(),
+mFont(font)
 {
+	mTextureFont = gl::TextureFont::create(mFont);
 }
 
 StatsView::~StatsView() {
 }
 
+void StatsView::addStat(const std::string& name, StatsFn fn)
+{
+	auto it = mStatFunctions.find(name);
+	if (it != mStatFunctions.end()) {
+		cout << "StatsView: Replacing existing stat with name " << name << endl;
+		removeStat(name);
+	}
+	mStatFunctions[name] = fn;
+}
+
+void StatsView::removeStat(const std::string& name)
+{
+	const auto statsIt = mStatFunctions.find(name);
+	if (statsIt == mStatFunctions.end()) {
+		cout << "StatsView: Can't find stat with name " << name << endl;
+		return;
+	}
+	mStatFunctions.erase(statsIt);
+}
+
 void StatsView::draw() {
-	vec2 pos(0);
 	const float rowHeight = mFont.getSize();
-	for (auto& name : mAllStats) {
-		const std::string str = name + ": " + getValueString(name);
-		gl::drawString(str, pos, mFontColor, mFont);
+	vec2 pos(0, mTextureFont->getAscent());
+
+	for (const auto& it : mStatFunctions) {
+		const string str = it.first + ": " + it.second();
+		mTextureFont->drawString(str, pos);
 		pos.y += rowHeight;
 	}
-}
-std::string StatsView::getValueString(const std::string& name) const {
-	{
-		auto it = mFnStats.find(name);
-		if (it != mFnStats.end()) {
-			return it->second();
-		}
-	}
-	{
-		auto it = mBoolStats.find(name);
-		if (it != mBoolStats.end()) {
-			return to_string(*it->second);
-		}
-	}
-	{
-		auto it = mIntStats.find(name);
-		if (it != mIntStats.end()) {
-			return to_string(*it->second);
-		}
-	}
-	{
-		auto it = mFloatStats.find(name);
-		if (it != mFloatStats.end()) {
-			return to_string(*it->second);
-		}
-	}
-	{
-		auto it = mDoubleStats.find(name);
-		if (it != mDoubleStats.end()) {
-			return to_string(*it->second);
-		}
-	}
-
-	return "";
 }
 
 }

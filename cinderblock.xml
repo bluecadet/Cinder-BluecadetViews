@@ -13,8 +13,12 @@
 	<requires>com.bluecadet.cinder.text</requires>
 	<requires>com.bluecadet.cinder.utils</requires>
 
-	<sourcePattern>src/*.cpp</sourcePattern>
 	<headerPattern>src/*.h</headerPattern>
+	<headerPattern>src/*.cpp</headerPattern>
+	
+	<sourcePattern>src/debug/*.h</sourcePattern>
+	<sourcePattern>src/debug/*.cpp</sourcePattern>
+	
 	<includePath>src</includePath>
 </block>
 </cinder>
