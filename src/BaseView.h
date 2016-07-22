@@ -84,18 +84,30 @@ public:
 
 	//! Local position relative to parent view
 	virtual ci::Anim<ci::vec2>&			getPosition() { return mPosition; };
-	virtual void						setPosition(const ci::vec2 &position) { mPosition = position; invalidateTransforms(); }
-	virtual void						setPosition(const ci::vec3 &position) { mPosition = ci::vec2(position.x, position.y); invalidateTransforms(); }
+	virtual void						setPosition(const ci::vec2& position) { mPosition = position; invalidateTransforms(); }
+	virtual void						setPosition(const ci::vec3& position) { mPosition = ci::vec2(position.x, position.y); invalidateTransforms(); }
 
 	//! Local scale relative to parent view
 	virtual ci::Anim<ci::vec2>&			getScale() { return mScale; };
-	virtual void						setScale(const ci::vec2 &scale) { mScale = scale;  invalidateTransforms(); };
-	virtual void						setScale(const ci::vec3 &scale) { mScale = ci::vec2(scale.x, scale.y);  invalidateTransforms(); };
+	virtual void						setScale(const float& scale) { mScale = ci::vec2(scale, scale);  invalidateTransforms(); };
+	virtual void						setScale(const ci::vec2& scale) { mScale = scale;  invalidateTransforms(); };
+	virtual void						setScale(const ci::vec3& scale) { mScale = ci::vec2(scale.x, scale.y);  invalidateTransforms(); };
+
+	//! Size of this view. Defaults to 0, 0 and is not affected by children. Does not affect transforms (position, rotation, scale).
+	virtual ci::Anim<ci::vec2>&			getSize() { return mSize; }
+	virtual void						setSize(const ci::vec2& size) { mSize = size; }
+	virtual float						getWidth() const { return mSize.value().x; };
+	virtual float						getHeight() const { return mSize.value().y; };
+
+	//! The fill color used when drawing the bounding rect when a size greater than 0, 0 is given.
+	virtual ci::Anim<ci::ColorA>&		getBackgroundColor() { return mBackgroundColor; }
+	virtual void						setBackgroundColor(const ci::Color color) { mBackgroundColor = ci::ColorA(color, 1.0f); } //! Sets background color with 100% alpha
+	virtual void						setBackgroundColor(const ci::ColorA color) { mBackgroundColor = color; }
 
 	//! Local rotation relative to parent view
 	virtual ci::Anim<ci::quat>&			getRotation() { return mRotation; };
 	virtual void						setRotation(const float radians) { mRotation = glm::angleAxis(radians, ci::vec3(0, 0, 1)); invalidateTransforms(); };
-	virtual void						setRotation(const ci::quat &rotation) { mRotation = rotation; invalidateTransforms(); };
+	virtual void						setRotation(const ci::quat& rotation) { mRotation = rotation; invalidateTransforms(); };
 
 	virtual void						validateTransforms(const bool clearInvalidFlag = true);
 	virtual const ci::mat4&				getTransform() { if (mHasInvalidTransforms) { validateTransforms(); }; return mTransform; }
@@ -103,7 +115,7 @@ public:
 
 	//! Applied before each draw together with mAlpha; Defaults to white
 	virtual ci::Anim<ci::Color>&		getTint() { return mTint; }
-	virtual void						setTint(const ci::Color tint) { mTint = tint; }
+	virtual void						setTint(const ci::Color tint) { mTint = tint; } //! Sets tint while preserving current alpha
 	virtual void						setTint(const ci::ColorA tint) { mTint = tint; mAlpha = tint.a; } //! Sets mTint and mAlpha properties
 
 	//! Applied before each draw together with mTint; Gets multiplied with parent alpha; Defaults to 1.0f
@@ -142,18 +154,22 @@ public:
 protected:
 
 	virtual void invalidateTransforms() { mHasInvalidTransforms = true; };
+	virtual void invalidateUniforms()	{ mHasInvalidUniforms = true; };
 
 	virtual void update(const double deltaTime);
 
 	virtual void willDraw();		//! Called by drawScene before draw()
-	virtual void draw();			//! Called by drawScene and allows for drawing content for this node
+	virtual void draw();			//! Called by drawScene and allows for drawing content for this node. By default draws a rectangle with the current size and background color (only if x/y /bg-alpha > 0)
 	virtual void drawChildren(const ci::ColorA& parentTint);	//! Called by drawScene() after draw() and before didDraw()
 	virtual void didDraw();			//! Called by drawScene after draw()
 
 	virtual void didMoveToView(BaseView* parent);		//! Called when moved to a parent
 	virtual void willMoveFromView(BaseView* parent);	//! Called when removed from a parent
 
-	const ci::ColorA& getTintA() const { return mTintA; }
+	const ci::ColorA& getDrawColor() const { return mDrawColor; }	//! The color used for drawing
+
+	static ci::gl::BatchRef getDefaultDrawBatch();
+	static ci::gl::GlslProgRef getDefaultDrawProg();
 
 private:
 
@@ -161,15 +177,20 @@ private:
 	BaseViewList mChildren;
 
 	ci::TimelineRef mTimeline;
-	ci::Anim<ci::Color> mTint;
 	ci::Anim<float> mAlpha;
+	ci::Anim<ci::Color> mTint;
+	ci::Anim<ci::ColorA> mBackgroundColor;
 	bool mIsHidden;
 	bool mShouldForceRedraw;
 
 	ci::Anim<ci::vec2> mPosition;
+	ci::Anim<ci::vec2> mSize;
 	ci::Anim<ci::vec2> mScale;
 	ci::Anim<ci::quat> mRotation;
-	ci::ColorA mTintA; //! For internal use only; Merges mAlpha and mColor for faster draw
+	
+	ci::ColorA mDrawColor;			//! Combines mAlpha and mTint for faster draw
+	ci::gl::BatchRef mDrawBatch;	//! Batch used for drawing in draw(). Defaults to a geom batch with a rect.
+	bool mHasInvalidUniforms;		//! Will cause draw batch uniforms to be updated during next draw.
 
 	ci::mat4 mTransform;
 	ci::mat4 mGlobalTransform;

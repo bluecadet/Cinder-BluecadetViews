@@ -84,7 +84,7 @@ void TextView::renderContent(bool surfaceOnly, bool alpha, bool premultiplied, b
 		return;
 	}
 
-	if (mHasInvalidRenderedContent || hasChanges() || (mSurface.getSize() != getSize()) || (mTexture && mSurface.getSize() != mTexture->getSize())) {
+	if (mHasInvalidRenderedContent || hasChanges() || (mSurface.getSize() != getTextSize()) || (mTexture && mSurface.getSize() != mTexture->getSize())) {
 		mSurface = renderToSurface(alpha, premultiplied);
 	}
 
