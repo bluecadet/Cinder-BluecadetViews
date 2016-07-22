@@ -3,6 +3,7 @@
 #include "cinder/gl/gl.h"
 
 #include "BaseApp.h"
+#include "BaseView.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -12,23 +13,21 @@ using namespace bluecadet::views;
 
 class ViewTypesSampleApp : public BaseApp {
 public:
-	// optional overrides
 	void setup() override;
 	void update() override;
 	void draw() override;
 };
 
 void ViewTypesSampleApp::setup() {
-	BaseApp::setup(); // will set up settings, views and touches
+	BaseApp::setup();
 }
 
 void ViewTypesSampleApp::update() {
-	BaseApp::update(); // will update views and touches
+	BaseApp::update();
 }
 
 void ViewTypesSampleApp::draw() {
-	BaseApp::draw(); // will draw views
+	BaseApp::draw();
 }
 
-// Point to prepareSettings here to apply settings
 CINDER_APP(ViewTypesSampleApp, RendererGl, ViewTypesSampleApp::prepareSettings)
