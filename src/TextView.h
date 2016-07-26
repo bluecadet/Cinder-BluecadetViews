@@ -33,7 +33,6 @@ public:
 	void setup(const std::wstring& text = L"", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = -1.0f);
 	void setup(const std::string& text = "", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = -1.0f);
 
-
 	virtual void	reset() override;
 
 	void			animateOn(float alpha, float aniDur, float aniDelay);

@@ -27,10 +27,6 @@ public:
 	virtual void setup(const std::string &fileName, const ci::vec2 &size = ci::vec2(0));
 	virtual void setup(const ci::gl::TextureRef texture, const ci::vec2 &size = ci::vec2(0));
 
-	ci::vec2& getSize() { return mSize; };
-	float getWidth() { return mSize.x; };
-	float getHeight() { return mSize.y; };
-
 	void animateOn(float alpha, float aniDur, float aniDelay);
 	void animateOff(float alpha, float aniDur, float aniDelay);
 
@@ -43,7 +39,6 @@ private:
 
 	ci::Rectf				mDrawingDestRect;
 	ci::Area				mDrawingArea;
-	ci::vec2				mSize;
 };
 
 }

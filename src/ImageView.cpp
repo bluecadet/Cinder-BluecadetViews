@@ -12,7 +12,6 @@ namespace views {
 
 ImageView::ImageView() : BaseView(),
 mTexture(nullptr),
-mSize(0),
 mDrawingArea()
 {
 }
@@ -26,7 +25,6 @@ void ImageView::setup(const std::string &fileName, const ci::vec2 &size) {
 
 void ImageView::reset() {
 	mTexture = nullptr;
-	mSize = vec2();
 	mDrawingDestRect = Rectf();
 	mDrawingArea = Area();
 }
@@ -38,12 +36,13 @@ void ImageView::stopAnimation() {
 void ImageView::setup(const gl::TextureRef texture, const ci::vec2 &size) {
 	mTexture = texture;
 
-	if (size == vec2(0) && mTexture) {
-		mSize = vec2(mTexture->getWidth(), mTexture->getHeight());
+	if ((size.x == 0 || size.y == 0) && mTexture) {
+		setSize(vec2(mTexture->getWidth(), mTexture->getHeight()));
+	} else {
+		setSize(size);
 	}
-	else mSize = size;
 
-	mDrawingDestRect = Rectf(0.0f, 0.0f, mSize.x, mSize.y);
+	mDrawingDestRect = Rectf(0.0f, 0.0f, getWidth(), getHeight());
 
 	if (mTexture) {
 		// Aspect fill drawing area

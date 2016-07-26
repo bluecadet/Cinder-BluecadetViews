@@ -17,9 +17,12 @@ BaseView::BaseView() :
 	mTransform(mat4()),
 	mGlobalTransform(mat4()),
 	mHasInvalidTransforms(true),
+	mHasInvalidUniforms(true),
 
 	mTint(Color(1.0f, 1.0f, 1.0f)),
-	mTintA(ColorA(1.0f, 1.0f, 1.0f, 1.0f)),
+	mDrawColor(ColorA(1.0f, 1.0f, 1.0f, 1.0f)),
+	mBackgroundColor(ColorA(0, 0, 0, 0)),
+
 	mAlpha(1.0),
 	mIsHidden(false),
 	mShouldForceRedraw(false),
@@ -27,7 +30,10 @@ BaseView::BaseView() :
 	mTimeline(ci::Timeline::create()),
 
 	mChildren(),
-	mParent(nullptr)
+	mParent(nullptr),
+
+	mSize(vec2(0, 0)),
+	mDrawBatch(nullptr)
 {
 }
 
@@ -42,8 +48,11 @@ void BaseView::reset() {
 	mTransform = mat4();
 	mGlobalTransform = mat4();
 	mHasInvalidTransforms = true;
+	mHasInvalidUniforms = true;
 	mTint = Color(1.0f, 1.0f, 1.0f);
-	mTintA = ColorA(1.0f, 1.0f, 1.0f, 1.0f);
+	mDrawColor = ColorA(1.0f, 1.0f, 1.0f, 1.0f);
+	mBackgroundColor = ColorA(0, 0, 0, 0);
+	mSize = vec2(0, 0);
 	mAlpha = 1.0;
 }
 
@@ -232,10 +241,10 @@ void BaseView::drawScene(const ci::ColorA& parentTint) {
 		validateTransforms(false);
 	}
 
-	mTintA.r = mTint.value().r * parentTint.r;
-	mTintA.g = mTint.value().g * parentTint.g;
-	mTintA.b = mTint.value().b * parentTint.b;
-	mTintA.a = mAlpha.value() * parentTint.a;
+	mDrawColor.r = mTint.value().r * parentTint.r;
+	mDrawColor.g = mTint.value().g * parentTint.g;
+	mDrawColor.b = mTint.value().b * parentTint.b;
+	mDrawColor.a = mAlpha.value() * parentTint.a;
 
 	{
 		gl::ScopedModelMatrix scopedModelMatrix;
@@ -243,11 +252,11 @@ void BaseView::drawScene(const ci::ColorA& parentTint) {
 		//gl::ScopedBlendAlpha scopedBlendAlpha; // bb: no real need for this at this point since we're not changing blend modes a lot
 
 		gl::multModelMatrix(mTransform);
-		gl::color(mTintA);
+		gl::color(mDrawColor);
 
 		willDraw();
 		draw();
-		drawChildren(mTintA);
+		drawChildren(mDrawColor);
 		didDraw();
 	}
 
@@ -260,7 +269,21 @@ void BaseView::willDraw() {
 }
 
 void BaseView::draw() {
-	// override this method
+	// override this method for custom drawing
+
+	const auto& bgColor = mBackgroundColor.value();
+	const auto& size = mSize.value();
+
+	if (size.x <= 0 && size.y <= 0 && bgColor.a <= 0) {
+		return;
+	}
+
+	auto prog = getDefaultDrawProg();
+	auto batch = getDefaultDrawBatch();
+
+	prog->uniform("uSize", size);
+	prog->uniform("uBackgroundColor", vec4(bgColor.r, bgColor.g, bgColor.b, bgColor.a));
+	batch->draw();
 }
 
 void BaseView::drawChildren(const ci::ColorA& parentTint) {
@@ -331,6 +354,50 @@ ci::TimelineRef BaseView::getTimeline() {
 
 ci::CueRef BaseView::dispatchAfter(std::function<void()> fn, float delay) {
 	return getTimeline()->add(fn, getTimeline()->getCurrentTime() + delay);
+}
+
+//==================================================
+// Drawing
+// 
+
+gl::GlslProgRef BaseView::getDefaultDrawProg() {
+	static gl::GlslProgRef defaultProg = nullptr;
+
+	if (!defaultProg) {
+		defaultProg = gl::GlslProg::create(
+			gl::GlslProg::Format().vertex(CI_GLSL(150,
+				uniform vec2	uSize;
+				uniform mat4	ciModelViewProjection;
+				in vec4			ciPosition;
+				in vec4			ciColor;
+				out vec4		color;
+				void main(void) {
+					vec4 pos = vec4(ciPosition.x * uSize.x, ciPosition.y * uSize.y, 0.0f, 1.0f);
+					gl_Position = ciModelViewProjection * pos;
+					color = ciColor;
+				}
+			)).fragment(CI_GLSL(150,
+				in vec4			color;
+				out vec4		oColor;
+				uniform vec4	uBackgroundColor;
+				void main(void) {
+					oColor = color * uBackgroundColor;
+				}
+			))
+		);
+		defaultProg->uniform("uSize", vec2(0, 0));
+	}
+	
+	return defaultProg;
+}
+
+gl::BatchRef BaseView::getDefaultDrawBatch() {
+	static gl::BatchRef defaultBatch = nullptr;
+	if (!defaultBatch) {
+		auto rect = geom::Rect().rect(Rectf(0, 0, 1, 1));
+		defaultBatch = gl::Batch::create(rect, getDefaultDrawProg());
+	}
+	return defaultBatch;
 }
 
 //==================================================
