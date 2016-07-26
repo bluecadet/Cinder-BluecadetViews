@@ -37,7 +37,7 @@ public:
 
 
 	//! Setup/Destruction
-	TouchView(bool dragEnabled = false);
+	TouchView();
 	virtual ~TouchView();
 
 	//! Calls BaseView::reset() and cancels/ends all existing touches on this view.
@@ -61,7 +61,7 @@ public:
 
 	virtual void				cancelTouches();					//! Remove whatever touches are currently within the object and causes touchesEndedHandler() to be called
 	virtual bool                hasTouchPoint(const ci::vec2 &pnt);	//! Returns whether or not this object should accept the touch point
-	bool						canAcceptTouch() const;	//! Will return whether this touch object can accept a new touch based on its current state.
+	virtual bool				canAcceptTouch() const;	//! Will return whether this touch object can accept a new touch based on its current state.
 
 	// Used by the touch manager and should not be overriden
 	virtual	void				processTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) final;
@@ -72,8 +72,12 @@ public:
 	//! Getters/Setters
 
 	//! Set whether or not to accept new touches. Can be turned on/off.
-	virtual void	setTouchEnabled(const bool state) { mTouchEnabled = state; };
+	void			setTouchEnabled(const bool state) { mTouchEnabled = state; };
 	const bool		isTouchEnabled() const { return mTouchEnabled; }
+
+	//! Set whether to process move events and whether to process whether this view is being dragged or tapped.
+	bool			getMovingTouchesEnabled() const { return mMovingTouchesEnabled; }
+	void			setMovingTouchesEnabled(const bool value) { mMovingTouchesEnabled = value; }
 
 	//! Accepts more than one touch if true, otherwise max of one touch if false. Defaults to false.
 	bool			getMultiTouchEnabled() const { return mMultiTouchEnabled; }
@@ -139,7 +143,7 @@ private:
 	bool			mMultiTouchEnabled;
 	int				mUniqueID;				//! Object identification
 
-	bool			mDragEnabled;
+	bool			mMovingTouchesEnabled;
 	bool			mIsActive;
 	bool			mIsDragging;
 	bool			mHasMovingTouches;

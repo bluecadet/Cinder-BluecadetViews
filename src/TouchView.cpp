@@ -18,12 +18,12 @@ namespace views {
 // Setup/Destruction
 //
 
-TouchView::TouchView(bool dragEnabled) :
+TouchView::TouchView() :
 	BaseView(),
 	mSize(0.0f),
-	mDragEnabled(dragEnabled),
 	mTouchEnabled(true),
 	mMultiTouchEnabled(false),
+	mMovingTouchesEnabled(true),
 	mHasMovingTouches(false),
 	mAllowsTapReleaseOutside(false),
 	mIsDragging(false),
@@ -123,7 +123,7 @@ void TouchView::processTouchMoved(const touch::TouchEvent& touchEvent) {
 
 	mHasMovingTouches = true;
 
-	if (!mDragEnabled) {
+	if (!mMovingTouchesEnabled) {
 		return;
 	}
 
