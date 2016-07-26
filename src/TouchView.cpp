@@ -70,9 +70,9 @@ void TouchView::draw() {
 	gl::color(ColorA(1.0f, 0, 0, 0.5f));
 
 	if (mTouchPath.empty()) {
-		gl::drawSolidRect(Rectf(vec2(), getSize()));
+		gl::drawStrokedRect(Rectf(vec2(), getSize()));
 	} else {
-		gl::drawSolid(mTouchPath);
+		gl::draw(mTouchPath);
 	}
 
 }

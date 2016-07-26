@@ -36,6 +36,7 @@ void ViewTypesSampleApp::setup() {
 	mRootView->addChild(view);
 
 	auto touchView = TouchViewRef(new TouchView());
+	touchView->setDebugDrawTouchPath(true);
 	touchView->setSize(view->getSize());
 	touchView->setPosition(view->getPosition().value() + vec2(view->getWidth() + 10, 0));
 	touchView->setBackgroundColor(ColorA(0, 1.0f, 0, 1.0f));
@@ -44,8 +45,8 @@ void ViewTypesSampleApp::setup() {
 	mRootView->addChild(touchView);
 
 	auto diamondTouchView = TouchViewRef(new TouchView());
-	diamondTouchView->setSize(touchView->getSize());
 	diamondTouchView->setDebugDrawTouchPath(true);
+	diamondTouchView->setSize(touchView->getSize());
 	diamondTouchView->setTouchPath([=]{
 		ci::Path2d p;
 		p.moveTo(50, 0);
