@@ -20,14 +20,12 @@ namespace views {
 
 TouchView::TouchView() :
 	BaseView(),
-	mSize(0.0f),
 	mTouchEnabled(true),
 	mMultiTouchEnabled(false),
 	mMovingTouchesEnabled(true),
 	mHasMovingTouches(false),
 	mAllowsTapReleaseOutside(false),
 	mIsDragging(false),
-	mIsActive(false),
 	mDragThreshold(20.0f),
 	mMaxTapDuration(2.0),
 	mCurTouchPos(0, 0),
@@ -40,26 +38,12 @@ TouchView::TouchView() :
 }
 
 TouchView::~TouchView() {
-	mPath.clear();
 	cancelTouches();
 }
 
 void TouchView::reset() {
 	BaseView::reset();
 	cancelTouches();
-}
-
-void TouchView::setup(const cinder::vec2 &size) {
-	// Create shape from this position and size
-	vector<cinder::vec2> coordinates;
-	vec2 startCoord = vec2(0);
-	coordinates.push_back(startCoord);
-	coordinates.push_back(vec2(startCoord.x + size.x, startCoord.y));
-	coordinates.push_back(vec2(startCoord.x + size.x, startCoord.y + size.y));
-	coordinates.push_back(vec2(startCoord.x, startCoord.y + size.y));
-	createShape(coordinates);
-	// Clean up
-	coordinates.clear();
 }
 
 void TouchView::setup(float radius) {
@@ -84,16 +68,16 @@ void TouchView::setup(const std::vector<cinder::vec2> &coordinates, const cinder
 }
 
 void TouchView::createShape(const std::vector<cinder::vec2> &coordinates) {
-	mPath = cinder::Path2d();
+	mTouchablePath = cinder::Path2d();
+	mTouchablePath.moveTo(coordinates[0]);
 
-	for (int i = 0; i <= coordinates.size() - 1; i++) {
-		if (i == 0) mPath.moveTo(coordinates[0]);
-		else mPath.lineTo(coordinates[i]);
+	for (int i = 1; i < coordinates.size(); ++i) {
+		mTouchablePath.lineTo(coordinates[i]);
 	}
 
-	mPath.close();
+	mTouchablePath.close();
 
-	mSize = mPath.calcBoundingBox().getSize();
+	setSize(mTouchablePath.calcBoundingBox().getSize());
 }
 
 //==================================================
@@ -148,7 +132,7 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 	handleTouchEnded(touchEvent);
 	mDidEndTouch(touchEvent);
 
-	bool didTap = mAllowsTapReleaseOutside || hasTouchPoint(touchEvent.position);
+	bool didTap = mAllowsTapReleaseOutside || containsPoint(touchEvent.localPosition);
 
 	// Only allow taps within a certain time
 	if (didTap) {
@@ -197,13 +181,17 @@ void TouchView::resetTouchState() {
 	mObjectTouchIDs.clear();
 }
 
-bool TouchView::hasTouchPoint(const vec2 &pnt) {
-	// do we have a path?
-	// yes: is within path?
-	// no: is within size?
+bool TouchView::containsPoint(const vec2 &point) {
+	const vec2& size = BaseView::getSize();
 
-	vec2 localPoint = convertGlobalToLocal(pnt);
-	return mPath.contains(localPoint);
+	if (mTouchablePath.getNumPoints() <= 0) {
+		// simply check if within size when no path defined
+		return 
+			point.x >= 0 && point.x <= size.x &&
+			point.y >= 0 && point.y <= size.y;
+	}
+
+	return mTouchablePath.contains(point);
 }
 
 bool TouchView::canAcceptTouch() const {
@@ -214,10 +202,10 @@ bool TouchView::canAcceptTouch() const {
 // Debugging
 //
 
-void TouchView::drawDebugShape() const {
-	gl::lineWidth(2.0f);
-	gl::draw(mPath);
-}
+//void TouchView::drawDebugShape() const {
+//	gl::lineWidth(2.0f);
+//	gl::draw(mPath);
+//}
 
 }
 }

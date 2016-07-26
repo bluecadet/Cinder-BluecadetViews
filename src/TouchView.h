@@ -43,9 +43,6 @@ public:
 	//! Calls BaseView::reset() and cancels/ends all existing touches on this view.
 	virtual void				reset() override;
 
-
-	//! Setting up base touch object as a rectangle
-	virtual void				setup(const cinder::vec2 &size = cinder::vec2(10.0f, 10.0f));
 	//! Setting up base touch object as a circle
 	virtual void				setup(float radius = 10.0);
 	//! Setting up base touch object as random shape
@@ -56,11 +53,10 @@ public:
 	// Touch Management
 	//
 
-	void						createShape(const std::vector<cinder::vec2> &coordinates);	//! Iterate through coordinates passed in. Create Path2d of the touchable area.
-	const cinder::Path2d		getPath() const { return mPath; };
+	void						createShape(const std::vector<cinder::vec2>& coordinates);	//! Iterate through coordinates passed in. Create Path2d of the touchable area.
 
 	virtual void				cancelTouches();					//! Remove whatever touches are currently within the object and causes touchesEndedHandler() to be called
-	virtual bool                hasTouchPoint(const ci::vec2 &pnt);	//! Returns whether or not this object should accept the touch point
+	virtual bool				containsPoint(const ci::vec2& point);	//! Used for touch detection. Passes in a local point.
 	virtual bool				canAcceptTouch() const;	//! Will return whether this touch object can accept a new touch based on its current state.
 
 	// Used by the touch manager and should not be overriden
@@ -86,10 +82,6 @@ public:
 	//! Returns the total number of touches currently within the object
 	const int		getNumTouches() const { return (int)mObjectTouchIDs.size(); }
 
-	const ci::vec2&	getSize() const { return mSize; };		//! Returns size
-	float			getWidth()	const { return mSize.x; };	//! Returns width as float
-	float			getHeight()	const { return mSize.y; };	//! Returns height as float
-
 	//! True once a touch has moved the minimum drag threshold
 	bool			isDragging() const { return mIsDragging; };
 
@@ -110,11 +102,8 @@ public:
 	bool			getAllowsTapReleaseOutside() const { return mAllowsTapReleaseOutside; }
 	void			setAllowsTapReleaseOutside(const bool value) { mAllowsTapReleaseOutside = value; }
 
-	bool			isActive() const { return mIsActive; };
-	void			setActive(bool activeState) { mIsActive = activeState; };
-
-	//! Draws an the outer box of the object, and the objects to string in the center, helpful for debugging pourposes.
-	virtual void	drawDebugShape() const;
+	const ci::Path2d&	getTouchablePath() const { return mTouchablePath; }
+	void				setTouchablePath(const ci::Path2d value) { mTouchablePath = value; }
 
 protected:
 	// Override these boilerplate methods to react to touch events
@@ -133,18 +122,14 @@ protected:
 	ci::vec2		mInitialPosWhenTouched;
 	double			mInitialTouchTime;
 
-	std::vector<int>mObjectTouchIDs;		//! Vector containing the touch IDs of the touches within this object
-
-	ci::Path2d		mPath;					//! Coordinates of the object
-	ci::vec2		mSize;					//! Calculated from path bounding box
+	std::vector<int>mObjectTouchIDs;	//! Vector containing the touch IDs of the touches within this object
+	ci::Path2d		mTouchablePath;	//! Custom path that determines touchable area
 
 private:
 	bool			mTouchEnabled;
 	bool			mMultiTouchEnabled;
-	int				mUniqueID;				//! Object identification
 
 	bool			mMovingTouchesEnabled;
-	bool			mIsActive;
 	bool			mIsDragging;
 	bool			mHasMovingTouches;
 	bool			mAllowsTapReleaseOutside;

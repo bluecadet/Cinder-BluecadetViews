@@ -12,11 +12,10 @@ RectButton::RectButton() : TouchView() {
 }
 
 RectButton::~RectButton() {
-	
 }
 
 void RectButton::setup(const vec2 size, const ci::ColorA& touchUpColor, const ci::ColorA& touchDownColor) {
-	TouchView::setup(size);
+	setSize(size);
 
 	mTouchUpColor = touchUpColor;
 	mTouchDownColor = touchDownColor;
