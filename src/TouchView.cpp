@@ -25,6 +25,7 @@ TouchView::TouchView() :
 	mMovingTouchesEnabled(true),
 	mHasMovingTouches(false),
 	mAllowsTapReleaseOutside(false),
+	mDebugDrawTouchPath(false),
 	mIsDragging(false),
 	mDragThreshold(20.0f),
 	mMaxTapDuration(2.0),
@@ -46,38 +47,34 @@ void TouchView::reset() {
 	cancelTouches();
 }
 
-void TouchView::setup(float radius) {
-
-	// Touchable area of each circle is created from 50 points. This number may be adjusted.
-	int points = 30;
-	double slice = 2.0 * M_PI / points;
-	vector<cinder::vec2> coordinates;
-	for (int i = 0; i < points; i++) {
-		double angle = slice * i;
-		int newX = (int)(radius *  cos(angle));
-		int newY = (int)(radius * sin(angle));
-		coordinates.push_back(vec2(newX, newY));
-	}
-
-	createShape(coordinates);
-	coordinates.clear();
-}
-
-void TouchView::setup(const std::vector<cinder::vec2> &coordinates, const cinder::vec2 &pos) {
-	createShape(coordinates);
-}
-
 void TouchView::createShape(const std::vector<cinder::vec2> &coordinates) {
-	mTouchablePath = cinder::Path2d();
-	mTouchablePath.moveTo(coordinates[0]);
+	mTouchPath = cinder::Path2d();
+	mTouchPath.moveTo(coordinates[0]);
 
 	for (int i = 1; i < coordinates.size(); ++i) {
-		mTouchablePath.lineTo(coordinates[i]);
+		mTouchPath.lineTo(coordinates[i]);
 	}
 
-	mTouchablePath.close();
+	mTouchPath.close();
 
-	setSize(mTouchablePath.calcBoundingBox().getSize());
+	setSize(mTouchPath.calcBoundingBox().getSize());
+}
+
+void TouchView::draw() {
+	BaseView::draw();
+	
+	if (!mDebugDrawTouchPath) {
+		return;
+	}
+
+	gl::color(ColorA(1.0f, 0, 0, 0.5f));
+
+	if (mTouchPath.empty()) {
+		gl::drawSolidRect(Rectf(vec2(), getSize()));
+	} else {
+		gl::drawSolid(mTouchPath);
+	}
+
 }
 
 //==================================================
@@ -184,14 +181,14 @@ void TouchView::resetTouchState() {
 bool TouchView::containsPoint(const vec2 &point) {
 	const vec2& size = BaseView::getSize();
 
-	if (mTouchablePath.getNumPoints() <= 0) {
+	if (mTouchPath.empty()) {
 		// simply check if within size when no path defined
 		return 
 			point.x >= 0 && point.x <= size.x &&
 			point.y >= 0 && point.y <= size.y;
 	}
 
-	return mTouchablePath.contains(point);
+	return mTouchPath.contains(point);
 }
 
 bool TouchView::canAcceptTouch() const {

@@ -39,13 +39,27 @@ void ViewTypesSampleApp::setup() {
 	touchView->setSize(view->getSize());
 	touchView->setPosition(view->getPosition().value() + vec2(view->getWidth() + 10, 0));
 	touchView->setBackgroundColor(ColorA(0, 1.0f, 0, 1.0f));
-	touchView->mDidBeginTouch.connect([=](const bluecadet::touch::TouchEvent& e) { touchView->setAlpha(0.5f); });
-	touchView->mDidEndTouch.connect([=](const bluecadet::touch::TouchEvent& e) { touchView->setAlpha(1.0f); });
-	touchView->mDidTap.connect([=](const bluecadet::touch::TouchEvent& e) {
-		touchView->getTimeline()->appendTo(&touchView->getScale(), vec2(1.5f), 0.3f);
-		touchView->getTimeline()->appendTo(&touchView->getScale(), vec2(1.0f), 0.3f);
-	});
+	touchView->mDidBeginTouch.connect([=](const bluecadet::touch::TouchEvent& e) { touchView->resetAnimations(); touchView->setAlpha(0.5f); });
+	touchView->mDidTap.connect([=](const bluecadet::touch::TouchEvent& e) { touchView->getTimeline()->apply(&touchView->getAlpha(), 1.0f, 0.3f); });
 	mRootView->addChild(touchView);
+
+	auto diamondTouchView = TouchViewRef(new TouchView());
+	diamondTouchView->setSize(touchView->getSize());
+	diamondTouchView->setDebugDrawTouchPath(true);
+	diamondTouchView->setTouchPath([=]{
+		ci::Path2d p;
+		p.moveTo(50, 0);
+		p.lineTo(100, 50);
+		p.lineTo(50, 100);
+		p.lineTo(0, 50);
+		p.close();
+		return p;
+	}());
+	diamondTouchView->setPosition(touchView->getPosition().value() + vec2(touchView->getWidth() + 10, 0));
+	diamondTouchView->setBackgroundColor(ColorA(0, 0, 1.0f, 1.0f));
+	diamondTouchView->mDidBeginTouch.connect([=](const bluecadet::touch::TouchEvent& e) { diamondTouchView->resetAnimations(); diamondTouchView->setAlpha(0.5f); });
+	diamondTouchView->mDidTap.connect([=](const bluecadet::touch::TouchEvent& e) { diamondTouchView->getTimeline()->apply(&diamondTouchView->getAlpha(), 1.0f, 0.3f); });
+	mRootView->addChild(diamondTouchView);
 }
 
 void ViewTypesSampleApp::update() {

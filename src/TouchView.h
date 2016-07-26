@@ -41,29 +41,21 @@ public:
 	virtual ~TouchView();
 
 	//! Calls BaseView::reset() and cancels/ends all existing touches on this view.
-	virtual void				reset() override;
-
-	//! Setting up base touch object as a circle
-	virtual void				setup(float radius = 10.0);
-	//! Setting up base touch object as random shape
-	virtual void				setup(const std::vector<cinder::vec2> &coordinates, const cinder::vec2 &pos = cinder::vec2(0));
-
+	virtual void	reset() override;
 
 	//==================================================
 	// Touch Management
 	//
 
-	void						createShape(const std::vector<cinder::vec2>& coordinates);	//! Iterate through coordinates passed in. Create Path2d of the touchable area.
-
-	virtual void				cancelTouches();					//! Remove whatever touches are currently within the object and causes touchesEndedHandler() to be called
-	virtual bool				containsPoint(const ci::vec2& point);	//! Used for touch detection. Passes in a local point.
-	virtual bool				canAcceptTouch() const;	//! Will return whether this touch object can accept a new touch based on its current state.
+	virtual void	cancelTouches();						//! Remove whatever touches are currently within the object and causes touchesEndedHandler() to be called
+	virtual bool	containsPoint(const ci::vec2& point);	//! Used for touch detection. Passes in a local point.
+	virtual bool	canAcceptTouch() const;					//! Will return whether this touch object can accept a new touch based on its current state.
 
 	// Used by the touch manager and should not be overriden
-	virtual	void				processTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) final;
-	virtual	void				processTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) final;
-	virtual	void				processTouchCanceled(const bluecadet::touch::TouchEvent& touchEvent) final;
-	virtual	void				processTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) final;
+	virtual	void	processTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) final;
+	virtual	void	processTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) final;
+	virtual	void	processTouchCanceled(const bluecadet::touch::TouchEvent& touchEvent) final;
+	virtual	void	processTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) final;
 
 	//! Getters/Setters
 
@@ -102,10 +94,18 @@ public:
 	bool			getAllowsTapReleaseOutside() const { return mAllowsTapReleaseOutside; }
 	void			setAllowsTapReleaseOutside(const bool value) { mAllowsTapReleaseOutside = value; }
 
-	const ci::Path2d&	getTouchablePath() const { return mTouchablePath; }
-	void				setTouchablePath(const ci::Path2d value) { mTouchablePath = value; }
+	//! Custom path that determines touchable area if configured. If no path is set, size will be used for hit detection.
+	const ci::Path2d&	getTouchPath() const { return mTouchPath; }
+	void				setTouchPath(const ci::Path2d value) { mTouchPath = value; }
+
+	//! If set to true, will draw the touch path with a debug color
+	bool			getDebugDrawTouchPath() const { return mDebugDrawTouchPath; }
+	void			setDebugDrawTouchPath(const bool value) { mDebugDrawTouchPath = value; }
 
 protected:
+	virtual void	draw() override;
+	void			createShape(const std::vector<cinder::vec2>& coordinates);	//! Iterate through coordinates passed in. Create Path2d of the touchable area.
+																				
 	// Override these boilerplate methods to react to touch events
 	virtual	void	handleTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) {};
 	virtual void	handleTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) {};
@@ -123,7 +123,7 @@ protected:
 	double			mInitialTouchTime;
 
 	std::vector<int>mObjectTouchIDs;	//! Vector containing the touch IDs of the touches within this object
-	ci::Path2d		mTouchablePath;	//! Custom path that determines touchable area
+	ci::Path2d		mTouchPath;			//! Custom path that determines touchable area
 
 private:
 	bool			mTouchEnabled;
@@ -136,6 +136,8 @@ private:
 
 	float			mDragThreshold;
 	double			mMaxTapDuration;
+
+	bool			mDebugDrawTouchPath;
 };
 
 }

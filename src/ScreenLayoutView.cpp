@@ -1,5 +1,4 @@
 #include "ScreenLayoutView.h"
-#include "debug/RectView.h"
 
 using namespace ci;
 using namespace ci::app;
