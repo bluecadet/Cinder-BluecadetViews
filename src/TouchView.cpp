@@ -47,19 +47,6 @@ void TouchView::reset() {
 	cancelTouches();
 }
 
-void TouchView::createShape(const std::vector<cinder::vec2> &coordinates) {
-	mTouchPath = cinder::Path2d();
-	mTouchPath.moveTo(coordinates[0]);
-
-	for (int i = 1; i < coordinates.size(); ++i) {
-		mTouchPath.lineTo(coordinates[i]);
-	}
-
-	mTouchPath.close();
-
-	setSize(mTouchPath.calcBoundingBox().getSize());
-}
-
 void TouchView::draw() {
 	BaseView::draw();
 	

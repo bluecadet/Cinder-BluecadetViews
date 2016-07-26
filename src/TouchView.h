@@ -104,7 +104,6 @@ public:
 
 protected:
 	virtual void	draw() override;
-	void			createShape(const std::vector<cinder::vec2>& coordinates);	//! Iterate through coordinates passed in. Create Path2d of the touchable area.
 																				
 	// Override these boilerplate methods to react to touch events
 	virtual	void	handleTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) {};
