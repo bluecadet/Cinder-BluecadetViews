@@ -8,9 +8,6 @@ using namespace std;
 namespace bluecadet {
 namespace views {
 
-//==================================================
-// Class Lifecycle
-// 
 TextView::TextView() : BaseView(), text::StyledTextLayout(),
 mTexture(nullptr),
 mAutoRenderEnabled(true),
@@ -39,12 +36,10 @@ void TextView::setup(const std::wstring& text, const std::string& styleKey, cons
 	if (text.empty()) {
 		auto style = text::StyleManager::getInstance()->getStyle(styleKey);
 		setCurrentStyle(style);
-	}
-	else if (parseText) {
+	} else if (parseText) {
 		setText(text, styleKey);
 
-	}
-	else {
+	} else {
 		setPlainText(text, styleKey);
 	}
 }
@@ -66,10 +61,9 @@ void TextView::willDraw() {
 }
 
 void TextView::draw() {
-	if (mTexture) 
+	if (mTexture) {
 		gl::draw(mTexture);
-
-	// draw any children?
+	}
 }
 
 bool TextView::needsToBeRendered(bool surfaceOnly) const {
@@ -91,8 +85,7 @@ void TextView::renderContent(bool surfaceOnly, bool alpha, bool premultiplied, b
 	if (surfaceOnly) {
 		mTexture = nullptr; // reset texture to save memory
 
-	}
-	else {
+	} else {
 		mTexture = gl::Texture2d::create(mSurface, createTextureFormat(mSmoothScalingEnabled));
 		mSurface = ci::Surface(); // reset surface to save memory
 	}
@@ -127,8 +120,7 @@ ci::gl::Texture::Format TextView::createTextureFormat(bool smoothScaling) const 
 		format.setMaxMipmapLevel(2);
 		format.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 		format.setMagFilter(GL_LINEAR);
-	}
-	else {
+	} else {
 		format.setMaxAnisotropy(4.0f);
 		format.enableMipmapping(false);
 		format.setMaxMipmapLevel(0);

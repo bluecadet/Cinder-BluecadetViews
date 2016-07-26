@@ -106,9 +106,6 @@
     <ClCompile Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\NativeTouchDriver.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\SimulatedTouchDriver.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\TuioDriver.cpp" />
-    <ClCompile Include="..\..\..\src\debug\RectButton.cpp" />
-    <ClCompile Include="..\..\..\src\debug\RectView.cpp" />
-    <ClCompile Include="..\..\..\src\debug\StatsView.cpp" />
     <ClCompile Include="..\src\TextViewSampleApp.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\FontManager.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextLayout.cpp" />
@@ -127,9 +124,6 @@
     <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\NativeTouchDriver.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\SimulatedTouchDriver.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\TuioDriver.h" />
-    <ClInclude Include="..\..\..\src\debug\RectButton.h" />
-    <ClInclude Include="..\..\..\src\debug\RectView.h" />
-    <ClInclude Include="..\..\..\src\debug\StatsView.h" />
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\FontManager.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextLayout.h" />

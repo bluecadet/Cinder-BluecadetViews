@@ -28,13 +28,6 @@ void TextViewSampleApp::setup() {
 
 	mTitle = TextViewRef(new TextView());
 
-	// Since it's a view, we have access to properties like this (animation help)
-	mTitle->setAlpha(0.75f);
-	
-	// The view tint color affects the overal tint of the view, but not the actual text color
-	// Text + tint color get multiplied (i.e. final color = tintColor * textColor)
-	mTitle->setTint(Color(1.0f, 0.0f, 0.0f));
-
 	// This is what actually changes the text color; Gets multiplied with tint color
 	mTitle->setTextColor(Color(1.0f, 1.0f, 1.0f));
 
@@ -60,11 +53,10 @@ void TextViewSampleApp::mouseDown(MouseEvent event) {
 	
 	if (count % 2) {
 		// bottom right minus padding
-		pos = vec2(getWindowSize() - mTitle->getSize()) - padding;
+		pos = vec2(getWindowSize() - mTitle->getTextSize()) - padding;
 	}
 
 	mTitle->getTimeline()->apply(&mTitle->getPosition(), pos, 0.33f, EaseInOutQuad());
-	//mTitle->setPosition(pos);
 }
 
 void TextViewSampleApp::update() {
