@@ -93,6 +93,19 @@ public:
 	virtual void						setScale(const ci::vec2& scale) { mScale = scale;  invalidateTransforms(); };
 	virtual void						setScale(const ci::vec3& scale) { mScale = ci::vec2(scale.x, scale.y);  invalidateTransforms(); };
 
+	//! Local rotation relative to parent view. Changing this value invalidates transforms.
+	virtual ci::Anim<ci::quat>&			getRotation() { return mRotation; };
+	virtual void						setRotation(const float radians) { mRotation = glm::angleAxis(radians, ci::vec3(0, 0, 1)); invalidateTransforms(); };
+	virtual void						setRotation(const ci::quat& rotation) { mRotation = rotation; invalidateTransforms(); };
+
+	//! Acts as the point of origin for all transforms. Essentially allows for rotating and scaling around a specific point. Defaults to (0,0). Changing this value invalidates transforms.
+	virtual ci::Anim<ci::vec2>&			getTransformOrigin() { return mTransformOrigin; invalidateTransforms(); }
+	void								setTransformOrigin(const ci::vec2& value) { mTransformOrigin = value; }
+
+	virtual void						validateTransforms(const bool clearInvalidFlag = true);
+	virtual const ci::mat4&				getTransform() { if (mHasInvalidTransforms) { validateTransforms(); }; return mTransform; }
+	virtual const ci::mat4&				getGlobalTransform() { if (mHasInvalidTransforms) { validateTransforms(); }; return mGlobalTransform; }
+
 	//! Size of this view. Defaults to 0, 0 and is not affected by children. Does not affect transforms (position, rotation, scale).
 	virtual ci::Anim<ci::vec2>&			getSize() { return mSize; }
 	virtual void						setSize(const ci::vec2& size) { mSize = size; }
@@ -103,15 +116,6 @@ public:
 	virtual ci::Anim<ci::ColorA>&		getBackgroundColor() { return mBackgroundColor; }
 	virtual void						setBackgroundColor(const ci::Color color) { mBackgroundColor = ci::ColorA(color, 1.0f); } //! Sets background color with 100% alpha
 	virtual void						setBackgroundColor(const ci::ColorA color) { mBackgroundColor = color; }
-
-	//! Local rotation relative to parent view
-	virtual ci::Anim<ci::quat>&			getRotation() { return mRotation; };
-	virtual void						setRotation(const float radians) { mRotation = glm::angleAxis(radians, ci::vec3(0, 0, 1)); invalidateTransforms(); };
-	virtual void						setRotation(const ci::quat& rotation) { mRotation = rotation; invalidateTransforms(); };
-
-	virtual void						validateTransforms(const bool clearInvalidFlag = true);
-	virtual const ci::mat4&				getTransform() { if (mHasInvalidTransforms) { validateTransforms(); }; return mTransform; }
-	virtual const ci::mat4&				getGlobalTransform() { if (mHasInvalidTransforms) { validateTransforms(); }; return mGlobalTransform; }
 
 	//! Applied before each draw together with mAlpha; Defaults to white
 	virtual ci::Anim<ci::Color>&		getTint() { return mTint; }
@@ -183,6 +187,7 @@ private:
 	bool mIsHidden;
 	bool mShouldForceRedraw;
 
+	ci::Anim<ci::vec2> mTransformOrigin;
 	ci::Anim<ci::vec2> mPosition;
 	ci::Anim<ci::vec2> mSize;
 	ci::Anim<ci::vec2> mScale;

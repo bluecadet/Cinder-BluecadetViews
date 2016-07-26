@@ -11,6 +11,7 @@ namespace bluecadet {
 namespace views {
 
 BaseView::BaseView() :
+	mTransformOrigin(vec2(0.0f, 0.0f)),
 	mPosition(vec2(0.0f, 0.0f)),
 	mScale(vec2(1.0f, 1.0f)),
 	mRotation(quat()),
@@ -27,7 +28,7 @@ BaseView::BaseView() :
 	mIsHidden(false),
 	mShouldForceRedraw(false),
 
-	mTimeline(ci::Timeline::create()),
+	mTimeline(Timeline::create()),
 
 	mChildren(),
 	mParent(nullptr),
@@ -227,7 +228,7 @@ void BaseView::update(const double deltaTime) {
 
 }
 
-void BaseView::drawScene(const ci::ColorA& parentTint) {
+void BaseView::drawScene(const ColorA& parentTint) {
 	if (!mShouldForceRedraw && (mIsHidden || mAlpha <= 0.0f)) {
 		return;
 	}
@@ -235,7 +236,7 @@ void BaseView::drawScene(const ci::ColorA& parentTint) {
 	// recalculate transforms if marked as dirty or while animations are happening
 	// this way children will also know that their parent transform has changed
 	mHasInvalidTransforms = mHasInvalidTransforms || (mParent && mParent->mHasInvalidTransforms) ||
-		!mPosition.isComplete() || !mScale.isComplete() || !mRotation.isComplete();
+		!mPosition.isComplete() || !mScale.isComplete() || !mRotation.isComplete() || !mTransformOrigin.isComplete();
 
 	if (mHasInvalidTransforms) {
 		validateTransforms(false);
@@ -286,7 +287,7 @@ void BaseView::draw() {
 	batch->draw();
 }
 
-void BaseView::drawChildren(const ci::ColorA& parentTint) {
+void BaseView::drawChildren(const ColorA& parentTint) {
 	for (auto child : mChildren) {
 		child->drawScene(parentTint);
 	}
@@ -301,26 +302,30 @@ void BaseView::didDraw() {
 // 
 
 void BaseView::validateTransforms(const bool clearInvalidFlag) {
+	const vec3 origin = vec3(mTransformOrigin.value(), 0.0f);
+
 	mTransform = glm::translate(vec3(mPosition.value(), 0.0f));
+	mTransform *= glm::translate(origin);	// offset by origin
 	mTransform *= glm::scale(vec3(mScale.value(), 1.0f));
 	mTransform *= glm::toMat4(mRotation.value());
+	mTransform *= glm::translate(-origin);	// reset to original position
 	mGlobalTransform = mParent ? mParent->mGlobalTransform * mTransform : mTransform;
 	if (clearInvalidFlag) {
 		mHasInvalidTransforms = false;
 	}
 }
 
-const ci::vec2 BaseView::convertLocalToGlobal(const ci::vec2& local) const {
+const vec2 BaseView::convertLocalToGlobal(const vec2& local) const {
 	vec4 global = mGlobalTransform * vec4(local, 0, 1);
 	return vec2(global.x, global.y);
 }
 
-const ci::vec2 BaseView::convertGlobalToLocal(const ci::vec2& global) const {
+const vec2 BaseView::convertGlobalToLocal(const vec2& global) const {
 	vec4 local = glm::inverse(mGlobalTransform) * vec4(global, 0, 1);
 	return vec2(local.x, local.y);
 }
 
-const ci::vec2 BaseView::getGlobalPosition() const {
+const vec2 BaseView::getGlobalPosition() const {
 	if (!mParent) {
 		return mPosition;
 	}
@@ -342,9 +347,9 @@ void BaseView::resetAnimations() {
 	mAlpha.stop();
 }
 
-ci::TimelineRef BaseView::getTimeline() {
+TimelineRef BaseView::getTimeline() {
 	if (!mTimeline) {
-		mTimeline = ci::Timeline::create();
+		mTimeline = Timeline::create();
 	}
 	if (mTimeline) {
 		mTimeline->stepTo(timeline().getCurrentTime());
@@ -352,7 +357,7 @@ ci::TimelineRef BaseView::getTimeline() {
 	return mTimeline;
 }
 
-ci::CueRef BaseView::dispatchAfter(std::function<void()> fn, float delay) {
+CueRef BaseView::dispatchAfter(std::function<void()> fn, float delay) {
 	return getTimeline()->add(fn, getTimeline()->getCurrentTime() + delay);
 }
 
