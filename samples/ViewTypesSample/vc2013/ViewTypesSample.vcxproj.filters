@@ -150,9 +150,6 @@
     <ClInclude Include="..\..\..\src\ScreenLayoutView.h">
       <Filter>Blocks\BluecadetViews\src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\ShapeView.h">
-      <Filter>Blocks\BluecadetViews\src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\TextView.h">
       <Filter>Blocks\BluecadetViews\src</Filter>
     </ClInclude>
@@ -169,9 +166,6 @@
       <Filter>Blocks\BluecadetViews\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\ScreenLayoutView.cpp">
-      <Filter>Blocks\BluecadetViews\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\ShapeView.cpp">
       <Filter>Blocks\BluecadetViews\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\TextView.cpp">
@@ -192,10 +186,16 @@
     <ClInclude Include="..\..\..\..\TUIO\src\Tuio.h">
       <Filter>Blocks\TUIO\src</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\..\src\EllipseView.cpp">
+      <Filter>Blocks\BluecadetViews\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\EllipseView.h">
+      <Filter>Blocks\BluecadetViews\src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

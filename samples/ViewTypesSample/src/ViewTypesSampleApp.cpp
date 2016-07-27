@@ -4,6 +4,7 @@
 
 #include "BaseApp.h"
 #include "BaseView.h"
+#include "EllipseView.h"
 #include "TouchView.h"
 #include "SettingsManager.h"
 
@@ -33,16 +34,19 @@ void ViewTypesSampleApp::setup() {
 	auto view = BaseViewRef(new BaseView());
 	view->setSize(vec2(100, 100));
 	view->setPosition(vec2(10, 10));
-	view->setBackgroundColor(ColorA(1.0f, 0, 0, 1.0f));
-	view->setPosition(vec2(100, 100));
-	view->setBackgroundColor(ColorA(0.5f, 0.5f, 0.5f, 0.75f));
-	view->setTransformOrigin(view->getSize() * 0.5f);
+	view->setBackgroundColor(ColorA(1.0f, 0.5f, 0.5f, 0.75f));
 	mRootView->addChild(view);
+
+	auto ellipseView = EllipseViewRef(new EllipseView());
+	ellipseView->setSize(vec2(150, 100));
+	ellipseView->setPosition(vec2(view->getPosition().value().x + view->getSize().x + 10.0f, 10));
+	ellipseView->setBackgroundColor(ColorA(0.5f, 1.0f, 0.5f, 0.75f));
+	mRootView->addChild(ellipseView);
 
 	auto touchView = TouchViewRef(new TouchView());
 	touchView->setDebugDrawTouchPath(true);
 	touchView->setSize(vec2(200, 100));
-	touchView->setPosition(view->getPosition().value() + vec2(view->getWidth() + 10, 0));
+	touchView->setPosition(view->getPosition().value() + vec2(0, view->getWidth() + 10));
 	touchView->setTransformOrigin(0.5f * touchView->getSize());
 	touchView->setBackgroundColor(ColorA(0, 1.0f, 0, 1.0f));
 	touchView->mDidBeginTouch.connect([=](const bluecadet::touch::TouchEvent& e) { touchView->resetAnimations(); touchView->setScale(1.5f); });
@@ -72,10 +76,10 @@ void ViewTypesSampleApp::setup() {
 	auto circleTouchView = TouchViewRef(new TouchView());
 	circleTouchView->setDebugDrawTouchPath(true);
 	circleTouchView->setSize(vec2(200, 100));
-	circleTouchView->setPosition(vec2(touchView->getPosition().value().x, diamondTouchView->getHeight() + diamondTouchView->getPosition().value().y + 10));
+	circleTouchView->setPosition(diamondTouchView->getPosition().value() + vec2(diamondTouchView->getWidth() + 10, 0));
 	circleTouchView->setTransformOrigin(0.5f * circleTouchView->getSize());
 	circleTouchView->setup(circleTouchRadius, vec2(circleTouchRadius));
-	circleTouchView->setBackgroundColor(ColorA(0, 1.0f, 0, 1.0f));
+	circleTouchView->setBackgroundColor(ColorA(0, 1.0f, 1.0f, 1.0f));
 	circleTouchView->mDidBeginTouch.connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->resetAnimations(); circleTouchView->setScale(1.5f); });
 	circleTouchView->mDidEndTouch.connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->getTimeline()->apply(&circleTouchView->getScale(), vec2(1.0f), 0.3f); });
 	mRootView->addChild(circleTouchView);

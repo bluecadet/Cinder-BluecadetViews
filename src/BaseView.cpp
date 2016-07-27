@@ -33,8 +33,7 @@ BaseView::BaseView() :
 	mChildren(),
 	mParent(nullptr),
 
-	mSize(0, 0),
-	mDrawBatch(nullptr)
+	mSize(0, 0)
 {
 }
 

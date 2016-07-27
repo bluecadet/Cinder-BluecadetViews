@@ -172,8 +172,8 @@ protected:
 
 	const ci::ColorA& getDrawColor() const { return mDrawColor; }	//! The color used for drawing
 
-	static ci::gl::BatchRef getDefaultDrawBatch();
-	static ci::gl::GlslProgRef getDefaultDrawProg();
+	static ci::gl::BatchRef		getDefaultDrawBatch();
+	static ci::gl::GlslProgRef	getDefaultDrawProg();
 
 private:
 
@@ -194,7 +194,6 @@ private:
 	ci::Anim<ci::quat> mRotation;
 	
 	ci::ColorA mDrawColor;			//! Combines mAlpha and mTint for faster draw
-	ci::gl::BatchRef mDrawBatch;	//! Batch used for drawing in draw(). Defaults to a geom batch with a rect.
 	bool mHasInvalidUniforms;		//! Will cause draw batch uniforms to be updated during next draw.
 
 	ci::mat4 mTransform;
