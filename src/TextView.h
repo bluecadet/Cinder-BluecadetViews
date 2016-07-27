@@ -49,8 +49,11 @@ public:
 	void			setSmoothScalingEnabled(const bool value) { mSmoothScalingEnabled = value; }
 	bool			getSmoothScalingEnabled() const { return mSmoothScalingEnabled; }
 
-	//! Returns the larger of either max size or text size
+	//! Sets a fixed size for the text view. Any values below 0 will allow the text view to automatically expand in that direction.
 	virtual inline void				setSize(const ci::vec2& size) override;
+
+	//! Returns the actual size of the text including padding.
+	//! In advanced use-cases this can differ from what was set in setSize(), e.g. if a special clip mode is set or size-trimming is enabled.
 	virtual inline const ci::vec2	getSize() override;
 
 protected:

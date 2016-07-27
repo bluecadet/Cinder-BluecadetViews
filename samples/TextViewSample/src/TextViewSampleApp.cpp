@@ -26,8 +26,10 @@ void TextViewSampleApp::setup() {
 
 	mTitle = TextViewRef(new TextView());
 
-	mTitle->setSize(vec2(200.0f, 200.0f));
-	mTitle->setClipMode(StyledTextLayout::ClipMode::NoClip);
+	// Set a size to wrap text; -1.0 will let the textview grow in that direction.
+	mTitle->setSize(vec2(200.0f, -1.0f));
+	
+	// Background color and text color can both be set independently
 	mTitle->setBackgroundColor(Color(1, 0, 0));
 	mTitle->setTextColor(Color(1.0f, 1.0f, 1.0f));
 
