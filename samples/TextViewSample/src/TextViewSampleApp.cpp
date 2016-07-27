@@ -24,12 +24,9 @@ private:
 
 void TextViewSampleApp::setup() {
 
-	count = 0;
-
 	mTitle = TextViewRef(new TextView());
 
-	// This is what actually changes the text color; Gets multiplied with tint color
-	mTitle->setSize(vec2(100.0f, 100.0f));
+	mTitle->setSize(vec2(200.0f, 200.0f));
 	mTitle->setClipMode(StyledTextLayout::ClipMode::NoClip);
 	mTitle->setBackgroundColor(Color(1, 0, 0));
 	mTitle->setTextColor(Color(1.0f, 1.0f, 1.0f));
@@ -38,8 +35,12 @@ void TextViewSampleApp::setup() {
 	mTitle->setFontSize(64.0f);
 	
 	// All styles will be applied to text now
-	//mTitle->setTextAlign(TextAlign::Center);
+	mTitle->setTextAlign(TextAlign::Center);
 	mTitle->setText("Sample Title " + toString(count));
+
+	// init
+	count = -1;
+	mouseDown(MouseEvent());
 }
 
 void TextViewSampleApp::mouseDown(MouseEvent event) {
