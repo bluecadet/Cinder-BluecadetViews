@@ -29,12 +29,15 @@ void TextViewSampleApp::setup() {
 	mTitle = TextViewRef(new TextView());
 
 	// This is what actually changes the text color; Gets multiplied with tint color
+	mTitle->setMaxWidth(500.0f);
+	mTitle->setBackgroundColor(Color(1, 0, 0));
 	mTitle->setTextColor(Color(1.0f, 1.0f, 1.0f));
 
 	// Change font size
 	mTitle->setFontSize(64.0f);
 	
 	// All styles will be applied to text now
+	mTitle->setTextAlign(TextAlign::Center);
 	mTitle->setText("Sample Title " + toString(count));
 }
 
@@ -53,10 +56,10 @@ void TextViewSampleApp::mouseDown(MouseEvent event) {
 	
 	if (count % 2) {
 		// bottom right minus padding
-		pos = vec2(getWindowSize() - mTitle->getTextSize()) - padding;
+		pos = vec2(getWindowSize()) - mTitle->getSize() - padding;
 	}
 
-	mTitle->getTimeline()->apply(&mTitle->getPosition(), pos, 0.33f, EaseInOutQuad());
+	mTitle->getTimeline()->apply(&mTitle->getPosition(), pos, 0.33f, EaseOutElastic(1.1f, 0.75f));
 }
 
 void TextViewSampleApp::update() {

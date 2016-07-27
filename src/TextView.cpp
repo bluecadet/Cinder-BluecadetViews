@@ -61,6 +61,7 @@ void TextView::willDraw() {
 }
 
 void TextView::draw() {
+	BaseView::draw();
 	if (mTexture) {
 		gl::draw(mTexture);
 	}
@@ -103,12 +104,18 @@ void TextView::resetRenderedContent() {
 	mSurface = ci::Surface();
 }
 
-void TextView::animateOn(float alpha, float aniDur, float aniDelay) {
-	getTimeline()->apply(&getAlpha(), alpha, aniDur, easeInQuad).delay(aniDelay);
+void TextView::setSize(const ci::vec2& size) {
+	invalidate();
+	setMaxSize(size);
 }
 
-void TextView::animateOff(float alpha, float aniDur, float aniDelay) {
-	getTimeline()->apply(&getAlpha(), 0.0f, aniDur, easeOutQuad).delay(aniDelay);
+const ci::vec2 TextView::getSize() {
+	const vec2 maxSize = StyledTextLayout::getTextSize();
+	const vec2 textSize = StyledTextLayout::getTextSize();
+	return vec2(
+		max(maxSize.x, textSize.x),
+		max(maxSize.y, textSize.y)
+	);
 }
 
 ci::gl::Texture::Format TextView::createTextureFormat(bool smoothScaling) const {

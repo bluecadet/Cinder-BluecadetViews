@@ -35,10 +35,6 @@ public:
 
 	virtual void	reset() override;
 
-	void			animateOn(float alpha, float aniDur, float aniDelay);
-	void			animateOff(float alpha, float aniDur, float aniDelay);
-
-
 	//! Use these methods for more granular rendering control. Textures will otherwise automatically be rendered if necessary when draw() is called.
 	bool			getAutoRenderEnabled() const { return mAutoRenderEnabled; }
 	void			setAutoRenderEnabled(const bool value) { mAutoRenderEnabled = value; }
@@ -52,13 +48,17 @@ public:
 	//! Enabling smooth scaling uses mipmapping. Does not affect existing texture. Default is true.
 	void			setSmoothScalingEnabled(const bool value) { mSmoothScalingEnabled = value; }
 	bool			getSmoothScalingEnabled() const { return mSmoothScalingEnabled; }
-	
-private:
-	//! Will update the text texture if necessary.
-	virtual void	willDraw() override;
-	virtual void	draw() override;
+
+	//! Returns the larger of either max size or text size
+	virtual void			setSize(const ci::vec2& size) override;
+	virtual const ci::vec2	getSize() override;
 
 protected:
+
+	//! Will update the text texture if necessary.
+	virtual void			willDraw() override;
+	virtual void			draw() override;
+
 	ci::gl::Texture::Format createTextureFormat(bool smoothScaling) const;
 	virtual inline void		invalidate(const bool layout = true, const bool size = true) override;
 

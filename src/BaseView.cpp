@@ -33,7 +33,7 @@ BaseView::BaseView() :
 	mChildren(),
 	mParent(nullptr),
 
-	mSize(vec2(0, 0)),
+	mSize(0, 0),
 	mDrawBatch(nullptr)
 {
 }
@@ -217,6 +217,7 @@ void BaseView::moveChildToIndex(BaseViewList::iterator childIt, size_t index) {
 void BaseView::updateScene(const double deltaTime) {
 	if (mTimeline && !mTimeline->empty()) {
 		mTimeline->stepTo(timeline().getCurrentTime());
+		invalidateTransforms();
 	}
 	update(deltaTime);
 	for (auto child : mChildren) {
@@ -235,8 +236,7 @@ void BaseView::drawScene(const ColorA& parentTint) {
 
 	// recalculate transforms if marked as dirty or while animations are happening
 	// this way children will also know that their parent transform has changed
-	mHasInvalidTransforms = mHasInvalidTransforms || (mParent && mParent->mHasInvalidTransforms) ||
-		!mPosition.isComplete() || !mScale.isComplete() || !mRotation.isComplete() || !mTransformOrigin.isComplete();
+	mHasInvalidTransforms = mHasInvalidTransforms || (mParent && mParent->mHasInvalidTransforms);
 
 	if (mHasInvalidTransforms) {
 		validateTransforms(false);
@@ -273,7 +273,7 @@ void BaseView::draw() {
 	// override this method for custom drawing
 
 	const auto& bgColor = mBackgroundColor.value();
-	const auto& size = mSize.value();
+	const auto size = getSize();
 
 	if (size.x <= 0 && size.y <= 0 && bgColor.a <= 0) {
 		return;
