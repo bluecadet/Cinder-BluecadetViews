@@ -37,43 +37,46 @@ public:
 
 
 	//! Setup/Destruction
-	TouchView(bool dragEnabled = false);
+	TouchView();
 	virtual ~TouchView();
 
 	//! Calls BaseView::reset() and cancels/ends all existing touches on this view.
-	virtual void				reset() override;
+	virtual void	reset() override;
 
+	//! Sets the size of this touch view and clears any existing touch path. You also just call setSize().
+	virtual void	setup(const ci::vec2 size);
 
-	//! Setting up base touch object as a rectangle
-	virtual void				setup(const cinder::vec2 &size = cinder::vec2(10.0f, 10.0f));
-	//! Setting up base touch object as a circle
-	virtual void				setup(float radius = 10.0);
-	//! Setting up base touch object as random shape
-	virtual void				setup(const std::vector<cinder::vec2> &coordinates, const cinder::vec2 &pos = cinder::vec2(0));
+	//! Sets a circular touch path with radius and n segments with an origin at offset.
+	//! If segments is below 0, it will be automatically calculated based on radius.
+	//! This is a convenience method and can cause complex paths that slow down performance. Use sparingly.
+	virtual void	setup(const float radius, const ci::vec2& offset = ci::vec2(0, 0), const int numSegments = -1);
 
+	//! Sets a touch path with a custom shape in local coordinate space. You can also just call setTouchPath().
+	virtual void	setup(const ci::Path2d& path);
 
 	//==================================================
 	// Touch Management
 	//
 
-	void						createShape(const std::vector<cinder::vec2> &coordinates);	//! Iterate through coordinates passed in. Create Path2d of the touchable area.
-	const cinder::Path2d		getPath() const { return mPath; };
-
-	virtual void				cancelTouches();					//! Remove whatever touches are currently within the object and causes touchesEndedHandler() to be called
-	virtual bool                hasTouchPoint(const ci::vec2 &pnt);	//! Returns whether or not this object should accept the touch point
-	bool						canAcceptTouch() const;	//! Will return whether this touch object can accept a new touch based on its current state.
+	virtual void	cancelTouches();						//! Remove whatever touches are currently within the object and causes touchesEndedHandler() to be called
+	virtual bool	containsPoint(const ci::vec2& point);	//! Used for touch detection. Passes in a local point. Override this method to define more complex hit areas.
+	virtual bool	canAcceptTouch() const;					//! Will return whether this touch object can accept a new touch based on its current state.
 
 	// Used by the touch manager and should not be overriden
-	virtual	void				processTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) final;
-	virtual	void				processTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) final;
-	virtual	void				processTouchCanceled(const bluecadet::touch::TouchEvent& touchEvent) final;
-	virtual	void				processTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) final;
+	virtual	void	processTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) final;
+	virtual	void	processTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) final;
+	virtual	void	processTouchCanceled(const bluecadet::touch::TouchEvent& touchEvent) final;
+	virtual	void	processTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) final;
 
 	//! Getters/Setters
 
 	//! Set whether or not to accept new touches. Can be turned on/off.
-	virtual void	setTouchEnabled(const bool state) { mTouchEnabled = state; };
+	void			setTouchEnabled(const bool state) { mTouchEnabled = state; };
 	const bool		isTouchEnabled() const { return mTouchEnabled; }
+
+	//! Set whether to process move events and whether to process whether this view is being dragged or tapped.
+	bool			getMovingTouchesEnabled() const { return mMovingTouchesEnabled; }
+	void			setMovingTouchesEnabled(const bool value) { mMovingTouchesEnabled = value; }
 
 	//! Accepts more than one touch if true, otherwise max of one touch if false. Defaults to false.
 	bool			getMultiTouchEnabled() const { return mMultiTouchEnabled; }
@@ -81,10 +84,6 @@ public:
 
 	//! Returns the total number of touches currently within the object
 	const int		getNumTouches() const { return (int)mObjectTouchIDs.size(); }
-
-	const ci::vec2&	getSize() const { return mSize; };		//! Returns size
-	float			getWidth()	const { return mSize.x; };	//! Returns width as float
-	float			getHeight()	const { return mSize.y; };	//! Returns height as float
 
 	//! True once a touch has moved the minimum drag threshold
 	bool			isDragging() const { return mIsDragging; };
@@ -106,13 +105,17 @@ public:
 	bool			getAllowsTapReleaseOutside() const { return mAllowsTapReleaseOutside; }
 	void			setAllowsTapReleaseOutside(const bool value) { mAllowsTapReleaseOutside = value; }
 
-	bool			isActive() const { return mIsActive; };
-	void			setActive(bool activeState) { mIsActive = activeState; };
+	//! Custom path that determines touchable area if configured. If no path is set, size will be used for hit detection.
+	const ci::Path2d&	getTouchPath() const { return mTouchPath; }
+	void				setTouchPath(const ci::Path2d value) { mTouchPath = value; }
 
-	//! Draws an the outer box of the object, and the objects to string in the center, helpful for debugging pourposes.
-	virtual void	drawDebugShape() const;
+	//! If set to true, will draw the touch path with a debug color
+	bool			getDebugDrawTouchPath() const { return mDebugDrawTouchPath; }
+	void			setDebugDrawTouchPath(const bool value) { mDebugDrawTouchPath = value; }
 
 protected:
+	virtual void	draw() override;
+																				
 	// Override these boilerplate methods to react to touch events
 	virtual	void	handleTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) {};
 	virtual void	handleTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) {};
@@ -129,24 +132,22 @@ protected:
 	ci::vec2		mInitialPosWhenTouched;
 	double			mInitialTouchTime;
 
-	std::vector<int>mObjectTouchIDs;		//! Vector containing the touch IDs of the touches within this object
-
-	ci::Path2d		mPath;					//! Coordinates of the object
-	ci::vec2		mSize;					//! Calculated from path bounding box
+	std::vector<int>mObjectTouchIDs;	//! Vector containing the touch IDs of the touches within this object
+	ci::Path2d		mTouchPath;			//! Custom path that determines touchable area
 
 private:
 	bool			mTouchEnabled;
 	bool			mMultiTouchEnabled;
-	int				mUniqueID;				//! Object identification
 
-	bool			mDragEnabled;
-	bool			mIsActive;
+	bool			mMovingTouchesEnabled;
 	bool			mIsDragging;
 	bool			mHasMovingTouches;
 	bool			mAllowsTapReleaseOutside;
 
 	float			mDragThreshold;
 	double			mMaxTapDuration;
+
+	bool			mDebugDrawTouchPath;
 };
 
 }

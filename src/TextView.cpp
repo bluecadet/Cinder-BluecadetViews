@@ -8,9 +8,6 @@ using namespace std;
 namespace bluecadet {
 namespace views {
 
-//==================================================
-// Class Lifecycle
-// 
 TextView::TextView() : BaseView(), text::StyledTextLayout(),
 mTexture(nullptr),
 mAutoRenderEnabled(true),
@@ -39,12 +36,10 @@ void TextView::setup(const std::wstring& text, const std::string& styleKey, cons
 	if (text.empty()) {
 		auto style = text::StyleManager::getInstance()->getStyle(styleKey);
 		setCurrentStyle(style);
-	}
-	else if (parseText) {
+	} else if (parseText) {
 		setText(text, styleKey);
 
-	}
-	else {
+	} else {
 		setPlainText(text, styleKey);
 	}
 }
@@ -66,10 +61,10 @@ void TextView::willDraw() {
 }
 
 void TextView::draw() {
-	if (mTexture) 
+	BaseView::draw();
+	if (mTexture) {
 		gl::draw(mTexture);
-
-	// draw any children?
+	}
 }
 
 bool TextView::needsToBeRendered(bool surfaceOnly) const {
@@ -91,8 +86,7 @@ void TextView::renderContent(bool surfaceOnly, bool alpha, bool premultiplied, b
 	if (surfaceOnly) {
 		mTexture = nullptr; // reset texture to save memory
 
-	}
-	else {
+	} else {
 		mTexture = gl::Texture2d::create(mSurface, createTextureFormat(mSmoothScalingEnabled));
 		mSurface = ci::Surface(); // reset surface to save memory
 	}
@@ -110,12 +104,18 @@ void TextView::resetRenderedContent() {
 	mSurface = ci::Surface();
 }
 
-void TextView::animateOn(float alpha, float aniDur, float aniDelay) {
-	getTimeline()->apply(&getAlpha(), alpha, aniDur, easeInQuad).delay(aniDelay);
+void TextView::setSize(const ci::vec2& size) {
+	invalidate();
+	setMaxSize(size);
 }
 
-void TextView::animateOff(float alpha, float aniDur, float aniDelay) {
-	getTimeline()->apply(&getAlpha(), 0.0f, aniDur, easeOutQuad).delay(aniDelay);
+const ci::vec2 TextView::getSize() {
+	const vec2 maxSize = StyledTextLayout::getTextSize();
+	const vec2 textSize = StyledTextLayout::getTextSize();
+	return vec2(
+		max(maxSize.x, textSize.x),
+		max(maxSize.y, textSize.y)
+	);
 }
 
 ci::gl::Texture::Format TextView::createTextureFormat(bool smoothScaling) const {
@@ -127,8 +127,7 @@ ci::gl::Texture::Format TextView::createTextureFormat(bool smoothScaling) const 
 		format.setMaxMipmapLevel(2);
 		format.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 		format.setMagFilter(GL_LINEAR);
-	}
-	else {
+	} else {
 		format.setMaxAnisotropy(4.0f);
 		format.enableMipmapping(false);
 		format.setMaxMipmapLevel(0);

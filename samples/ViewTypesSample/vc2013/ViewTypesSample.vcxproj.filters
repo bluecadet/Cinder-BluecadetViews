@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -41,9 +42,6 @@
     </Filter>
     <Filter Include="Blocks\BluecadetViews\src">
       <UniqueIdentifier>{4F5573DB-674E-4751-9A03-9A8C3B2A8311}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Blocks\BluecadetViews\src\debug">
-      <UniqueIdentifier>{9BDF15BF-22AE-40F3-9481-12C12A602352}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\OSC">
       <UniqueIdentifier>{41B7766D-D6AD-4A99-80DE-DDD5CC6D5A92}</UniqueIdentifier>
@@ -181,24 +179,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\TouchView.cpp">
       <Filter>Blocks\BluecadetViews\src</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\src\debug\RectButton.h">
-      <Filter>Blocks\BluecadetViews\src\debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\debug\RectView.h">
-      <Filter>Blocks\BluecadetViews\src\debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\debug\StatsView.h">
-      <Filter>Blocks\BluecadetViews\src\debug</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\src\debug\RectButton.cpp">
-      <Filter>Blocks\BluecadetViews\src\debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\debug\RectView.cpp">
-      <Filter>Blocks\BluecadetViews\src\debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\debug\StatsView.cpp">
-      <Filter>Blocks\BluecadetViews\src\debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\OSC\src\Osc.cpp">
       <Filter>Blocks\OSC\src</Filter>

@@ -4,6 +4,7 @@
 
 #include "BaseApp.h"
 #include "BaseView.h"
+#include "TouchView.h"
 #include "SettingsManager.h"
 
 using namespace ci;
@@ -23,6 +24,7 @@ public:
 
 void ViewTypesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 	BaseApp::prepareSettings(settings);
+	settings->setWindowSize(ivec2(1024, 768));
 }
 
 void ViewTypesSampleApp::setup() {
@@ -30,13 +32,53 @@ void ViewTypesSampleApp::setup() {
 
 	auto view = BaseViewRef(new BaseView());
 	view->setSize(vec2(100, 100));
+	view->setPosition(vec2(10, 10));
+	view->setBackgroundColor(ColorA(1.0f, 0, 0, 1.0f));
 	view->setPosition(vec2(100, 100));
 	view->setBackgroundColor(ColorA(0.5f, 0.5f, 0.5f, 0.75f));
-	view->setTransformOrigin(view->getSize().value() * 0.5f);
-	view->getTimeline()->apply(&view->getScale(), vec2(2.0f), 2.0f, easeInOutQuad).pingPong().loop();
-	//view->getTimeline()->apply(&view->getTransformOrigin(), vec2(0), view->getSize().value() * 0.5f, 4.0f).pingPong().loop();
-
+	view->setTransformOrigin(view->getSize() * 0.5f);
 	mRootView->addChild(view);
+
+	auto touchView = TouchViewRef(new TouchView());
+	touchView->setDebugDrawTouchPath(true);
+	touchView->setSize(vec2(200, 100));
+	touchView->setPosition(view->getPosition().value() + vec2(view->getWidth() + 10, 0));
+	touchView->setTransformOrigin(0.5f * touchView->getSize());
+	touchView->setBackgroundColor(ColorA(0, 1.0f, 0, 1.0f));
+	touchView->mDidBeginTouch.connect([=](const bluecadet::touch::TouchEvent& e) { touchView->resetAnimations(); touchView->setScale(1.5f); });
+	touchView->mDidEndTouch.connect([=](const bluecadet::touch::TouchEvent& e) { touchView->getTimeline()->apply(&touchView->getScale(), vec2(1.0f), 0.3f); });
+	mRootView->addChild(touchView);
+
+	auto diamondTouchView = TouchViewRef(new TouchView());
+	diamondTouchView->setDebugDrawTouchPath(true);
+	diamondTouchView->setSize(vec2(200, 100));
+	diamondTouchView->setPosition(touchView->getPosition().value() + vec2(touchView->getWidth() + 10, 0));
+	diamondTouchView->setTransformOrigin(0.5f * diamondTouchView->getSize());
+	diamondTouchView->setup([]{
+		ci::Path2d p;
+		p.moveTo(50, 0);
+		p.lineTo(100, 50);
+		p.lineTo(50, 100);
+		p.lineTo(0, 50);
+		p.close();
+		return p;
+	}());
+	diamondTouchView->setBackgroundColor(ColorA(0, 0, 1.0f, 1.0f));
+	diamondTouchView->mDidBeginTouch.connect([=](const bluecadet::touch::TouchEvent& e) { diamondTouchView->resetAnimations(); diamondTouchView->setScale(1.5f); });
+	diamondTouchView->mDidEndTouch.connect([=](const bluecadet::touch::TouchEvent& e) { diamondTouchView->getTimeline()->apply(&diamondTouchView->getScale(), vec2(1.0f), 0.3f); });
+	mRootView->addChild(diamondTouchView);
+
+	const float circleTouchRadius = 50.0f;
+	auto circleTouchView = TouchViewRef(new TouchView());
+	circleTouchView->setDebugDrawTouchPath(true);
+	circleTouchView->setSize(vec2(200, 100));
+	circleTouchView->setPosition(vec2(touchView->getPosition().value().x, diamondTouchView->getHeight() + diamondTouchView->getPosition().value().y + 10));
+	circleTouchView->setTransformOrigin(0.5f * circleTouchView->getSize());
+	circleTouchView->setup(circleTouchRadius, vec2(circleTouchRadius));
+	circleTouchView->setBackgroundColor(ColorA(0, 1.0f, 0, 1.0f));
+	circleTouchView->mDidBeginTouch.connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->resetAnimations(); circleTouchView->setScale(1.5f); });
+	circleTouchView->mDidEndTouch.connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->getTimeline()->apply(&circleTouchView->getScale(), vec2(1.0f), 0.3f); });
+	mRootView->addChild(circleTouchView);
 }
 
 void ViewTypesSampleApp::update() {

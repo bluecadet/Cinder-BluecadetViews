@@ -28,20 +28,17 @@ void TextViewSampleApp::setup() {
 
 	mTitle = TextViewRef(new TextView());
 
-	// Since it's a view, we have access to properties like this (animation help)
-	mTitle->setAlpha(0.75f);
-	
-	// The view tint color affects the overal tint of the view, but not the actual text color
-	// Text + tint color get multiplied (i.e. final color = tintColor * textColor)
-	mTitle->setTint(Color(1.0f, 0.0f, 0.0f));
-
 	// This is what actually changes the text color; Gets multiplied with tint color
+	mTitle->setSize(vec2(100.0f, 100.0f));
+	mTitle->setClipMode(StyledTextLayout::ClipMode::NoClip);
+	mTitle->setBackgroundColor(Color(1, 0, 0));
 	mTitle->setTextColor(Color(1.0f, 1.0f, 1.0f));
 
 	// Change font size
 	mTitle->setFontSize(64.0f);
 	
 	// All styles will be applied to text now
+	//mTitle->setTextAlign(TextAlign::Center);
 	mTitle->setText("Sample Title " + toString(count));
 }
 
@@ -60,11 +57,10 @@ void TextViewSampleApp::mouseDown(MouseEvent event) {
 	
 	if (count % 2) {
 		// bottom right minus padding
-		pos = vec2(getWindowSize() - mTitle->getSize()) - padding;
+		pos = vec2(getWindowSize()) - mTitle->getSize() - padding;
 	}
 
-	mTitle->getTimeline()->apply(&mTitle->getPosition(), pos, 0.33f, EaseInOutQuad());
-	//mTitle->setPosition(pos);
+	mTitle->getTimeline()->apply(&mTitle->getPosition(), pos, 0.33f, EaseOutElastic(1.1f, 0.75f));
 }
 
 void TextViewSampleApp::update() {

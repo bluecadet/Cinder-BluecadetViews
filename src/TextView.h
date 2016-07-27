@@ -35,10 +35,6 @@ public:
 
 	virtual void	reset() override;
 
-	void			animateOn(float alpha, float aniDur, float aniDelay);
-	void			animateOff(float alpha, float aniDur, float aniDelay);
-
-
 	//! Use these methods for more granular rendering control. Textures will otherwise automatically be rendered if necessary when draw() is called.
 	bool			getAutoRenderEnabled() const { return mAutoRenderEnabled; }
 	void			setAutoRenderEnabled(const bool value) { mAutoRenderEnabled = value; }
@@ -52,15 +48,27 @@ public:
 	//! Enabling smooth scaling uses mipmapping. Does not affect existing texture. Default is true.
 	void			setSmoothScalingEnabled(const bool value) { mSmoothScalingEnabled = value; }
 	bool			getSmoothScalingEnabled() const { return mSmoothScalingEnabled; }
-	
-private:
-	//! Will update the text texture if necessary.
-	virtual void	willDraw() override;
-	virtual void	draw() override;
+
+	//! Returns the larger of either max size or text size
+	virtual inline void				setSize(const ci::vec2& size) override;
+	virtual inline const ci::vec2	getSize() override;
 
 protected:
+
+	//! Will update the text texture if necessary.
+	virtual void			willDraw() override;
+	virtual void			draw() override;
+
 	ci::gl::Texture::Format createTextureFormat(bool smoothScaling) const;
 	virtual inline void		invalidate(const bool layout = true, const bool size = true) override;
+
+	// Change visibility of these methods from public to protected since setSize()/getSize() should be used.
+	virtual ci::vec2		getMaxSize() const override { return StyledTextLayout::getMaxSize(); };
+	virtual void			setMaxSize(const ci::vec2& size) override { return StyledTextLayout::setMaxSize(size); };
+	virtual float			getMaxWidth() const override { return StyledTextLayout::getMaxWidth(); };
+	virtual void			setMaxWidth(const float value) override { return StyledTextLayout::setMaxWidth(value); };
+	virtual float			getMaxHeight() const override { return StyledTextLayout::getMaxHeight(); };
+	virtual void			setMaxHeight(const float value) override { return StyledTextLayout::setMaxHeight(value); };
 
 	bool				mHasInvalidRenderedContent;
 	bool				mSmoothScalingEnabled;
@@ -68,6 +76,7 @@ protected:
 
 	ci::Surface			mSurface;
 	ci::gl::TextureRef	mTexture;
+
 };
 
 }
