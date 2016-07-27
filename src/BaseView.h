@@ -107,10 +107,10 @@ public:
 	virtual const ci::mat4&				getGlobalTransform() { if (mHasInvalidTransforms) { validateTransforms(); }; return mGlobalTransform; }
 
 	//! Size of this view. Defaults to 0, 0 and is not affected by children. Does not affect transforms (position, rotation, scale).
-	virtual const ci::vec2				getSize() { return mSize; }
-	virtual void						setSize(const ci::vec2& size) { mSize = size; }
-	virtual float						getWidth() const { return mSize.x; };
-	virtual float						getHeight() const { return mSize.y; };
+	virtual inline const ci::vec2		getSize() { return mSize; }
+	virtual inline void					setSize(const ci::vec2& size) { mSize = size; }
+	virtual inline float				getWidth() { return getSize().x; };
+	virtual inline float				getHeight() { return getSize().y; };
 
 	//! The fill color used when drawing the bounding rect when a size greater than 0, 0 is given.
 	virtual ci::Anim<ci::ColorA>&		getBackgroundColor() { return mBackgroundColor; }

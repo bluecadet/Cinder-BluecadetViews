@@ -38,7 +38,7 @@ void TextViewSampleApp::setup() {
 	mTitle->setFontSize(64.0f);
 	
 	// All styles will be applied to text now
-	mTitle->setTextAlign(TextAlign::Center);
+	//mTitle->setTextAlign(TextAlign::Center);
 	mTitle->setText("Sample Title " + toString(count));
 }
 

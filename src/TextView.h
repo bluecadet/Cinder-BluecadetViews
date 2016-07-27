@@ -50,8 +50,8 @@ public:
 	bool			getSmoothScalingEnabled() const { return mSmoothScalingEnabled; }
 
 	//! Returns the larger of either max size or text size
-	virtual void			setSize(const ci::vec2& size) override;
-	virtual const ci::vec2	getSize() override;
+	virtual inline void				setSize(const ci::vec2& size) override;
+	virtual inline const ci::vec2	getSize() override;
 
 protected:
 
@@ -61,6 +61,14 @@ protected:
 
 	ci::gl::Texture::Format createTextureFormat(bool smoothScaling) const;
 	virtual inline void		invalidate(const bool layout = true, const bool size = true) override;
+
+	// Change visibility of these methods from public to protected since setSize()/getSize() should be used.
+	virtual ci::vec2		getMaxSize() const override { return StyledTextLayout::getMaxSize(); };
+	virtual void			setMaxSize(const ci::vec2& size) override { return StyledTextLayout::setMaxSize(size); };
+	virtual float			getMaxWidth() const override { return StyledTextLayout::getMaxWidth(); };
+	virtual void			setMaxWidth(const float value) override { return StyledTextLayout::setMaxWidth(value); };
+	virtual float			getMaxHeight() const override { return StyledTextLayout::getMaxHeight(); };
+	virtual void			setMaxHeight(const float value) override { return StyledTextLayout::setMaxHeight(value); };
 
 	bool				mHasInvalidRenderedContent;
 	bool				mSmoothScalingEnabled;
