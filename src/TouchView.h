@@ -43,6 +43,17 @@ public:
 	//! Calls BaseView::reset() and cancels/ends all existing touches on this view.
 	virtual void	reset() override;
 
+	//! Sets the size of this touch view and clears any existing touch path. You also just call setSize().
+	virtual void	setup(const ci::vec2 size);
+
+	//! Sets a circular touch path with radius and n segments with an origin at offset.
+	//! If segments is below 0, it will be automatically calculated based on radius.
+	//! This is a convenience method and can cause complex paths that slow down performance. Use sparingly.
+	virtual void	setup(const float radius, const ci::vec2& offset = ci::vec2(0, 0), const int numSegments = -1);
+
+	//! Sets a touch path with a custom shape in local coordinate space. You can also just call setTouchPath().
+	virtual void	setup(const ci::Path2d& path);
+
 	//==================================================
 	// Touch Management
 	//

@@ -47,6 +47,35 @@ void TouchView::reset() {
 	cancelTouches();
 }
 
+void TouchView::setup(const ci::vec2 size) {
+	mTouchPath.clear();
+	setSize(size);
+}
+
+void TouchView::setup(const float radius, const ci::vec2& offset, const int numSegments) {
+	mTouchPath.clear();
+
+	static const float twoPi = 2.0f * (float)M_PI;
+	static const float defSegmentLength = 12.0f;
+	static const float defMinNumSegments = 12.0f;
+	const float n = numSegments >= 0 ? numSegments : max(defMinNumSegments, twoPi * radius / defSegmentLength);
+	const float deltaAngle = twoPi / n;
+
+	mTouchPath.moveTo(offset.x + radius, offset.y);
+	for (float angle = deltaAngle; angle < twoPi; angle += deltaAngle) {
+		mTouchPath.lineTo(offset.x + radius * cosf(angle), offset.y + radius * sinf(angle));
+	}
+	mTouchPath.close();
+}
+
+void TouchView::setup(const ci::Path2d& path) {
+	mTouchPath = path;
+}
+
+//==================================================
+// Rendering
+// 
+
 void TouchView::draw() {
 	BaseView::draw();
 	
@@ -54,14 +83,14 @@ void TouchView::draw() {
 		return;
 	}
 
-	gl::color(ColorA(1.0f, 0, 0, 0.5f));
+	gl::ScopedColor color(ColorA(1.0f, 0, 0, 0.5f));
+	gl::ScopedLineWidth lineWidth(2.0f);
 
 	if (mTouchPath.empty()) {
 		gl::drawStrokedRect(Rectf(vec2(), getSize()));
 	} else {
 		gl::draw(mTouchPath);
 	}
-
 }
 
 //==================================================

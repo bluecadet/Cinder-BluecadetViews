@@ -29,7 +29,8 @@ void TextViewSampleApp::setup() {
 	mTitle = TextViewRef(new TextView());
 
 	// This is what actually changes the text color; Gets multiplied with tint color
-	mTitle->setMaxWidth(500.0f);
+	mTitle->setSize(vec2(100.0f, 100.0f));
+	mTitle->setClipMode(StyledTextLayout::ClipMode::NoClip);
 	mTitle->setBackgroundColor(Color(1, 0, 0));
 	mTitle->setTextColor(Color(1.0f, 1.0f, 1.0f));
 

@@ -68,6 +68,7 @@ protected:
 
 	ci::Surface			mSurface;
 	ci::gl::TextureRef	mTexture;
+
 };
 
 }
