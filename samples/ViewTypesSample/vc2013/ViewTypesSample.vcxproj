@@ -104,6 +104,7 @@
   <ItemGroup />
   <ItemGroup>
     <ClCompile Include="..\..\..\src\EllipseView.cpp" />
+    <ClCompile Include="..\..\..\src\LineView.cpp" />
     <ClCompile Include="..\src\ViewTypesSampleApp.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\FontManager.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextLayout.cpp" />
@@ -127,6 +128,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\EllipseView.h" />
+    <ClInclude Include="..\..\..\src\LineView.h" />
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\FontManager.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextLayout.h" />

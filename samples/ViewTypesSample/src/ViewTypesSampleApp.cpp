@@ -5,6 +5,7 @@
 #include "BaseApp.h"
 #include "BaseView.h"
 #include "EllipseView.h"
+#include "LineView.h"
 #include "TouchView.h"
 #include "SettingsManager.h"
 
@@ -42,6 +43,13 @@ void ViewTypesSampleApp::setup() {
 	ellipseView->setPosition(vec2(view->getPosition().value().x + view->getSize().x + 10.0f, 10));
 	ellipseView->setBackgroundColor(ColorA(0.5f, 1.0f, 0.5f, 0.75f));
 	mRootView->addChild(ellipseView);
+
+	auto lineView = LineViewRef(new LineView());
+	lineView->setEndPoint(vec2(100, 100));
+	lineView->setLineColor(ColorA(1.0f, 0.0f, 1.0f, 0.75f));
+	lineView->setLineWidth(2.0f);
+	lineView->setPosition(vec2(ellipseView->getPosition().value().x + ellipseView->getSize().x + 10.0f, 10));
+	mRootView->addChild(lineView);
 
 	auto touchView = TouchViewRef(new TouchView());
 	touchView->setDebugDrawTouchPath(true);
