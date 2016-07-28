@@ -87,6 +87,12 @@ public:
 	virtual void						setPosition(const ci::vec2& position) { mPosition = position; invalidateTransforms(); }
 	virtual void						setPosition(const ci::vec3& position) { mPosition = ci::vec2(position.x, position.y); invalidateTransforms(); }
 
+	//! Shorthand for combining position and size to center the view at `center`
+	virtual void						setCenter(const ci::vec2 center) { setPosition(center  - 0.5f * getSize()); };
+
+	//! Shorthand for getting the center based on the current position and size
+	virtual ci::vec2					getCenter() { return getPosition().value() + getSize() * 0.5f; }
+
 	//! Local scale relative to parent view
 	virtual ci::Anim<ci::vec2>&			getScale() { return mScale; };
 	virtual void						setScale(const float& scale) { mScale = ci::vec2(scale, scale);  invalidateTransforms(); };

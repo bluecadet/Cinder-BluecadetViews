@@ -14,6 +14,11 @@ EllipseView::EllipseView() : BaseView()
 EllipseView::~EllipseView() {
 }
 
+void EllipseView::setRadius(const float radius)
+{
+	setSize(vec2(2.0f * radius));
+}
+
 void EllipseView::draw() {
 	const auto& bgColor = getBackgroundColor().value();
 	const auto& size = getSize();
@@ -50,20 +55,20 @@ ci::gl::GlslProgRef EllipseView::getSharedEllipseProg() {
 				in vec4			ciPosition;
 				in vec4			ciColor;
 				out vec4		color;
-				out vec4		position;
 				out vec4		normPosition;
 
 				void main(void) {
 					color = ciColor * uBackgroundColor;
 					normPosition = ciPosition;
-					position = vec4(ciPosition.x * uSize.x, ciPosition.y * uSize.y, 0.0f, 1.0f);
-					gl_Position = ciModelViewProjection * position;
+					gl_Position = ciModelViewProjection * vec4(
+						ciPosition.x * uSize.x - uSize.x * 0.5f,
+						ciPosition.y * uSize.y - uSize.y * 0.5f,
+						0.0f, 1.0f);
 				}
 			)).fragment(CI_GLSL(150,
 				uniform vec2	uSize;
 
 				in vec4			normPosition;
-				in vec4			position;
 				in vec4			color;
 				out vec4		oColor;
 
