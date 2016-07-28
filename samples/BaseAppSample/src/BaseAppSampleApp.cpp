@@ -3,7 +3,7 @@
 #include "cinder/gl/gl.h"
 
 #include "BaseApp.h"
-#include "debug/RectButton.h"
+#include "TouchView.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -17,14 +17,14 @@ public:
 	void draw() override;
 
 protected:
-	debug::RectButtonRef mButton;
+	TouchViewRef mButton;
 };
 
 void BaseAppSampleApp::setup()
 {
 	BaseApp::setup();
 
-	mButton = bluecadet::views::debug::RectButtonRef(new bluecadet::views::debug::RectButton());
+	mButton = TouchViewRef(new TouchView());
 	mButton->setup(vec2(100.0f, 100.0f));
 	mButton->setPosition((vec2(getWindowSize()) - mButton->getSize()) * 0.5f);
 
