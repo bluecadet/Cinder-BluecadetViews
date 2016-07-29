@@ -118,11 +118,11 @@ public:
 
 	//! Width of this view. Defaults to 0 and is not affected by children.
 	virtual inline float				getWidth() { return getSize().x; };
-	virtual inline float				setWidth(const float width) { vec2 s = getSize(); setSize(vec2(width, s.y)); };
+	virtual void						setWidth(const float width) { ci::vec2 s = getSize(); setSize(ci::vec2(width, s.y)); };
 
 	//! Height of this view. Defaults to 0 and is not affected by children.
 	virtual inline float				getHeight() { return getSize().y; };
-	virtual inline float				setHeight(const float height) { vec2 s = getSize(); setSize(vec2(s.x, height)); };
+	virtual void						setHeight(const float height) { ci::vec2 s = getSize(); setSize(ci::vec2(s.x, height)); };
 
 	//! The fill color used when drawing the bounding rect when a size greater than 0, 0 is given.
 	virtual ci::Anim<ci::ColorA>&		getBackgroundColor() { return mBackgroundColor; }
