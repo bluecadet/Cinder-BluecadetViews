@@ -27,18 +27,23 @@ public:
 	virtual void setup(const std::string &fileName, const ci::vec2 &size = ci::vec2(0));
 	virtual void setup(const ci::gl::TextureRef texture, const ci::vec2 &size = ci::vec2(0));
 
-	void animateOn(float alpha, float aniDur, float aniDelay);
-	void animateOff(float alpha, float aniDur, float aniDelay);
+	virtual void setSize(const ci::vec2& size) override;
+
+	ci::gl::TextureRef getTexture() const { return mTexture; }
+	void setTexture(const ci::gl::TextureRef value);
+
+	bool getAutoSizeToTexture() const { return mAutoSizeToTexture; }
+	void setAutoSizeToTexture(const bool value) { mAutoSizeToTexture = value; }
 
 private:
 
 	virtual void draw() override;
 
-	// Properties
 	ci::gl::TextureRef	mTexture;
 
-	ci::Rectf				mDrawingDestRect;
-	ci::Area				mDrawingArea;
+	bool				mAutoSizeToTexture;
+	ci::Rectf			mDrawingDestRect;
+	ci::Area			mDrawingArea;
 };
 
 }

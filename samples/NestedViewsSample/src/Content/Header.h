@@ -9,8 +9,8 @@
 #include "cinder/gl/gl.h"
 
 #include "BaseView.h"
-#include "ShapeView.h"
 #include "TextView.h"
+#include "LineView.h"
 
 typedef std::shared_ptr<class Header> HeaderRef;
 
@@ -29,5 +29,5 @@ private:
 
 	//! Properties
 	bluecadet::views::TextViewRef	mTitle;
-	bluecadet::views::ShapeViewRef	mUnderline;
+	bluecadet::views::LineViewRef	mUnderline;
 };

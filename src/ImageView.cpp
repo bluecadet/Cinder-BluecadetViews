@@ -12,7 +12,7 @@ namespace views {
 
 ImageView::ImageView() : BaseView(),
 mTexture(nullptr),
-mDrawingArea()
+mAutoSizeToTexture(true)
 {
 }
 
@@ -34,30 +34,38 @@ void ImageView::stopAnimation() {
 }
 
 void ImageView::setup(const gl::TextureRef texture, const ci::vec2 &size) {
-	mTexture = texture;
+	setTexture(texture);
 
-	if ((size.x == 0 || size.y == 0) && mTexture) {
-		setSize(vec2(mTexture->getWidth(), mTexture->getHeight()));
-	} else {
+	if (size.x != 0 || size.y != 0) {
 		setSize(size);
 	}
+}
 
-	mDrawingDestRect = Rectf(0.0f, 0.0f, getWidth(), getHeight());
+void ImageView::setTexture(ci::gl::TextureRef texture) {
+	mTexture = texture;
+
+	if (mAutoSizeToTexture) {
+		if (mTexture) {
+			// apply texture size
+			setSize(vec2(mTexture->getSize()));
+		} else {
+			// reset to 0
+			setSize(vec2());
+		}
+	}
+}
+
+void ImageView::setSize(const ci::vec2& size) {
+	BaseView::setSize(size);
+
+	mDrawingDestRect = Rectf(vec2(0), size);
 
 	if (mTexture) {
 		// Aspect fill drawing area
 		mDrawingArea = Area(mDrawingDestRect.getCenteredFit(mTexture->getBounds(), true));
+	} else {
+		mDrawingArea = Area();
 	}
-}
-
-void ImageView::animateOn(float alpha, float aniDur, float aniDelay) {
-	getTimeline()->apply(&getAlpha(), alpha, aniDur, easeOutQuad)
-		.delay(aniDelay);
-}
-
-void ImageView::animateOff(float alpha, float aniDur, float aniDelay) {
-	getTimeline()->apply(&getAlpha(), alpha, aniDur, easeOutQuad)
-		.delay(aniDelay);
 }
 
 void ImageView::draw() {

@@ -55,9 +55,6 @@
     <Filter Include="Source Files\Content">
       <UniqueIdentifier>{974a3443-d550-4ecb-8243-45786a57c172}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Blocks\BluecadetViews\src\debug">
-      <UniqueIdentifier>{f24fcadd-5837-4e52-9c2a-8e5ad8fa99d2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Blocks\BluecadetTouch\src\drivers">
       <UniqueIdentifier>{77bd5634-8084-4125-b27e-d60904a44aaf}</UniqueIdentifier>
     </Filter>
@@ -117,9 +114,6 @@
     <ClCompile Include="..\..\..\src\ImageView.cpp">
       <Filter>Blocks\BluecadetViews\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\ShapeView.cpp">
-      <Filter>Blocks\BluecadetViews\src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\TextView.cpp">
       <Filter>Blocks\BluecadetViews\src</Filter>
     </ClCompile>
@@ -130,9 +124,6 @@
       <Filter>Blocks\BluecadetViews\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\ImageView.h">
-      <Filter>Blocks\BluecadetViews\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\ShapeView.h">
       <Filter>Blocks\BluecadetViews\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\TextView.h">
@@ -165,15 +156,6 @@
     <ClCompile Include="..\..\..\..\Cinder-BluecadetUtils\src\SettingsManager.cpp">
       <Filter>Blocks\BluecadetUtils\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\debug\RectButton.cpp">
-      <Filter>Blocks\BluecadetViews\src\debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\debug\RectView.cpp">
-      <Filter>Blocks\BluecadetViews\src\debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\debug\StatsView.cpp">
-      <Filter>Blocks\BluecadetViews\src\debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\MouseDriver.cpp">
       <Filter>Blocks\BluecadetTouch\src\drivers</Filter>
     </ClCompile>
@@ -185,6 +167,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\TuioDriver.cpp">
       <Filter>Blocks\BluecadetTouch\src\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\EllipseView.cpp">
+      <Filter>Blocks\BluecadetViews\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\LineView.cpp">
+      <Filter>Blocks\BluecadetViews\src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -203,15 +191,6 @@
     <ClInclude Include="..\..\..\..\Cinder-BluecadetUtils\src\SettingsManager.h">
       <Filter>Blocks\BluecadetUtils\src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\debug\StatsView.h">
-      <Filter>Blocks\BluecadetViews\src\debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\debug\RectButton.h">
-      <Filter>Blocks\BluecadetViews\src\debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\debug\RectView.h">
-      <Filter>Blocks\BluecadetViews\src\debug</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\MouseDriver.h">
       <Filter>Blocks\BluecadetTouch\src\drivers</Filter>
     </ClInclude>
@@ -226,6 +205,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\Touch.h">
       <Filter>Blocks\BluecadetTouch\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\EllipseView.h">
+      <Filter>Blocks\BluecadetViews\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\LineView.h">
+      <Filter>Blocks\BluecadetViews\src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

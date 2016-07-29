@@ -24,8 +24,6 @@ public:
 
 private:
 
-	virtual void draw() override;
-
 	//! Properties
 	bluecadet::views::BaseViewRef	mBgImageContainer; //! Used to center the bg icon when we scale
 	bluecadet::views::ImageViewRef	mBgImage;

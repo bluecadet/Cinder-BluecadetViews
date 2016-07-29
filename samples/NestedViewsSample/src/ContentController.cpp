@@ -6,6 +6,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 using namespace bluecadet::views;
+using namespace bluecadet::utils;
 
 ContentController::ContentController() : BaseView(){
 }
@@ -26,6 +27,7 @@ void ContentController::setup() {
 	// Create several detail views
 	for (int i = 0; i < 10; i++) {
 		DetailImageRef detail = DetailImageRef(new DetailImage());
+		detail->setDebugDrawTouchPath(true); // draw debug touch path
 		detail->setup(i);
 
 		// Add the individual detail to a container that holds all the detalis

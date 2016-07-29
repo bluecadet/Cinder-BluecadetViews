@@ -9,7 +9,7 @@ using namespace bluecadet::views;
 // Class Lifecycle
 // 
 
-DetailImage::DetailImage() : TouchView(true) {
+DetailImage::DetailImage() : TouchView() {
 }
 
 DetailImage::~DetailImage(){
@@ -24,7 +24,7 @@ void DetailImage::setup(int id) {
 	string iconFileName = "bluecadetIcon.png";
 	mBgImage->setup(iconFileName, vec2(0));
 	// Center the bgImage within the container
-	mBgImage->setPosition(vec2(-mBgImage->getWidth()*0.5f, -mBgImage->getHeight()*0.5f));
+	mBgImage->setPosition(-0.5f -mBgImage->getSize());
 	// Move the container back
 	mBgImageContainer->setPosition(vec2(mBgImage->getWidth()*0.5f, mBgImage->getHeight()*0.5f));
 
@@ -58,11 +58,6 @@ void DetailImage::update() {
 	if (hasMovingTouches()) {
 		setPosition(getCurTouchPosition());
 	}
-}
-
-void DetailImage::draw() {
-	// Debugging use only: Draw the shape of the touchable area of this button to compare against the visible shapes you draw within
-	drawDebugShape();
 }
 
 //==================================================
