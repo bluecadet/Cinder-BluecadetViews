@@ -22,9 +22,11 @@ void DetailImage::setup(int id) {
 	// Create bg
 	mBgImage = ImageViewRef(new ImageView());
 	string iconFileName = "bluecadetIcon.png";
-	mBgImage->setup(iconFileName, vec2(0));
+	mBgImage->setup(iconFileName);
+
 	// Center the bgImage within the container
-	mBgImage->setPosition(-0.5f -mBgImage->getSize());
+	mBgImage->setPosition(-0.5f * mBgImage->getSize());
+	
 	// Move the container back
 	mBgImageContainer->setPosition(vec2(mBgImage->getWidth()*0.5f, mBgImage->getHeight()*0.5f));
 
