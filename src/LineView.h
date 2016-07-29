@@ -16,6 +16,9 @@ public:
 	LineView();
 	virtual ~LineView();
 
+	//! Convenience method to configure this line view with a local end point, optional line color and optional line width.
+	inline void setup(const ci::vec2& endPoint, const ci::ColorA& lineColor = ci::ColorA(1, 1, 1, 1), const float lineWidth = 1.0f);
+
 	//! The point that the line is drawn to. End point defaults to 0,0 (the start point is always at 0,0).
 	const inline ci::vec2 getEndPoint()					{ return getSize(); }
 	void inline setEndPoint(const ci::vec2& value)		{ setSize(value); }

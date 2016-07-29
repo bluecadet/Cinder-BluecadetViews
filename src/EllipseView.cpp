@@ -14,6 +14,17 @@ EllipseView::EllipseView() : BaseView()
 EllipseView::~EllipseView() {
 }
 
+void EllipseView::setup(const float radius, const ci::ColorA backgroundColor) {
+	setRadius(radius);
+	setBackgroundColor(backgroundColor);
+}
+
+void EllipseView::setup(const ci::vec2& size, const ci::ColorA backgroundColor) {
+	setSize(size);
+	setBackgroundColor(backgroundColor);
+}
+
+
 void EllipseView::setRadius(const float radius)
 {
 	setSize(vec2(2.0f * radius));

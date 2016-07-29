@@ -18,6 +18,12 @@ public:
 	EllipseView();
 	virtual ~EllipseView();
 
+	//! Shorthand to get a circle with a background color set up
+	void setup(const float radius, const ci::ColorA backgroundColor = ci::ColorA());
+
+	//! Shorthand to get an ellipse with a background color set up
+	void setup(const ci::vec2& size, const ci::ColorA backgroundColor = ci::ColorA());
+
 	//! Shorthand for calling setSize(vec2(2.0f * radius))
 	void setRadius(const float radius);
 
