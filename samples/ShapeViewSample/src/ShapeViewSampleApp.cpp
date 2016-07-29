@@ -2,7 +2,8 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include "ShapeView.h" // Include the ShapeView header. If we want any other kind of views in our class, include those here as well. 
+#include "EllipseView.h"
+#include "LineView.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -17,7 +18,8 @@ public:
 
 private:
 	// Vector to store references to each circle - this could be any kind of container at this point
-	std::vector<ShapeViewRef> mCircles;
+	std::vector<EllipseViewRef> mCircles;
+	LineViewRef					mLine;
 };
 
 void ShapeViewSampleApp::setup() {
@@ -27,18 +29,21 @@ void ShapeViewSampleApp::setup() {
 		float yPos = (float)i * radius + radius*0.5f;
 
 		// Create local circle (does not get m or s before name)
-		ShapeViewRef circle = ShapeViewRef(new ShapeView());
+		EllipseViewRef circle = EllipseViewRef(new EllipseView());
 		// The ShapeView has the option of being a variety of shapes - this is how we tell it we want it to be a circle. Pass the position and radius.
-		circle->createSolidCircle(vec2(xPos, yPos), radius);
+		circle->setup(radius);
+		circle->setPosition(vec2(xPos, yPos));
 		// Set the tint color of this one circle
-		circle->setTint(ColorA(1.0f, 0.0f, 0.0f, 0.5f));
+		circle->setBackgroundColor(ColorA(1.0f, 0.0f, 0.0f, 1.0f));
 		// Play around with other properties you can set
-		circle->setAlpha(0.25f);		// You could set a new alpha (without setting the entire color) = animation helper
 		circle->setScale(vec2(1.2));	// Set the scale (hit states perhaps, or animating on/off). 
 
 		// Add circle to the vector of all circles
 		mCircles.push_back(circle);
 	}
+
+	mLine = LineViewRef(new LineView());
+	mLine->setup(vec2(300));
 }
 
 void ShapeViewSampleApp::update() {
@@ -50,6 +55,8 @@ void ShapeViewSampleApp::draw() {
 	for (auto circle : mCircles) {
 		circle->drawScene();
 	}
+
+	mLine->drawScene();
 }
 
 CINDER_APP(ShapeViewSampleApp, RendererGl)
