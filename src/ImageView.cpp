@@ -36,7 +36,7 @@ void ImageView::stopAnimation() {
 void ImageView::setup(const gl::TextureRef texture, const ci::vec2 &size) {
 	setTexture(texture);
 
-	if (size.x != 0 || size.y != 0) {
+	if (size.x != 0 && size.y != 0) {
 		setSize(size);
 	}
 }
