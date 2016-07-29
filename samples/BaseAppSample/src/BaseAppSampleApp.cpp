@@ -12,6 +12,7 @@ using namespace bluecadet::views;
 
 class BaseAppSampleApp : public BaseApp {
 public:
+	static void prepareSettings(ci::app::App::Settings* settings);
 	void setup() override;
 	void update() override;
 	void draw() override;
@@ -19,6 +20,14 @@ public:
 protected:
 	TouchViewRef mButton;
 };
+
+void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings)
+{
+	BaseApp::prepareSettings(settings);
+	settings->setFullScreen(false);
+	settings->setWindowSize(1024, 768);
+	settings->setBorderless(false);
+}
 
 void BaseAppSampleApp::setup()
 {
