@@ -68,6 +68,14 @@ void ImageView::setSize(const ci::vec2& size) {
 	}
 }
 
+inline void ImageView::setImage(const std::string& fileName) {
+	setTexture(ImageManager::getInstance()->getTexture(fileName));
+}
+
+void ImageView::setImage(const gl::TextureRef texture) {
+	setTexture(texture);
+}
+
 void ImageView::draw() {
 	if (!mTexture) return;
 	gl::draw(mTexture, mDrawingArea, mDrawingDestRect);

@@ -9,8 +9,7 @@
 #include "drivers/TuioDriver.h"
 
 #include "BaseView.h"
-#include "debug/RectView.h"
-#include "debug/RectButton.h"
+#include "TouchView.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -19,7 +18,6 @@ using namespace bluecadet;
 using namespace bluecadet::touch;
 using namespace bluecadet::touch::drivers;
 using namespace bluecadet::views;
-using namespace bluecadet::views::debug;
 
 class NestedTransformsSampleApp : public App {
 public:
@@ -58,11 +56,13 @@ void NestedTransformsSampleApp::setup() {
 	//mRootView->getTimeline()->apply(&mRootView->getRotation(), glm::angleAxis(0.25f * (float)M_PI, vec3(0, 0, 1)), 8, EaseInOutQuad()).pingPong(true).loop(true);
 	mRootView->getTimeline()->apply(&mRootView->getScale(), vec2(2.0, 2.0), 4.0, EaseInOutQuad()).pingPong(true).loop(true);
 
-	mContainer = BaseViewRef(new RectView(vec2(400, 400), red));
+	mContainer = BaseViewRef(new BaseView());
+	mContainer->setSize(vec2(400, 400));
+	mContainer->setBackgroundColor(red);
 	mContainer->setPosition(vec2(-200, -200));
 	mRootView->addChild(mContainer);
 
-	auto button = RectButtonRef(new RectButton());
+	auto button = TouchViewRef(new TouchView());
 	button->setup(vec2(50, 50));
 	button->setPosition(vec2(0, 50));
 	mContainer->addChild(button);
@@ -72,32 +72,37 @@ void NestedTransformsSampleApp::setup() {
 	};
 
 	{ // overlapping buttons
-		auto a = RectButtonRef(new RectButton());
-		a->setup(vec2(50, 50), blue);
+		auto a = TouchViewRef(new TouchView());
+		a->setSize(vec2(50, 50));
+		a->setBackgroundColor(blue);
 		a->setPosition(vec2(0, 0));
 		a->mDidTap.connect(moveToFrontFn);
 		mContainer->addChild(a, 0);
 
-		auto b = RectButtonRef(new RectButton());
-		b->setup(vec2(50, 50), magenta);
+		auto b = TouchViewRef(new TouchView());
+		b->setSize(vec2(50, 50));
+		b->setBackgroundColor(magenta);
 		b->setPosition(vec2(30, 0));
 		b->mDidTap.connect(moveToFrontFn);
 		mContainer->addChild(b, 0);
 
-		auto c = RectButtonRef(new RectButton());
-		c->setup(vec2(50, 50), cyan);
+		auto c = TouchViewRef(new TouchView());
+		c->setSize(vec2(50, 50));
+		c->setBackgroundColor(cyan);
 		c->setPosition(vec2(60, 0));
 		c->mDidTap.connect(moveToFrontFn);
 		mContainer->addChild(c, 0);
 
-		auto c1 = RectButtonRef(new RectButton());
-		c1->setup(vec2(25, 25), red);
+		auto c1 = TouchViewRef(new TouchView());
+		c1->setSize(vec2(25, 25));
+		c1->setBackgroundColor(red);
 		c1->setPosition(vec2(10, 10));
 		c1->mDidTap.connect(moveToFrontFn);
 		c->addChild(c1);
 
-		auto c2 = RectButtonRef(new RectButton());
-		c2->setup(vec2(25, 25), blue);
+		auto c2 = TouchViewRef(new TouchView());
+		c2->setSize(vec2(25, 25));
+		c2->setBackgroundColor(blue);
 		c2->setPosition(vec2(20, 10));
 		c2->mDidTap.connect(moveToFrontFn);
 		c->addChild(c2);
