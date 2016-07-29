@@ -66,7 +66,13 @@ void BaseApp::update() {
 }
 
 void BaseApp::draw() {
-	gl::clear(Color(0, 0, 0));
+	draw(true);
+}
+
+void BaseApp::draw(const bool clear) {
+	if (clear) {
+		gl::clear(Color(0, 0, 0));
+	}
 	mRootView->drawScene();
 }
 
