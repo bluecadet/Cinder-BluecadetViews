@@ -8,3 +8,5 @@
     * Requires Cinder TUIO block   
 
 Clone each of the above dependency blocks into your Cinder > blocks folder (Cinder OSC & TUIO will come automatically when you download Cinder). 
+
+Version 1.0.0
