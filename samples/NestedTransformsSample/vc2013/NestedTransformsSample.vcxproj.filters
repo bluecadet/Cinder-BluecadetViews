@@ -159,6 +159,12 @@
     <ClCompile Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\TuioDriver.cpp">
       <Filter>Blocks\BluecadetTouch\src\drivers</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\EllipseView.cpp">
+      <Filter>Blocks\BluecadetViews\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\LineView.cpp">
+      <Filter>Blocks\BluecadetViews\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
@@ -178,6 +184,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\Touch.h">
       <Filter>Blocks\BluecadetTouch\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\EllipseView.h">
+      <Filter>Blocks\BluecadetViews\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\LineView.h">
+      <Filter>Blocks\BluecadetViews\src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

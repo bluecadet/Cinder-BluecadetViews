@@ -106,6 +106,8 @@
     <ClCompile Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\NativeTouchDriver.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\SimulatedTouchDriver.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\TuioDriver.cpp" />
+    <ClCompile Include="..\..\..\src\EllipseView.cpp" />
+    <ClCompile Include="..\..\..\src\LineView.cpp" />
     <ClCompile Include="..\src\NestedTransformsSampleApp.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\FontManager.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextLayout.cpp" />
@@ -127,6 +129,8 @@
     <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\SimulatedTouchDriver.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\TuioDriver.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\Touch.h" />
+    <ClInclude Include="..\..\..\src\EllipseView.h" />
+    <ClInclude Include="..\..\..\src\LineView.h" />
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\FontManager.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextLayout.h" />
