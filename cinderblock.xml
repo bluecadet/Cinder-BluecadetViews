@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<block
+	name="BluecadetViews"
+	id="com.bluecadet.cinder.views"
+	git="git@github.com:bluecadet/Cinder-BluecadetViews.git"
+	author="Bluecadet"
+	summary=""
+	license="MIT"
+	>
+
+	<requires>com.bluecadet.cinder.touch</requires>
+	<requires>com.bluecadet.cinder.text</requires>
+	<requires>com.bluecadet.cinder.utils</requires>
+
+	<headerPattern>src/*.h</headerPattern>
+	<sourcePattern>src/*.cpp</sourcePattern>
+	
+	<headerPattern>src/debug/*.h</headerPattern>
+	<sourcePattern>src/debug/*.cpp</sourcePattern>
+	
+	<includePath>src</includePath>
+</block>
+</cinder>
