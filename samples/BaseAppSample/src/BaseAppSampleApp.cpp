@@ -23,6 +23,8 @@ protected:
 void BaseAppSampleApp::setup()
 {
 	BaseApp::setup();
+	// Optional, will add control options to the Params
+	BaseApp::connectSimulatedTouchDriver(1000);
 
 	mButton = TouchViewRef(new TouchView());
 	mButton->setup(vec2(100.0f, 100.0f));

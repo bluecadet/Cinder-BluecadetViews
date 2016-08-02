@@ -2,11 +2,13 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/params/Params.h"
 
 #include "BaseView.h"
 
 #include "drivers/MouseDriver.h"
 #include "drivers/TuioDriver.h"
+#include "drivers/SimulatedTouchDriver.h"
 #include "TouchManager.h"
 
 namespace bluecadet {
@@ -26,17 +28,21 @@ public:
 	virtual void draw() override;
 	virtual void keyDown(ci::app::KeyEvent event) override;
 
-//	void		zoomToScreen(const int& screenId = 1);
-//	void		scaleRootViewCentered(const float& targetScale);
+	//	void		zoomToScreen(const int& screenId = 1);
+	//	void		scaleRootViewCentered(const float& targetScale);
 
 	static void prepareSettings(ci::app::App::Settings *settings);
+	void		connectSimulatedTouchDriver(int touchesPerSecond = 100);
 
 protected:
-	views::BaseViewRef			mRootView;
-	touch::drivers::MouseDriver	mMouseDriver;
-	touch::drivers::TuioDriver	mTuioDriver;
+	views::BaseViewRef						mRootView;
+	touch::drivers::MouseDriver				mMouseDriver;
+	touch::drivers::TuioDriver				mTuioDriver;
+	touch::drivers::SimulatedTouchDriver	mSimulatedTouchDriver;
 
-	double						mLastFrameTime;
+	ci::params::InterfaceGlRef				mParams;
+	double									mLastFrameTime;
+
 };
 
 }

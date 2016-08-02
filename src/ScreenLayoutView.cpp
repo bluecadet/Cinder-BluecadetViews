@@ -14,7 +14,9 @@ ScreenLayoutView::ScreenLayoutView() :
 	mDisplayTotalRows(1),
 	mDisplayTotalColumns(1),
 	mBorderWidth(4.0f),
-	mBorderColor(ColorA(1.0f, 0.0f, 0.0f, 1.0f))
+	mBorderColor(ColorA(1.0f, 0.0f, 0.0f, 1.0f)),
+	mAppWidth(1920),
+	mAppHeight(1080)
 {
 }
 
@@ -35,8 +37,10 @@ void ScreenLayoutView::setup(BaseViewRef baseRootView, const int displayWidth, c
 	mDisplayTotalColumns = columns;
 
 	// Set app width and height based on screen layout //move appWidth/height to screenLayout
-	mAppWidth = mDisplayWidth*mDisplayTotalColumns;
-	mAppHeight = mDisplayHeight*mDisplayTotalRows;
+	if (mDisplayTotalColumns > 0 && mDisplayTotalRows > 0) {
+		mAppWidth = mDisplayWidth*mDisplayTotalColumns;
+		mAppHeight = mDisplayHeight*mDisplayTotalRows;
+	}
 
 	// Setup the outlines that will draw for each display
 	int screenId = 1;
