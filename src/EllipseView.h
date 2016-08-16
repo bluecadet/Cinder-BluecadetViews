@@ -19,13 +19,17 @@ public:
 	virtual ~EllipseView();
 
 	//! Shorthand to get a circle with a background color set up
-	void setup(const float radius, const ci::ColorA backgroundColor = ci::ColorA());
+	void setup(const float radius, const ci::ColorA backgroundColor = ci::ColorA(), const float smoothness = 1.0f);
 
 	//! Shorthand to get an ellipse with a background color set up
-	void setup(const ci::vec2& size, const ci::ColorA backgroundColor = ci::ColorA());
+	void setup(const ci::vec2& size, const ci::ColorA backgroundColor = ci::ColorA(), const float smoothness = 1.0f);
 
 	//! Shorthand for calling setSize(vec2(2.0f * radius))
 	void setRadius(const float radius);
+
+	//! The smoothness of the ellipse's edge
+	inline float	getSmoothness() const { return mSmoothness; }
+	inline void		setSmoothness(const float value) { mSmoothness = value; }
 
 protected:
 	virtual void draw() override;
@@ -33,6 +37,7 @@ protected:
 	static ci::gl::BatchRef		getSharedEllipseBatch();
 	static ci::gl::GlslProgRef	getSharedEllipseProg();
 
+	float mSmoothness;
 
 };
 
