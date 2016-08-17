@@ -42,7 +42,11 @@ void ViewTypesSampleApp::setup() {
 	ellipseView->setSize(vec2(150, 100)); // if width/height are equal you can also use setRadius()
 	ellipseView->setPosition(ellipseView->getSize() * 0.5f + vec2(view->getPosition().value().x + view->getSize().x + 10.0f, 10)); // ellipse is drawn around 0,0; so offset by 50% width/height
 	ellipseView->setBackgroundColor(ColorA(0.5f, 1.0f, 0.5f, 0.75f));
+	ellipseView->setSmoothness(1.0f); // the default is 1
 	mRootView->addChild(ellipseView);
+
+	// test smoothness update
+	getSignalUpdate().connect([=] { ellipseView->setSmoothness(50.0f * getMousePos().x / (float)getWindowWidth()); });
 
 	auto lineView = LineViewRef(new LineView());
 	lineView->setEndPoint(vec2(100, 100));
