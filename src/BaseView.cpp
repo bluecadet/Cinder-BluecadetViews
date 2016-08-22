@@ -98,7 +98,6 @@ void BaseView::addChild(BaseViewRef child, size_t index) {
 		mChildren.insert(it, child);
 	}
 
-	child->validateTransforms();
 	child->didMoveToView(this);
 }
 
@@ -116,7 +115,6 @@ void BaseView::removeChild(BaseViewRef child) {
 	child->willMoveFromView(this);
 	child->mParent = nullptr;
 	mChildren.remove(child);
-	child->validateTransforms();
 }
 
 void BaseView::removeChild(BaseView* childPtr) {
@@ -233,13 +231,7 @@ void BaseView::drawScene(const ColorA& parentTint) {
 		return;
 	}
 
-	// recalculate transforms if marked as dirty or while animations are happening
-	// this way children will also know that their parent transform has changed
-	mHasInvalidTransforms = mHasInvalidTransforms || (mParent && mParent->mHasInvalidTransforms);
-
-	if (mHasInvalidTransforms) {
-		validateTransforms(false);
-	}
+	validateTransforms();
 
 	mDrawColor.r = mTint.value().r * parentTint.r;
 	mDrawColor.g = mTint.value().g * parentTint.g;
@@ -259,9 +251,6 @@ void BaseView::drawScene(const ColorA& parentTint) {
 		drawChildren(mDrawColor);
 		didDraw();
 	}
-
-	// clear dirty flag at end so that children know that things have changed
-	mHasInvalidTransforms = false;
 }
 
 void BaseView::willDraw() {
@@ -286,12 +275,6 @@ void BaseView::draw() {
 	batch->draw();
 }
 
-void BaseView::drawChildren(const ColorA& parentTint) {
-	for (auto child : mChildren) {
-		child->drawScene(parentTint);
-	}
-}
-
 void BaseView::didDraw() {
 	// override this method
 }
@@ -300,7 +283,9 @@ void BaseView::didDraw() {
 // Local/Global Transforms
 // 
 
-void BaseView::validateTransforms(const bool clearInvalidFlag) {
+void BaseView::validateTransforms(const bool force) {
+	if (!mHasInvalidTransforms && !force) return;
+
 	const vec3 origin = vec3(mTransformOrigin.value(), 0.0f);
 
 	mTransform = glm::translate(vec3(mPosition.value(), 0.0f));
@@ -308,27 +293,10 @@ void BaseView::validateTransforms(const bool clearInvalidFlag) {
 	mTransform *= glm::scale(vec3(mScale.value(), 1.0f));
 	mTransform *= glm::toMat4(mRotation.value());
 	mTransform *= glm::translate(-origin);	// reset to original position
-	mGlobalTransform = mParent ? mParent->mGlobalTransform * mTransform : mTransform;
-	if (clearInvalidFlag) {
-		mHasInvalidTransforms = false;
-	}
-}
+	
+	mGlobalTransform = mParent ? mParent->getGlobalTransform() * mTransform : mTransform;
 
-const vec2 BaseView::convertLocalToGlobal(const vec2& local) const {
-	vec4 global = mGlobalTransform * vec4(local, 0, 1);
-	return vec2(global.x, global.y);
-}
-
-const vec2 BaseView::convertGlobalToLocal(const vec2& global) const {
-	vec4 local = glm::inverse(mGlobalTransform) * vec4(global, 0, 1);
-	return vec2(local.x, local.y);
-}
-
-const vec2 BaseView::getGlobalPosition() const {
-	if (!mParent) {
-		return mPosition;
-	}
-	return mParent->convertLocalToGlobal(mPosition);
+	mHasInvalidTransforms = false;
 }
 
 //==================================================

@@ -23,11 +23,9 @@ public:
 
 	virtual void setup() override;
 	virtual void update() override;
-	virtual void draw() override;
+	virtual void draw() override; // clears and draws
+	virtual inline void draw(const bool clear);
 	virtual void keyDown(ci::app::KeyEvent event) override;
-
-//	void		zoomToScreen(const int& screenId = 1);
-//	void		scaleRootViewCentered(const float& targetScale);
 
 	static void prepareSettings(ci::app::App::Settings *settings);
 

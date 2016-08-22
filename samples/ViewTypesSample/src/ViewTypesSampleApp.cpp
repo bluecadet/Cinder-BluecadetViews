@@ -1,6 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/Rand.h"
 
 #include "BaseApp.h"
 #include "BaseView.h"
@@ -95,6 +96,41 @@ void ViewTypesSampleApp::setup() {
 	circleTouchView->mDidBeginTouch.connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->resetAnimations(); circleTouchView->setScale(1.5f); });
 	circleTouchView->mDidEndTouch.connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->getTimeline()->apply(&circleTouchView->getScale(), vec2(1.0f), 0.3f); });
 	mRootView->addChild(circleTouchView);
+
+	//for (int i = 0; i < 5000; ++i) {
+		auto parent = BaseViewRef(new BaseView());
+		parent->setSize(vec2(100, 100));
+		parent->setPosition(vec2(100, 100));
+		parent->setBackgroundColor(ColorA(1.0f, 0.0f, 0.0f, 1.0f));
+		mRootView->addChild(parent);
+
+		auto child = BaseViewRef(new BaseView());
+		child->setSize(vec2(100, 100));
+		child->setTransformOrigin(child->getSize() * 0.5f);
+		child->setPosition(vec2(100, 100));
+		child->setBackgroundColor(ColorA(randFloat(), randFloat(), randFloat(), 1.0f));
+		parent->addChild(child);
+
+		child->getTimeline()->apply(&child->getScale(), vec2(2.0f), 1.0f).delay(randFloat()).pingPong(true).loop(true);
+
+		console() << "Parent scale: " << parent->getScale().value() << " - local pos: " << parent->getPosition().value() << " - global pos: " << parent->getGlobalPosition() << endl;
+		console() << "Child scale: " << child->getScale().value() << " - local pos: " << child->getPosition().value() << " - global pos: " << child->getGlobalPosition() << endl;
+
+		child->setScale(2.0f);
+
+		console() << "Parent scale: " << parent->getScale().value() << " - local pos: " << parent->getPosition().value() << " - global pos: " << parent->getGlobalPosition() << endl;
+		console() << "Child scale: " << child->getScale().value() << " - local pos: " << child->getPosition().value() << " - global pos: " << child->getGlobalPosition() << endl;
+
+		parent->setScale(2.0f);
+
+		console() << "Parent scale: " << parent->getScale().value() << " - local pos: " << parent->getPosition().value() << " - global pos: " << parent->getGlobalPosition() << endl;
+		console() << "Child scale: " << child->getScale().value() << " - local pos: " << child->getPosition().value() << " - global pos: " << child->getGlobalPosition() << endl;
+
+		parent->drawScene();
+
+		console() << "Parent scale: " << parent->getScale().value() << " - local pos: " << parent->getPosition().value() << " - global pos: " << parent->getGlobalPosition() << endl;
+		console() << "Child scale: " << child->getScale().value() << " - local pos: " << child->getPosition().value() << " - global pos: " << child->getGlobalPosition() << endl;
+	//}
 }
 
 void ViewTypesSampleApp::update() {
@@ -103,6 +139,8 @@ void ViewTypesSampleApp::update() {
 
 void ViewTypesSampleApp::draw() {
 	BaseApp::draw();
+
+	gl::drawString("FPS: " + to_string(getAverageFps()), vec2(0, 100));
 }
 
 CINDER_APP(ViewTypesSampleApp, RendererGl(RendererGl::Options().msaa(4)), ViewTypesSampleApp::prepareSettings)

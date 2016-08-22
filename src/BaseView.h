@@ -34,8 +34,14 @@ class BaseView {
 
 public:
 
+
 	BaseView();
 	virtual ~BaseView();
+
+
+	//==================================================
+	// Scene graph modification
+	// 
 
 	//! Updates this view and all of its children. Call this method on root views that don't have a parent.
 	virtual void			updateScene(double deltaTime);
@@ -73,7 +79,10 @@ public:
 	virtual void			moveChildToIndex(BaseViewList::iterator childIt, size_t index);
 
 
+
+	//==================================================
 	// Getters/Setters
+	// 
 
 	//! Parent or nullptr
 	virtual BaseView*					getParent() const { return mParent; }
@@ -107,10 +116,6 @@ public:
 	//! Acts as the point of origin for all transforms. Essentially allows for rotating and scaling around a specific point. Defaults to (0,0). Changing this value invalidates transforms.
 	virtual ci::Anim<ci::vec2>&			getTransformOrigin() { return mTransformOrigin; invalidateTransforms(); }
 	void								setTransformOrigin(const ci::vec2& value) { mTransformOrigin = value; }
-
-	virtual void						validateTransforms(const bool clearInvalidFlag = true);
-	virtual const ci::mat4&				getTransform() { if (mHasInvalidTransforms) { validateTransforms(); }; return mTransform; }
-	virtual const ci::mat4&				getGlobalTransform() { if (mHasInvalidTransforms) { validateTransforms(); }; return mGlobalTransform; }
 
 	//! Size of this view. Defaults to 0, 0 and is not affected by children. Does not affect transforms (position, rotation, scale).
 	virtual inline const ci::vec2		getSize() { return mSize; }
@@ -146,12 +151,31 @@ public:
 	virtual bool						shouldForceRedraw() const { return mShouldForceRedraw; }
 	virtual void						setShouldForceRedraw(const bool shouldForceRedraw) { mShouldForceRedraw = shouldForceRedraw; }
 
-	// Conversion helpers
-	const ci::vec2 getGlobalPosition() const;	//! Global position regardless of parent view; Gets computed recursively on each update
-	const ci::vec2 convertLocalToGlobal(const ci::vec2& local) const;
-	const ci::vec2 convertGlobalToLocal(const ci::vec2& global) const;
 
-	// Templated user info functions to store and retrieve arbitrary, key-based user info
+
+	//==================================================
+	// Coordinate space conversions
+	// 
+
+	//! The local transform based on this view's coordinate space. Since this method validates the transforms them before returning it's non-const.
+	inline const ci::mat4&				getTransform()			{ validateTransforms(); return mTransform; }
+	
+	//! The global transform based on the root view's coordinate space. Since this method validates the transforms them before returning it's non-const.
+	inline const ci::mat4&				getGlobalTransform()	{ validateTransforms(); return mGlobalTransform; }
+
+	//! Global position in the root view's coordinate space.
+	const ci::vec2						getGlobalPosition()		{ if (!mParent) return mPosition; return mParent->convertLocalToGlobal(mPosition); };
+	
+	//! Converts a position from the current view's local space to the root view's global space.
+	const ci::vec2						convertLocalToGlobal(const ci::vec2& local) { ci::vec4 global = getGlobalTransform() * ci::vec4(local, 0, 1); return ci::vec2(global.x, global.y); }
+	
+	//! Converts a position from the root view's global space to the current view's local space.
+	const ci::vec2						convertGlobalToLocal(const ci::vec2& global) { ci::vec4 local = glm::inverse(getGlobalTransform()) * ci::vec4(global, 0, 1);	return ci::vec2(local.x, local.y); };
+
+
+
+	//==================================================
+	//! Stores key-based user info. Overrivetes any existing values for this key.
 	template <typename T>
 	void setUserInfo(const std::string& key, const T& value) { mUserInfo[key] = value; }
 	bool hasUserInfo(const std::string& key) {
@@ -159,24 +183,29 @@ public:
 		return it != mUserInfo.end();
 	}
 
+	//! Returns user info if it exists for the key. Will return an empty instance of the requested type if the key is not found.
 	template <typename T>
 	const T& getUserInfo(const std::string& key) const {
 		static T defaultValue;
 		auto it = mUserInfo.find(key);
 		if (it == mUserInfo.end()) return defaultValue;
-		return boost::get<T>(it->second);
+		return boost::exists<T>(it->second);
 	}
+
+
 
 protected:
 
-	virtual void invalidateTransforms() { mHasInvalidTransforms = true; };
-	virtual void invalidateUniforms()	{ mHasInvalidUniforms = true; };
+	inline void	validateTransforms(const bool force = false);
+	inline void invalidateTransforms()	{ mHasInvalidTransforms = true; for (auto &child : mChildren) child->invalidateTransforms(); };
+	inline void invalidateUniforms()	{ mHasInvalidUniforms = true; };
 
 	virtual void update(const double deltaTime);
 
-	virtual void willDraw();		//! Called by drawScene before draw()
-	virtual void draw();			//! Called by drawScene and allows for drawing content for this node. By default draws a rectangle with the current size and background color (only if x/y /bg-alpha > 0)
-	virtual void drawChildren(const ci::ColorA& parentTint);	//! Called by drawScene() after draw() and before didDraw()
+	virtual void		willDraw();		//! Called by drawScene before draw()
+	virtual void		draw();			//! Called by drawScene and allows for drawing content for this node. By default draws a rectangle with the current size and background color (only if x/y /bg-alpha > 0)
+	inline virtual void drawChildren(const ci::ColorA& parentTint) { for (auto child : mChildren) child->drawScene(parentTint); } //! Called by drawScene() after draw() and before didDraw()
+
 	virtual void didDraw();			//! Called by drawScene after draw()
 
 	virtual void didMoveToView(BaseView* parent);		//! Called when moved to a parent

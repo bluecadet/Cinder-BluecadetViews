@@ -75,9 +75,6 @@ ci::Rectf ScreenLayoutView::getDisplayBounds(const int& column, const int& row) 
 		(float)((row + 1.0f) * mDisplayHeight));
 }
 
-//void ScreenLayout::update(double deltaTime) {
-//}
-
 void ScreenLayoutView::draw() {
 	ci::gl::color(mBorderColor);
 	ci::gl::lineWidth(mBorderWidth);
@@ -132,40 +129,40 @@ void ScreenLayoutView::keyDown(KeyEvent event) {
 
 	switch (event.getCode()) {
 
-	case KeyEvent::KEY_KP_PLUS:
-	case KeyEvent::KEY_KP_MINUS:
-	case KeyEvent::KEY_PLUS:
-	case KeyEvent::KEY_EQUALS:
-	case KeyEvent::KEY_MINUS: {
-		const auto code = event.getCode();
-		const float dir = (code == KeyEvent::KEY_KP_PLUS || code == KeyEvent::KEY_PLUS || code == KeyEvent::KEY_EQUALS) ? 1.0f : -1.0f;
-		const float speed = event.isShiftDown() ? 0.25f : 0.1f;
-		const float targetScale = mBaseRootView->getScale().value().x * (1.0f + dir * speed);
-		scaleRootViewCentered(targetScale);
-		break;
-	}
-	case KeyEvent::KEY_KP1: case KeyEvent::KEY_KP2: case KeyEvent::KEY_KP3: case KeyEvent::KEY_KP4: case KeyEvent::KEY_KP5: case KeyEvent::KEY_KP6: case KeyEvent::KEY_KP7:
-	case KeyEvent::KEY_1: case KeyEvent::KEY_2: case KeyEvent::KEY_3: case KeyEvent::KEY_4: case KeyEvent::KEY_5: case KeyEvent::KEY_6: case KeyEvent::KEY_7: {
-		int screenId = (event.getChar() - (int)'0') - 1; // parse int from char, make 0-based
-		zoomToScreen(screenId);
-		break;
-	}
-	case KeyEvent::KEY_UP: {
-		mBaseRootView->setPosition(vec2(mBaseRootView->getPosition().value().x, mBaseRootView->getPosition().value().y += getWindowHeight() * (event.isShiftDown() ? 1.0f : 0.25f)));
-		break;
-	}
-	case KeyEvent::KEY_DOWN: {
-		mBaseRootView->setPosition(vec2(mBaseRootView->getPosition().value().x, mBaseRootView->getPosition().value().y -= getWindowHeight() * (event.isShiftDown() ? 1.0f : 0.25f)));
-		break;
-	}
-	case KeyEvent::KEY_LEFT: {
-		mBaseRootView->setPosition(vec2(mBaseRootView->getPosition().value().x += getWindowWidth() * (event.isShiftDown() ? 1.0f : 0.25f), mBaseRootView->getPosition().value().y));
-		break;
-	}
-	case KeyEvent::KEY_RIGHT: {
-		mBaseRootView->setPosition(vec2(mBaseRootView->getPosition().value().x -= getWindowWidth() * (event.isShiftDown() ? 1.0f : 0.25f), mBaseRootView->getPosition().value().y));
-		break;
-	}
+		case KeyEvent::KEY_KP_PLUS:
+		case KeyEvent::KEY_KP_MINUS:
+		case KeyEvent::KEY_PLUS:
+		case KeyEvent::KEY_EQUALS:
+		case KeyEvent::KEY_MINUS: {
+			const auto code = event.getCode();
+			const float dir = (code == KeyEvent::KEY_KP_PLUS || code == KeyEvent::KEY_PLUS || code == KeyEvent::KEY_EQUALS) ? 1.0f : -1.0f;
+			const float speed = event.isShiftDown() ? 0.25f : 0.1f;
+			const float targetScale = mBaseRootView->getScale().value().x * (1.0f + dir * speed);
+			scaleRootViewCentered(targetScale);
+			break;
+		}
+		case KeyEvent::KEY_KP1: case KeyEvent::KEY_KP2: case KeyEvent::KEY_KP3: case KeyEvent::KEY_KP4: case KeyEvent::KEY_KP5: case KeyEvent::KEY_KP6: case KeyEvent::KEY_KP7:
+		case KeyEvent::KEY_1: case KeyEvent::KEY_2: case KeyEvent::KEY_3: case KeyEvent::KEY_4: case KeyEvent::KEY_5: case KeyEvent::KEY_6: case KeyEvent::KEY_7: {
+			int screenId = (event.getChar() - (int)'0') - 1; // parse int from char, make 0-based
+			zoomToScreen(screenId);
+			break;
+		}
+		case KeyEvent::KEY_UP: {
+			mBaseRootView->setPosition(vec2(mBaseRootView->getPosition().value().x, mBaseRootView->getPosition().value().y += getWindowHeight() * (event.isShiftDown() ? 1.0f : 0.25f)));
+			break;
+		}
+		case KeyEvent::KEY_DOWN: {
+			mBaseRootView->setPosition(vec2(mBaseRootView->getPosition().value().x, mBaseRootView->getPosition().value().y -= getWindowHeight() * (event.isShiftDown() ? 1.0f : 0.25f)));
+			break;
+		}
+		case KeyEvent::KEY_LEFT: {
+			mBaseRootView->setPosition(vec2(mBaseRootView->getPosition().value().x += getWindowWidth() * (event.isShiftDown() ? 1.0f : 0.25f), mBaseRootView->getPosition().value().y));
+			break;
+		}
+		case KeyEvent::KEY_RIGHT: {
+			mBaseRootView->setPosition(vec2(mBaseRootView->getPosition().value().x -= getWindowWidth() * (event.isShiftDown() ? 1.0f : 0.25f), mBaseRootView->getPosition().value().y));
+			break;
+		}
 	}
 }
 
