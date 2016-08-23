@@ -30,12 +30,12 @@ public:
 
 
 	//! Must be called before calling draw. Adds a key-up event listener.
-	void setup(views::BaseViewRef rootView, const ci::ivec2& dislaySize = ci::ivec2(1920, 1080), const int numRows = 1, const int numColumns = 1);
+	void			setup(views::BaseViewRef rootView, const ci::ivec2& dislaySize = ci::ivec2(1920, 1080), const int numRows = 1, const int numColumns = 1);
 
 
 
 	//! Draws the current screen layout, transformed appropriately to match the position and scale of rootView
-	void draw();
+	void			draw();
 
 
 
@@ -62,15 +62,15 @@ public:
 	//! Helper to extract the column from a display id. Ids start at 0 and increment in right-to-left, top-to-bottom sequence.
 	inline int		getColFromDisplayId(const int displayId) const { if (mNumColumns <= 0) return 0; return displayId % mNumColumns; };
 	//! Helper to extract the row from a display id. Ids start at 0 and increment in right-to-left, top-to-bottom sequence.
-	inline int		getRowFromDisplayId(const int displayId) const { if (mNumRows <= 0) return 0; return displayId / mNumRows; };
+	inline int		getRowFromDisplayId(const int displayId) const { if (mNumRows <= 0) return 0; return displayId / mNumColumns; };
 
 
 
 	//! Absolute bounds of the display with the given id
-	ci::Rectf		getDisplayBounds(const int displayId);
+	const ci::Rectf&	getDisplayBounds(const int displayId);
 
 	//! Absolute bounds of the display at col/row
-	ci::Rectf		getDisplayBounds(const int row, const int col);
+	const ci::Rectf&	getDisplayBounds(const int row, const int col);
 
 
 
@@ -85,16 +85,20 @@ public:
 
 	
 	//! Zooms to fit the display at displayId into the current application window.
-	void				zoomToDisplay(const int displayId);
+	void			zoomToDisplay(const int displayId);
 	
 	//! Zooms to fit the display at col/row into the current application window.
-	void				zoomToDisplay(const int row, const int col);
+	void			zoomToDisplay(const int row, const int col);
 
 	//! Zooms around a location in window coordinate space
-	void				zoomAtLocation(const float scale, const ci::vec2 location);
+	void			zoomAtLocation(const float scale, const ci::vec2 location);
 
 	//! Zooms around the application window's center
-	inline void			zoomAtWindowCenter(const float scale) { zoomAtLocation(scale, ci::app::getWindowCenter()); }
+	inline void		zoomAtWindowCenter(const float scale) { zoomAtLocation(scale, ci::app::getWindowCenter()); }
+
+	//! Zooms the app to fit centered into the current window
+	void			zoomToFitWindow();
+
 
 
 	//! The border color used when drawing the display bounds. Defaults to opaque magenta.
@@ -102,16 +106,14 @@ public:
 	void				setBorderColor(const ci::ColorA& color) { mBorderColor = color; };
 	
 	//! The border size used when drawing the display bounds. Defaults to 4.
-	float				getBordeSize() const { return mBorderSize; }
-	void				setBorderSize(const float value) { mBorderSize = value; }
+	float			getBordeSize() const { return mBorderSize; }
+	void			setBorderSize(const float value) { mBorderSize = value; }
+
 
 protected:
-
-	const float		getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding = 0.0f);
-	const ci::vec2	getTranslateToCenterBounds(const ci::Rectf &bounds, const ci::vec2& maxSize);
+	float			getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding = 0.0f) const;
 
 	void			updateLayout();
-
 	void			handleKeyDown(ci::app::KeyEvent event);
 
 

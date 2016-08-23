@@ -48,11 +48,11 @@ void ScreenLayoutView::updateLayout() {
 	mAppSize = mDisplaySize * ivec2(mNumColumns, mNumRows);
 }
 
-ci::Rectf ScreenLayoutView::getDisplayBounds(const int displayId) {
+const Rectf& ScreenLayoutView::getDisplayBounds(const int displayId) {
 	return getDisplayBounds(getColFromDisplayId(displayId), getRowFromDisplayId(displayId));
 }
 
-ci::Rectf ScreenLayoutView::getDisplayBounds(const int row, const int col) {
+const Rectf& ScreenLayoutView::getDisplayBounds(const int row, const int col) {
 	return Rectf(
 		(float)(col * mDisplaySize.x),
 		(float)(row * mDisplaySize.y),
@@ -77,32 +77,30 @@ void ScreenLayoutView::draw() {
 // Scaling/zooming helpers
 // 
 
-const float ScreenLayoutView::getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding) {
-	Rectf paddedBounds = bounds.inflated(vec2(padding));
-	float xScale = maxSize.x / (float)bounds.getWidth();
-	float yScale = maxSize.y / (float)bounds.getHeight();
-	float scale = std::min(xScale, yScale); // scale to fit
-	return scale;
-}
-
-const ci::vec2 ScreenLayoutView::getTranslateToCenterBounds(const ci::Rectf &bounds, const ci::vec2& maxSize) {
-	return ci::vec2(
-		((float)maxSize.x - bounds.getWidth()) * 0.5f - bounds.x1,
-		((float)maxSize.y - bounds.getHeight()) * 0.5f - bounds.y1
-	);
-}
-
 void ScreenLayoutView::zoomToDisplay(const int displayId) {
-	zoomToDisplay(getColFromDisplayId(displayId), getColFromDisplayId(displayId));
+	zoomToDisplay(getRowFromDisplayId(displayId), getColFromDisplayId(displayId));
 }
 
-void ScreenLayoutView::zoomToDisplay(const int row, const int col)
-{
-	ci::Rectf bounds = getDisplayBounds(row, col);
-	ci::vec2 winSize = getWindowSize();
+void ScreenLayoutView::zoomToDisplay(const int row, const int col) {
+	const Rectf displayBounds = getDisplayBounds(row, col);
+	const vec2 winSize = getWindowSize();
+	const float scale = getScaleToFitBounds(displayBounds, winSize);
 
-	mRootView->setScale(vec2(ScreenLayoutView::getInstance()->getScaleToFitBounds(bounds, winSize)));
-	mRootView->setPosition(ScreenLayoutView::getInstance()->getTranslateToCenterBounds(bounds, winSize / mRootView->getScale().value().x));
+	mRootView->setScale(scale);
+	mRootView->setPosition(vec2(0, 0));
+	const vec2 pos = mRootView->convertLocalToGlobal(displayBounds.getUpperLeft());
+	mRootView->setPosition(-pos);
+}
+
+void ScreenLayoutView::zoomToFitWindow() {
+	const vec2 winSize = getWindowSize();
+	const vec2 appSize = getAppSize();
+	const Rectf appBounds = Rectf(vec2(), appSize);
+	const float scale = getScaleToFitBounds(appBounds, winSize);
+	const vec2 pos = (winSize - appSize * scale) * 0.5f;
+
+	mRootView->setScale(scale);
+	mRootView->setPosition(pos);
 }
 
 void ScreenLayoutView::zoomAtLocation(const float targetScale, const vec2 location) {
@@ -117,6 +115,15 @@ void ScreenLayoutView::zoomAtLocation(const float targetScale, const vec2 locati
 	mRootView->setScale(targetScale);
 	mRootView->setPosition(targetPos);
 }
+
+float ScreenLayoutView::getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding) const {
+	Rectf paddedBounds = bounds.inflated(vec2(padding));
+	float xScale = maxSize.x / (float)bounds.getWidth();
+	float yScale = maxSize.y / (float)bounds.getHeight();
+	float scale = std::min(xScale, yScale); // scale to fit
+	return scale;
+}
+
 
 //==================================================
 // Event Handlers
@@ -157,6 +164,16 @@ void ScreenLayoutView::handleKeyDown(KeyEvent event) {
 		case KeyEvent::KEY_RIGHT: {
 			// pan right
 			mRootView->setPosition(vec2(mRootView->getPosition().value().x -= getWindowWidth() * (event.isShiftDown() ? 1.0f : 0.25f), mRootView->getPosition().value().y));
+			break;
+		}
+		case KeyEvent::KEY_0:
+		case KeyEvent::KEY_KP0: {
+			// toggle zoom to fit window
+			if (mRootView->getScale().value().x != 1.0f) {
+				zoomAtWindowCenter(1.0f);
+			} else {
+				zoomToFitWindow();
+			}
 			break;
 		}
 		case KeyEvent::KEY_KP1: case KeyEvent::KEY_KP2: case KeyEvent::KEY_KP3: case KeyEvent::KEY_KP4: case KeyEvent::KEY_KP5: case KeyEvent::KEY_KP6: case KeyEvent::KEY_KP7: case KeyEvent::KEY_KP8: case KeyEvent::KEY_KP9:
