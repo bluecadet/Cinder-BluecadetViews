@@ -6,6 +6,7 @@
 #include "TouchView.h"
 #include "ImageView.h"
 #include "SettingsManager.h"
+#include "ScreenLayoutView.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -25,7 +26,7 @@ void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings)
 {
 	BaseApp::prepareSettings(settings);
 	settings->setFullScreen(false);
-	settings->setWindowSize(1024, 768);
+	settings->setWindowSize(1280, 720);
 	settings->setBorderless(false);
 }
 
@@ -33,6 +34,9 @@ void BaseAppSampleApp::setup()
 {
 	BaseApp::setup();
 	BaseApp::addTouchSimulatorParams();
+
+	mRootView->setBackgroundColor(Color::gray(0.5f));
+	mRootView->setSize(ScreenLayoutView::getInstance()->getAppSize());
 
 	auto addButton = [=](vec2 pos, vec2 size, ColorA color) {
 		auto button = TouchViewRef(new TouchView());
@@ -43,11 +47,11 @@ void BaseAppSampleApp::setup()
 		mRootView->addChild(button);
 	};
 
-	const vec2 buttonSize(100, 100);
-	addButton(getWindowCenter() + vec2(-buttonSize.x, -buttonSize.y), buttonSize, ColorA(1, 0, 0, 1));
-	addButton(getWindowCenter() + vec2(buttonSize.x, -buttonSize.y), buttonSize, ColorA(1, 1, 0, 1));
-	addButton(getWindowCenter() + vec2(buttonSize.x, buttonSize.y), buttonSize, ColorA(0, 0, 1, 1));
-	addButton(getWindowCenter() + vec2(-buttonSize.x, buttonSize.y), buttonSize, ColorA(0, 1, 0, 1));
+	const vec2 buttonSize = mRootView->getSize() * 0.5f;
+	addButton(mRootView->getSize() * 0.5f + (vec2(-buttonSize.x, -buttonSize.y) - buttonSize) * 0.5f, buttonSize, ColorA(1, 0, 0, 1));
+	addButton(mRootView->getSize() * 0.5f + (vec2(buttonSize.x, -buttonSize.y) - buttonSize) * 0.5f, buttonSize, ColorA(1, 1, 0, 1));
+	addButton(mRootView->getSize() * 0.5f + (vec2(buttonSize.x, buttonSize.y) - buttonSize) * 0.5f, buttonSize, ColorA(0, 0, 1, 1));
+	addButton(mRootView->getSize() * 0.5f + (vec2(-buttonSize.x, buttonSize.y) - buttonSize) * 0.5f, buttonSize, ColorA(0, 1, 0, 1));
 }
 
 void BaseAppSampleApp::update()

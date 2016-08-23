@@ -4,6 +4,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 using namespace bluecadet::utils;
+using namespace bluecadet::views;
 
 namespace bluecadet {
 namespace utils {
@@ -22,7 +23,7 @@ ScreenLayoutView::ScreenLayoutView() :
 ScreenLayoutView::~ScreenLayoutView() {
 }
 
-void ScreenLayoutView::setup(views::BaseViewRef baseRootView, const ci::ivec2& dislaySize, const int numRows, const int numColumns) {
+void ScreenLayoutView::setup(BaseViewRef baseRootView, const ci::ivec2& dislaySize, const int numRows, const int numColumns) {
 
 	mRootView = baseRootView;
 
@@ -76,7 +77,9 @@ void ScreenLayoutView::draw() {
 	}
 }
 
-// HELPERS
+//==================================================
+// Scaling/zooming helpers
+// 
 
 const float ScreenLayoutView::getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding) {
 	Rectf paddedBounds = bounds.inflated(vec2(padding));
@@ -108,20 +111,21 @@ void ScreenLayoutView::zoomToDisplay(const int col, const int row)
 }
 
 void ScreenLayoutView::scaleRootViewCentered(const float targetScale) {
-	/*const float currentScale = mRootView->getScale().value().x;
+	const vec2 currentScale = mRootView->getScale();
+	const vec2 deltaScale = vec2(targetScale) / currentScale;
 
-	vec2 windowSize = vec2(getWindowSize());
-	vec2 currentSize = windowSize / currentScale;
-	vec2 targetSize = windowSize / targetScale;*/
+	const vec2 winCenter = getWindowCenter();
 
+	const vec2 currentPos = mRootView->getPosition();
+	const vec2 targetPos = (currentPos - winCenter) * deltaScale + winCenter; // see http://math.stackexchange.com/a/5808/363352
 
-	vec2 transformOrigin = targetScale + getWindowCenter() - mRootView->getPosition().value();
-	mRootView->setTransformOrigin(transformOrigin);
-	
 	mRootView->setScale(targetScale);
-
-	//mRootView->setPosition(mRootView->getPosition().value() += (targetSize - currentSize) * 0.5f);
+	mRootView->setPosition(targetPos);
 }
+
+//==================================================
+// Event Handlers
+// 
 
 void ScreenLayoutView::keyDown(KeyEvent event) {
 
@@ -133,9 +137,10 @@ void ScreenLayoutView::keyDown(KeyEvent event) {
 		case KeyEvent::KEY_EQUALS:
 		case KeyEvent::KEY_MINUS: {
 			const auto code = event.getCode();
-			const float dir = (code == KeyEvent::KEY_KP_PLUS || code == KeyEvent::KEY_PLUS || code == KeyEvent::KEY_EQUALS) ? 1.0f : -1.0f;
-			const float speed = event.isShiftDown() ? 0.25f : 0.1f;
-			const float targetScale = mRootView->getScale().value().x * (1.0f + dir * speed);
+			const bool zoomIn = (code == KeyEvent::KEY_KP_PLUS || code == KeyEvent::KEY_PLUS || code == KeyEvent::KEY_EQUALS);
+			const float speed = event.isShiftDown() ? 1.25f : 1.1f;
+			const float deltaScale = (zoomIn ? speed : 1.0f / speed);
+			const float targetScale = mRootView->getScale().value().x * deltaScale;
 			scaleRootViewCentered(targetScale);
 			break;
 		}
