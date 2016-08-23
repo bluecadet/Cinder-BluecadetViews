@@ -5,8 +5,6 @@
 #include "BaseApp.h"
 #include "TouchView.h"
 #include "ImageView.h"
-#include "SettingsManager.h"
-#include "ScreenLayoutView.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -32,6 +30,10 @@ void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings)
 
 void BaseAppSampleApp::setup()
 {
+
+	ScreenLayoutView::getInstance()->setNumRows(3);
+	ScreenLayoutView::getInstance()->setNumColumns(4);
+
 	BaseApp::setup();
 	BaseApp::addTouchSimulatorParams();
 

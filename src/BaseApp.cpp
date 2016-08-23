@@ -32,13 +32,12 @@ void BaseApp::setup() {
 	auto settings = SettingsManager::getInstance();
 
 	// Set up screen layout
-	int displayWidth = settings->hasField("settings.display.width") ? settings->getField<int>("settings.display.width") : Display::getMainDisplay()->getWidth();
-	int displayHeight = settings->hasField("settings.display.width") ? settings->getField<int>("settings.display.height") : Display::getMainDisplay()->getHeight();
-	int rows = settings->hasField("settings.display.rows") ? settings->getField<int>("settings.display.rows") : 1;
-	int columns = settings->hasField("settings.display.columns") ? settings->getField<int>("settings.display.columns") : 1;
-
-	ScreenLayoutView::getInstance()->setup(mRootView, ivec2(displayWidth, displayHeight), rows, columns);
-
+	int displayWidth = settings->hasField("settings.display.width") ? settings->getField<int>("settings.display.width") : ScreenLayoutView::getInstance()->getDisplayWidth();
+	int displayHeight = settings->hasField("settings.display.width") ? settings->getField<int>("settings.display.height") : ScreenLayoutView::getInstance()->getDisplayHeight();
+	int rows = settings->hasField("settings.display.rows") ? settings->getField<int>("settings.display.rows") : ScreenLayoutView::getInstance()->getNumRows();
+	int cols = settings->hasField("settings.display.columns") ? settings->getField<int>("settings.display.columns") : ScreenLayoutView::getInstance()->getNumColumns();
+	ScreenLayoutView::getInstance()->setup(mRootView, ivec2(displayWidth, displayHeight), rows, cols);
+	
 	// Set up settings
 	if (settings->mShowMouse) {
 		showCursor();

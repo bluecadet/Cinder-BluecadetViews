@@ -27,45 +27,84 @@ public:
 		return instance;
 	}
 
+
+
+	//! Must be called before calling draw. Adds a key-up event listener.
 	void setup(views::BaseViewRef rootView, const ci::ivec2& dislaySize = ci::ivec2(1920, 1080), const int numRows = 1, const int numColumns = 1);
+
+
+
+	//! Draws the current screen layout, transformed appropriately to match the position and scale of rootView
 	void draw();
 
-	//! Display
-	void			setDisplayWidth(const int width) { mDisplaySize.x = width; };
+
+
+	//! The width of a single display in the display matrix
 	int				getDisplayWidth() const { return mDisplaySize.x; };
+	void			setDisplayWidth(const int width) { mDisplaySize.x = width; updateLayout(); };
 
-	void			setDisplayHeight(const int height) { mDisplaySize.y = height; };
+	//! The height of a single display in the display matrix
 	int				getDisplayHeight() const { return mDisplaySize.y; };
+	void			setDisplayHeight(const int height) { mDisplaySize.y = height; updateLayout(); };
 
-	void			setNumRows(const int numRows) { mNumRows = numRows; };
+	//! The number of rows of displays in the display matrix.
 	int				getNumRows() const { return mNumRows; };
+	void			setNumRows(const int numRows) { mNumRows = numRows; updateLayout(); };
 
-	void			setNumColumns(const int numColumns) { mNumColumns = mNumColumns; };
+	//! The number of columns of displays in the display matrix.
 	int				getNumColumns() const { return mNumColumns; };
-	
-	ci::Rectf		getDisplayBounds(const int displayId);
-	ci::Rectf		getDisplayBounds(const int col, const int row);
+	void			setNumColumns(const int numColumns) { mNumColumns = numColumns; updateLayout(); };
 
-	// Full app 
-	int					getAppWidth() const { return mAppSize.x; }
-	int					getAppHeight() const { return mAppSize.y; }
+
+
+	//! Helper to retrieve a display id from a row/col. Ids start at 0 and increment in right-to-left, top-to-bottom sequence.
+	inline int		getDisplayId(const int row, const int col) const { return row * mNumColumns + col; };
+	//! Helper to extract the column from a display id. Ids start at 0 and increment in right-to-left, top-to-bottom sequence.
+	inline int		getColFromDisplayId(const int displayId) const { if (mNumColumns <= 0) return 0; return displayId % mNumColumns; };
+	//! Helper to extract the row from a display id. Ids start at 0 and increment in right-to-left, top-to-bottom sequence.
+	inline int		getRowFromDisplayId(const int displayId) const { if (mNumRows <= 0) return 0; return displayId / mNumRows; };
+
+
+
+	//! Absolute bounds of the display with the given id
+	ci::Rectf		getDisplayBounds(const int displayId);
+
+	//! Absolute bounds of the display at col/row
+	ci::Rectf		getDisplayBounds(const int row, const int col);
+
+
+
+	//! The total app size when scaled at 100%
 	const ci::ivec2&	getAppSize() const { return mAppSize; };
 
+	//! Overall app width when scaled at 100%
+	int					getAppWidth() const { return getAppSize().x; }
 
-	// Debugging
+	//! Overall app height when scaled at 100%
+	int					getAppHeight() const { return getAppSize().y; }
+
+	
+	//! Zooms to fit the display at displayId into the current application window.
 	void			zoomToDisplay(const int displayId);
-	void			zoomToDisplay(const int col, const int row);
-	void			setCenteredZoom(const float targetScale);
+	
+	//! Zooms to fit the display at col/row into the current application window.
+	void			zoomToDisplay(const int row, const int col);
+
+	//! Zooms around a location in window coordinate space
+	void			zoomAtLocation(const float scale, const ci::vec2 location);
+
+	//! Zooms around the application window's center
+	inline void		zoomAtWindowCenter(const float scale) { zoomAtLocation(scale, ci::app::getWindowCenter()); }
 
 	void				setBorderColor(const ci::ColorA& color) { mBorderColor = color; };
 	const ci::ColorA&	getBorderColor() { return mBorderColor; };
 
 protected:
-	inline int		getColFromDisplayId(const int displayId) const { if (displayId < 0 || mNumColumns <= 0 || mNumRows <= 0) return 0; return displayId % mNumColumns; };
-	inline int		getRowFromDisplayId(const int displayId) const { if (displayId < 0 || mNumColumns <= 0 || mNumRows <= 0) return 0; return displayId / mNumRows; };
 
 	const float		getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding = 0.0f);
 	const ci::vec2	getTranslateToCenterBounds(const ci::Rectf &bounds, const ci::vec2& maxSize);
+
+	void			updateLayout();
 
 	void			handleKeyDown(ci::app::KeyEvent event);
 
@@ -81,8 +120,8 @@ protected:
 	ci::ColorA	mBorderColor;
 
 private:
-	//! Used to draw bounds of each screen & 
-	std::vector<ci::Rectf>	mDisplayOutlines;
+	//! Used to draw bounds of each display
+	std::vector<ci::Rectf>	mDisplayBounds;
 
 	// From BaseApp
 	views::BaseViewRef		mRootView;

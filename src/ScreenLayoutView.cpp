@@ -29,25 +29,31 @@ void ScreenLayoutView::setup(BaseViewRef rootView, const ci::ivec2& dislaySize, 
 	mDisplaySize = dislaySize;
 	mNumRows = numRows;
 	mNumColumns = numColumns;
-	mAppSize = mDisplaySize * ivec2(mNumRows, mNumColumns);
 
-	// Set up the outlines that for each display
-	for (int row = 0; row < mNumRows; ++row) {
-		for (int col = 0; col < mNumColumns; ++col) {
-			ci::Rectf displayBounds = getDisplayBounds(col, row);
-			mDisplayOutlines.push_back(displayBounds);
-		}
-	}
+	updateLayout();
 
 	ci::app::getWindow()->getSignalKeyDown().connect(std::bind(&ScreenLayoutView::handleKeyDown, this, std::placeholders::_1));
 }
 
-ci::Rectf ScreenLayoutView::getDisplayBounds(const int displayId) {
-	return getDisplayBounds(getColFromDisplayId(displayId), getColFromDisplayId(displayId));
+void ScreenLayoutView::updateLayout() {
+	mDisplayBounds.clear();
+
+	for (int row = 0; row < mNumRows; ++row) {
+		for (int col = 0; col < mNumColumns; ++col) {
+			Rectf displayBounds = getDisplayBounds(row, col);
+			mDisplayBounds.push_back(displayBounds);
+		}
+	}
+
+	mAppSize = mDisplaySize * ivec2(mNumColumns, mNumRows);
 }
 
-ci::Rectf ScreenLayoutView::getDisplayBounds(const int col, const int row) {
-	return ci::Rectf(
+ci::Rectf ScreenLayoutView::getDisplayBounds(const int displayId) {
+	return getDisplayBounds(getColFromDisplayId(displayId), getRowFromDisplayId(displayId));
+}
+
+ci::Rectf ScreenLayoutView::getDisplayBounds(const int row, const int col) {
+	return Rectf(
 		(float)(col * mDisplaySize.x),
 		(float)(row * mDisplaySize.y),
 		(float)((col + 1) * mDisplaySize.x),
@@ -62,8 +68,8 @@ void ScreenLayoutView::draw() {
 
 	gl::multModelMatrix(mRootView->getTransform());
 
-	for (const auto &displayOutline : mDisplayOutlines) {
-		gl::drawStrokedRect(displayOutline);
+	for (const auto &outline : mDisplayBounds) {
+		gl::drawStrokedRect(outline);
 	}
 }
 
@@ -90,16 +96,16 @@ void ScreenLayoutView::zoomToDisplay(const int displayId) {
 	zoomToDisplay(getColFromDisplayId(displayId), getColFromDisplayId(displayId));
 }
 
-void ScreenLayoutView::zoomToDisplay(const int col, const int row)
+void ScreenLayoutView::zoomToDisplay(const int row, const int col)
 {
-	ci::Rectf bounds = getDisplayBounds(col, row);
+	ci::Rectf bounds = getDisplayBounds(row, col);
 	ci::vec2 winSize = getWindowSize();
 
 	mRootView->setScale(vec2(ScreenLayoutView::getInstance()->getScaleToFitBounds(bounds, winSize)));
 	mRootView->setPosition(ScreenLayoutView::getInstance()->getTranslateToCenterBounds(bounds, winSize / mRootView->getScale().value().x));
 }
 
-void ScreenLayoutView::setCenteredZoom(const float targetScale) {
+void ScreenLayoutView::zoomAtLocation(const float targetScale, const vec2 location) {
 	const vec2 currentScale = mRootView->getScale();
 	const vec2 deltaScale = vec2(targetScale) / currentScale;
 
@@ -130,7 +136,7 @@ void ScreenLayoutView::handleKeyDown(KeyEvent event) {
 			const float speed = event.isShiftDown() ? 1.25f : 1.1f;
 			const float deltaScale = (zoomIn ? speed : 1.0f / speed);
 			const float targetScale = mRootView->getScale().value().x * deltaScale;
-			setCenteredZoom(targetScale);
+			zoomAtWindowCenter(targetScale);
 			break;
 		}
 		case KeyEvent::KEY_UP: {

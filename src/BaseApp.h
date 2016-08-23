@@ -5,7 +5,10 @@
 #include "cinder/params/Params.h"
 
 #include "BaseView.h"
+
+// These aren't used in the header, but added as convenience includes for BaseApp sub classes.
 #include "SettingsManager.h"
+#include "ScreenLayoutView.h"
 #include "TouchManager.h"
 
 #include "drivers/MouseDriver.h"
