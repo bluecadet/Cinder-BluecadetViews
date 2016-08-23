@@ -1,4 +1,4 @@
-#include "ScreenLayoutView.h"
+#include "ScreenLayout.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -9,7 +9,7 @@ using namespace bluecadet::views;
 namespace bluecadet {
 namespace utils {
 
-ScreenLayoutView::ScreenLayoutView() :
+ScreenLayout::ScreenLayout() :
 	mNumRows(1),
 	mNumColumns(1),
 	mDisplaySize(ci::ivec2(1920, 1080)),
@@ -20,10 +20,10 @@ ScreenLayoutView::ScreenLayoutView() :
 {
 }
 
-ScreenLayoutView::~ScreenLayoutView() {
+ScreenLayout::~ScreenLayout() {
 }
 
-void ScreenLayoutView::setup(BaseViewRef rootView, const ci::ivec2& dislaySize, const int numRows, const int numColumns) {
+void ScreenLayout::setup(BaseViewRef rootView, const ci::ivec2& dislaySize, const int numRows, const int numColumns) {
 
 	mRootView = rootView;
 	mDisplaySize = dislaySize;
@@ -32,10 +32,10 @@ void ScreenLayoutView::setup(BaseViewRef rootView, const ci::ivec2& dislaySize, 
 
 	updateLayout();
 
-	ci::app::getWindow()->getSignalKeyDown().connect(std::bind(&ScreenLayoutView::handleKeyDown, this, std::placeholders::_1));
+	ci::app::getWindow()->getSignalKeyDown().connect(std::bind(&ScreenLayout::handleKeyDown, this, std::placeholders::_1));
 }
 
-void ScreenLayoutView::updateLayout() {
+void ScreenLayout::updateLayout() {
 	mDisplayBounds.clear();
 
 	for (int row = 0; row < mNumRows; ++row) {
@@ -48,11 +48,11 @@ void ScreenLayoutView::updateLayout() {
 	mAppSize = mDisplaySize * ivec2(mNumColumns, mNumRows);
 }
 
-const Rectf& ScreenLayoutView::getDisplayBounds(const int displayId) {
+Rectf ScreenLayout::getDisplayBounds(const int displayId) {
 	return getDisplayBounds(getColFromDisplayId(displayId), getRowFromDisplayId(displayId));
 }
 
-const Rectf& ScreenLayoutView::getDisplayBounds(const int row, const int col) {
+Rectf ScreenLayout::getDisplayBounds(const int row, const int col) {
 	return Rectf(
 		(float)(col * mDisplaySize.x),
 		(float)(row * mDisplaySize.y),
@@ -60,7 +60,7 @@ const Rectf& ScreenLayoutView::getDisplayBounds(const int row, const int col) {
 		(float)((row + 1) * mDisplaySize.y));
 }
 
-void ScreenLayoutView::draw() {
+void ScreenLayout::draw() {
 
 	gl::ScopedColor scopedColor(mBorderColor);
 	gl::ScopedLineWidth scopedLineWidth(mBorderSize);
@@ -77,11 +77,11 @@ void ScreenLayoutView::draw() {
 // Scaling/zooming helpers
 // 
 
-void ScreenLayoutView::zoomToDisplay(const int displayId) {
+void ScreenLayout::zoomToDisplay(const int displayId) {
 	zoomToDisplay(getRowFromDisplayId(displayId), getColFromDisplayId(displayId));
 }
 
-void ScreenLayoutView::zoomToDisplay(const int row, const int col) {
+void ScreenLayout::zoomToDisplay(const int row, const int col) {
 	const Rectf displayBounds = getDisplayBounds(row, col);
 	const vec2 winSize = getWindowSize();
 	const float scale = getScaleToFitBounds(displayBounds, winSize);
@@ -92,7 +92,7 @@ void ScreenLayoutView::zoomToDisplay(const int row, const int col) {
 	mRootView->setPosition(-pos);
 }
 
-void ScreenLayoutView::zoomToFitWindow() {
+void ScreenLayout::zoomToFitWindow() {
 	const vec2 winSize = getWindowSize();
 	const vec2 appSize = getAppSize();
 	const Rectf appBounds = Rectf(vec2(), appSize);
@@ -103,7 +103,7 @@ void ScreenLayoutView::zoomToFitWindow() {
 	mRootView->setPosition(pos);
 }
 
-void ScreenLayoutView::zoomAtLocation(const float targetScale, const vec2 location) {
+void ScreenLayout::zoomAtLocation(const float targetScale, const vec2 location) {
 	const vec2 currentScale = mRootView->getScale();
 	const vec2 deltaScale = vec2(targetScale) / currentScale;
 
@@ -116,7 +116,7 @@ void ScreenLayoutView::zoomAtLocation(const float targetScale, const vec2 locati
 	mRootView->setPosition(targetPos);
 }
 
-float ScreenLayoutView::getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding) const {
+float ScreenLayout::getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding) const {
 	Rectf paddedBounds = bounds.inflated(vec2(padding));
 	float xScale = maxSize.x / (float)bounds.getWidth();
 	float yScale = maxSize.y / (float)bounds.getHeight();
@@ -129,7 +129,7 @@ float ScreenLayoutView::getScaleToFitBounds(const ci::Rectf &bounds, const ci::v
 // Event Handlers
 // 
 
-void ScreenLayoutView::handleKeyDown(KeyEvent event) {
+void ScreenLayout::handleKeyDown(KeyEvent event) {
 
 	switch (event.getCode()) {
 		case KeyEvent::KEY_KP_PLUS:

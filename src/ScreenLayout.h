@@ -13,17 +13,17 @@
 namespace bluecadet {
 namespace utils {
 
-typedef std::shared_ptr<class ScreenLayoutView> ScreenLayoutViewRef;
+typedef std::shared_ptr<class ScreenLayout> ScreenLayoutRef;
 
-class ScreenLayoutView {
+class ScreenLayout {
 
 public:
-	ScreenLayoutView();
-	~ScreenLayoutView();
+	ScreenLayout();
+	~ScreenLayout();
 
-	static ScreenLayoutViewRef getInstance() {
-		static ScreenLayoutViewRef instance = nullptr;
-		if (!instance) instance = ScreenLayoutViewRef(new ScreenLayoutView());
+	static ScreenLayoutRef getInstance() {
+		static ScreenLayoutRef instance = nullptr;
+		if (!instance) instance = ScreenLayoutRef(new ScreenLayout());
 		return instance;
 	}
 
@@ -67,10 +67,10 @@ public:
 
 
 	//! Absolute bounds of the display with the given id
-	const ci::Rectf&	getDisplayBounds(const int displayId);
+	ci::Rectf		getDisplayBounds(const int displayId);
 
 	//! Absolute bounds of the display at col/row
-	const ci::Rectf&	getDisplayBounds(const int row, const int col);
+	ci::Rectf		getDisplayBounds(const int row, const int col);
 
 
 
@@ -78,10 +78,10 @@ public:
 	const ci::ivec2&	getAppSize() const { return mAppSize; };
 
 	//! Overall app width when scaled at 100%
-	int					getAppWidth() const { return getAppSize().x; }
+	int				getAppWidth() const { return getAppSize().x; }
 
 	//! Overall app height when scaled at 100%
-	int					getAppHeight() const { return getAppSize().y; }
+	int				getAppHeight() const { return getAppSize().y; }
 
 	
 	//! Zooms to fit the display at displayId into the current application window.

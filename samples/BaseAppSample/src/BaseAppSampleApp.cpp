@@ -31,14 +31,14 @@ void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings)
 void BaseAppSampleApp::setup()
 {
 
-	ScreenLayoutView::getInstance()->setNumRows(3);
-	ScreenLayoutView::getInstance()->setNumColumns(4);
+	ScreenLayout::getInstance()->setNumRows(3);
+	ScreenLayout::getInstance()->setNumColumns(4);
 
 	BaseApp::setup();
 	BaseApp::addTouchSimulatorParams();
 
 	mRootView->setBackgroundColor(Color::gray(0.5f));
-	mRootView->setSize(ScreenLayoutView::getInstance()->getAppSize());
+	mRootView->setSize(ScreenLayout::getInstance()->getAppSize());
 
 	auto addButton = [=](vec2 pos, vec2 size, ColorA color) {
 		auto button = TouchViewRef(new TouchView());

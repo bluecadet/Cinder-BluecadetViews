@@ -1,6 +1,6 @@
 #include "BaseApp.h"
 #include "SettingsManager.h"
-#include "ScreenLayoutView.h"
+#include "ScreenLayout.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -32,13 +32,13 @@ void BaseApp::setup() {
 	auto settings = SettingsManager::getInstance();
 
 	// Set up screen layout
-	int displayWidth = settings->hasField("settings.display.width") ? settings->getField<int>("settings.display.width") : ScreenLayoutView::getInstance()->getDisplayWidth();
-	int displayHeight = settings->hasField("settings.display.width") ? settings->getField<int>("settings.display.height") : ScreenLayoutView::getInstance()->getDisplayHeight();
-	int rows = settings->hasField("settings.display.rows") ? settings->getField<int>("settings.display.rows") : ScreenLayoutView::getInstance()->getNumRows();
-	int cols = settings->hasField("settings.display.columns") ? settings->getField<int>("settings.display.columns") : ScreenLayoutView::getInstance()->getNumColumns();
+	int displayWidth = settings->hasField("settings.display.width") ? settings->getField<int>("settings.display.width") : ScreenLayout::getInstance()->getDisplayWidth();
+	int displayHeight = settings->hasField("settings.display.width") ? settings->getField<int>("settings.display.height") : ScreenLayout::getInstance()->getDisplayHeight();
+	int rows = settings->hasField("settings.display.rows") ? settings->getField<int>("settings.display.rows") : ScreenLayout::getInstance()->getNumRows();
+	int cols = settings->hasField("settings.display.columns") ? settings->getField<int>("settings.display.columns") : ScreenLayout::getInstance()->getNumColumns();
 	
-	ScreenLayoutView::getInstance()->setup(mRootView, ivec2(displayWidth, displayHeight), rows, cols);
-	ScreenLayoutView::getInstance()->zoomToFitWindow();
+	ScreenLayout::getInstance()->setup(mRootView, ivec2(displayWidth, displayHeight), rows, cols);
+	ScreenLayout::getInstance()->zoomToFitWindow();
 	
 	// Apply settings
 	if (settings->mShowMouse) {
@@ -54,7 +54,7 @@ void BaseApp::setup() {
 	// Set up touches
 	mMouseDriver.connect();
 	mTuioDriver.connect();
-	mSimulatedTouchDriver.setup(Rectf(vec2(0), ScreenLayoutView::getInstance()->getAppSize()), 60);
+	mSimulatedTouchDriver.setup(Rectf(vec2(0), ScreenLayout::getInstance()->getAppSize()), 60);
 }
 
 void BaseApp::update() {
@@ -75,7 +75,7 @@ void BaseApp::draw() {
 
 	if (settings->mDebugMode) {
 		if (settings->mDebugDrawScreenLayout) {
-			ScreenLayoutView::getInstance()->draw();
+			ScreenLayout::getInstance()->draw();
 		}
 
 		settings->getParams()->draw();
