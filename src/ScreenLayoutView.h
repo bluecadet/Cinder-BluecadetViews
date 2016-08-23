@@ -18,16 +18,16 @@ typedef std::shared_ptr<class ScreenLayoutView> ScreenLayoutViewRef;
 class ScreenLayoutView {
 
 public:
+	ScreenLayoutView();
 	~ScreenLayoutView();
 
-	//! Singleton
 	static ScreenLayoutViewRef getInstance() {
 		static ScreenLayoutViewRef instance = nullptr;
 		if (!instance) instance = ScreenLayoutViewRef(new ScreenLayoutView());
 		return instance;
 	}
 
-	void setup(views::BaseViewRef baseRootView, const ci::ivec2& dislaySize = ci::ivec2(1920, 1080), const int numRows = 1, const int numColumns = 1);
+	void setup(views::BaseViewRef rootView, const ci::ivec2& dislaySize = ci::ivec2(1920, 1080), const int numRows = 1, const int numColumns = 1);
 	void draw();
 
 	//! Display
@@ -53,21 +53,21 @@ public:
 
 
 	// Debugging
-	const float		getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding = 0.0f);
-	const ci::vec2	getTranslateToCenterBounds(const ci::Rectf &bounds, const ci::vec2& maxSize);
 	void			zoomToDisplay(const int displayId);
 	void			zoomToDisplay(const int col, const int row);
-	void			scaleRootViewCentered(const float targetScale);
+	void			setCenteredZoom(const float targetScale);
 
 	void				setBorderColor(const ci::ColorA& color) { mBorderColor = color; };
 	const ci::ColorA&	getBorderColor() { return mBorderColor; };
 
+protected:
 	inline int		getColFromDisplayId(const int displayId) const { if (displayId < 0 || mNumColumns <= 0 || mNumRows <= 0) return 0; return displayId % mNumColumns; };
 	inline int		getRowFromDisplayId(const int displayId) const { if (displayId < 0 || mNumColumns <= 0 || mNumRows <= 0) return 0; return displayId / mNumRows; };
 
-protected:
-	ScreenLayoutView();
-	void keyDown(ci::app::KeyEvent event);
+	const float		getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding = 0.0f);
+	const ci::vec2	getTranslateToCenterBounds(const ci::Rectf &bounds, const ci::vec2& maxSize);
+
+	void			handleKeyDown(ci::app::KeyEvent event);
 
 
 	//! Layout

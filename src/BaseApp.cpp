@@ -74,8 +74,6 @@ void BaseApp::draw() {
 
 	if (settings->mDebugMode) {
 		if (settings->mDebugDrawScreenLayout) {
-			gl::ScopedModelMatrix scopedMatrix;
-			gl::multModelMatrix(mRootView->getTransform());
 			ScreenLayoutView::getInstance()->draw();
 		}
 

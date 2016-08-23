@@ -14,8 +14,8 @@ ScreenLayoutView::ScreenLayoutView() :
 	mNumColumns(1),
 	mDisplaySize(ci::ivec2(1920, 1080)),
 	mAppSize(mDisplaySize),
-	mBorderWidth(4.0f),
-	mBorderColor(ColorA(1.0f, 0.0f, 0.0f, 1.0f)),
+	mBorderWidth(2.0f),
+	mBorderColor(ColorA(1.0f, 0.0f, 1.0f, 1.0f)),
 	mRootView(nullptr)
 {
 }
@@ -23,37 +23,23 @@ ScreenLayoutView::ScreenLayoutView() :
 ScreenLayoutView::~ScreenLayoutView() {
 }
 
-void ScreenLayoutView::setup(BaseViewRef baseRootView, const ci::ivec2& dislaySize, const int numRows, const int numColumns) {
+void ScreenLayoutView::setup(BaseViewRef rootView, const ci::ivec2& dislaySize, const int numRows, const int numColumns) {
 
-	mRootView = baseRootView;
-
-	// Get key input
-	ci::app::getWindow()->getSignalKeyDown().connect(std::bind(&ScreenLayoutView::keyDown, this, std::placeholders::_1));
-
-	// Load display settings
+	mRootView = rootView;
 	mDisplaySize = dislaySize;
 	mNumRows = numRows;
 	mNumColumns = numColumns;
-
-	// Set app width and height based on screen layout //move appWidth/height to screenLayout
 	mAppSize = mDisplaySize * ivec2(mNumRows, mNumColumns);
 
-	// Setup the outlines that will draw for each display
+	// Set up the outlines that for each display
 	for (int row = 0; row < mNumRows; ++row) {
 		for (int col = 0; col < mNumColumns; ++col) {
-
 			ci::Rectf displayBounds = getDisplayBounds(col, row);
 			mDisplayOutlines.push_back(displayBounds);
-
-			/*
-			// Todo - Create as screen bounds views -- need to create view that allows outlines of shapes only
-			debug::RectViewRef rect = debug::RectViewRef(new debug::RectView(vec2(mDisplayWidth, mDisplayHeight), mBorderColor));
-			rect->setPosition(vec2(mDisplayWidth*row, mDisplayHeight*col));
-			addChild(rect);
-			*/
 		}
 	}
 
+	ci::app::getWindow()->getSignalKeyDown().connect(std::bind(&ScreenLayoutView::handleKeyDown, this, std::placeholders::_1));
 }
 
 ci::Rectf ScreenLayoutView::getDisplayBounds(const int displayId) {
@@ -69,8 +55,12 @@ ci::Rectf ScreenLayoutView::getDisplayBounds(const int col, const int row) {
 }
 
 void ScreenLayoutView::draw() {
-	gl::color(mBorderColor);
-	gl::lineWidth(mBorderWidth);
+
+	gl::ScopedColor scopedColor(mBorderColor);
+	gl::ScopedLineWidth scopedLineWidth(mBorderWidth);
+	gl::ScopedModelMatrix scopedMatrix;
+
+	gl::multModelMatrix(mRootView->getTransform());
 
 	for (const auto &displayOutline : mDisplayOutlines) {
 		gl::drawStrokedRect(displayOutline);
@@ -96,7 +86,6 @@ const ci::vec2 ScreenLayoutView::getTranslateToCenterBounds(const ci::Rectf &bou
 	);
 }
 
-
 void ScreenLayoutView::zoomToDisplay(const int displayId) {
 	zoomToDisplay(getColFromDisplayId(displayId), getColFromDisplayId(displayId));
 }
@@ -110,7 +99,7 @@ void ScreenLayoutView::zoomToDisplay(const int col, const int row)
 	mRootView->setPosition(ScreenLayoutView::getInstance()->getTranslateToCenterBounds(bounds, winSize / mRootView->getScale().value().x));
 }
 
-void ScreenLayoutView::scaleRootViewCentered(const float targetScale) {
+void ScreenLayoutView::setCenteredZoom(const float targetScale) {
 	const vec2 currentScale = mRootView->getScale();
 	const vec2 deltaScale = vec2(targetScale) / currentScale;
 
@@ -127,43 +116,48 @@ void ScreenLayoutView::scaleRootViewCentered(const float targetScale) {
 // Event Handlers
 // 
 
-void ScreenLayoutView::keyDown(KeyEvent event) {
+void ScreenLayoutView::handleKeyDown(KeyEvent event) {
 
 	switch (event.getCode()) {
-
 		case KeyEvent::KEY_KP_PLUS:
 		case KeyEvent::KEY_KP_MINUS:
 		case KeyEvent::KEY_PLUS:
 		case KeyEvent::KEY_EQUALS:
 		case KeyEvent::KEY_MINUS: {
+			// zoom in/out
 			const auto code = event.getCode();
 			const bool zoomIn = (code == KeyEvent::KEY_KP_PLUS || code == KeyEvent::KEY_PLUS || code == KeyEvent::KEY_EQUALS);
 			const float speed = event.isShiftDown() ? 1.25f : 1.1f;
 			const float deltaScale = (zoomIn ? speed : 1.0f / speed);
 			const float targetScale = mRootView->getScale().value().x * deltaScale;
-			scaleRootViewCentered(targetScale);
-			break;
-		}
-		case KeyEvent::KEY_KP1: case KeyEvent::KEY_KP2: case KeyEvent::KEY_KP3: case KeyEvent::KEY_KP4: case KeyEvent::KEY_KP5: case KeyEvent::KEY_KP6: case KeyEvent::KEY_KP7:
-		case KeyEvent::KEY_1: case KeyEvent::KEY_2: case KeyEvent::KEY_3: case KeyEvent::KEY_4: case KeyEvent::KEY_5: case KeyEvent::KEY_6: case KeyEvent::KEY_7: {
-			int displayId = (event.getChar() - (int)'0') - 1; // parse int from char, make 0-based
-			zoomToDisplay(displayId);
+			setCenteredZoom(targetScale);
 			break;
 		}
 		case KeyEvent::KEY_UP: {
+			// pan up
 			mRootView->setPosition(vec2(mRootView->getPosition().value().x, mRootView->getPosition().value().y += getWindowHeight() * (event.isShiftDown() ? 1.0f : 0.25f)));
 			break;
 		}
 		case KeyEvent::KEY_DOWN: {
+			// pan down
 			mRootView->setPosition(vec2(mRootView->getPosition().value().x, mRootView->getPosition().value().y -= getWindowHeight() * (event.isShiftDown() ? 1.0f : 0.25f)));
 			break;
 		}
 		case KeyEvent::KEY_LEFT: {
+			// pan left
 			mRootView->setPosition(vec2(mRootView->getPosition().value().x += getWindowWidth() * (event.isShiftDown() ? 1.0f : 0.25f), mRootView->getPosition().value().y));
 			break;
 		}
 		case KeyEvent::KEY_RIGHT: {
+			// pan right
 			mRootView->setPosition(vec2(mRootView->getPosition().value().x -= getWindowWidth() * (event.isShiftDown() ? 1.0f : 0.25f), mRootView->getPosition().value().y));
+			break;
+		}
+		case KeyEvent::KEY_KP1: case KeyEvent::KEY_KP2: case KeyEvent::KEY_KP3: case KeyEvent::KEY_KP4: case KeyEvent::KEY_KP5: case KeyEvent::KEY_KP6: case KeyEvent::KEY_KP7: case KeyEvent::KEY_KP8: case KeyEvent::KEY_KP9:
+		case KeyEvent::KEY_1: case KeyEvent::KEY_2: case KeyEvent::KEY_3: case KeyEvent::KEY_4: case KeyEvent::KEY_5: case KeyEvent::KEY_6: case KeyEvent::KEY_7: case KeyEvent::KEY_8: case KeyEvent::KEY_9: {
+			// zoom into display on top-most row
+			int displayId = (event.getChar() - (int)'0') - 1; // parse int from char, make 0-based
+			zoomToDisplay(displayId);
 			break;
 		}
 	}
