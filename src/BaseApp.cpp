@@ -54,7 +54,7 @@ void BaseApp::setup() {
 	// Set up touches
 	mMouseDriver.connect();
 	mTuioDriver.connect();
-	mSimulatedTouchDriver.setup(Rectf(vec2(0), ScreenLayout::getInstance()->getAppSize()), 60);
+	mSimulatedTouchDriver.setup(Rectf(vec2(0), getWindowSize()), 60);
 }
 
 void BaseApp::update() {
@@ -102,23 +102,23 @@ void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
 	SettingsManager::getInstance()->getParams()->addText("Touch Simulator");
 	SettingsManager::getInstance()->getParams()->addParam<float>("Touches/s", [&](float v) { mSimulatedTouchDriver.setTouchesPerSecond(v); }, [&]() { return mSimulatedTouchDriver.getTouchesPerSecond(); });
 	SettingsManager::getInstance()->getParams()->addParam<bool>("Stress Test",
-		[=](bool v) { SettingsManager::getInstance()->mDebugDrawTouches = v; v ? mSimulatedTouchDriver.start() : mSimulatedTouchDriver.stop(); },
-		[=] { return SettingsManager::getInstance()->mDebugDrawTouches && mSimulatedTouchDriver.isRunning(); });
-	SettingsManager::getInstance()->getParams()->addButton("Stress Test Tap + Drag", [=] {
+		[&](bool v) { SettingsManager::getInstance()->mDebugDrawTouches = v; v ? mSimulatedTouchDriver.start() : mSimulatedTouchDriver.stop(); },
+		[&] { return SettingsManager::getInstance()->mDebugDrawTouches && mSimulatedTouchDriver.isRunning(); });
+	SettingsManager::getInstance()->getParams()->addButton("Stress Test Tap + Drag", [&] {
 		SettingsManager::getInstance()->mDebugDrawTouches = true;
 		mSimulatedTouchDriver.setMinTouchDuration(0);
 		mSimulatedTouchDriver.setMaxTouchDuration(1.f);
 		mSimulatedTouchDriver.setMaxDragDistance(200.f);
 		mSimulatedTouchDriver.start();
 	});
-	SettingsManager::getInstance()->getParams()->addButton("Stress Test Long Drag", [=] {
+	SettingsManager::getInstance()->getParams()->addButton("Stress Test Long Drag", [&] {
 		SettingsManager::getInstance()->mDebugDrawTouches = true;
 		mSimulatedTouchDriver.setMinTouchDuration(4.f);
 		mSimulatedTouchDriver.setMaxTouchDuration(8.f);
 		mSimulatedTouchDriver.setMaxDragDistance(200.f);
 		mSimulatedTouchDriver.start();
 	});
-	SettingsManager::getInstance()->getParams()->addButton("Stress Test Tap Only", [=] {
+	SettingsManager::getInstance()->getParams()->addButton("Stress Test Tap Only", [&] {
 		SettingsManager::getInstance()->mDebugDrawTouches = true;
 		mSimulatedTouchDriver.setMinTouchDuration(0);
 		mSimulatedTouchDriver.setMaxTouchDuration(0.1f);
