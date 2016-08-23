@@ -3,11 +3,10 @@
 using namespace ci;
 using namespace ci::app;
 using namespace std;
-using namespace bluecadet::utils;
 using namespace bluecadet::views;
 
 namespace bluecadet {
-namespace utils {
+namespace views {
 
 ScreenLayout::ScreenLayout() :
 	mNumRows(1),

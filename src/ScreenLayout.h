@@ -11,7 +11,7 @@
 #include "BaseView.h"
 
 namespace bluecadet {
-namespace utils {
+namespace views {
 
 typedef std::shared_ptr<class ScreenLayout> ScreenLayoutRef;
 
