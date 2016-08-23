@@ -6,6 +6,8 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 using namespace bluecadet::utils;
+using namespace bluecadet::touch;
+using namespace bluecadet::touch::drivers;
 
 namespace bluecadet {
 namespace views {
@@ -20,44 +22,38 @@ BaseApp::BaseApp() :
 BaseApp::~BaseApp() {
 }
 
-void BaseApp::prepareSettings(ci::app::App::Settings* settings) {
-	// Init settings manager
+void BaseApp::prepareSettings(ci::app::App::Settings *settings) {
 	fs::path appSettingsPath = ci::app::getAssetPath("appSettings.json");
 	SettingsManager::getInstance()->setup(appSettingsPath, settings);
 }
 
-void BaseApp::setup() {
-	// Add screen layout
-	int width = SettingsManager::getInstance()->getField<int>("settings.display.width");
-	int height = SettingsManager::getInstance()->getField<int>("settings.display.height");
-	int rows = SettingsManager::getInstance()->getField<int>("settings.display.totalRows");
-	int columns = SettingsManager::getInstance()->getField<int>("settings.display.totalColumns");
-	ScreenLayoutView::getInstance()->setup(mRootView, width, height, rows, columns);
-	
-	mRootView->addChild(ScreenLayoutView::getInstance());
 
-	// Set if screen layout will draw
-	SettingsManager::getInstance()->mDebugDrawScreenLayout ? ScreenLayoutView::getInstance()->setAlpha(1.0f) : ScreenLayoutView::getInstance()->setAlpha(0.0f);
+void BaseApp::setup() {
+	auto settings = SettingsManager::getInstance();
+
+	// Set up screen layout
+	int displayWidth = settings->hasField("settings.display.width") ? settings->getField<int>("settings.display.width") : Display::getMainDisplay()->getWidth();
+	int displayHeight = settings->hasField("settings.display.width") ? settings->getField<int>("settings.display.height") : Display::getMainDisplay()->getHeight();
+	int rows = settings->hasField("settings.display.rows") ? settings->getField<int>("settings.display.rows") : 1;
+	int columns = settings->hasField("settings.display.columns") ? settings->getField<int>("settings.display.columns") : 1;
+
+	ScreenLayoutView::getInstance()->setup(mRootView, ivec2(displayWidth, displayHeight), rows, columns);
 
 	// Set up settings
-	if (SettingsManager::getInstance()->mShowMouse) {
+	if (settings->mShowMouse) {
 		showCursor();
-	}
-	else {
+	} else {
 		hideCursor();
 	}
 
 	// Set up graphics
-	gl::enableVerticalSync(SettingsManager::getInstance()->mVerticalSync);
+	gl::enableVerticalSync(settings->mVerticalSync);
 	gl::enableAlphaBlending();
 
 	// Set up touches
 	mMouseDriver.connect();
 	mTuioDriver.connect();
-
-	if (SettingsManager::getInstance()->mDebugMode) {
-		mParams = SettingsManager::getInstance()->getParams();
-	}
+	mSimulatedTouchDriver.setup(Rectf(vec2(0), ScreenLayoutView::getInstance()->getAppSize()), 60);
 }
 
 void BaseApp::update() {
@@ -70,35 +66,45 @@ void BaseApp::update() {
 }
 
 void BaseApp::draw() {
-	gl::clear(Color(0, 0, 0));
+	auto settings = SettingsManager::getInstance();
+
+	gl::clear(settings->mClearColor);
+
 	mRootView->drawScene();
 
-	if (SettingsManager::getInstance()->mDebugDrawTouches) {
-		touch::TouchManager::getInstance()->debugDrawTouches();
-	}
+	if (settings->mDebugMode) {
+		if (settings->mDebugDrawScreenLayout) {
+			gl::ScopedModelMatrix scopedMatrix;
+			gl::multModelMatrix(mRootView->getTransform());
+			ScreenLayoutView::getInstance()->draw();
+		}
 
-	if (SettingsManager::getInstance()->mDebugMode) {
-		mParams->draw();
+		settings->getParams()->draw();
+
+		if (settings->mDebugDrawTouches) {
+			touch::TouchManager::getInstance()->debugDrawTouches();
+		}
 	}
 }
 
 void BaseApp::keyDown(KeyEvent event) {
 	switch (event.getCode()) {
-	case KeyEvent::KEY_q:
-		quit();
-		break;
+		case KeyEvent::KEY_q:
+			quit();
+			break;
 	}
 }
 
-void BaseApp::connectSimulatedTouchDriver(int touchesPerSecond) {
-	console() << ScreenLayoutView::getInstance()->getAppWidth() << "   " << ScreenLayoutView::getInstance()->getAppHeight() << endl;
-	mSimulatedTouchDriver.setup(Rectf(0.0f, 0.0f, (float)ScreenLayoutView::getInstance()->getAppWidth(), (float)ScreenLayoutView::getInstance()->getAppHeight()), (float)touchesPerSecond);
+void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
+
+	mSimulatedTouchDriver.setTouchesPerSecond(touchesPerSecond);
 
 	SettingsManager::getInstance()->getParams()->addSeparator();
 	SettingsManager::getInstance()->getParams()->addText("Touch Simulator");
+	SettingsManager::getInstance()->getParams()->addParam<float>("Touches/s", [&](float v) { mSimulatedTouchDriver.setTouchesPerSecond(v); }, [&]() { return mSimulatedTouchDriver.getTouchesPerSecond(); });
 	SettingsManager::getInstance()->getParams()->addParam<bool>("Stress Test",
 		[=](bool v) { SettingsManager::getInstance()->mDebugDrawTouches = v; v ? mSimulatedTouchDriver.start() : mSimulatedTouchDriver.stop(); },
-		[=] { return SettingsManager::getInstance()->mDebugDrawTouches && mSimulatedTouchDriver.isRunning(); }).key("g");
+		[=] { return SettingsManager::getInstance()->mDebugDrawTouches && mSimulatedTouchDriver.isRunning(); });
 	SettingsManager::getInstance()->getParams()->addButton("Stress Test Tap + Drag", [=] {
 		SettingsManager::getInstance()->mDebugDrawTouches = true;
 		mSimulatedTouchDriver.setMinTouchDuration(0);

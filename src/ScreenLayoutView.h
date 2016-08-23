@@ -11,11 +11,11 @@
 #include "BaseView.h"
 
 namespace bluecadet {
-namespace views {
+namespace utils {
 
 typedef std::shared_ptr<class ScreenLayoutView> ScreenLayoutViewRef;
 
-class ScreenLayoutView : public bluecadet::views::BaseView{
+class ScreenLayoutView {
 
 public:
 	~ScreenLayoutView();
@@ -27,65 +27,65 @@ public:
 		return instance;
 	}
 
-	void setup(BaseViewRef baseRootView, const int displayWidth = 1920, const int displayHeight = 1080, const int rows = 1, const int columns = 1);
-
-//	virtual void update(double deltaTime) override;
-	virtual void draw() override;
+	void setup(views::BaseViewRef baseRootView, const ci::ivec2& dislaySize = ci::ivec2(1920, 1080), const int numRows = 1, const int numColumns = 1);
+	void draw();
 
 	//! Display
-	void			setDisplayWidth(const int& width) { mDisplayWidth = width; };
-	const int		getDisplayWidth() { return mDisplayWidth; };
+	void			setDisplayWidth(const int width) { mDisplaySize.x = width; };
+	int				getDisplayWidth() const { return mDisplaySize.x; };
 
-	void			setDisplayHeight(const int& height) { mDisplayHeight = height; };
-	const int		getDisplayHeight() { return mDisplayHeight; };
+	void			setDisplayHeight(const int height) { mDisplaySize.y = height; };
+	int				getDisplayHeight() const { return mDisplaySize.y; };
 
-	void			setDisplayTotalRows(const int& totalRows) { mDisplayTotalRows = totalRows; };
-	const int		getDisplayTotalRows() { return mDisplayTotalRows; };
+	void			setNumRows(const int numRows) { mNumRows = numRows; };
+	int				getNumRows() const { return mNumRows; };
 
-	void			setDisplayTotalColumns(const int& totalColumns) { mDisplayTotalColumns = totalColumns; };
-	const int		getDisplayTotalColumns() { return mDisplayTotalColumns; };
+	void			setNumColumns(const int numColumns) { mNumColumns = mNumColumns; };
+	int				getNumColumns() const { return mNumColumns; };
+	
+	ci::Rectf		getDisplayBounds(const int displayId);
+	ci::Rectf		getDisplayBounds(const int col, const int row);
 
 	// Full app 
-	const int		getAppWidth() { return mAppWidth; }
-	const int		getAppHeight() { return mAppHeight; }
-	const ci::vec2	getAppSize() { return ci::vec2(mAppWidth, mAppHeight); };
-
-	const void		setBorderColor(const ci::ColorA& color) { mBorderColor = color; };
-
-	ci::Rectf		getDisplayBounds(const int& displayId);
-
-//testing
-	const float		getScaleToFitBounds(ci::Rectf bounds, ci::vec2 maxSize, float padding = 0.0f);
-	const ci::vec2	getTranslateToCenterBounds(ci::Rectf bounds, ci::vec2 maxSize);
-	void			zoomToScreen(const int& screenId = 1);
-	void			scaleRootViewCentered(const float& targetScale);
+	int					getAppWidth() const { return mAppSize.x; }
+	int					getAppHeight() const { return mAppSize.y; }
+	const ci::ivec2&	getAppSize() const { return mAppSize; };
 
 
+	// Debugging
+	const float		getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding = 0.0f);
+	const ci::vec2	getTranslateToCenterBounds(const ci::Rectf &bounds, const ci::vec2& maxSize);
+	void			zoomToDisplay(const int displayId);
+	void			zoomToDisplay(const int col, const int row);
+	void			scaleRootViewCentered(const float targetScale);
+
+	void				setBorderColor(const ci::ColorA& color) { mBorderColor = color; };
+	const ci::ColorA&	getBorderColor() { return mBorderColor; };
+
+	inline int		getColFromDisplayId(const int displayId) const { if (displayId < 0 || mNumColumns <= 0 || mNumRows <= 0) return 0; return displayId % mNumColumns; };
+	inline int		getRowFromDisplayId(const int displayId) const { if (displayId < 0 || mNumColumns <= 0 || mNumRows <= 0) return 0; return displayId / mNumRows; };
 
 protected:
 	ScreenLayoutView();
 	void keyDown(ci::app::KeyEvent event);
 
-	ci::Rectf getDisplayBounds(const int& column, const int& row);
-	
-	//! Display
-	int			mDisplayWidth;
-	int			mDisplayHeight;
-	int			mDisplayTotalRows;
-	int			mDisplayTotalColumns;
 
-	int			mAppWidth;
-	int			mAppHeight;
+	//! Layout
+	int			mNumRows;
+	int			mNumColumns;
+
+	ci::ivec2	mDisplaySize;
+	ci::ivec2	mAppSize;
 
 	float		mBorderWidth;
 	ci::ColorA	mBorderColor;
 
 private:
 	//! Used to draw bounds of each screen & 
-	std::vector<std::pair<int, ci::Rectf>> mDisplayOutlines;
+	std::vector<ci::Rectf>	mDisplayOutlines;
 
 	// From BaseApp
-	BaseViewRef mBaseRootView;
+	views::BaseViewRef		mRootView;
 };
 
 }
