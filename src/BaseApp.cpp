@@ -37,6 +37,9 @@ void BaseApp::setup() {
 	int rows = settings->hasField("settings.display.rows") ? settings->getField<int>("settings.display.rows") : ScreenLayoutView::getInstance()->getNumRows();
 	int cols = settings->hasField("settings.display.columns") ? settings->getField<int>("settings.display.columns") : ScreenLayoutView::getInstance()->getNumColumns();
 	ScreenLayoutView::getInstance()->setup(mRootView, ivec2(displayWidth, displayHeight), rows, cols);
+
+	// Zoom to fit app content
+
 	
 	// Set up settings
 	if (settings->mShowMouse) {

@@ -85,19 +85,25 @@ public:
 
 	
 	//! Zooms to fit the display at displayId into the current application window.
-	void			zoomToDisplay(const int displayId);
+	void				zoomToDisplay(const int displayId);
 	
 	//! Zooms to fit the display at col/row into the current application window.
-	void			zoomToDisplay(const int row, const int col);
+	void				zoomToDisplay(const int row, const int col);
 
 	//! Zooms around a location in window coordinate space
-	void			zoomAtLocation(const float scale, const ci::vec2 location);
+	void				zoomAtLocation(const float scale, const ci::vec2 location);
 
 	//! Zooms around the application window's center
-	inline void		zoomAtWindowCenter(const float scale) { zoomAtLocation(scale, ci::app::getWindowCenter()); }
+	inline void			zoomAtWindowCenter(const float scale) { zoomAtLocation(scale, ci::app::getWindowCenter()); }
 
-	void				setBorderColor(const ci::ColorA& color) { mBorderColor = color; };
+
+	//! The border color used when drawing the display bounds. Defaults to opaque magenta.
 	const ci::ColorA&	getBorderColor() { return mBorderColor; };
+	void				setBorderColor(const ci::ColorA& color) { mBorderColor = color; };
+	
+	//! The border size used when drawing the display bounds. Defaults to 4.
+	float				getBordeSize() const { return mBorderSize; }
+	void				setBorderSize(const float value) { mBorderSize = value; }
 
 protected:
 
@@ -116,7 +122,7 @@ protected:
 	ci::ivec2	mDisplaySize;
 	ci::ivec2	mAppSize;
 
-	float		mBorderWidth;
+	float		mBorderSize;
 	ci::ColorA	mBorderColor;
 
 private:

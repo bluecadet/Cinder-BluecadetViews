@@ -14,7 +14,7 @@ ScreenLayoutView::ScreenLayoutView() :
 	mNumColumns(1),
 	mDisplaySize(ci::ivec2(1920, 1080)),
 	mAppSize(mDisplaySize),
-	mBorderWidth(2.0f),
+	mBorderSize(2.0f),
 	mBorderColor(ColorA(1.0f, 0.0f, 1.0f, 1.0f)),
 	mRootView(nullptr)
 {
@@ -63,7 +63,7 @@ ci::Rectf ScreenLayoutView::getDisplayBounds(const int row, const int col) {
 void ScreenLayoutView::draw() {
 
 	gl::ScopedColor scopedColor(mBorderColor);
-	gl::ScopedLineWidth scopedLineWidth(mBorderWidth);
+	gl::ScopedLineWidth scopedLineWidth(mBorderSize);
 	gl::ScopedModelMatrix scopedMatrix;
 
 	gl::multModelMatrix(mRootView->getTransform());
