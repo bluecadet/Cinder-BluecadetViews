@@ -47,6 +47,10 @@ public:
 	int				getDisplayHeight() const { return mDisplaySize.y; };
 	void			setDisplayHeight(const int height) { mDisplaySize.y = height; updateLayout(); };
 
+	//! The size of a single display in the display matrix
+	ci::ivec2		getDisplaySize() const { return mDisplaySize; }
+	void			 setDisplaySize(const ci::ivec2 value) { mDisplaySize = value; }
+
 	//! The number of rows of displays in the display matrix.
 	int				getNumRows() const { return mNumRows; };
 	void			setNumRows(const int numRows) { mNumRows = numRows; updateLayout(); };
