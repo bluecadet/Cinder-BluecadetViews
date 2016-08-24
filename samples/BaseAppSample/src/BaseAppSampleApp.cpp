@@ -5,7 +5,6 @@
 #include "BaseApp.h"
 #include "TouchView.h"
 #include "ImageView.h"
-#include "SettingsManager.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -25,24 +24,36 @@ void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings)
 {
 	BaseApp::prepareSettings(settings);
 	settings->setFullScreen(false);
-	settings->setWindowSize(1024, 768);
+	settings->setWindowSize(1280, 720);
 	settings->setBorderless(false);
 }
 
 void BaseAppSampleApp::setup()
 {
+
+	ScreenLayout::getInstance()->setNumRows(3);
+	ScreenLayout::getInstance()->setNumColumns(4);
+
 	BaseApp::setup();
+	BaseApp::addTouchSimulatorParams();
 
-	
-	
-	auto button = TouchViewRef(new TouchView());
-	button->setSize(vec2(100.0f, 100.0f));
-	button->setBackgroundColor(ColorA(1, 0, 0, 1));
-	button->setPosition((vec2(getWindowSize()) - button->getSize()) * 0.5f);
-	button->mDidBeginTouch.connect([=](bluecadet::touch::TouchEvent e) { e.target->setAlpha(0.5f); });
-	button->mDidEndTouch.connect([=](bluecadet::touch::TouchEvent e) { e.target->setAlpha(1.0f); });
+	getRootView()->setBackgroundColor(Color::gray(0.5f));
+	getRootView()->setSize(ScreenLayout::getInstance()->getAppSize());
 
-	mRootView->addChild(button);
+	auto addButton = [=](vec2 pos, vec2 size, ColorA color) {
+		auto button = TouchViewRef(new TouchView());
+		button->setSize(size);
+		button->setBackgroundColor(color);
+		button->setPosition(pos);
+		button->mDidTap.connect([=](bluecadet::touch::TouchEvent e) { CI_LOG_I("Button tapped"); });
+		getRootView()->addChild(button);
+	};
+
+	const vec2 buttonSize = getRootView()->getSize() * 0.5f;
+	addButton(getRootView()->getSize() * 0.5f + (vec2(-buttonSize.x, -buttonSize.y) - buttonSize) * 0.5f, buttonSize, ColorA(1, 0, 0, 1));
+	addButton(getRootView()->getSize() * 0.5f + (vec2(buttonSize.x, -buttonSize.y) - buttonSize) * 0.5f, buttonSize, ColorA(1, 1, 0, 1));
+	addButton(getRootView()->getSize() * 0.5f + (vec2(buttonSize.x, buttonSize.y) - buttonSize) * 0.5f, buttonSize, ColorA(0, 0, 1, 1));
+	addButton(getRootView()->getSize() * 0.5f + (vec2(-buttonSize.x, buttonSize.y) - buttonSize) * 0.5f, buttonSize, ColorA(0, 1, 0, 1));
 }
 
 void BaseAppSampleApp::update()
