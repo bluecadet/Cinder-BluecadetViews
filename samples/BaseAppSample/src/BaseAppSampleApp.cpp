@@ -37,8 +37,8 @@ void BaseAppSampleApp::setup()
 	BaseApp::setup();
 	BaseApp::addTouchSimulatorParams();
 
-	mRootView->setBackgroundColor(Color::gray(0.5f));
-	mRootView->setSize(ScreenLayout::getInstance()->getAppSize());
+	getRootView()->setBackgroundColor(Color::gray(0.5f));
+	getRootView()->setSize(ScreenLayout::getInstance()->getAppSize());
 
 	auto addButton = [=](vec2 pos, vec2 size, ColorA color) {
 		auto button = TouchViewRef(new TouchView());
@@ -46,14 +46,14 @@ void BaseAppSampleApp::setup()
 		button->setBackgroundColor(color);
 		button->setPosition(pos);
 		button->mDidTap.connect([=](bluecadet::touch::TouchEvent e) { CI_LOG_I("Button tapped"); });
-		mRootView->addChild(button);
+		getRootView()->addChild(button);
 	};
 
-	const vec2 buttonSize = mRootView->getSize() * 0.5f;
-	addButton(mRootView->getSize() * 0.5f + (vec2(-buttonSize.x, -buttonSize.y) - buttonSize) * 0.5f, buttonSize, ColorA(1, 0, 0, 1));
-	addButton(mRootView->getSize() * 0.5f + (vec2(buttonSize.x, -buttonSize.y) - buttonSize) * 0.5f, buttonSize, ColorA(1, 1, 0, 1));
-	addButton(mRootView->getSize() * 0.5f + (vec2(buttonSize.x, buttonSize.y) - buttonSize) * 0.5f, buttonSize, ColorA(0, 0, 1, 1));
-	addButton(mRootView->getSize() * 0.5f + (vec2(-buttonSize.x, buttonSize.y) - buttonSize) * 0.5f, buttonSize, ColorA(0, 1, 0, 1));
+	const vec2 buttonSize = getRootView()->getSize() * 0.5f;
+	addButton(getRootView()->getSize() * 0.5f + (vec2(-buttonSize.x, -buttonSize.y) - buttonSize) * 0.5f, buttonSize, ColorA(1, 0, 0, 1));
+	addButton(getRootView()->getSize() * 0.5f + (vec2(buttonSize.x, -buttonSize.y) - buttonSize) * 0.5f, buttonSize, ColorA(1, 1, 0, 1));
+	addButton(getRootView()->getSize() * 0.5f + (vec2(buttonSize.x, buttonSize.y) - buttonSize) * 0.5f, buttonSize, ColorA(0, 0, 1, 1));
+	addButton(getRootView()->getSize() * 0.5f + (vec2(-buttonSize.x, buttonSize.y) - buttonSize) * 0.5f, buttonSize, ColorA(0, 1, 0, 1));
 }
 
 void BaseAppSampleApp::update()
