@@ -23,7 +23,7 @@ class TextView : public BaseView, public text::StyledTextLayout {
 
 public:
 	TextView();
-	~TextView();
+	virtual ~TextView();
 
 	//! Creates a TextViewRef instance. Convenience method that groups a few calls together.
 	static TextViewRef create(const std::string& text = "", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = -1.0f);
