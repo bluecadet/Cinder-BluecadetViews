@@ -52,6 +52,7 @@ void TextViewSampleApp::mouseDown(MouseEvent event) {
 
 	// Clear and reset the text
 	mTitle->setWidth(400.0f);
+	mTitle->setHeight(400.0f);
 	mTitle->setText("Sample Title " + toString(count));
 
 	vec2 padding = vec2(16.f, 16.f);
