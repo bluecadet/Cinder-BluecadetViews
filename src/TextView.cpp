@@ -109,12 +109,12 @@ void TextView::setSize(const ci::vec2& size) {
 	setMaxSize(size);
 }
 
-void TextView::setWidth(const float width) {
+inline void TextView::setWidth(const float width){
 	invalidate();
 	setMaxWidth(width);
 }
 
-void TextView::setHeight(const float height) {
+inline void TextView::setHeight(const float height){
 	invalidate();
 	setMaxHeight(height);
 }
