@@ -51,6 +51,8 @@ public:
 
 	//! Sets a fixed size for the text view. Any values below 0 will allow the text view to automatically expand in that direction.
 	virtual inline void				setSize(const ci::vec2& size) override;
+	virtual void					setWidth(const float width) override;
+	virtual void					setHeight(const float height) override;
 
 	//! Returns the actual size of the text including padding.
 	//! In advanced use-cases this can differ from what was set in setSize(), e.g. if a special clip mode is set or size-trimming is enabled.
