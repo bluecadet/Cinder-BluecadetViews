@@ -102,10 +102,12 @@ void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
 	SettingsManager::getInstance()->getParams()->addText("Touch Simulator");
 	SettingsManager::getInstance()->getParams()->addParam<float>("Touches/s", [&](float v) { mSimulatedTouchDriver.setTouchesPerSecond(v); }, [&]() { return mSimulatedTouchDriver.getTouchesPerSecond(); });
 	SettingsManager::getInstance()->getParams()->addParam<bool>("Stress Test", [&](bool v) {
-		if (SettingsManager::getInstance()->mDebugDrawTouches){
+		if (!mSimulatedTouchDriver.isRunning()){
+			SettingsManager::getInstance()->mDebugDrawTouches = true;
 			mSimulatedTouchDriver.setBounds(Rectf(vec2(0), getWindowSize()));
 			mSimulatedTouchDriver.start();
 		} else {
+			SettingsManager::getInstance()->mDebugDrawTouches = false;
 			mSimulatedTouchDriver.stop();
 		}
 	}, [&] {
