@@ -33,7 +33,7 @@ void BaseApp::setup() {
 
 	// Set up screen layout
 	int displayWidth = settings->hasField("settings.display.width") ? settings->getField<int>("settings.display.width") : ScreenLayout::getInstance()->getDisplayWidth();
-	int displayHeight = settings->hasField("settings.display.width") ? settings->getField<int>("settings.display.height") : ScreenLayout::getInstance()->getDisplayHeight();
+	int displayHeight = settings->hasField("settings.display.height") ? settings->getField<int>("settings.display.height") : ScreenLayout::getInstance()->getDisplayHeight();
 	int rows = settings->hasField("settings.display.rows") ? settings->getField<int>("settings.display.rows") : ScreenLayout::getInstance()->getNumRows();
 	int cols = settings->hasField("settings.display.columns") ? settings->getField<int>("settings.display.columns") : ScreenLayout::getInstance()->getNumColumns();
 	
