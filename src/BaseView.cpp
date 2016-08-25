@@ -18,7 +18,6 @@ BaseView::BaseView() :
 	mTransform(mat4()),
 	mGlobalTransform(mat4()),
 	mHasInvalidTransforms(true),
-	mHasInvalidUniforms(true),
 
 	mTint(Color(1.0f, 1.0f, 1.0f)),
 	mDrawColor(ColorA(1.0f, 1.0f, 1.0f, 1.0f)),
@@ -48,7 +47,6 @@ void BaseView::reset() {
 	mTransform = mat4();
 	mGlobalTransform = mat4();
 	mHasInvalidTransforms = true;
-	mHasInvalidUniforms = true;
 	mTint = Color(1.0f, 1.0f, 1.0f);
 	mDrawColor = ColorA(1.0f, 1.0f, 1.0f, 1.0f);
 	mBackgroundColor = ColorA(0, 0, 0, 0);
@@ -136,14 +134,6 @@ void BaseView::removeAllChildren() {
 	for (BaseViewList::iterator it = mChildren.begin(); it != mChildren.end();) {
 		it = removeChild(it);
 	}
-}
-
-void BaseView::didMoveToView(BaseView* parent) {
-	// override this method
-}
-
-void BaseView::willMoveFromView(BaseView* parent) {
-	// override this method
 }
 
 //==================================================
@@ -253,10 +243,6 @@ void BaseView::drawScene(const ColorA& parentTint) {
 	}
 }
 
-void BaseView::willDraw() {
-	// override this method
-}
-
 void BaseView::draw() {
 	// override this method for custom drawing
 
@@ -273,30 +259,6 @@ void BaseView::draw() {
 	prog->uniform("uSize", size);
 	prog->uniform("uBackgroundColor", vec4(bgColor.r, bgColor.g, bgColor.b, bgColor.a));
 	batch->draw();
-}
-
-void BaseView::didDraw() {
-	// override this method
-}
-
-//==================================================
-// Local/Global Transforms
-// 
-
-void BaseView::validateTransforms(const bool force) {
-	if (!mHasInvalidTransforms && !force) return;
-
-	const vec3 origin = vec3(mTransformOrigin.value(), 0.0f);
-
-	mTransform = glm::translate(vec3(mPosition.value(), 0.0f));
-	mTransform *= glm::translate(origin);	// offset by origin
-	mTransform *= glm::scale(vec3(mScale.value(), 1.0f));
-	mTransform *= glm::toMat4(mRotation.value());
-	mTransform *= glm::translate(-origin);	// reset to original position
-	
-	mGlobalTransform = mParent ? mParent->getGlobalTransform() * mTransform : mTransform;
-
-	mHasInvalidTransforms = false;
 }
 
 //==================================================
@@ -370,26 +332,6 @@ gl::BatchRef BaseView::getDefaultDrawBatch() {
 		defaultBatch = gl::Batch::create(rect, getDefaultDrawProg());
 	}
 	return defaultBatch;
-}
-
-//==================================================
-// Helpers
-// 
-
-BaseViewList::iterator BaseView::getChildIt(BaseViewRef child) {
-	if (!child || child->mParent != this) {
-		return mChildren.end();
-	}
-	return std::find(mChildren.begin(), mChildren.end(), child);
-}
-
-BaseViewList::iterator BaseView::getChildIt(BaseView* childPtr) {
-	if (!childPtr || childPtr->mParent != this) {
-		return mChildren.end();
-	}
-	return std::find_if(mChildren.begin(), mChildren.end(), [&](BaseViewRef child) {
-		return child.get() == childPtr;
-	});
 }
 
 }

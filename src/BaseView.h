@@ -118,15 +118,15 @@ public:
 	void								setTransformOrigin(const ci::vec2& value) { mTransformOrigin = value; }
 
 	//! Size of this view. Defaults to 0, 0 and is not affected by children. Does not affect transforms (position, rotation, scale).
-	virtual inline const ci::vec2		getSize() { return mSize; }
-	virtual inline void					setSize(const ci::vec2& size) { mSize = size; }
+	virtual const ci::vec2				getSize() { return mSize; }
+	virtual void						setSize(const ci::vec2& size) { mSize = size; }
 
 	//! Width of this view. Defaults to 0 and is not affected by children.
-	virtual inline float				getWidth() { return getSize().x; };
+	virtual float						getWidth() { return getSize().x; };
 	virtual void						setWidth(const float width) { ci::vec2 s = getSize(); setSize(ci::vec2(width, s.y)); };
 
 	//! Height of this view. Defaults to 0 and is not affected by children.
-	virtual inline float				getHeight() { return getSize().y; };
+	virtual float						getHeight() { return getSize().y; };
 	virtual void						setHeight(const float height) { ci::vec2 s = getSize(); setSize(ci::vec2(s.x, height)); };
 
 	//! The fill color used when drawing the bounding rect when a size greater than 0, 0 is given.
@@ -158,10 +158,10 @@ public:
 	// 
 
 	//! The local transform based on this view's coordinate space. Since this method validates the transforms them before returning it's non-const.
-	inline const ci::mat4&				getTransform()			{ validateTransforms(); return mTransform; }
+	const ci::mat4&						getTransform()			{ validateTransforms(); return mTransform; }
 	
 	//! The global transform based on the root view's coordinate space. Since this method validates the transforms them before returning it's non-const.
-	inline const ci::mat4&				getGlobalTransform()	{ validateTransforms(); return mGlobalTransform; }
+	const ci::mat4&						getGlobalTransform()	{ validateTransforms(); return mGlobalTransform; }
 
 	//! Global position in the root view's coordinate space.
 	const ci::vec2						getGlobalPosition()		{ if (!mParent) return mPosition; return mParent->convertLocalToGlobal(mPosition); };
@@ -196,28 +196,34 @@ public:
 
 protected:
 
-	inline void	validateTransforms(const bool force = false);
-	inline void invalidateTransforms()	{ mHasInvalidTransforms = true; for (auto &child : mChildren) child->invalidateTransforms(); };
-	inline void invalidateUniforms()	{ mHasInvalidUniforms = true; };
+	virtual void update(const double deltaTime);	//! Gets called before draw() and after any parent's update. Override this method to plug into the update loop.
 
-	virtual void update(const double deltaTime);
-
-	virtual void		willDraw();		//! Called by drawScene before draw()
+	inline virtual void	willDraw() {};	//! Called by drawScene before draw()
 	virtual void		draw();			//! Called by drawScene and allows for drawing content for this node. By default draws a rectangle with the current size and background color (only if x/y /bg-alpha > 0)
-	inline virtual void drawChildren(const ci::ColorA& parentTint) { for (auto child : mChildren) child->drawScene(parentTint); } //! Called by drawScene() after draw() and before didDraw()
+	inline virtual void	drawChildren(const ci::ColorA& parentTint); //! Called by drawScene() after draw() and before didDraw(). Implemented at bottom of class.
+	inline virtual void	didDraw() {};	//! Called by drawScene after draw()
 
-	virtual void didDraw();			//! Called by drawScene after draw()
+	inline virtual void didMoveToView(BaseView* parent) {};		//! Called when moved to a parent
+	inline virtual void willMoveFromView(BaseView* parent) {};	//! Called when removed from a parent
 
-	virtual void didMoveToView(BaseView* parent);		//! Called when moved to a parent
-	virtual void willMoveFromView(BaseView* parent);	//! Called when removed from a parent
+	const ci::ColorA& getDrawColor() const { return mDrawColor; }	//! The color used for drawing, which is a composite of the alpha and tint colors.
 
-	const ci::ColorA& getDrawColor() const { return mDrawColor; }	//! The color used for drawing
+	//! This will recalculate the transformation matrix based on the current position, scale and rotation. Gets called automatically before getTransforms(), getGlobalTransforms() or getGlobalPosition() is called.
+	inline void	validateTransforms(const bool force = false);
 
-	static ci::gl::BatchRef		getDefaultDrawBatch();
-	static ci::gl::GlslProgRef	getDefaultDrawProg();
+	//! Marks the transformation matrix (and all of its children's matrices) as invalid. This will cause the matrices to be re-calculated when necessary.
+	inline void invalidateTransforms()	{ mHasInvalidTransforms = true; for (auto &child : mChildren) child->invalidateTransforms(); };
 
 private:
 
+	// Helpers
+	inline BaseViewList::iterator getChildIt(BaseViewRef child);
+	inline BaseViewList::iterator getChildIt(BaseView* childPtr);
+
+	inline static ci::gl::BatchRef		getDefaultDrawBatch();	//! Default shader batch that draws the background in the default implementation of draw().
+	inline static ci::gl::GlslProgRef	getDefaultDrawProg();	//! Default glsl program used by the default batch that draws a rectangular background using background color and size.
+
+	// Properties
 	BaseView* mParent;
 	BaseViewList mChildren;
 
@@ -229,24 +235,61 @@ private:
 	bool mIsHidden;
 	bool mShouldForceRedraw;
 
+	ci::ColorA mDrawColor;	//! Combines mAlpha and mTint for faster draw
+
 	ci::Anim<ci::vec2> mTransformOrigin;
 	ci::Anim<ci::vec2> mPosition;
 	ci::Anim<ci::vec2> mScale;
 	ci::Anim<ci::quat> mRotation;
-	
-	ci::ColorA mDrawColor;			//! Combines mAlpha and mTint for faster draw
-	bool mHasInvalidUniforms;		//! Will cause draw batch uniforms to be updated during next draw.
 
 	ci::mat4 mTransform;
 	ci::mat4 mGlobalTransform;
 	bool mHasInvalidTransforms;
 
-	BaseViewList::iterator getChildIt(BaseViewRef child);
-	BaseViewList::iterator getChildIt(BaseView* childPtr);
-
 	std::map<std::string, UserInfoTypes> mUserInfo;
 
-};
+}; // class BaseView
+
+
+
+//==================================================
+// Inline implementations to improve speed on frequently used methods
+// 
+
+void BaseView::drawChildren(const ci::ColorA& parentTint) {
+	for (auto child : mChildren) {
+		child->drawScene(parentTint);
+	}
+}
+
+void BaseView::validateTransforms(const bool force) {
+	if (!mHasInvalidTransforms && !force) return;
+
+	const ci::vec3 origin = ci::vec3(mTransformOrigin.value(), 0.0f);
+
+	mTransform = glm::translate(ci::vec3(mPosition.value(), 0.0f))
+	 * glm::translate(origin)	// offset by origin
+	 * glm::scale(ci::vec3(mScale.value(), 1.0f))
+	 * glm::toMat4(mRotation.value())
+	 * glm::translate(-origin);	// reset to original position
+
+	mGlobalTransform = mParent ? mParent->getGlobalTransform() * mTransform : mTransform;
+
+	mHasInvalidTransforms = false;
+}
+
+BaseViewList::iterator BaseView::getChildIt(BaseViewRef child) {
+	if (!child || child->mParent != this) return mChildren.end();
+	return std::find(mChildren.begin(), mChildren.end(), child);
+}
+
+BaseViewList::iterator BaseView::getChildIt(BaseView* childPtr) {
+	if (!childPtr || childPtr->mParent != this) return mChildren.end();
+	return std::find_if(mChildren.begin(), mChildren.end(), [&](BaseViewRef child) {
+		return child.get() == childPtr;
+	});
+}
+
 
 }
 }
