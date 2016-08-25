@@ -19,7 +19,7 @@ class ImageView : public BaseView {
 
 public:
 	ImageView();
-	~ImageView();
+	virtual ~ImageView();
 
 	virtual void reset();
 	virtual void stopAnimation();
