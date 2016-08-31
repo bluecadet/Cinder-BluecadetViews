@@ -53,19 +53,7 @@ void TouchView::setup(const ci::vec2 size) {
 }
 
 void TouchView::setup(const float radius, const ci::vec2& offset, const int numSegments) {
-	mTouchPath.clear();
-
-	static const float twoPi = 2.0f * (float)M_PI;
-	static const float defSegmentLength = 12.0f;
-	static const float defMinNumSegments = 12.0f;
-	const float n = numSegments >= 0 ? numSegments : max(defMinNumSegments, twoPi * radius / defSegmentLength);
-	const float deltaAngle = twoPi / n;
-
-	mTouchPath.moveTo(offset.x + radius, offset.y);
-	for (float angle = deltaAngle; angle < twoPi; angle += deltaAngle) {
-		mTouchPath.lineTo(offset.x + radius * cosf(angle), offset.y + radius * sinf(angle));
-	}
-	mTouchPath.close();
+	setTouchPath(radius,offset,numSegments);
 }
 
 void TouchView::setup(const ci::Path2d& path) {
@@ -209,6 +197,22 @@ bool TouchView::containsPoint(const vec2 &point) {
 
 bool TouchView::canAcceptTouch() const {
 	return mMultiTouchEnabled || mObjectTouchIDs.empty();
+}
+
+void TouchView::setTouchPath(const float radius, const ci::vec2& offset, const int numSegments){
+	mTouchPath.clear();
+
+	static const float twoPi = 2.0f * (float)M_PI;
+	static const float defSegmentLength = 12.0f;
+	static const float defMinNumSegments = 12.0f;
+	const float n = numSegments >= 0 ? numSegments : max(defMinNumSegments, twoPi * radius / defSegmentLength);
+	const float deltaAngle = twoPi / n;
+
+	mTouchPath.moveTo(offset.x + radius, offset.y);
+	for (float angle = deltaAngle; angle < twoPi; angle += deltaAngle) {
+		mTouchPath.lineTo(offset.x + radius * cosf(angle), offset.y + radius * sinf(angle));
+	}
+	mTouchPath.close();
 }
 
 //==================================================

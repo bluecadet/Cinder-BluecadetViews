@@ -108,6 +108,7 @@ public:
 	//! Custom path that determines touchable area if configured. If no path is set, size will be used for hit detection.
 	const ci::Path2d&	getTouchPath() const { return mTouchPath; }
 	void				setTouchPath(const ci::Path2d value) { mTouchPath = value; }
+	void				setTouchPath(const float radius, const ci::vec2& offset = ci::vec2(0, 0), const int numSegments = -1);
 
 	//! If set to true, will draw the touch path with a debug color
 	bool			getDebugDrawTouchPath() const { return mDebugDrawTouchPath; }

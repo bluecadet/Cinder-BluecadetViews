@@ -96,6 +96,21 @@ void ViewTypesSampleApp::setup() {
 	circleTouchView->mDidBeginTouch.connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->resetAnimations(); circleTouchView->setScale(1.5f); });
 	circleTouchView->mDidEndTouch.connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->getTimeline()->apply(&circleTouchView->getScale(), vec2(1.0f), 0.3f); });
 	mRootView->addChild(circleTouchView);
+
+	auto circleTouchPath = TouchViewRef(new TouchView());
+	circleTouchPath->setup(circleTouchRadius);
+	circleTouchPath->setDebugDrawTouchPath(true);
+	circleTouchPath->setBackgroundColor(Color(1.0f, 1.0f, 1.0f));
+	circleTouchPath->mDidEndTouch.connect([=](const bluecadet::touch::TouchEvent& e) { 
+		auto s = (circleTouchPath->getScale().value() == vec2(1.0f)) ? 1.5f : 1.0f;
+		circleTouchPath->resetAnimations();
+		circleTouchPath->getTimeline()->apply(&circleTouchPath->getScale(), vec2(s), 0.3f).updateFn([=](){
+			circleTouchPath->setTouchPath(circleTouchRadius * circleTouchPath->getScale().value().x);
+		});
+	});
+	circleTouchPath->setPosition(circleTouchView->getPosition().value() + vec2(circleTouchView->getWidth() + circleTouchPath->getWidth()/2, 0));
+	mRootView->addChild(circleTouchPath);
+
 }
 
 void ViewTypesSampleApp::update() {
