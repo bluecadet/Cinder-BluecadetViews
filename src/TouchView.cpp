@@ -149,6 +149,7 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 	// Trigger tap if we had one
 	if (didTap) {
 		mDidTap(touchEvent);
+		handleTouchTapped(touchEvent);
 	}
 
 	resetTouchState();
