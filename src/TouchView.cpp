@@ -150,6 +150,7 @@ namespace views {
 		// Trigger tap if we had one
 		if (didTap) {
 			mDidTap(touchEvent);
+			handleTouchTapped(touchEvent);
 		}
 
 		resetTouchState();
