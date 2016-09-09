@@ -9,7 +9,7 @@ namespace views {
 
 LineView::LineView() : BaseView(),
 	mLineWidth(1.0f),
-	mLineColor(ColorA::white())
+	mBackgroundColor(ColorA::white())
 {
 }
 
@@ -18,12 +18,12 @@ LineView::~LineView() {
 
 inline void LineView::setup(const ci::vec2 & endPoint, const ci::ColorA & lineColor, const float lineWidth) {
 	setEndPoint(endPoint);
-	setLineColor(lineColor);
+	setBackgroundColor(lineColor);
 	setLineWidth(lineWidth);
 }
 
 void LineView::draw() {
-	gl::ScopedColor color(mLineColor);
+	gl::ScopedColor color(mBackgroundColor);
 	gl::ScopedLineWidth lineWidth(mLineWidth);
 
 	gl::drawLine(vec2(0, 0), getEndPoint());
