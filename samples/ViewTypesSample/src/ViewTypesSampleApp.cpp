@@ -65,7 +65,7 @@ void ViewTypesSampleApp::setup() {
 
 	auto lineView = LineViewRef(new LineView());
 	lineView->setEndPoint(vec2(100, 100));
-	lineView->setBackgroundColor(ColorA(1.0f, 0.0f, 1.0f, 1.0f));
+	lineView->setLineColor(ColorA(1.0f, 0.0f, 1.0f, 1.0f));
 	lineView->setLineWidth(2.0f);
 	lineView->setPosition(vec2(0, 0));
 	parentTouch->addChild(lineView);
