@@ -33,6 +33,8 @@ void ViewTypesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 void ViewTypesSampleApp::setup() {
 	BaseApp::setup();
 
+	BaseViewRef mRootView = getRootView();
+
 	auto view = BaseViewRef(new BaseView());
 	view->setSize(vec2(100, 100));
 	view->setPosition(vec2(10, 10));
@@ -49,12 +51,24 @@ void ViewTypesSampleApp::setup() {
 	// test smoothness update
 	getSignalUpdate().connect([=] { ellipseView->setSmoothness(50.0f * getMousePos().x / (float)getWindowWidth()); });
 
+
+	auto parentTouch = TouchViewRef(new TouchView());
+	parentTouch->setSize(vec2(200, 100));
+	parentTouch->setPosition(vec2(ellipseView->getPosition().value().x + ellipseView->getSize().x + 10.0f, 10));
+	parentTouch->setBackgroundColor(Color::white());
+	parentTouch->mDidEndTouch.connect([=](const bluecadet::touch::TouchEvent& e) {
+		auto s = (parentTouch->getAlpha() == 1.0f) ? 0.0f : 1.0f;
+		parentTouch->resetAnimations();
+		parentTouch->getTimeline()->apply(&parentTouch->getAlpha(), s, 0.3f);
+	});
+	mRootView->addChild(parentTouch);
+
 	auto lineView = LineViewRef(new LineView());
 	lineView->setEndPoint(vec2(100, 100));
-	lineView->setLineColor(ColorA(1.0f, 0.0f, 1.0f, 0.75f));
+	lineView->setBackgroundColor(ColorA(1.0f, 0.0f, 1.0f, 1.0f));
 	lineView->setLineWidth(2.0f);
-	lineView->setPosition(vec2(ellipseView->getPosition().value().x + ellipseView->getSize().x + 10.0f, 10));
-	mRootView->addChild(lineView);
+	lineView->setPosition(vec2(0, 0));
+	parentTouch->addChild(lineView);
 
 	auto touchView = TouchViewRef(new TouchView());
 	touchView->setDebugDrawTouchPath(true);
@@ -110,7 +124,6 @@ void ViewTypesSampleApp::setup() {
 	});
 	circleTouchPath->setPosition(circleTouchView->getPosition().value() + vec2(circleTouchView->getWidth() + circleTouchPath->getWidth()/2, 0));
 	mRootView->addChild(circleTouchPath);
-
 }
 
 void ViewTypesSampleApp::update() {
