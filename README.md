@@ -68,7 +68,13 @@ void BaseAppSampleApp::update() {
 	BaseApp::update();
 }
 
-CINDER_APP(BaseAppSampleApp, RendererGl, BaseAppSampleApp::prepareSettings);
+void BaseAppSampleApp::draw() {
+	// Optional override. BaseApp::draw() will draw all views.
+	BaseApp::draw();
+}
+
+// MSAA is optional, but passing in prepareSettings need to happen to parse and apply certain app settings
+CINDER_APP(BaseAppSampleApp, RendererGl(RendererGl::Options().msaa(4)), BaseAppSampleApp::prepareSettings);
 
 ```
 
