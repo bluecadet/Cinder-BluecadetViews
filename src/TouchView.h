@@ -122,6 +122,7 @@ protected:
 	virtual void	handleTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) {};
 	virtual void	handleTouchCanceled(const bluecadet::touch::TouchEvent& touchEvent) {};
 	virtual void	handleTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) {};
+	virtual void	handleTouchTapped(const bluecadet::touch::TouchEvent& touchEvent) {};
 
 	//! Resets all touch-state related variables to a non-touched state
 	virtual void	resetTouchState();
