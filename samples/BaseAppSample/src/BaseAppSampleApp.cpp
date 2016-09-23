@@ -18,22 +18,18 @@ public:
 	static void prepareSettings(ci::app::App::Settings* settings);
 	void setup() override;
 	void update() override;
+	void draw() override;
 };
 
-void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings)
-{
-	BaseApp::prepareSettings(settings);
-	settings->setFullScreen(false);
-	settings->setWindowSize(1280, 720);
-	settings->setBorderless(false);
-}
-
-void BaseAppSampleApp::setup()
-{
-
+void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings) {
+	SettingsManager::getInstance()->mDebugFullscreen = false;
+	SettingsManager::getInstance()->mDebugWindowSize = ivec2(1280, 720);
 	ScreenLayout::getInstance()->setNumRows(3);
 	ScreenLayout::getInstance()->setNumColumns(4);
+	BaseApp::prepareSettings(settings);
+}
 
+void BaseAppSampleApp::setup() {
 	BaseApp::setup();
 	BaseApp::addTouchSimulatorParams();
 
@@ -56,9 +52,14 @@ void BaseAppSampleApp::setup()
 	addButton(getRootView()->getSize() * 0.5f + (vec2(-buttonSize.x, buttonSize.y) - buttonSize) * 0.5f, buttonSize, ColorA(0, 1, 0, 1));
 }
 
-void BaseAppSampleApp::update()
-{
+void BaseAppSampleApp::update() {
+	// Optional override. BaseApp::update() will update all views and touches.
 	BaseApp::update();
+}
+
+void BaseAppSampleApp::draw() {
+	// Optional override. BaseApp::draw() will draw all views.
+	BaseApp::draw();
 }
 
 CINDER_APP(BaseAppSampleApp, RendererGl, BaseAppSampleApp::prepareSettings);
