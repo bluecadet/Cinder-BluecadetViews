@@ -157,18 +157,8 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 
 void TouchView::cancelTouches() {
 	// TODO: Move this logic to the touch manager
-
-	/*std::shared_ptr<touch::TouchManager> manager = touch::TouchManager::getInstance();
-
-	const auto sharedPtr = shared_from_this();
-	const auto touchIds = vector<int>(mObjectTouchIDs.begin(), mObjectTouchIDs.end());
-
-	for (const auto i : touchIds) {
-		manager->endTouch(i);
-		mDidCancelTouch(sharedPtr);
-	}
-
-	mObjectTouchIDs.clear();*/
+	std::shared_ptr<touch::TouchManager> manager = touch::TouchManager::getInstance();
+	manager->cancelTouch(shared_from_this());
 }
 
 void TouchView::resetTouchState() {
