@@ -124,10 +124,12 @@ void TouchView::processTouchMoved(const touch::TouchEvent& touchEvent) {
 	mDidMoveTouch(touchEvent);
 }
 
+/*
 void TouchView::processTouchCanceled(const bluecadet::touch::TouchEvent& touchEvent) {
 	handleTouchCanceled(touchEvent);
 	mDidCancelTouch(touchEvent);
 }
+*/
 
 void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 	handleTouchEnded(touchEvent);

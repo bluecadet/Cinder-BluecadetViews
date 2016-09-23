@@ -123,6 +123,12 @@ void ViewTypesSampleApp::setup() {
 	circleTouchPath->setPosition(circleTouchView->getPosition().value() + vec2(circleTouchView->getWidth() + circleTouchPath->getWidth()/2, 0));
 	getRootView()->addChild(circleTouchPath);
 
+	auto cancel = TouchViewRef(new TouchView());
+	cancel->setSize(vec2(400, 400));
+	cancel->setPosition(vec2(10, 10));
+	cancel->setBackgroundColor(ColorA(1.0f, 0.5f, 0.5f, 0.75f));
+	cancel->mDidBeginTouch.connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->cancelTouches();  diamondTouchView->cancelTouches(); });
+	getRootView()->addChild(cancel);
 }
 
 void ViewTypesSampleApp::update() {
