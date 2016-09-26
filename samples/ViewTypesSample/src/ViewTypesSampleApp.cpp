@@ -123,12 +123,18 @@ void ViewTypesSampleApp::setup() {
 	circleTouchPath->setPosition(circleTouchView->getPosition().value() + vec2(circleTouchView->getWidth() + circleTouchPath->getWidth()/2, 0));
 	getRootView()->addChild(circleTouchPath);
 
-	auto cancel = TouchViewRef(new TouchView());
-	cancel->setSize(vec2(400, 400));
-	cancel->setPosition(vec2(10, 10));
-	cancel->setBackgroundColor(ColorA(1.0f, 0.5f, 0.5f, 0.75f));
-	cancel->mDidBeginTouch.connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->cancelTouches();  diamondTouchView->cancelTouches(); });
-	getRootView()->addChild(cancel);
+	auto cancelView = TouchViewRef(new TouchView());
+	cancelView->setSize(vec2(100, 100));
+	cancelView->setPosition(vec2(100, 250));
+	cancelView->setBackgroundColor(ColorA(1.0f, 0.5f, 0.5f, 0.75f));
+	cancelView->mDidBeginTouch.connect([=](const bluecadet::touch::TouchEvent& e) {
+		cancelView->getTimeline()->apply(&cancelView->getScale(), vec2(2.0f), 1.0f).finishFn([=]() {
+			cancelView->cancelTouches();
+		});
+	});
+	cancelView->mDidEndTouch.connect([=](const bluecadet::touch::TouchEvent& e) { cancelView->getTimeline()->apply(&cancelView->getScale(), vec2(1.0f), 0.3f); });
+
+	getRootView()->addChild(cancelView);
 }
 
 void ViewTypesSampleApp::update() {
