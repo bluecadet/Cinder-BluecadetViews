@@ -35,6 +35,7 @@ public:
 	static void prepareSettings(ci::app::App::Settings* settings);
 	void setup() override;
 	void update() override;
+	void draw() override;
 };
 
 void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings) {
