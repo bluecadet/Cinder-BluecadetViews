@@ -47,12 +47,18 @@ void BaseApp::setup() {
 	ScreenLayout::getInstance()->setup(ivec2(displayWidth, displayHeight), rows, cols);
 	ScreenLayout::getInstance()->zoomToFitWindow();
 	
-	// Apply settings
+	// Apply run-time settings
 	if (settings->mShowMouse) {
 		showCursor();
 	} else {
 		hideCursor();
 	}
+
+#if defined(CINDER_MSW)
+	// Move window to foreground so that console output doesn't obstruct it
+	HWND nativeWindow = (HWND)getWindow()->getNative();
+	::SetForegroundWindow(nativeWindow);
+#endif
 
 	// Set up graphics
 	gl::enableVerticalSync(settings->mVerticalSync);
