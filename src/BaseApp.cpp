@@ -47,7 +47,7 @@ void BaseApp::setup() {
 		hideCursor();
 	}
 
-#if defined( CINDER_MSW )
+#if defined(CINDER_MSW)
 	// Move window to foreground so that console output doesn't obstruct it
 	HWND nativeWindow = (HWND)getWindow()->getNative();
 	::SetForegroundWindow(nativeWindow);
