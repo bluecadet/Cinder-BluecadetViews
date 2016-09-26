@@ -25,6 +25,13 @@ BaseApp::~BaseApp() {
 void BaseApp::prepareSettings(ci::app::App::Settings *settings) {
 	fs::path appSettingsPath = ci::app::getAssetPath("appSettings.json");
 	SettingsManager::getInstance()->setup(appSettingsPath, settings);
+
+	// Apply pre-launch settings
+	settings->setConsoleWindowEnabled(SettingsManager::getInstance()->mConsoleWindowEnabled);
+	settings->setFrameRate((float)SettingsManager::getInstance()->mFps);
+	settings->setWindowSize(SettingsManager::getInstance()->mDebugWindowSize);
+	settings->setBorderless(SettingsManager::getInstance()->mDebugBorderless);
+	settings->setFullScreen(SettingsManager::getInstance()->mDebugFullscreen);
 }
 
 
