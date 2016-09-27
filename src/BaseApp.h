@@ -30,7 +30,8 @@ public:
 	// Cinder app events
 	virtual void setup() override;
 	virtual void update() override;
-	virtual void draw() override;
+	virtual void draw() override { draw(true); };
+	virtual void draw(const bool clear);
 	virtual void keyDown(ci::app::KeyEvent event) override;
 
 	//! Call this method when initializing your app with the CINDER_APP macro

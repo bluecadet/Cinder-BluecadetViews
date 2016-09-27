@@ -82,10 +82,12 @@ void BaseApp::update() {
 	mRootView->updateScene(deltaTime);
 }
 
-void BaseApp::draw() {
+void BaseApp::draw(const bool clear) {
 	auto settings = SettingsManager::getInstance();
 
-	gl::clear(settings->mClearColor);
+	if (clear) {
+		gl::clear(settings->mClearColor);
+	}
 
 	{
 		gl::ScopedModelMatrix scopedMatrix;
