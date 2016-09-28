@@ -39,7 +39,7 @@ TouchView::TouchView() :
 }
 
 TouchView::~TouchView() {
-	cancelTouches();
+//	cancelTouches(); -- breaks on closing, review with @BB
 }
 
 void TouchView::reset() {
@@ -158,9 +158,9 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 }
 
 void TouchView::cancelTouches() {
-	// TODO: Move this logic to the touch manager
-	std::shared_ptr<touch::TouchManager> manager = touch::TouchManager::getInstance();
-	manager->cancelTouch(shared_from_this());
+	console() << "TouchView::cancelTouches" << endl;
+	std::shared_ptr<touch::TouchManager> touchManager = touch::TouchManager::getInstance();
+	touchManager->cancelTouch(shared_from_this());
 }
 
 void TouchView::resetTouchState() {
