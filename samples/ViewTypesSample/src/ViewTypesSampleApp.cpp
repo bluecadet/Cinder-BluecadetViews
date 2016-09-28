@@ -22,7 +22,11 @@ public:
 	void setup() override;
 	void update() override;
 	void draw() override;
+	void handleKeyDown(ci::app::KeyEvent event);
 	static void prepareSettings(ci::app::App::Settings* settings);
+
+	TouchViewRef cancelView;
+
 };
 
 void ViewTypesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
@@ -123,18 +127,27 @@ void ViewTypesSampleApp::setup() {
 	circleTouchPath->setPosition(circleTouchView->getPosition().value() + vec2(circleTouchView->getWidth() + circleTouchPath->getWidth()/2, 0));
 	getRootView()->addChild(circleTouchPath);
 
-	auto cancelView = TouchViewRef(new TouchView());
+	cancelView = TouchViewRef(new TouchView());
 	cancelView->setSize(vec2(100, 100));
 	cancelView->setPosition(vec2(100, 250));
 	cancelView->setBackgroundColor(ColorA(1.0f, 0.5f, 0.5f, 0.75f));
 	cancelView->mDidBeginTouch.connect([=](const bluecadet::touch::TouchEvent& e) {
-		cancelView->getTimeline()->apply(&cancelView->getScale(), vec2(2.0f), 1.0f).finishFn([=]() {
-			cancelView->cancelTouches();
-		});
+		cancelView->getTimeline()->apply(&cancelView->getScale(), vec2(2.0f), 0.3f);
 	});
+
 	cancelView->mDidEndTouch.connect([=](const bluecadet::touch::TouchEvent& e) { cancelView->getTimeline()->apply(&cancelView->getScale(), vec2(1.0f), 0.3f); });
 
 	getRootView()->addChild(cancelView);
+
+	getWindow()->getSignalKeyDown().connect(std::bind(&ViewTypesSampleApp::handleKeyDown, this, std::placeholders::_1));
+}
+
+void ViewTypesSampleApp::handleKeyDown(ci::app::KeyEvent event) {
+	switch (event.getCode()) {
+		case KeyEvent::KEY_EQUALS:
+			cancelView->cancelTouches();
+			break;
+	}
 }
 
 void ViewTypesSampleApp::update() {
