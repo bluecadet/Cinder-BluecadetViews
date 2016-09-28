@@ -25,6 +25,13 @@ BaseApp::~BaseApp() {
 void BaseApp::prepareSettings(ci::app::App::Settings *settings) {
 	fs::path appSettingsPath = ci::app::getAssetPath("appSettings.json");
 	SettingsManager::getInstance()->setup(appSettingsPath, settings);
+
+	// Apply pre-launch settings
+	settings->setConsoleWindowEnabled(SettingsManager::getInstance()->mConsoleWindowEnabled);
+	settings->setFrameRate((float)SettingsManager::getInstance()->mFps);
+	settings->setWindowSize(SettingsManager::getInstance()->mDebugWindowSize);
+	settings->setBorderless(SettingsManager::getInstance()->mDebugBorderless);
+	settings->setFullScreen(SettingsManager::getInstance()->mDebugFullscreen);
 }
 
 
@@ -37,15 +44,21 @@ void BaseApp::setup() {
 	int rows = settings->hasField("settings.display.rows") ? settings->getField<int>("settings.display.rows") : ScreenLayout::getInstance()->getNumRows();
 	int cols = settings->hasField("settings.display.columns") ? settings->getField<int>("settings.display.columns") : ScreenLayout::getInstance()->getNumColumns();
 	
-	ScreenLayout::getInstance()->setup(mRootView, ivec2(displayWidth, displayHeight), rows, cols);
+	ScreenLayout::getInstance()->setup(ivec2(displayWidth, displayHeight), rows, cols);
 	ScreenLayout::getInstance()->zoomToFitWindow();
 	
-	// Apply settings
+	// Apply run-time settings
 	if (settings->mShowMouse) {
 		showCursor();
 	} else {
 		hideCursor();
 	}
+
+#if defined(CINDER_MSW)
+	// Move window to foreground so that console output doesn't obstruct it
+	HWND nativeWindow = (HWND)getWindow()->getNative();
+	::SetForegroundWindow(nativeWindow);
+#endif
 
 	// Set up graphics
 	gl::enableVerticalSync(settings->mVerticalSync);
@@ -62,27 +75,38 @@ void BaseApp::update() {
 	const double deltaTime = mLastUpdateTime == 0 ? 0 : currentTime - mLastUpdateTime;
 	mLastUpdateTime = currentTime;
 
-	touch::TouchManager::getInstance()->update(mRootView);
+	// get the screen layout's transform and apply it to all
+	// touch events to convert touches from window into app space
+	auto transform = glm::inverse(ScreenLayout::getInstance()->getTransform());
+	touch::TouchManager::getInstance()->update(mRootView, transform);
 	mRootView->updateScene(deltaTime);
 }
 
-void BaseApp::draw() {
+void BaseApp::draw(const bool clear) {
 	auto settings = SettingsManager::getInstance();
 
-	gl::clear(settings->mClearColor);
+	if (clear) {
+		gl::clear(settings->mClearColor);
+	}
 
-	mRootView->drawScene();
+	{
+		gl::ScopedModelMatrix scopedMatrix;
+		// apply screen layout transform to root view
+		gl::multModelMatrix(ScreenLayout::getInstance()->getTransform());
+		mRootView->drawScene();
+
+		// draw debug touches in app coordinate space
+		if (settings->mDebugMode && settings->mDebugDrawTouches) {
+			touch::TouchManager::getInstance()->debugDrawTouches();
+		}
+	}
 
 	if (settings->mDebugMode) {
+		// draw params in window coordinate space
 		if (settings->mDebugDrawScreenLayout) {
 			ScreenLayout::getInstance()->draw();
 		}
-
 		settings->getParams()->draw();
-
-		if (settings->mDebugDrawTouches) {
-			touch::TouchManager::getInstance()->debugDrawTouches();
-		}
 	}
 }
 

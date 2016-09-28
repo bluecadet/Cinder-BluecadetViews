@@ -30,7 +30,7 @@ public:
 
 
 	//! Must be called before calling draw. Adds a key-up event listener.
-	void			setup(views::BaseViewRef rootView, const ci::ivec2& dislaySize = ci::ivec2(1920, 1080), const int numRows = 1, const int numColumns = 1);
+	void			setup(const ci::ivec2& dislaySize = ci::ivec2(1920, 1080), const int numRows = 1, const int numColumns = 1);
 
 
 
@@ -49,7 +49,7 @@ public:
 
 	//! The size of a single display in the display matrix
 	ci::ivec2		getDisplaySize() const { return mDisplaySize; }
-	void			 setDisplaySize(const ci::ivec2 value) { mDisplaySize = value; }
+	void			setDisplaySize(const ci::ivec2 value) { mDisplaySize = value; }
 
 	//! The number of rows of displays in the display matrix.
 	int				getNumRows() const { return mNumRows; };
@@ -110,15 +110,16 @@ public:
 	void				setBorderColor(const ci::ColorA& color) { mBorderColor = color; };
 	
 	//! The border size used when drawing the display bounds. Defaults to 4.
-	float			getBordeSize() const { return mBorderSize; }
-	void			setBorderSize(const float value) { mBorderSize = value; }
+	float				getBordeSize() const { return mBorderSize; }
+	void				setBorderSize(const float value) { mBorderSize = value; }
 
+	const ci::mat4&		getTransform() const { return mPlaceholderView->getTransform(); };
 
 protected:
-	float			getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding = 0.0f) const;
+	float				getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding = 0.0f) const;
 
-	void			updateLayout();
-	void			handleKeyDown(ci::app::KeyEvent event);
+	void				updateLayout();
+	void				handleKeyDown(ci::app::KeyEvent event);
 
 
 	//! Layout
@@ -134,9 +135,7 @@ protected:
 private:
 	//! Used to draw bounds of each display
 	std::vector<ci::Rectf>	mDisplayBounds;
-
-	// From BaseApp
-	views::BaseViewRef		mRootView;
+	views::BaseViewRef		mPlaceholderView;
 };
 
 }
