@@ -39,7 +39,6 @@ TouchView::TouchView() :
 }
 
 TouchView::~TouchView() {
-	cancelTouches();
 }
 
 void TouchView::reset() {
@@ -124,16 +123,11 @@ void TouchView::processTouchMoved(const touch::TouchEvent& touchEvent) {
 	mDidMoveTouch(touchEvent);
 }
 
-void TouchView::processTouchCanceled(const bluecadet::touch::TouchEvent& touchEvent) {
-	handleTouchCanceled(touchEvent);
-	mDidCancelTouch(touchEvent);
-}
-
 void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 	handleTouchEnded(touchEvent);
 	mDidEndTouch(touchEvent);
 
-	bool didTap = mAllowsTapReleaseOutside || containsPoint(touchEvent.localPosition);
+	bool didTap = (mAllowsTapReleaseOutside || containsPoint(touchEvent.localPosition)) && !touchEvent.canceled;
 
 	// Only allow taps within a certain time
 	if (didTap) {
@@ -156,19 +150,8 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 }
 
 void TouchView::cancelTouches() {
-	// TODO: Move this logic to the touch manager
-
-	/*std::shared_ptr<touch::TouchManager> manager = touch::TouchManager::getInstance();
-
-	const auto sharedPtr = shared_from_this();
-	const auto touchIds = vector<int>(mObjectTouchIDs.begin(), mObjectTouchIDs.end());
-
-	for (const auto i : touchIds) {
-		manager->endTouch(i);
-		mDidCancelTouch(sharedPtr);
-	}
-
-	mObjectTouchIDs.clear();*/
+	std::shared_ptr<touch::TouchManager> touchManager = touch::TouchManager::getInstance();
+	touchManager->cancelTouch(shared_from_this());
 }
 
 void TouchView::resetTouchState() {

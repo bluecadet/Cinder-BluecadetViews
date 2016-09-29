@@ -65,7 +65,6 @@ public:
 	// Used by the touch manager and should not be overriden
 	virtual	void	processTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) final;
 	virtual	void	processTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) final;
-	virtual	void	processTouchCanceled(const bluecadet::touch::TouchEvent& touchEvent) final;
 	virtual	void	processTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) final;
 
 	//! Getters/Setters
@@ -120,7 +119,6 @@ protected:
 	// Override these boilerplate methods to react to touch events
 	virtual	void	handleTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) {};
 	virtual void	handleTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) {};
-	virtual void	handleTouchCanceled(const bluecadet::touch::TouchEvent& touchEvent) {};
 	virtual void	handleTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) {};
 	virtual void	handleTouchTapped(const bluecadet::touch::TouchEvent& touchEvent) {};
 
