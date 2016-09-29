@@ -119,7 +119,6 @@ protected:
 	// Override these boilerplate methods to react to touch events
 	virtual	void	handleTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) {};
 	virtual void	handleTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) {};
-	virtual void	handleTouchCanceled(const bluecadet::touch::TouchEvent& touchEvent) {};
 	virtual void	handleTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) {};
 	virtual void	handleTouchTapped(const bluecadet::touch::TouchEvent& touchEvent) {};
 
