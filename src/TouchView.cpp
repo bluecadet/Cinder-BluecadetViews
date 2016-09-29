@@ -39,7 +39,6 @@ TouchView::TouchView() :
 }
 
 TouchView::~TouchView() {
-//	cancelTouches(); -- breaks on closing, review with @BB
 }
 
 void TouchView::reset() {
