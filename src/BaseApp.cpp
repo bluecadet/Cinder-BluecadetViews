@@ -32,6 +32,11 @@ void BaseApp::prepareSettings(ci::app::App::Settings *settings) {
 	settings->setWindowSize(SettingsManager::getInstance()->mDebugWindowSize);
 	settings->setBorderless(SettingsManager::getInstance()->mDebugBorderless);
 	settings->setFullScreen(SettingsManager::getInstance()->mDebugFullscreen);
+
+	// Keep window top-left within display bounds
+	ivec2 windowPos = (Display::getMainDisplay()->getSize() - settings->getWindowSize()) / 2;
+	windowPos = glm::max(windowPos, ivec2(0));
+	settings->setWindowPos(windowPos);
 }
 
 
