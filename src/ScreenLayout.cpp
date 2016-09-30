@@ -29,7 +29,9 @@ void ScreenLayout::setup(const ci::ivec2& dislaySize, const int numRows, const i
 
 	updateLayout();
 
-	getWindow()->getSignalKeyDown().connect(std::bind(&ScreenLayout::handleKeyDown, this, std::placeholders::_1));
+	// Connect w low priority to give other parts of app first dibs on key events.
+	// E.g. this prevents zooming/panning when typing into gl::InterfaceGl params.
+	getWindow()->getSignalKeyDown().connect(-1, std::bind(&ScreenLayout::handleKeyDown, this, std::placeholders::_1));
 }
 
 void ScreenLayout::updateLayout() {
@@ -127,6 +129,10 @@ float ScreenLayout::getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 
 // 
 
 void ScreenLayout::handleKeyDown(KeyEvent event) {
+	if (event.isHandled()) {
+		// Don't change layout when event has been handled by other parts of the app
+		return;
+	}
 
 	switch (event.getCode()) {
 		case KeyEvent::KEY_KP_PLUS:
