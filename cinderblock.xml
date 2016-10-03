@@ -18,6 +18,9 @@
 	
 	<headerPattern>src/debug/*.h</headerPattern>
 	<sourcePattern>src/debug/*.cpp</sourcePattern>
+
+	<headerPattern>src/utils/*.h</headerPattern>
+	<sourcePattern>src/utils/*.cpp</sourcePattern>
 	
 	<includePath>src</includePath>
 </block>
