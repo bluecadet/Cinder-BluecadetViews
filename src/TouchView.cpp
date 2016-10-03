@@ -1,11 +1,7 @@
 
 #include "TouchView.h"
-
-#include "cinder/gl/gl.h"
-#include "boost/lexical_cast.hpp"
-#include <math.h>
-
 #include "TouchManager.h"
+#include "gestureworks/GestureWorksCore.h"
 
 using namespace std;
 using namespace ci;
@@ -13,6 +9,8 @@ using namespace ci::app;
 
 namespace bluecadet {
 namespace views {
+
+static size_t NumTouchViews = 0;
 
 //==================================================
 // Setup/Destruction
@@ -34,11 +32,13 @@ TouchView::TouchView() :
 	mInitialRelTouchPos(0, 0),
 	mInitialAbsTouchPos(0, 0),
 	mInitialPosWhenTouched(0, 0),
-	mInitialTouchTime(0)
+	mInitialTouchTime(0),
+	mTouchViewId("touch_view" + to_string(NumTouchViews++))
 {
 }
 
 TouchView::~TouchView() {
+	deregisterGestures();
 }
 
 void TouchView::reset() {
@@ -200,13 +200,28 @@ void TouchView::setTouchPath(const float radius, const ci::vec2& offset, const i
 }
 
 //==================================================
-// Debugging
+// Touch Event Management
 //
 
-//void TouchView::drawDebugShape() const {
-//	gl::lineWidth(2.0f);
-//	gl::draw(mPath);
-//}
+void TouchView::registerGestures() {
+	gwc::GestureWorks::getInstance()->registerTouchObject(mTouchViewId);
+	gwc::GestureWorks::getInstance()->addGesture(mTouchViewId, "n-drag");
+	gwc::GestureWorks::getInstance()->addGesture(mTouchViewId, "n-rotate");
+	gwc::GestureWorks::getInstance()->addGesture(mTouchViewId, "n-scale");
+}
+
+void TouchView::deregisterGestures() {
+	gwc::GestureWorks::getInstance()->deregisterTouchObject(mTouchViewId);
+
+}
+
+void TouchView::didMoveToView(BaseView * parent) {
+	registerGestures();
+}
+
+void TouchView::willMoveFromView(BaseView * parent) {
+	deregisterGestures();
+}
 
 }
 }

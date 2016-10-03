@@ -112,8 +112,13 @@ public:
 	bool			getDebugDrawTouchPath() const { return mDebugDrawTouchPath; }
 	void			setDebugDrawTouchPath(const bool value) { mDebugDrawTouchPath = value; }
 
+	const std::string & getTouchViewId() const { return mTouchViewId; }
+
 protected:
-	virtual void	draw() override;
+
+	void			didMoveToView(BaseView* parent) override;
+	void			willMoveFromView(BaseView* parent) override;
+	void			draw() override;
 																				
 	// Override these boilerplate methods to react to touch events
 	virtual	void	handleTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) {};
@@ -123,6 +128,9 @@ protected:
 
 	//! Resets all touch-state related variables to a non-touched state
 	virtual void	resetTouchState();
+
+	virtual void	registerGestures();
+	virtual void	deregisterGestures();
 
 	ci::vec2		mCurTouchPos;
 	ci::vec2		mPrevTouchPos;
@@ -147,6 +155,8 @@ private:
 	double			mMaxTapDuration;
 
 	bool			mDebugDrawTouchPath;
+
+	std::string		mTouchViewId;
 };
 
 }
