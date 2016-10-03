@@ -72,6 +72,8 @@ void BaseApp::setup() {
 	gl::enableAlphaBlending();
 
 	// Set up touches
+	TouchManager::getInstance()->setup();
+
 	mMouseDriver.connect();
 	mTuioDriver.connect();
 	mSimulatedTouchDriver.setup(Rectf(vec2(0), getWindowSize()), 60);
