@@ -32,7 +32,6 @@ public:
 	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidBeginTouch;		//! Triggered for first touch when touch begins and for subsequent touches if multi-touch is enabled
 	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidMoveTouch;		//! Triggered for moving touches after touch began
 	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidEndTouch;		//! Triggered when touch ends and when touch is canceled
-	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidCancelTouch;	//! Triggered after mDidEndTouch when cancelTouches() is called
 	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidTap;			//! Triggered after mDidEndTouch if the touch fits the parameters for tapping
 
 
