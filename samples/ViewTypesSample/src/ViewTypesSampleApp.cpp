@@ -9,6 +9,7 @@
 #include "LineView.h"
 #include "TouchView.h"
 #include "SettingsManager.h"
+#include "FboView.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -25,6 +26,8 @@ public:
 	void handleKeyDown(ci::app::KeyEvent event);
 	static void prepareSettings(ci::app::App::Settings* settings);
 
+private :
+	FboViewRef mFboView;
 };
 
 void ViewTypesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
@@ -128,6 +131,23 @@ void ViewTypesSampleApp::setup() {
 	circleTouchPath->setPosition(circleTouchView->getPosition().value() + vec2(circleTouchView->getWidth() + circleTouchPath->getWidth()/2, 0));
 	getRootView()->addChild(circleTouchPath);
 
+	
+	mFboView = FboViewRef(new FboView());
+	mFboView->setup(vec2(100.0f));
+	mFboView->setPosition(circleTouchView->getPosition().value() + vec2(circleTouchView->getWidth() + 10, 0));
+	for (int x = 0; x < 23; x++) {
+		for (int y = 0; y < 8; y++) {
+			auto square = BaseViewRef(new BaseView());
+			float squareWidth = 12.0f;
+			square->setSize(vec2(squareWidth));
+			square->setBackgroundColor(Color(x*0.03f + 0.5f, 0.0f, y*0.03f + 0.5f));
+			square->setPosition(vec2(x*(squareWidth + 6.0f), y*(squareWidth + 6.0f)));
+			mFboView->addChild(square);
+		}
+	}
+	getRootView()->addChild(mFboView);
+
+
 	auto cancelView = TouchViewRef(new TouchView());
 	cancelView->setSize(vec2(100, 100));
 	cancelView->setPosition(vec2(100, 250));
@@ -162,6 +182,10 @@ void ViewTypesSampleApp::handleKeyDown(ci::app::KeyEvent event) {
 
 void ViewTypesSampleApp::update() {
 	BaseApp::update();
+
+	if (mFboView->getWidth() < 400.0f) {
+		mFboView->setSize(mFboView->getSize() + vec2(1));
+	}
 }
 
 void ViewTypesSampleApp::draw() {
