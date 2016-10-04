@@ -32,6 +32,7 @@ void BaseApp::prepareSettings(ci::app::App::Settings *settings) {
 	settings->setWindowSize(SettingsManager::getInstance()->mDebugWindowSize);
 	settings->setBorderless(SettingsManager::getInstance()->mDebugBorderless);
 	settings->setFullScreen(SettingsManager::getInstance()->mDebugFullscreen);
+	settings->setHighDensityDisplayEnabled(true);
 
 	// Keep window top-left within display bounds
 	if (settings->getWindowPos().x == 0 && settings->getWindowPos().y == 0) {

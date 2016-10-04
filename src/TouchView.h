@@ -17,6 +17,7 @@ Comments:
 
 #include "BaseView.h"
 #include "Touch.h"
+#include "gestureworks/GWCUtils.h"
 
 namespace bluecadet {
 namespace views {
@@ -33,6 +34,7 @@ public:
 	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidMoveTouch;		//! Triggered for moving touches after touch began
 	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidEndTouch;		//! Triggered when touch ends and when touch is canceled
 	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidTap;			//! Triggered after mDidEndTouch if the touch fits the parameters for tapping
+	boost::signals2::signal<void(const gwc::GestureEvent& gestureEvent)>mDidReceiveGesture;	//! Triggered after mDidEndTouch if the touch fits the parameters for tapping
 
 
 	//! Setup/Destruction
@@ -62,9 +64,10 @@ public:
 	virtual bool	canAcceptTouch() const;					//! Will return whether this touch object can accept a new touch based on its current state.
 
 	// Used by the touch manager and should not be overriden
-	virtual	void	processTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) final;
-	virtual	void	processTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) final;
-	virtual	void	processTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) final;
+	virtual void	processTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) final;
+	virtual void	processTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) final;
+	virtual void	processTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) final;
+	virtual void	processGesture(const gwc::GestureEvent& gestureEvent) final;
 
 	//! Getters/Setters
 
@@ -125,6 +128,7 @@ protected:
 	virtual void	handleTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) {};
 	virtual void	handleTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) {};
 	virtual void	handleTouchTapped(const bluecadet::touch::TouchEvent& touchEvent) {};
+	virtual void	handleGesture(const gwc::GestureEvent & gestureEvent) {};
 
 	//! Resets all touch-state related variables to a non-touched state
 	virtual void	resetTouchState();

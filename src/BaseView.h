@@ -114,8 +114,8 @@ public:
 	virtual void						setRotation(const ci::quat& rotation) { mRotation = rotation; invalidateTransforms(); };
 
 	//! Acts as the point of origin for all transforms. Essentially allows for rotating and scaling around a specific point. Defaults to (0,0). Changing this value invalidates transforms.
-	virtual ci::Anim<ci::vec2>&			getTransformOrigin() { return mTransformOrigin; invalidateTransforms(); }
-	void								setTransformOrigin(const ci::vec2& value) { mTransformOrigin = value; }
+	virtual ci::Anim<ci::vec2>&			getTransformOrigin() { return mTransformOrigin; }
+	void								setTransformOrigin(const ci::vec2& value) { mTransformOrigin = value; invalidateTransforms(); }
 
 	//! Size of this view. Defaults to 0, 0 and is not affected by children. Does not affect transforms (position, rotation, scale).
 	virtual const ci::vec2				getSize() { return mSize; }
@@ -165,6 +165,9 @@ public:
 
 	//! Global position in the root view's coordinate space.
 	const ci::vec2						getGlobalPosition()		{ if (!mParent) return mPosition; return mParent->convertLocalToGlobal(mPosition); };
+
+	//! Set the global position in the root view's coordinate space.
+	void								setGlobalPosition(const ci::vec2 pos) { if (!mParent) { setPosition(pos); } else { setPosition(mParent->convertGlobalToLocal(pos)); }};
 	
 	//! Converts a position from the current view's local space to the root view's global space.
 	const ci::vec2						convertLocalToGlobal(const ci::vec2& local) { ci::vec4 global = getGlobalTransform() * ci::vec4(local, 0, 1); return ci::vec2(global.x, global.y); }
@@ -172,7 +175,7 @@ public:
 	//! Converts a position from the root view's global space to the current view's local space.
 	const ci::vec2						convertGlobalToLocal(const ci::vec2& global) { ci::vec4 local = glm::inverse(getGlobalTransform()) * ci::vec4(global, 0, 1); return ci::vec2(local); };
 
-
+	//void								bakeInTransformOrigin();
 
 	//==================================================
 	//! Stores key-based user info. Overrivetes any existing values for this key.

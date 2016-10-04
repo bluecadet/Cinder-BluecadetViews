@@ -87,12 +87,15 @@ void TouchView::draw() {
 void TouchView::processTouchBegan(const touch::TouchEvent& touchEvent) {
 	mObjectTouchIDs.push_back(touchEvent.id);
 
-	mPrevTouchPos = touchEvent.position; // Set to current touchPnt, otherwise prevtouch pos may be anywhere
-	mCurTouchPos = touchEvent.position;
-	mInitialRelTouchPos = touchEvent.position;
-	mInitialAbsTouchPos = convertLocalToGlobal(touchEvent.position);
-	mInitialPosWhenTouched = getGlobalPosition();
-	mInitialTouchTime = getElapsedSeconds();
+	if (mObjectTouchIDs.size() <= 1) {
+		mPrevTouchPos = touchEvent.position; // Set to current touchPnt, otherwise prevtouch pos may be anywhere
+		mCurTouchPos = touchEvent.position;
+		mInitialRelTouchPos = touchEvent.position;
+		mInitialAbsTouchPos = convertLocalToGlobal(touchEvent.position);
+		mInitialPosWhenTouched = getGlobalPosition();
+		mInitialTouchTime = getElapsedSeconds();
+	}
+
 	mIsDragging = getNumTouches() == 1 ? false : mIsDragging;
 	mHasMovingTouches = getNumTouches() == 1 ? false : mHasMovingTouches;
 
@@ -101,7 +104,7 @@ void TouchView::processTouchBegan(const touch::TouchEvent& touchEvent) {
 }
 
 void TouchView::processTouchMoved(const touch::TouchEvent& touchEvent) {
-	if (mObjectTouchIDs.empty() || mObjectTouchIDs.front() != touchEvent.id) {
+	if (mObjectTouchIDs.empty()) {
 		return;
 	}
 
@@ -111,12 +114,14 @@ void TouchView::processTouchMoved(const touch::TouchEvent& touchEvent) {
 		return;
 	}
 
-	mPrevTouchPos = mCurTouchPos;
-	mCurTouchPos = touchEvent.position;
+	if (touchEvent.id == mObjectTouchIDs.front()) {
+		mPrevTouchPos = mCurTouchPos;
+		mCurTouchPos = touchEvent.position;
 
-	if (!mIsDragging) {
-		const float dragDistance2 = glm::distance2(mInitialAbsTouchPos, convertLocalToGlobal(mCurTouchPos));
-		mIsDragging = dragDistance2 > mDragThreshold * mDragThreshold;
+		if (!mIsDragging) {
+			const float dragDistance2 = glm::distance2(mInitialAbsTouchPos, convertLocalToGlobal(mCurTouchPos));
+			mIsDragging = dragDistance2 > mDragThreshold * mDragThreshold;
+		}
 	}
 
 	handleTouchMoved(touchEvent);
@@ -146,7 +151,20 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 		handleTouchTapped(touchEvent);
 	}
 
-	resetTouchState();
+	// Remove id from list
+	auto idIt = std::find(mObjectTouchIDs.cbegin(), mObjectTouchIDs.cend(), touchEvent.id);
+	if (idIt != mObjectTouchIDs.end()) {
+		mObjectTouchIDs.erase(idIt);
+	}
+	
+	if (mObjectTouchIDs.empty()) {
+		resetTouchState();
+	}
+}
+
+void TouchView::processGesture(const gwc::GestureEvent & gestureEvent) {
+	handleGesture(gestureEvent);
+	mDidReceiveGesture(gestureEvent);
 }
 
 void TouchView::cancelTouches() {
@@ -205,9 +223,11 @@ void TouchView::setTouchPath(const float radius, const ci::vec2& offset, const i
 
 void TouchView::registerGestures() {
 	gwc::GestureWorks::getInstance()->registerTouchObject(mTouchViewId);
-	gwc::GestureWorks::getInstance()->addGesture(mTouchViewId, "n-drag");
-	gwc::GestureWorks::getInstance()->addGesture(mTouchViewId, "n-rotate");
-	gwc::GestureWorks::getInstance()->addGesture(mTouchViewId, "n-scale");
+	//gwc::GestureWorks::getInstance()->addGestureSet(mTouchViewId, "basic-gestures");
+	//gwc::GestureWorks::getInstance()->addGesture(mTouchViewId, "1-drag");
+	gwc::GestureWorks::getInstance()->addGesture(mTouchViewId, "n-rotate-and-scale");
+	//gwc::GestureWorks::getInstance()->addGesture(mTouchViewId, "n-rotate");
+	//gwc::GestureWorks::getInstance()->addGesture(mTouchViewId, "n-scale");
 }
 
 void TouchView::deregisterGestures() {

@@ -212,6 +212,17 @@ void BaseView::updateScene(const double deltaTime) {
 	}
 }
 
+//void BaseView::bakeInTransformOrigin() {
+//	vec2 origin = mTransformOrigin.value();
+//	setTransformOrigin(vec2(0));
+//
+//	mat4 t = glm::translate(vec3(-origin, 0));
+//	t *= glm::scale(ci::vec3(mScale.value(), 1.0f));
+//	t *= glm::toMat4(mRotation.value());
+//
+//	setPosition(mPosition.value() + vec2(vec4(0, 0, 0, 1) * t));
+//}
+
 void BaseView::update(const double deltaTime) {
 
 }
