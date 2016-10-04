@@ -9,7 +9,7 @@ namespace views {
 
 FboView::FboView() : BaseView(),
 mHasInvalidContent(true),
-mForceRedraw(true),
+mForceRedraw(false),
 mFbo(nullptr)
 {
 	gl::Texture2d::Format fboTexFormat;
@@ -76,9 +76,25 @@ void FboView::draw() {
 		return;
 	}
 
-	if (mHasInvalidContent || mForceRedraw) {
+	// TODO : REVIEW
+	bool childHasInvalidTransform = false;
+	for (auto& child : BaseView::getChildren()) {
+		if (child->hasInvalidTransforms()) {
+			childHasInvalidTransform = true;
+			break;
+		}
+	}
+
+	if (BaseView::hasInvalidTransforms() || childHasInvalidTransform) {
 		validateContent();
 	}
+	else {
+		console() << "it doesn't need to be updated!" << endl;
+	}
+
+	//	if (mHasInvalidContent || mForceRedraw) {
+	//		validateContent();
+	//	}
 
 	if (mFbo) {
 		gl::draw(mFbo->getColorTexture());
