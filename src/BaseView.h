@@ -118,8 +118,8 @@ public:
 	void								setTransformOrigin(const ci::vec2& value) { mTransformOrigin = value; }
 
 	//! Size of this view. Defaults to 0, 0 and is not affected by children. Does not affect transforms (position, rotation, scale).
-	virtual const ci::vec2				getSize() { return mSize; }
-	virtual void						setSize(const ci::vec2& size) { mSize = size; }
+	virtual const ci::vec2				getSize() { return mSize;}
+	virtual void						setSize(const ci::vec2& size) { mSize = size; invalidateTransforms();}
 
 	//! Width of this view. Defaults to 0 and is not affected by children.
 	virtual float						getWidth() { return getSize().x; };
@@ -172,6 +172,8 @@ public:
 	//! Converts a position from the root view's global space to the current view's local space.
 	const ci::vec2						convertGlobalToLocal(const ci::vec2& global) { ci::vec4 local = glm::inverse(getGlobalTransform()) * ci::vec4(global, 0, 1); return ci::vec2(local); };
 
+	//! Returns whether or not this view needs to be redrawn
+	const bool&							hasInvalidTransforms() { return mHasInvalidTransforms; };
 
 
 	//==================================================
