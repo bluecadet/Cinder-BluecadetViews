@@ -197,6 +197,35 @@ void BaseView::moveChildToIndex(BaseViewList::iterator childIt, size_t index) {
 	mChildren.splice(targetIt, mChildren, childIt);
 }
 
+
+//==================================================
+// Transformation
+// 
+
+void BaseView::setTransformOrigin(const ci::vec2 & value, const bool compensateForOffset) {
+	if (!compensateForOffset) {
+		setTransformOrigin(value); return;
+	}
+
+	// an arbitrary point in our view. needs to be vec4 with w = 1 for mat4 mulitiplication
+	static const ci::vec4 center = ci::vec4(0, 0, 0, 1);
+	
+	// save our point when transformed with the current transform origin
+	const ci::vec2 transformedCenterBefore = ci::vec2(getTransform() * center);
+
+	// set the new origin
+	setTransformOrigin(value);
+	
+	// now see where the same point is in our view if we transform it with the new origin
+	const ci::vec2 transformedCenterAfter = ci::vec2(getTransform() * center);
+
+	// calculate the offset between new and old
+	const ci::vec2 centerOffset = transformedCenterBefore - transformedCenterAfter;
+
+	// apply the offset so that our point visually stays at the same position
+	setPosition(mPosition.value() + centerOffset);
+}
+
 //==================================================
 // Main loop
 // 
@@ -211,17 +240,6 @@ void BaseView::updateScene(const double deltaTime) {
 		child->updateScene(deltaTime);
 	}
 }
-
-//void BaseView::bakeInTransformOrigin() {
-//	vec2 origin = mTransformOrigin.value();
-//	setTransformOrigin(vec2(0));
-//
-//	mat4 t = glm::translate(vec3(-origin, 0));
-//	t *= glm::scale(ci::vec3(mScale.value(), 1.0f));
-//	t *= glm::toMat4(mRotation.value());
-//
-//	setPosition(mPosition.value() + vec2(vec4(0, 0, 0, 1) * t));
-//}
 
 void BaseView::update(const double deltaTime) {
 

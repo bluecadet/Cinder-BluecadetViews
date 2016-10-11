@@ -113,9 +113,15 @@ public:
 	virtual void						setRotation(const float radians) { mRotation = glm::angleAxis(radians, ci::vec3(0, 0, 1)); invalidateTransforms(); };
 	virtual void						setRotation(const ci::quat& rotation) { mRotation = rotation; invalidateTransforms(); };
 
-	//! Acts as the point of origin for all transforms. Essentially allows for rotating and scaling around a specific point. Defaults to (0,0). Changing this value invalidates transforms.
+	//! Acts as the point of origin for all transforms.
+	//! Essentially allows for rotating and scaling around a specific point.
+	//! Changing this value invalidates transforms. Defaults to (0,0).
 	virtual ci::Anim<ci::vec2>&			getTransformOrigin() { return mTransformOrigin; }
 	void								setTransformOrigin(const ci::vec2& value) { mTransformOrigin = value; invalidateTransforms(); }
+
+	//! Sets the transform origin. If true is passed for offset compensation then the position will be updated to compensate for the new origin.
+	//! This will have the effect that the view will visually remain locked in position. Passing in false is the same as calling setTransformOrigin(vec2).
+	void								setTransformOrigin(const ci::vec2& value, const bool compensateForOffset);
 
 	//! Size of this view. Defaults to 0, 0 and is not affected by children. Does not affect transforms (position, rotation, scale).
 	virtual const ci::vec2				getSize() { return mSize; }
@@ -162,6 +168,9 @@ public:
 	
 	//! The global transform based on the root view's coordinate space. Since this method validates the transforms them before returning it's non-const.
 	const ci::mat4&						getGlobalTransform()	{ validateTransforms(); return mGlobalTransform; }
+
+	//! A transform that rotates and scales around transform origin. Since this method validates the transforms them before returning it's non-const.
+	const ci::mat4&						getRotationScaleTransform()	{ validateTransforms(); return mRotationScaleTransform; }
 
 	//! Global position in the root view's coordinate space.
 	const ci::vec2						getGlobalPosition()		{ if (!mParent) return mPosition; return mParent->convertLocalToGlobal(mPosition); };
@@ -245,8 +254,9 @@ private:
 	ci::Anim<ci::vec2> mScale;
 	ci::Anim<ci::quat> mRotation;
 
-	ci::mat4 mTransform;
-	ci::mat4 mGlobalTransform;
+	ci::mat4 mTransform;				// contains position, transform origin, rotation and scale
+	ci::mat4 mGlobalTransform;			// current transform multiplied with parent's transform
+	ci::mat4 mRotationScaleTransform;	// contains rotation and scale around transform origin
 	bool mHasInvalidTransforms;
 
 	std::map<std::string, UserInfoTypes> mUserInfo;
@@ -270,11 +280,13 @@ void BaseView::validateTransforms(const bool force) {
 
 	const ci::vec3 origin = ci::vec3(mTransformOrigin.value(), 0.0f);
 
+	mRotationScaleTransform = glm::translate(origin)	// offset by origin
+		* glm::scale(ci::vec3(mScale.value(), 1.0f))
+		* glm::toMat4(mRotation.value())
+		* glm::translate(-origin);						// reset to original position
+
 	mTransform = glm::translate(ci::vec3(mPosition.value(), 0.0f))
-	 * glm::translate(origin)	// offset by origin
-	 * glm::scale(ci::vec3(mScale.value(), 1.0f))
-	 * glm::toMat4(mRotation.value())
-	 * glm::translate(-origin);	// reset to original position
+	 * mRotationScaleTransform;
 
 	mGlobalTransform = mParent ? mParent->getGlobalTransform() * mTransform : mTransform;
 
