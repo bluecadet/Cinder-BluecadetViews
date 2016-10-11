@@ -28,14 +28,16 @@ public:
 	}
 
 
-
 	//! Must be called before calling draw. Adds a key-up event listener.
 	void			setup(const ci::ivec2& dislaySize = ci::ivec2(1920, 1080), const int numRows = 1, const int numColumns = 1);
 
-
-
 	//! Draws the current screen layout, transformed appropriately to match the position and scale of rootView
 	void			draw();
+
+
+
+	//! Dispatched whenever a property chnage affects the app size.
+	ci::signals::Signal<void(const ci::ivec2 & appSize)> & getAppSizeChangedSignal() { return mAppSizeChanged; };
 
 
 
@@ -136,6 +138,7 @@ private:
 	//! Used to draw bounds of each display
 	std::vector<ci::Rectf>	mDisplayBounds;
 	views::BaseViewRef		mPlaceholderView;
+	ci::signals::Signal<void(const ci::ivec2 & appSize)> mAppSizeChanged;
 };
 
 }

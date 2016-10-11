@@ -54,6 +54,7 @@ void BaseApp::setup() {
 	
 	ScreenLayout::getInstance()->setup(ivec2(displayWidth, displayHeight), rows, cols);
 	ScreenLayout::getInstance()->zoomToFitWindow();
+	ScreenLayout::getInstance()->getAppSizeChangedSignal().connect(bind(&BaseApp::handleAppResize, this, placeholders::_1));
 	
 	// Apply run-time settings
 	if (settings->mShowMouse) {
@@ -73,7 +74,7 @@ void BaseApp::setup() {
 	gl::enableAlphaBlending();
 
 	// Set up touches
-	TouchManager::getInstance()->setup();
+	TouchManager::getInstance()->setupGestures(ScreenLayout::getInstance()->getAppSize());
 	//TouchManager::getInstance()->setDiscardMissedTouches(false);
 
 	mMouseDriver.connect();
@@ -127,6 +128,10 @@ void BaseApp::keyDown(KeyEvent event) {
 			quit();
 			break;
 	}
+}
+
+void BaseApp::handleAppResize(const ci::ivec2 & appSize) {
+	TouchManager::getInstance()->setAppSize(appSize);
 }
 
 void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
