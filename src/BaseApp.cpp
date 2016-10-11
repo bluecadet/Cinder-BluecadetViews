@@ -54,7 +54,6 @@ void BaseApp::setup() {
 	
 	ScreenLayout::getInstance()->setup(ivec2(displayWidth, displayHeight), rows, cols);
 	ScreenLayout::getInstance()->zoomToFitWindow();
-	ScreenLayout::getInstance()->getAppSizeChangedSignal().connect(bind(&BaseApp::handleAppResize, this, placeholders::_1));
 	
 	// Apply run-time settings
 	if (settings->mShowMouse) {
@@ -89,8 +88,9 @@ void BaseApp::update() {
 
 	// get the screen layout's transform and apply it to all
 	// touch events to convert touches from window into app space
-	auto transform = glm::inverse(ScreenLayout::getInstance()->getTransform());
-	touch::TouchManager::getInstance()->update(mRootView, transform);
+	const auto appTransform = glm::inverse(ScreenLayout::getInstance()->getTransform());
+	const auto appSize = ScreenLayout::getInstance()->getAppSize();
+	touch::TouchManager::getInstance()->update(mRootView, appSize, appTransform);
 	mRootView->updateScene(deltaTime);
 }
 
@@ -128,10 +128,6 @@ void BaseApp::keyDown(KeyEvent event) {
 			quit();
 			break;
 	}
-}
-
-void BaseApp::handleAppResize(const ci::ivec2 & appSize) {
-	TouchManager::getInstance()->setAppSize(appSize);
 }
 
 void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {

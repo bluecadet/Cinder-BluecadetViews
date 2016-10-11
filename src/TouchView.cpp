@@ -132,7 +132,7 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 	handleTouchEnded(touchEvent);
 	mDidEndTouch(touchEvent);
 
-	bool didTap = (mAllowsTapReleaseOutside || containsPoint(touchEvent.localPosition)) && !touchEvent.canceled;
+	bool didTap = (mAllowsTapReleaseOutside || containsPoint(touchEvent.localPosition)) && !touchEvent.isCanceled;
 
 	// Only allow taps within a certain time
 	if (didTap) {

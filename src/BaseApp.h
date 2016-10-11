@@ -34,7 +34,6 @@ public:
 	virtual void draw(const bool clear);
 
 	virtual void keyDown(ci::app::KeyEvent event) override;
-	virtual void handleAppResize(const ci::ivec2 & appSize);
 
 	//! Call this method when initializing your app with the CINDER_APP macro
 	static void prepareSettings(ci::app::App::Settings *settings);
