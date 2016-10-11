@@ -201,7 +201,7 @@ public:
 		static T defaultValue;
 		auto it = mUserInfo.find(key);
 		if (it == mUserInfo.end()) return defaultValue;
-		return boost::exists<T>(it->second);
+		return boost::get<T>(it->second);
 	}
 
 

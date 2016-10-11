@@ -74,6 +74,7 @@ void BaseApp::setup() {
 
 	// Set up touches
 	TouchManager::getInstance()->setup();
+	//TouchManager::getInstance()->setDiscardMissedTouches(false);
 
 	mMouseDriver.connect();
 	mTuioDriver.connect();

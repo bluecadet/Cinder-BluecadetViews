@@ -202,25 +202,25 @@ void BaseView::moveChildToIndex(BaseViewList::iterator childIt, size_t index) {
 // Transformation
 // 
 
-void BaseView::setTransformOrigin(const ci::vec2 & value, const bool compensateForOffset) {
+void BaseView::setTransformOrigin(const vec2 & value, const bool compensateForOffset) {
 	if (!compensateForOffset) {
 		setTransformOrigin(value); return;
 	}
 
 	// an arbitrary point in our view. needs to be vec4 with w = 1 for mat4 mulitiplication
-	static const ci::vec4 center = ci::vec4(0, 0, 0, 1);
+	static const vec4 center = vec4(0, 0, 0, 1);
 	
 	// save our point when transformed with the current transform origin
-	const ci::vec2 transformedCenterBefore = ci::vec2(getTransform() * center);
+	const vec2 transformedCenterBefore = vec2(getTransform() * center);
 
 	// set the new origin
 	setTransformOrigin(value);
 	
 	// now see where the same point is in our view if we transform it with the new origin
-	const ci::vec2 transformedCenterAfter = ci::vec2(getTransform() * center);
+	const vec2 transformedCenterAfter = vec2(getTransform() * center);
 
 	// calculate the offset between new and old
-	const ci::vec2 centerOffset = transformedCenterBefore - transformedCenterAfter;
+	const vec2 centerOffset = transformedCenterBefore - transformedCenterAfter;
 
 	// apply the offset so that our point visually stays at the same position
 	setPosition(mPosition.value() + centerOffset);
