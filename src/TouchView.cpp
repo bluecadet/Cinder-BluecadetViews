@@ -1,11 +1,15 @@
 
 #include "TouchView.h"
 #include "TouchManager.h"
-#include "gestureworks/GestureWorksCore.h"
 
 using namespace std;
 using namespace ci;
 using namespace ci::app;
+
+// forward declaration for GWC -- temporary solution
+namespace gwc {
+class GestureEvent;
+}
 
 namespace bluecadet {
 namespace views {
@@ -38,7 +42,6 @@ TouchView::TouchView() :
 }
 
 TouchView::~TouchView() {
-	deregisterGestures();
 }
 
 void TouchView::reset() {
@@ -215,32 +218,6 @@ void TouchView::setTouchPath(const float radius, const ci::vec2& offset, const i
 		mTouchPath.lineTo(offset.x + radius * cosf(angle), offset.y + radius * sinf(angle));
 	}
 	mTouchPath.close();
-}
-
-//==================================================
-// Touch Event Management
-//
-
-void TouchView::registerGestures() {
-	gwc::GestureWorks::getInstance()->registerTouchObject(mTouchViewId);
-	//gwc::GestureWorks::getInstance()->addGestureSet(mTouchViewId, "basic-gestures");
-	//gwc::GestureWorks::getInstance()->addGesture(mTouchViewId, "1-drag");
-	gwc::GestureWorks::getInstance()->addGesture(mTouchViewId, "n-rotate-and-scale");
-	//gwc::GestureWorks::getInstance()->addGesture(mTouchViewId, "n-rotate");
-	//gwc::GestureWorks::getInstance()->addGesture(mTouchViewId, "n-scale");
-}
-
-void TouchView::deregisterGestures() {
-	gwc::GestureWorks::getInstance()->deregisterTouchObject(mTouchViewId);
-
-}
-
-void TouchView::didMoveToView(BaseView * parent) {
-	registerGestures();
-}
-
-void TouchView::willMoveFromView(BaseView * parent) {
-	deregisterGestures();
 }
 
 }

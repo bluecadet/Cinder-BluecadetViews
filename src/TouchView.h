@@ -17,7 +17,11 @@ Comments:
 
 #include "BaseView.h"
 #include "Touch.h"
-#include "gestureworks/GWCUtils.h"
+
+// forward declaration for GWC -- temporary solution
+namespace gwc {
+	class GestureEvent;
+}
 
 namespace bluecadet {
 namespace views {
@@ -67,7 +71,7 @@ public:
 	virtual void	processTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) final;
 	virtual void	processTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) final;
 	virtual void	processTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) final;
-	virtual void	processGesture(const gwc::GestureEvent& gestureEvent) final;
+	virtual void	processGesture(const gwc::GestureEvent & gestureEvent) final;
 
 	//! Getters/Setters
 
@@ -119,8 +123,6 @@ public:
 
 protected:
 
-	void			didMoveToView(BaseView* parent) override;
-	void			willMoveFromView(BaseView* parent) override;
 	void			draw() override;
 																				
 	// Override these boilerplate methods to react to touch events
@@ -132,9 +134,6 @@ protected:
 
 	//! Resets all touch-state related variables to a non-touched state
 	virtual void	resetTouchState();
-
-	virtual void	registerGestures();
-	virtual void	deregisterGestures();
 
 	ci::vec2		mCurTouchPos;
 	ci::vec2		mPrevTouchPos;

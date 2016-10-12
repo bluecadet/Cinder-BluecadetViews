@@ -73,7 +73,6 @@ void BaseApp::setup() {
 	gl::enableAlphaBlending();
 
 	// Set up touches
-	TouchManager::getInstance()->setupGestures(ScreenLayout::getInstance()->getAppSize());
 	//TouchManager::getInstance()->setDiscardMissedTouches(false);
 
 	mMouseDriver.connect();
