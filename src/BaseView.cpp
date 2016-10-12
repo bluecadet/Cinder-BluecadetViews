@@ -204,7 +204,7 @@ void BaseView::moveChildToIndex(BaseViewList::iterator childIt, size_t index) {
 void BaseView::updateScene(const double deltaTime) {
 	if (mTimeline && !mTimeline->empty()) {
 		mTimeline->stepTo(timeline().getCurrentTime());
-		invalidateTransforms();
+		invalidate(true, true);
 	}
 	update(deltaTime);
 	for (auto child : mChildren) {
@@ -288,6 +288,13 @@ TimelineRef BaseView::getTimeline() {
 
 CueRef BaseView::dispatchAfter(std::function<void()> fn, float delay) {
 	return getTimeline()->add(fn, getTimeline()->getCurrentTime() + delay);
+}
+
+void BaseView::dispatchEvent(Event& event) {
+	if (!event.target) event.target = this;
+	else handleEvent(event);
+	event.currentTarget = this;
+	if (mParent) mParent->dispatchEvent(event);
 }
 
 //==================================================

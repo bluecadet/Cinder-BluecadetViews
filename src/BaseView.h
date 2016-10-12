@@ -33,7 +33,12 @@ class BaseView {
 	typedef std::map<std::string, UserInfoTypes> UserInfo;
 
 public:
-
+	struct Event {
+		enum class Type { ContentUpdated, Other };
+		Type				type = Event::Type::ContentUpdated;
+		BaseView*			target = nullptr;
+		BaseView*			currentTarget = nullptr;
+	};
 
 	BaseView();
 	virtual ~BaseView();
@@ -62,6 +67,11 @@ public:
 	//! The function will be added to the view's timeline and can be canceled with all other animations.
 	virtual ci::CueRef		dispatchAfter(std::function<void()> fn, float delay = 0.0f);
 
+	//! Dispatch events as needed. 
+	void					dispatchEvent(Event& event);
+	//! Override to handle response to dispatched event
+	virtual void			handleEvent(const Event& event) {};
+
 	virtual void			addChild(BaseViewRef child);
 	virtual void			addChild(BaseViewRef child, size_t index);
 
@@ -85,41 +95,41 @@ public:
 	// 
 
 	//! Parent or nullptr
-	virtual BaseView*					getParent() const { return mParent; }
+	virtual BaseView*					getParent() const { return mParent; };
 
 	//! Ordered list of all children optimized for fast insertion and removal
-	virtual const BaseViewList&			getChildren() const { return mChildren; }
-	virtual const size_t				getNumChildren() const { return mChildren.size(); }
+	virtual const BaseViewList&			getChildren() const { return mChildren; };
+	virtual const size_t				getNumChildren() const { return mChildren.size(); };
 
 	//! Local position relative to parent view
 	virtual ci::Anim<ci::vec2>&			getPosition() { return mPosition; };
-	virtual void						setPosition(const ci::vec2& position) { mPosition = position; invalidateTransforms(); }
-	virtual void						setPosition(const ci::vec3& position) { mPosition = ci::vec2(position.x, position.y); invalidateTransforms(); }
+	virtual void						setPosition(const ci::vec2& position) { mPosition = position; invalidate(true, true); };
+	virtual void						setPosition(const ci::vec3& position) { mPosition = ci::vec2(position.x, position.y); invalidate(true, true); };
 
 	//! Shorthand for combining position and size to center the view at `center`
 	virtual void						setCenter(const ci::vec2 center) { setPosition(center  - 0.5f * getSize()); };
 
 	//! Shorthand for getting the center based on the current position and size
-	virtual ci::vec2					getCenter() { return getPosition().value() + getSize() * 0.5f; }
+	virtual ci::vec2					getCenter() { return getPosition().value() + getSize() * 0.5f; };
 
 	//! Local scale relative to parent view
 	virtual ci::Anim<ci::vec2>&			getScale() { return mScale; };
-	virtual void						setScale(const float& scale) { mScale = ci::vec2(scale, scale);  invalidateTransforms(); };
-	virtual void						setScale(const ci::vec2& scale) { mScale = scale;  invalidateTransforms(); };
-	virtual void						setScale(const ci::vec3& scale) { mScale = ci::vec2(scale.x, scale.y);  invalidateTransforms(); };
+	virtual void						setScale(const float& scale) { mScale = ci::vec2(scale, scale);  invalidate(true, true); };
+	virtual void						setScale(const ci::vec2& scale) { mScale = scale;  invalidate(true, true); };
+	virtual void						setScale(const ci::vec3& scale) { mScale = ci::vec2(scale.x, scale.y);  invalidate(true, true); };
 
 	//! Local rotation relative to parent view. Changing this value invalidates transforms.
 	virtual ci::Anim<ci::quat>&			getRotation() { return mRotation; };
-	virtual void						setRotation(const float radians) { mRotation = glm::angleAxis(radians, ci::vec3(0, 0, 1)); invalidateTransforms(); };
-	virtual void						setRotation(const ci::quat& rotation) { mRotation = rotation; invalidateTransforms(); };
+	virtual void						setRotation(const float radians) { mRotation = glm::angleAxis(radians, ci::vec3(0, 0, 1)); invalidate(true, true); };
+	virtual void						setRotation(const ci::quat& rotation) { mRotation = rotation; invalidate(true, true); };
 
 	//! Acts as the point of origin for all transforms. Essentially allows for rotating and scaling around a specific point. Defaults to (0,0). Changing this value invalidates transforms.
-	virtual ci::Anim<ci::vec2>&			getTransformOrigin() { return mTransformOrigin; invalidateTransforms(); }
-	void								setTransformOrigin(const ci::vec2& value) { mTransformOrigin = value; }
+	virtual ci::Anim<ci::vec2>&			getTransformOrigin() { return mTransformOrigin; invalidate(true, true); };
+	void								setTransformOrigin(const ci::vec2& value) { mTransformOrigin = value; };
 
 	//! Size of this view. Defaults to 0, 0 and is not affected by children. Does not affect transforms (position, rotation, scale).
 	virtual const ci::vec2				getSize() { return mSize; }
-	virtual void						setSize(const ci::vec2& size) { mSize = size; }
+	virtual void						setSize(const ci::vec2& size) { mSize = size; invalidate(false, true); };
 
 	//! Width of this view. Defaults to 0 and is not affected by children.
 	virtual float						getWidth() { return getSize().x; };
@@ -212,7 +222,8 @@ protected:
 	inline void	validateTransforms(const bool force = false);
 
 	//! Marks the transformation matrix (and all of its children's matrices) as invalid. This will cause the matrices to be re-calculated when necessary.
-	inline void invalidateTransforms()	{ mHasInvalidTransforms = true; for (auto &child : mChildren) child->invalidateTransforms(); };
+	//! When content is true, marks the content as invalid and will dispatch a content updated event
+	inline void invalidate(const bool& transforms, const bool& content);
 
 private:
 
@@ -276,6 +287,19 @@ void BaseView::validateTransforms(const bool force) {
 	mGlobalTransform = mParent ? mParent->getGlobalTransform() * mTransform : mTransform;
 
 	mHasInvalidTransforms = false;
+}
+
+inline void BaseView::invalidate(const bool& transforms, const bool& content) {
+	if (transforms) {
+		mHasInvalidTransforms = true;
+		for (auto &child : mChildren) child->invalidate(true, false);
+	}
+
+	if (content) {
+		auto event = Event();
+		event.type = Event::Type::ContentUpdated;
+		dispatchEvent(event);
+	}
 }
 
 BaseViewList::iterator BaseView::getChildIt(BaseViewRef child) {

@@ -6,6 +6,7 @@
 #include "BaseApp.h"
 #include "BaseView.h"
 #include "EllipseView.h"
+#include "FboView.h"
 #include "LineView.h"
 #include "TouchView.h"
 #include "SettingsManager.h"
@@ -24,7 +25,7 @@ public:
 	void draw() override;
 	void handleKeyDown(ci::app::KeyEvent event);
 	static void prepareSettings(ci::app::App::Settings* settings);
-
+	
 };
 
 void ViewTypesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
@@ -127,6 +128,17 @@ void ViewTypesSampleApp::setup() {
 	});
 	circleTouchPath->setPosition(circleTouchView->getPosition().value() + vec2(circleTouchView->getWidth() + circleTouchPath->getWidth()/2, 0));
 	getRootView()->addChild(circleTouchPath);
+
+
+	auto fboView = FboViewRef(new FboView());
+	fboView->setup(vec2(200));
+	fboView->setBackgroundColor(ColorA(0.0f, 0.0f, 1.0f, 0.5f));
+	fboView->setPosition( circleTouchPath->getPosition().value() + vec2(100.0f));
+	auto circleInsideFbo = EllipseViewRef(new EllipseView());
+	circleInsideFbo->setup(100.0f, ColorA(0.8f, 0.2f, 0.2f, 1.0f));
+	fboView->addChild(circleInsideFbo);
+	circleInsideFbo->getTimeline()->apply(&circleInsideFbo->getScale(), vec2(3.0f), 2.0f).loop(true);
+	getRootView()->addChild(fboView);
 
 	auto cancelView = TouchViewRef(new TouchView());
 	cancelView->setSize(vec2(100, 100));
