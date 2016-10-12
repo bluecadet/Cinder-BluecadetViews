@@ -223,7 +223,7 @@ protected:
 
 	//! Marks the transformation matrix (and all of its children's matrices) as invalid. This will cause the matrices to be re-calculated when necessary.
 	//! When content is true, marks the content as invalid and will dispatch a content updated event
-	inline void invalidate(const bool& transforms, const bool& content);
+	inline void invalidate(const bool transforms, const bool content);
 
 private:
 
@@ -289,7 +289,7 @@ void BaseView::validateTransforms(const bool force) {
 	mHasInvalidTransforms = false;
 }
 
-inline void BaseView::invalidate(const bool& transforms, const bool& content) {
+inline void BaseView::invalidate(const bool transforms, const bool content) {
 	if (transforms) {
 		mHasInvalidTransforms = true;
 		for (auto &child : mChildren) child->invalidate(true, false);
