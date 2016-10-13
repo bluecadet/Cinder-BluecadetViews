@@ -186,12 +186,25 @@ public:
 
 	
 	//==================================================
-	//! Stores key-based user info. Overrivetes any existing values for this key.
+	// User info
+	//
+	
+	//! Stores key-based user info. Overwrites any existing values for this key and type.
 	template <typename T>
 	void setUserInfo(const std::string& key, const T& value) { mUserInfo[key] = value; }
+	
+	//! Checks if a user info entry exists for this key.
 	bool hasUserInfo(const std::string& key) {
-		auto it = mUserInfo.find(key);
+		const auto it = mUserInfo.find(key);
 		return it != mUserInfo.end();
+	}
+
+	//! Removes a user info entry if it exists for this key.
+	void removeUserInfo(const std::string& key) {
+		const auto it = mUserInfo.find(key);
+		if (it != mUserInfo.end()) {
+			mUserInfo.erase(key);
+		}
 	}
 
 	//! Returns user info if it exists for the key. Will return an empty instance of the requested type if the key is not found.
