@@ -44,9 +44,6 @@ void FboView::validateFbo(){
 }
 
 inline void FboView::validateContent(){
-
-	console() << "FboView::validateContent" << endl;
-
 	if (!mFbo) {
 		validateFbo();
 	}
@@ -76,7 +73,7 @@ inline void FboView::validateContent(){
 		BaseView::validateContent();
 	}
 	else {
-		console() << "FboView Warning: No fbo to draw to (size: " << getSize() << ")" << endl;
+		console() << "FboView Warning: No fbo to validate content in (size: " << getSize() << ")" << endl;
 	}
 
 }
