@@ -148,13 +148,13 @@ public:
 
 	//! The fill color used when drawing the bounding rect when a size greater than 0, 0 is given.
 	virtual ci::Anim<ci::ColorA>&		getBackgroundColor() { return mBackgroundColor; }
-	virtual void						setBackgroundColor(const ci::Color color) { mBackgroundColor = ci::ColorA(color, 1.0f); } //! Sets background color with 100% alpha
-	virtual void						setBackgroundColor(const ci::ColorA color) { mBackgroundColor = color; }
+	virtual void						setBackgroundColor(const ci::Color color) { mBackgroundColor = ci::ColorA(color, 1.0f); invalidate(false, true); } //! Sets background color with 100% alpha
+	virtual void						setBackgroundColor(const ci::ColorA color) { mBackgroundColor = color; invalidate(false, true); }
 
 	//! Applied before each draw together with mAlpha; Defaults to white
 	virtual ci::Anim<ci::Color>&		getTint() { return mTint; }
-	virtual void						setTint(const ci::Color tint) { mTint = tint; } //! Sets tint while preserving current alpha
-	virtual void						setTint(const ci::ColorA tint) { mTint = tint; mAlpha = tint.a; } //! Sets mTint and mAlpha properties
+	virtual void						setTint(const ci::Color tint) { mTint = tint; invalidate(false, true); } //! Sets tint while preserving current alpha
+	virtual void						setTint(const ci::ColorA tint) { mTint = tint; mAlpha = tint.a; invalidate(false, true); } //! Sets mTint and mAlpha properties
 
 	//! Applied before each draw together with mTint; Gets multiplied with parent alpha; Defaults to 1.0f
 	virtual ci::Anim<float>&			getAlpha() { return mAlpha; }
