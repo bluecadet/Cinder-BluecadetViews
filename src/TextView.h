@@ -65,7 +65,8 @@ protected:
 	virtual void			draw() override;
 
 	ci::gl::Texture::Format createTextureFormat(bool smoothScaling) const;
-	virtual inline void		invalidate(const bool layout = true, const bool size = true) override;
+	inline void		invalidate(const bool layout = true, const bool size = true) override;
+	inline void		invalidate(const bool transforms = true, const bool content = true) override;
 
 	// Change visibility of these methods from public to protected since setSize()/getSize() should be used.
 	virtual ci::vec2		getMaxSize() const override { return StyledTextLayout::getMaxSize(); };

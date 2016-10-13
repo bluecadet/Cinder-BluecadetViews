@@ -29,7 +29,7 @@ public:
 
 	//! The smoothness of the ellipse's edge
 	inline float	getSmoothness() const { return mSmoothness; }
-	inline void		setSmoothness(const float value) { mSmoothness = value; }
+	inline void		setSmoothness(const float value) { mSmoothness = value; invalidate(false, true); }
 
 protected:
 	virtual void draw() override;
