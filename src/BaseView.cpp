@@ -204,7 +204,7 @@ void BaseView::moveChildToIndex(BaseViewList::iterator childIt, size_t index) {
 void BaseView::updateScene(const double deltaTime) {
 	if (mTimeline && !mTimeline->empty()) {
 		mTimeline->stepTo(timeline().getCurrentTime());
-		invalidate(true, true);
+		invalidate();
 	}
 	update(deltaTime);
 	for (auto child : mChildren) {

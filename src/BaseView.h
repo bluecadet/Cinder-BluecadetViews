@@ -103,8 +103,8 @@ public:
 
 	//! Local position relative to parent view
 	virtual ci::Anim<ci::vec2>&			getPosition() { return mPosition; };
-	virtual void						setPosition(const ci::vec2& position) { mPosition = position; invalidate(true, true); };
-	virtual void						setPosition(const ci::vec3& position) { mPosition = ci::vec2(position.x, position.y); invalidate(true, true); };
+	virtual void						setPosition(const ci::vec2& position) { mPosition = position; invalidate(); };
+	virtual void						setPosition(const ci::vec3& position) { mPosition = ci::vec2(position.x, position.y); invalidate(); };
 
 	//! Shorthand for combining position and size to center the view at `center`
 	virtual void						setCenter(const ci::vec2 center) { setPosition(center  - 0.5f * getSize()); };
@@ -114,17 +114,17 @@ public:
 
 	//! Local scale relative to parent view
 	virtual ci::Anim<ci::vec2>&			getScale() { return mScale; };
-	virtual void						setScale(const float& scale) { mScale = ci::vec2(scale, scale);  invalidate(true, true); };
-	virtual void						setScale(const ci::vec2& scale) { mScale = scale;  invalidate(true, true); };
-	virtual void						setScale(const ci::vec3& scale) { mScale = ci::vec2(scale.x, scale.y);  invalidate(true, true); };
+	virtual void						setScale(const float& scale) { mScale = ci::vec2(scale, scale);  invalidate(); };
+	virtual void						setScale(const ci::vec2& scale) { mScale = scale;  invalidate(); };
+	virtual void						setScale(const ci::vec3& scale) { mScale = ci::vec2(scale.x, scale.y);  invalidate(); };
 
 	//! Local rotation relative to parent view. Changing this value invalidates transforms.
 	virtual ci::Anim<ci::quat>&			getRotation() { return mRotation; };
-	virtual void						setRotation(const float radians) { mRotation = glm::angleAxis(radians, ci::vec3(0, 0, 1)); invalidate(true, true); };
-	virtual void						setRotation(const ci::quat& rotation) { mRotation = rotation; invalidate(true, true); };
+	virtual void						setRotation(const float radians) { mRotation = glm::angleAxis(radians, ci::vec3(0, 0, 1)); invalidate(); };
+	virtual void						setRotation(const ci::quat& rotation) { mRotation = rotation; invalidate(); };
 
 	//! Acts as the point of origin for all transforms. Essentially allows for rotating and scaling around a specific point. Defaults to (0,0). Changing this value invalidates transforms.
-	virtual ci::Anim<ci::vec2>&			getTransformOrigin() { return mTransformOrigin; invalidate(true, true); };
+	virtual ci::Anim<ci::vec2>&			getTransformOrigin() { return mTransformOrigin; invalidate(); };
 	void								setTransformOrigin(const ci::vec2& value) { mTransformOrigin = value; };
 
 	//! Size of this view. Defaults to 0, 0 and is not affected by children. Does not affect transforms (position, rotation, scale).
@@ -223,7 +223,7 @@ protected:
 
 	//! Marks the transformation matrix (and all of its children's matrices) as invalid. This will cause the matrices to be re-calculated when necessary.
 	//! When content is true, marks the content as invalid and will dispatch a content updated event
-	inline void invalidate(const bool transforms, const bool content);
+	inline void invalidate(const bool transforms = true, const bool content = true);
 
 private:
 
