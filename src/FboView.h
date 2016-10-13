@@ -24,13 +24,13 @@ public:
 	void			setSize(const ci::vec2 & size) override;
 
 	//! Will re-create the current fbo on the next draw call and marks the content to be re-drawn.
-	virtual void	invalidateFbo() { mFbo = nullptr; mHasInvalidContent = true; };
+	virtual void	invalidateFbo() { mFbo = nullptr; mHasInvalidContent = true; }
 
 	//! Will trigger the FBO to re-draw its content before the next draw call
-	virtual void	invalidateContent() { mHasInvalidContent = true; };
+	virtual void	invalidateContent() { mHasInvalidContent = true; }
 
 	//! Will create a new fbo with this format.
-	virtual void	setFboFormat(const ci::gl::Fbo::Format & format) { mFboFormat = format; invalidateFbo(); };
+	virtual void	setFboFormat(const ci::gl::Fbo::Format & format) { mFboFormat = format; invalidateFbo(); }
 	virtual ci::gl::Fbo::Format getFboFormat() const { return mFboFormat; }
 	
 	//! Force redraw fbo on each frame.

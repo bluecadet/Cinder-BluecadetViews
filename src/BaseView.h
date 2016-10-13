@@ -99,49 +99,49 @@ public:
 	// 
 
 	//! Parent or nullptr
-	virtual BaseView*					getParent() const { return mParent; };
+	virtual BaseView*					getParent() const { return mParent; }
 
 	//! Ordered list of all children optimized for fast insertion and removal
-	virtual const BaseViewList&			getChildren() const { return mChildren; };
-	virtual const size_t				getNumChildren() const { return mChildren.size(); };
+	virtual const BaseViewList&			getChildren() const { return mChildren; }
+	virtual const size_t				getNumChildren() const { return mChildren.size(); }
 
 	//! Local position relative to parent view
-	virtual ci::Anim<ci::vec2>&			getPosition() { return mPosition; };
-	virtual void						setPosition(const ci::vec2& position) { mPosition = position; invalidate(); };
-	virtual void						setPosition(const ci::vec3& position) { mPosition = ci::vec2(position.x, position.y); invalidate(); };
+	virtual ci::Anim<ci::vec2>&			getPosition() { return mPosition; }
+	virtual void						setPosition(const ci::vec2& position) { mPosition = position; invalidate(); }
+	virtual void						setPosition(const ci::vec3& position) { mPosition = ci::vec2(position.x, position.y); invalidate(); }
 
 	//! Shorthand for combining position and size to center the view at `center`
-	virtual void						setCenter(const ci::vec2 center) { setPosition(center  - 0.5f * getSize()); };
+	virtual void						setCenter(const ci::vec2 center) { setPosition(center  - 0.5f * getSize()); }
 
 	//! Shorthand for getting the center based on the current position and size
-	virtual ci::vec2					getCenter() { return getPosition().value() + getSize() * 0.5f; };
+	virtual ci::vec2					getCenter() { return getPosition().value() + getSize() * 0.5f; }
 
 	//! Local scale relative to parent view
-	virtual ci::Anim<ci::vec2>&			getScale() { return mScale; };
-	virtual void						setScale(const float& scale) { mScale = ci::vec2(scale, scale);  invalidate(); };
-	virtual void						setScale(const ci::vec2& scale) { mScale = scale;  invalidate(); };
-	virtual void						setScale(const ci::vec3& scale) { mScale = ci::vec2(scale.x, scale.y);  invalidate(); };
+	virtual ci::Anim<ci::vec2>&			getScale() { return mScale; }
+	virtual void						setScale(const float& scale) { mScale = ci::vec2(scale, scale);  invalidate(); }
+	virtual void						setScale(const ci::vec2& scale) { mScale = scale;  invalidate(); }
+	virtual void						setScale(const ci::vec3& scale) { mScale = ci::vec2(scale.x, scale.y);  invalidate(); }
 
 	//! Local rotation relative to parent view. Changing this value invalidates transforms.
-	virtual ci::Anim<ci::quat>&			getRotation() { return mRotation; };
-	virtual void						setRotation(const float radians) { mRotation = glm::angleAxis(radians, ci::vec3(0, 0, 1)); invalidate(); };
-	virtual void						setRotation(const ci::quat& rotation) { mRotation = rotation; invalidate(); };
+	virtual ci::Anim<ci::quat>&			getRotation() { return mRotation; }
+	virtual void						setRotation(const float radians) { mRotation = glm::angleAxis(radians, ci::vec3(0, 0, 1)); invalidate(); }
+	virtual void						setRotation(const ci::quat& rotation) { mRotation = rotation; invalidate(); }
 
 	//! Acts as the point of origin for all transforms. Essentially allows for rotating and scaling around a specific point. Defaults to (0,0). Changing this value invalidates transforms.
-	virtual ci::Anim<ci::vec2>&			getTransformOrigin() { return mTransformOrigin; invalidate(); };
-	void								setTransformOrigin(const ci::vec2& value) { mTransformOrigin = value; };
+	virtual ci::Anim<ci::vec2>&			getTransformOrigin() { return mTransformOrigin; invalidate(); }
+	void								setTransformOrigin(const ci::vec2& value) { mTransformOrigin = value; }
 
 	//! Size of this view. Defaults to 0, 0 and is not affected by children. Does not affect transforms (position, rotation, scale).
 	virtual const ci::vec2				getSize() { return mSize; }
-	virtual void						setSize(const ci::vec2& size) { mSize = size; invalidate(false, true); };
+	virtual void						setSize(const ci::vec2& size) { mSize = size; invalidate(false, true); }
 
 	//! Width of this view. Defaults to 0 and is not affected by children.
-	virtual float						getWidth() { return getSize().x; };
-	virtual void						setWidth(const float width) { ci::vec2 s = getSize(); setSize(ci::vec2(width, s.y)); };
+	virtual float						getWidth() { return getSize().x; }
+	virtual void						setWidth(const float width) { ci::vec2 s = getSize(); setSize(ci::vec2(width, s.y)); }
 
 	//! Height of this view. Defaults to 0 and is not affected by children.
-	virtual float						getHeight() { return getSize().y; };
-	virtual void						setHeight(const float height) { ci::vec2 s = getSize(); setSize(ci::vec2(s.x, height)); };
+	virtual float						getHeight() { return getSize().y; }
+	virtual void						setHeight(const float height) { ci::vec2 s = getSize(); setSize(ci::vec2(s.x, height)); }
 
 	//! The fill color used when drawing the bounding rect when a size greater than 0, 0 is given.
 	virtual ci::Anim<ci::ColorA>&		getBackgroundColor() { return mBackgroundColor; }
@@ -184,7 +184,7 @@ public:
 	const ci::vec2						convertLocalToGlobal(const ci::vec2& local) { ci::vec4 global = getGlobalTransform() * ci::vec4(local, 0, 1); return ci::vec2(global.x, global.y); }
 	
 	//! Converts a position from the root view's global space to the current view's local space.
-	const ci::vec2						convertGlobalToLocal(const ci::vec2& global) { ci::vec4 local = glm::inverse(getGlobalTransform()) * ci::vec4(global, 0, 1); return ci::vec2(local); };
+	const ci::vec2						convertGlobalToLocal(const ci::vec2& global) { ci::vec4 local = glm::inverse(getGlobalTransform()) * ci::vec4(global, 0, 1); return ci::vec2(local); }
 
 
 
@@ -212,13 +212,13 @@ protected:
 
 	virtual void update(const double deltaTime);	//! Gets called before draw() and after any parent's update. Override this method to plug into the update loop.
 
-	inline virtual void	willDraw() {};	//! Called by drawScene before draw()
+	inline virtual void	willDraw() {}	//! Called by drawScene before draw()
 	virtual void		draw();			//! Called by drawScene and allows for drawing content for this node. By default draws a rectangle with the current size and background color (only if x/y /bg-alpha > 0)
 	inline virtual void	drawChildren(const ci::ColorA& parentTint); //! Called by drawScene() after draw() and before didDraw(). Implemented at bottom of class.
-	inline virtual void	didDraw() {};	//! Called by drawScene after draw()
+	inline virtual void	didDraw() {}	//! Called by drawScene after draw()
 
-	inline virtual void didMoveToView(BaseView* parent) {};		//! Called when moved to a parent
-	inline virtual void willMoveFromView(BaseView* parent) {};	//! Called when removed from a parent
+	inline virtual void didMoveToView(BaseView* parent) {}		//! Called when moved to a parent
+	inline virtual void willMoveFromView(BaseView* parent) {}	//! Called when removed from a parent
 
 	const ci::ColorA& getDrawColor() const { return mDrawColor; }	//! The color used for drawing, which is a composite of the alpha and tint colors.
 
