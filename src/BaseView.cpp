@@ -300,14 +300,12 @@ CueRef BaseView::dispatchAfter(std::function<void()> fn, float delay) {
 }
 
 void BaseView::dispatchEvent(Event& event) {
-	event.currentTarget = this;
 	if (!event.target) {
 		event.target = this;
-	}
-	else {
+	} else {
 		handleEvent(event);
 	}
-	
+	event.currentTarget = this;
 	if (mParent) {
 		mParent->dispatchEvent(event);
 	}
