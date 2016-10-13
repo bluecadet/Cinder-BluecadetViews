@@ -27,9 +27,12 @@ struct Event {
 		ContentUpdated,
 		Other
 	};
-	Type				type = Type::ContentUpdated;
+	Type				type = Type::Other;
 	BaseView*			target = nullptr;
 	BaseView*			currentTarget = nullptr;
+
+	Event(Type eType, BaseView* eTarget) :
+		type(eType), target(eTarget) {} 
 };
 
 class BaseView {
@@ -302,9 +305,7 @@ inline void BaseView::invalidate(const bool transforms, const bool content) {
 	}
 
 	if (content) {
-		auto event = Event();
-		event.type = Event::Type::ContentUpdated;
-		dispatchEvent(event);
+		dispatchEvent(Event(Event::Type::ContentUpdated, this));
 	}
 }
 
