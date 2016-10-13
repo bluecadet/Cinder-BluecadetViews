@@ -19,6 +19,8 @@ BaseView::BaseView() :
 	mGlobalTransform(mat4()),
 	mHasInvalidTransforms(true),
 
+	mHasInvalidContent(true),
+
 	mTint(Color(1.0f, 1.0f, 1.0f)),
 	mDrawColor(ColorA(1.0f, 1.0f, 1.0f, 1.0f)),
 	mBackgroundColor(ColorA(0, 0, 0, 0)),
@@ -47,6 +49,7 @@ void BaseView::reset() {
 	mTransform = mat4();
 	mGlobalTransform = mat4();
 	mHasInvalidTransforms = true;
+	mHasInvalidContent = true;
 	mTint = Color(1.0f, 1.0f, 1.0f);
 	mDrawColor = ColorA(1.0f, 1.0f, 1.0f, 1.0f);
 	mBackgroundColor = ColorA(0, 0, 0, 0);
@@ -204,8 +207,13 @@ void BaseView::moveChildToIndex(BaseViewList::iterator childIt, size_t index) {
 void BaseView::updateScene(const double deltaTime) {
 	if (mTimeline && !mTimeline->empty()) {
 		mTimeline->stepTo(timeline().getCurrentTime());
-		invalidateTransforms();
+		invalidate();
 	}
+	
+	if (mHasInvalidContent) {
+		dispatchEvent(Event(Event::Type::ContentUpdated, this));
+	}
+
 	update(deltaTime);
 	for (auto child : mChildren) {
 		child->updateScene(deltaTime);
@@ -222,6 +230,7 @@ void BaseView::drawScene(const ColorA& parentTint) {
 	}
 
 	validateTransforms();
+	validateContent();
 
 	mDrawColor.r = mTint.value().r * parentTint.r;
 	mDrawColor.g = mTint.value().g * parentTint.g;
@@ -288,6 +297,18 @@ TimelineRef BaseView::getTimeline() {
 
 CueRef BaseView::dispatchAfter(std::function<void()> fn, float delay) {
 	return getTimeline()->add(fn, getTimeline()->getCurrentTime() + delay);
+}
+
+void BaseView::dispatchEvent(Event& event) {
+	if (!event.target) {
+		event.target = this;
+	} else {
+		handleEvent(event);
+	}
+	event.currentTarget = this;
+	if (mParent) {
+		mParent->dispatchEvent(event);
+	}
 }
 
 //==================================================

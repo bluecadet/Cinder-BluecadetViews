@@ -22,6 +22,19 @@ typedef std::shared_ptr<class BaseView> BaseViewRef;
 typedef std::list<BaseViewRef> BaseViewList;
 typedef BaseViewList::size_type BaseViewListIndexType;
 
+struct Event {
+	enum class Type {
+		ContentUpdated,
+		Other
+	};
+	Type				type = Type::Other;
+	BaseView*			target = nullptr;
+	BaseView*			currentTarget = nullptr;
+
+	Event(Type eType, BaseView* eTarget) :
+		type(eType), target(eTarget) {} 
+};
+
 class BaseView {
 	typedef boost::variant<
 		bool, int, float, double,
@@ -33,7 +46,6 @@ class BaseView {
 	typedef std::map<std::string, UserInfoTypes> UserInfo;
 
 public:
-
 
 	BaseView();
 	virtual ~BaseView();
@@ -61,6 +73,11 @@ public:
 	//! Helper that will dispatch a function after a delay.
 	//! The function will be added to the view's timeline and can be canceled with all other animations.
 	virtual ci::CueRef		dispatchAfter(std::function<void()> fn, float delay = 0.0f);
+
+	//! Dispatch events as needed. 
+	void					dispatchEvent(Event& event);
+	//! Override to handle response to dispatched event
+	virtual void			handleEvent(const Event& event) {};
 
 	virtual void			addChild(BaseViewRef child);
 	virtual void			addChild(BaseViewRef child, size_t index);
@@ -92,52 +109,52 @@ public:
 	virtual const size_t				getNumChildren() const { return mChildren.size(); }
 
 	//! Local position relative to parent view
-	virtual ci::Anim<ci::vec2>&			getPosition() { return mPosition; };
-	virtual void						setPosition(const ci::vec2& position) { mPosition = position; invalidateTransforms(); }
-	virtual void						setPosition(const ci::vec3& position) { mPosition = ci::vec2(position.x, position.y); invalidateTransforms(); }
+	virtual ci::Anim<ci::vec2>&			getPosition() { return mPosition; }
+	virtual void						setPosition(const ci::vec2& position) { mPosition = position; invalidate(); }
+	virtual void						setPosition(const ci::vec3& position) { mPosition = ci::vec2(position.x, position.y); invalidate(); }
 
 	//! Shorthand for combining position and size to center the view at `center`
-	virtual void						setCenter(const ci::vec2 center) { setPosition(center  - 0.5f * getSize()); };
+	virtual void						setCenter(const ci::vec2 center) { setPosition(center  - 0.5f * getSize()); }
 
 	//! Shorthand for getting the center based on the current position and size
 	virtual ci::vec2					getCenter() { return getPosition().value() + getSize() * 0.5f; }
 
 	//! Local scale relative to parent view
-	virtual ci::Anim<ci::vec2>&			getScale() { return mScale; };
-	virtual void						setScale(const float& scale) { mScale = ci::vec2(scale, scale);  invalidateTransforms(); };
-	virtual void						setScale(const ci::vec2& scale) { mScale = scale;  invalidateTransforms(); };
-	virtual void						setScale(const ci::vec3& scale) { mScale = ci::vec2(scale.x, scale.y);  invalidateTransforms(); };
+	virtual ci::Anim<ci::vec2>&			getScale() { return mScale; }
+	virtual void						setScale(const float& scale) { mScale = ci::vec2(scale, scale);  invalidate(); }
+	virtual void						setScale(const ci::vec2& scale) { mScale = scale;  invalidate(); }
+	virtual void						setScale(const ci::vec3& scale) { mScale = ci::vec2(scale.x, scale.y);  invalidate(); }
 
 	//! Local rotation relative to parent view. Changing this value invalidates transforms.
-	virtual ci::Anim<ci::quat>&			getRotation() { return mRotation; };
-	virtual void						setRotation(const float radians) { mRotation = glm::angleAxis(radians, ci::vec3(0, 0, 1)); invalidateTransforms(); };
-	virtual void						setRotation(const ci::quat& rotation) { mRotation = rotation; invalidateTransforms(); };
+	virtual ci::Anim<ci::quat>&			getRotation() { return mRotation; }
+	virtual void						setRotation(const float radians) { mRotation = glm::angleAxis(radians, ci::vec3(0, 0, 1)); invalidate(); }
+	virtual void						setRotation(const ci::quat& rotation) { mRotation = rotation; invalidate(); }
 
 	//! Acts as the point of origin for all transforms. Essentially allows for rotating and scaling around a specific point. Defaults to (0,0). Changing this value invalidates transforms.
-	virtual ci::Anim<ci::vec2>&			getTransformOrigin() { return mTransformOrigin; invalidateTransforms(); }
+	virtual ci::Anim<ci::vec2>&			getTransformOrigin() { return mTransformOrigin; invalidate(); }
 	void								setTransformOrigin(const ci::vec2& value) { mTransformOrigin = value; }
 
 	//! Size of this view. Defaults to 0, 0 and is not affected by children. Does not affect transforms (position, rotation, scale).
 	virtual const ci::vec2				getSize() { return mSize; }
-	virtual void						setSize(const ci::vec2& size) { mSize = size; }
+	virtual void						setSize(const ci::vec2& size) { mSize = size; invalidate(false, true); }
 
 	//! Width of this view. Defaults to 0 and is not affected by children.
-	virtual float						getWidth() { return getSize().x; };
-	virtual void						setWidth(const float width) { ci::vec2 s = getSize(); setSize(ci::vec2(width, s.y)); };
+	virtual float						getWidth() { return getSize().x; }
+	virtual void						setWidth(const float width) { ci::vec2 s = getSize(); setSize(ci::vec2(width, s.y)); }
 
 	//! Height of this view. Defaults to 0 and is not affected by children.
-	virtual float						getHeight() { return getSize().y; };
-	virtual void						setHeight(const float height) { ci::vec2 s = getSize(); setSize(ci::vec2(s.x, height)); };
+	virtual float						getHeight() { return getSize().y; }
+	virtual void						setHeight(const float height) { ci::vec2 s = getSize(); setSize(ci::vec2(s.x, height)); }
 
 	//! The fill color used when drawing the bounding rect when a size greater than 0, 0 is given.
 	virtual ci::Anim<ci::ColorA>&		getBackgroundColor() { return mBackgroundColor; }
-	virtual void						setBackgroundColor(const ci::Color color) { mBackgroundColor = ci::ColorA(color, 1.0f); } //! Sets background color with 100% alpha
-	virtual void						setBackgroundColor(const ci::ColorA color) { mBackgroundColor = color; }
+	virtual void						setBackgroundColor(const ci::Color color) { mBackgroundColor = ci::ColorA(color, 1.0f); invalidate(false, true); } //! Sets background color with 100% alpha
+	virtual void						setBackgroundColor(const ci::ColorA color) { mBackgroundColor = color; invalidate(false, true); }
 
 	//! Applied before each draw together with mAlpha; Defaults to white
 	virtual ci::Anim<ci::Color>&		getTint() { return mTint; }
-	virtual void						setTint(const ci::Color tint) { mTint = tint; } //! Sets tint while preserving current alpha
-	virtual void						setTint(const ci::ColorA tint) { mTint = tint; mAlpha = tint.a; } //! Sets mTint and mAlpha properties
+	virtual void						setTint(const ci::Color tint) { mTint = tint; invalidate(false, true); } //! Sets tint while preserving current alpha
+	virtual void						setTint(const ci::ColorA tint) { mTint = tint; mAlpha = tint.a; invalidate(false, true); } //! Sets mTint and mAlpha properties
 
 	//! Applied before each draw together with mTint; Gets multiplied with parent alpha; Defaults to 1.0f
 	virtual ci::Anim<float>&			getAlpha() { return mAlpha; }
@@ -170,7 +187,7 @@ public:
 	const ci::vec2						convertLocalToGlobal(const ci::vec2& local) { ci::vec4 global = getGlobalTransform() * ci::vec4(local, 0, 1); return ci::vec2(global.x, global.y); }
 	
 	//! Converts a position from the root view's global space to the current view's local space.
-	const ci::vec2						convertGlobalToLocal(const ci::vec2& global) { ci::vec4 local = glm::inverse(getGlobalTransform()) * ci::vec4(global, 0, 1); return ci::vec2(local); };
+	const ci::vec2						convertGlobalToLocal(const ci::vec2& global) { ci::vec4 local = glm::inverse(getGlobalTransform()) * ci::vec4(global, 0, 1); return ci::vec2(local); }
 
 
 
@@ -198,13 +215,13 @@ protected:
 
 	virtual void update(const double deltaTime);	//! Gets called before draw() and after any parent's update. Override this method to plug into the update loop.
 
-	inline virtual void	willDraw() {};	//! Called by drawScene before draw()
+	inline virtual void	willDraw() {}	//! Called by drawScene before draw()
 	virtual void		draw();			//! Called by drawScene and allows for drawing content for this node. By default draws a rectangle with the current size and background color (only if x/y /bg-alpha > 0)
 	inline virtual void	drawChildren(const ci::ColorA& parentTint); //! Called by drawScene() after draw() and before didDraw(). Implemented at bottom of class.
-	inline virtual void	didDraw() {};	//! Called by drawScene after draw()
+	inline virtual void	didDraw() {}	//! Called by drawScene after draw()
 
-	inline virtual void didMoveToView(BaseView* parent) {};		//! Called when moved to a parent
-	inline virtual void willMoveFromView(BaseView* parent) {};	//! Called when removed from a parent
+	inline virtual void didMoveToView(BaseView* parent) {}		//! Called when moved to a parent
+	inline virtual void willMoveFromView(BaseView* parent) {}	//! Called when removed from a parent
 
 	const ci::ColorA& getDrawColor() const { return mDrawColor; }	//! The color used for drawing, which is a composite of the alpha and tint colors.
 
@@ -212,7 +229,11 @@ protected:
 	inline void	validateTransforms(const bool force = false);
 
 	//! Marks the transformation matrix (and all of its children's matrices) as invalid. This will cause the matrices to be re-calculated when necessary.
-	inline void invalidateTransforms()	{ mHasInvalidTransforms = true; for (auto &child : mChildren) child->invalidateTransforms(); };
+	//! When content is true, marks the content as invalid and will dispatch a content updated event
+	inline void invalidate(const bool transforms = true, const bool content = true);
+
+	const bool hasInvalidContent() { return mHasInvalidContent; }
+	inline virtual void validateContent() { if (!mHasInvalidContent) return; mHasInvalidContent = false; }
 
 private:
 
@@ -246,6 +267,8 @@ private:
 	ci::mat4 mGlobalTransform;
 	bool mHasInvalidTransforms;
 
+	bool mHasInvalidContent;
+
 	std::map<std::string, UserInfoTypes> mUserInfo;
 
 }; // class BaseView
@@ -276,6 +299,19 @@ void BaseView::validateTransforms(const bool force) {
 	mGlobalTransform = mParent ? mParent->getGlobalTransform() * mTransform : mTransform;
 
 	mHasInvalidTransforms = false;
+}
+
+inline void BaseView::invalidate(const bool transforms, const bool content) {
+	if (transforms) {
+		mHasInvalidTransforms = true;
+		for (auto child : mChildren) {
+			child->invalidate(true, false);
+		}
+	}
+
+	if (content) {
+		mHasInvalidContent = true;
+	}
 }
 
 BaseViewList::iterator BaseView::getChildIt(BaseViewRef child) {

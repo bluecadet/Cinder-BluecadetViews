@@ -97,6 +97,8 @@ void TextView::renderContent(bool surfaceOnly, bool alpha, bool premultiplied, b
 void TextView::invalidate(const bool layout, const bool size) {
 	StyledTextLayout::invalidate(layout, size);
 	mHasInvalidRenderedContent = true;
+
+	BaseView::invalidate(false, true);
 }
 
 void TextView::resetRenderedContent() {
