@@ -184,8 +184,7 @@ public:
 	//! Converts a position from the root view's global space to the current view's local space.
 	const ci::vec2						convertGlobalToLocal(const ci::vec2& global) { ci::vec4 local = glm::inverse(getGlobalTransform()) * ci::vec4(global, 0, 1); return ci::vec2(local); };
 
-	//void								bakeInTransformOrigin();
-
+	
 	//==================================================
 	//! Stores key-based user info. Overrivetes any existing values for this key.
 	template <typename T>

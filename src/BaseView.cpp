@@ -260,7 +260,6 @@ void BaseView::drawScene(const ColorA& parentTint) {
 	{
 		gl::ScopedModelMatrix scopedModelMatrix;
 		gl::ScopedViewMatrix scopedViewMatrix;
-		//gl::ScopedBlendAlpha scopedBlendAlpha; // bb: no real need for this at this point since we're not changing blend modes a lot
 
 		gl::multModelMatrix(mTransform);
 		gl::color(mDrawColor);
