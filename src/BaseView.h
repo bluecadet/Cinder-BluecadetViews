@@ -296,7 +296,9 @@ void BaseView::validateTransforms(const bool force) {
 inline void BaseView::invalidate(const bool transforms, const bool content) {
 	if (transforms) {
 		mHasInvalidTransforms = true;
-		for (auto &child : mChildren) child->invalidate(true, false);
+		for (auto &child : mChildren) {
+			child->invalidate(true, false);
+		}
 	}
 
 	if (content) {
