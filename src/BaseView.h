@@ -22,6 +22,16 @@ typedef std::shared_ptr<class BaseView> BaseViewRef;
 typedef std::list<BaseViewRef> BaseViewList;
 typedef BaseViewList::size_type BaseViewListIndexType;
 
+struct Event {
+	enum class Type {
+		ContentUpdated,
+		Other
+	};
+	Type				type = Type::ContentUpdated;
+	BaseView*			target = nullptr;
+	BaseView*			currentTarget = nullptr;
+};
+
 class BaseView {
 	typedef boost::variant<
 		bool, int, float, double,
@@ -33,12 +43,6 @@ class BaseView {
 	typedef std::map<std::string, UserInfoTypes> UserInfo;
 
 public:
-	struct Event {
-		enum class Type { ContentUpdated, Other };
-		Type				type = Event::Type::ContentUpdated;
-		BaseView*			target = nullptr;
-		BaseView*			currentTarget = nullptr;
-	};
 
 	BaseView();
 	virtual ~BaseView();
