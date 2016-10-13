@@ -137,7 +137,7 @@ void ViewTypesSampleApp::setup() {
 	auto circleInsideFbo = EllipseViewRef(new EllipseView());
 	circleInsideFbo->setup(100.0f, ColorA(0.8f, 0.2f, 0.2f, 1.0f));
 	fboView->addChild(circleInsideFbo);
-	circleInsideFbo->getTimeline()->apply(&circleInsideFbo->getScale(), vec2(3.0f), 2.0f).loop(true);
+//	circleInsideFbo->getTimeline()->apply(&circleInsideFbo->getScale(), vec2(3.0f), 2.0f).loop(true);
 	getRootView()->addChild(fboView);
 
 	auto cancelView = TouchViewRef(new TouchView());

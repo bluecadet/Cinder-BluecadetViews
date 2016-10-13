@@ -24,10 +24,7 @@ public:
 	void			setSize(const ci::vec2 & size) override;
 
 	//! Will re-create the current fbo on the next draw call and marks the content to be re-drawn.
-	virtual void	invalidateFbo() { mFbo = nullptr; mHasInvalidContent = true; }
-
-	//! Will trigger the FBO to re-draw its content before the next draw call
-	virtual void	invalidateContent() { mHasInvalidContent = true; }
+	virtual void	invalidateFbo() { mFbo = nullptr; invalidate(false, true); }
 
 	//! Will create a new fbo with this format.
 	virtual void	setFboFormat(const ci::gl::Fbo::Format & format) { mFboFormat = format; invalidateFbo(); }
@@ -38,21 +35,24 @@ public:
 	void			setForceRedraw(const bool value) { mForceRedraw = value; }
 
 	//! Listens for contentUpdated events. This fires with it's own or a child view's size, scale, rotation, transform or position are updated.
-	virtual void	handleEvent(const Event& event) override;
+	void			handleEvent(const Event& event) override;
 
 protected:
 
 	virtual ci::gl::FboRef	createFbo(const ci::ivec2 & size, const ci::gl::Fbo::Format & format);
 
 	void			validateFbo();
+
 	//! Redraw the fbo children
-	void			validateContent();
+	inline void		validateContent() override;
+
+	//! Draw content within this view
 	void			draw() override;
-	//! Re-draws this view's content to the FBO if necessary.
-	void			drawChildren(const ci::ColorA& parentTint) override;
+
+	//! Re-draws this view's content to the FBO if necessary. Overrides BaseView, only called during validateContent for fbo view.
+	void			drawChildren(const ci::ColorA& parentTint) override {};
 
 	bool					mForceRedraw;
-	bool					mHasInvalidContent;
 
 	ci::gl::Fbo::Format		mFboFormat;
 	ci::gl::FboRef			mFbo; //! Careful, if fbo is invalidated this could be NULL!

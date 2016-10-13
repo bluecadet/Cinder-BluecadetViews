@@ -232,6 +232,9 @@ protected:
 	//! When content is true, marks the content as invalid and will dispatch a content updated event
 	inline void invalidate(const bool transforms = true, const bool content = true);
 
+	const bool hasInvalidContent() { return mHasInvalidContent; }
+	inline virtual void validateContent() { if (!mHasInvalidContent) return; mHasInvalidContent = false; }
+
 private:
 
 	// Helpers
@@ -263,6 +266,8 @@ private:
 	ci::mat4 mTransform;
 	ci::mat4 mGlobalTransform;
 	bool mHasInvalidTransforms;
+
+	bool mHasInvalidContent;
 
 	std::map<std::string, UserInfoTypes> mUserInfo;
 
@@ -305,7 +310,7 @@ inline void BaseView::invalidate(const bool transforms, const bool content) {
 	}
 
 	if (content) {
-		dispatchEvent(Event(Event::Type::ContentUpdated, this));
+		mHasInvalidContent = true;
 	}
 }
 

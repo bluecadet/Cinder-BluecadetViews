@@ -9,8 +9,7 @@ namespace views {
 
 FboView::FboView() : BaseView(),
 mFbo(nullptr),
-mForceRedraw(false),
-mHasInvalidContent(true)
+mForceRedraw(false)
 {
 	gl::Texture2d::Format fboTexFormat;
 	fboTexFormat.enableMipmapping(true);
@@ -39,57 +38,69 @@ ci::gl::FboRef FboView::createFbo(const ci::ivec2 & size, const ci::gl::Fbo::For
 void FboView::validateFbo(){
 	if (getSize().x > 0 && getSize().y > 0) {
 		mFbo = createFbo(getSize(), getFboFormat());
+		// Invalidate content to confirm it will redraw to fbo
+		invalidate(false, true);
 	}
 }
 
-void FboView::validateContent(){
+inline void FboView::validateContent(){
 
-	auto vp = gl::getViewport();
+	console() << "FboView::validateContent" << endl;
 
-	gl::ScopedMatrices scopedMatrices;
-	gl::ScopedViewport scopedViewport(ivec2(0), mFbo->getSize());
-	
-	gl::setMatricesWindow(mFbo->getSize());
-
-	mFbo->bindFramebuffer();
-
-	gl::viewport(mFbo->getSize());
-	gl::clear(ColorA(0, 0, 0, 0));
-
-	BaseView::drawChildren(getDrawColor());
-
-	mFbo->unbindFramebuffer();
-
-	mHasInvalidContent = false;
-}
-
-void FboView::handleEvent(const Event& event) {
-	if (event.type == Event::Type::ContentUpdated) {
-		invalidateContent();
-	}
-}
-
-void FboView::draw() {
 	if (!mFbo) {
 		validateFbo();
 	}
 
+	if (!hasInvalidContent()) {
+		return;
+	}
+
+	if (mFbo) {
+		auto vp = gl::getViewport();
+
+		gl::ScopedMatrices scopedMatrices;
+		gl::ScopedViewport scopedViewport(ivec2(0), mFbo->getSize());
+
+		gl::setMatricesWindow(mFbo->getSize());
+
+		mFbo->bindFramebuffer();
+
+		gl::viewport(mFbo->getSize());
+		gl::clear(ColorA(0, 0, 0, 0));
+
+		BaseView::drawChildren(getDrawColor());
+
+		mFbo->unbindFramebuffer();
+
+		// Set mHasInvalidContent back to false so it doesn't continue to validate on every draw
+		BaseView::validateContent();
+	}
+	else {
+		console() << "FboView Warning: No fbo to draw to (size: " << getSize() << ")" << endl;
+	}
+
+}
+
+void FboView::handleEvent(const Event& event) {
+	if (event.type == Event::Type::ContentUpdated) {
+		invalidate(false, true);
+	}
+}
+
+void FboView::draw() {
+	
 	if (!mFbo) {
 		console() << "FboView Warning: No fbo to draw to (size: " << getSize() << ")" << endl;
 		return;
 	}
 
-	if (mHasInvalidContent || mForceRedraw) {
+	if (hasInvalidContent() || mForceRedraw){
 		validateContent();
 	}
 
 	if (mFbo) {
 		gl::draw(mFbo->getColorTexture());
 	}
-}
-
-void FboView::drawChildren(const ci::ColorA & parentTint){
-	// Don't do anything; Children are only drawn in validateContent().
 }
 
 }

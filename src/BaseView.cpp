@@ -19,6 +19,8 @@ BaseView::BaseView() :
 	mGlobalTransform(mat4()),
 	mHasInvalidTransforms(true),
 
+	mHasInvalidContent(true),
+
 	mTint(Color(1.0f, 1.0f, 1.0f)),
 	mDrawColor(ColorA(1.0f, 1.0f, 1.0f, 1.0f)),
 	mBackgroundColor(ColorA(0, 0, 0, 0)),
@@ -47,6 +49,7 @@ void BaseView::reset() {
 	mTransform = mat4();
 	mGlobalTransform = mat4();
 	mHasInvalidTransforms = true;
+	mHasInvalidContent = true;
 	mTint = Color(1.0f, 1.0f, 1.0f);
 	mDrawColor = ColorA(1.0f, 1.0f, 1.0f, 1.0f);
 	mBackgroundColor = ColorA(0, 0, 0, 0);
@@ -206,6 +209,11 @@ void BaseView::updateScene(const double deltaTime) {
 		mTimeline->stepTo(timeline().getCurrentTime());
 		invalidate();
 	}
+	
+	if (mHasInvalidContent) {
+		dispatchEvent(Event(Event::Type::ContentUpdated, this));
+	}
+
 	update(deltaTime);
 	for (auto child : mChildren) {
 		child->updateScene(deltaTime);
@@ -222,6 +230,7 @@ void BaseView::drawScene(const ColorA& parentTint) {
 	}
 
 	validateTransforms();
+	validateContent();
 
 	mDrawColor.r = mTint.value().r * parentTint.r;
 	mDrawColor.g = mTint.value().g * parentTint.g;
