@@ -9,11 +9,11 @@
 // These aren't used in the header, but added as convenience includes for BaseApp sub classes.
 #include "SettingsManager.h"
 #include "ScreenLayout.h"
-#include "TouchManager.h"
 
-#include "drivers/MouseDriver.h"
-#include "drivers/TuioDriver.h"
-#include "drivers/SimulatedTouchDriver.h"
+#include <touch/TouchManager.h>
+#include <touch/drivers/MouseDriver.h>
+#include <touch/drivers/TuioDriver.h>
+#include <touch/drivers/SimulatedTouchDriver.h>
 
 namespace bluecadet {
 namespace core {
