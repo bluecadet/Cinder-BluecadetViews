@@ -4,7 +4,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/params/Params.h"
 
-#include "BaseView.h"
+#include <views/BaseView.h>
 
 // These aren't used in the header, but added as convenience includes for BaseApp sub classes.
 #include "SettingsManager.h"
@@ -16,7 +16,7 @@
 #include "drivers/SimulatedTouchDriver.h"
 
 namespace bluecadet {
-namespace views {
+namespace core {
 
 typedef std::shared_ptr<class BaseApp> BaseAppRef;
 
@@ -42,7 +42,7 @@ public:
 	void		addTouchSimulatorParams(float touchesPerSecond = 50.f);
 
 	//! Use this view to add any children. The root view may be scaled and translated when using ScreenLayout to zoom/pan around the app.
-	BaseViewRef	getRootView() const			{ return mRootView; };
+	views::BaseViewRef	getRootView() const	{ return mRootView; };
 
 	//! The last time that update was called in seconds since app launch.
 	double		getLastUpdateTime() const	{ return mLastUpdateTime; }
@@ -58,7 +58,7 @@ public:
 	touch::drivers::SimulatedTouchDriver	getTouchSimDriver() const	{ return mSimulatedTouchDriver; }
 
 private:
-	BaseViewRef								mRootView;
+	views::BaseViewRef						mRootView;
 	double									mLastUpdateTime;
 
 	touch::drivers::TuioDriver				mTuioDriver;

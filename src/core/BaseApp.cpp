@@ -5,12 +5,12 @@
 using namespace ci;
 using namespace ci::app;
 using namespace std;
-using namespace bluecadet::utils;
+using namespace bluecadet::views;
 using namespace bluecadet::touch;
 using namespace bluecadet::touch::drivers;
 
 namespace bluecadet {
-namespace views {
+namespace core {
 
 BaseApp::BaseApp() :
 	ci::app::App(),

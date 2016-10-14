@@ -8,10 +8,10 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include "BaseView.h"
+#include <views/BaseView.h>
 
 namespace bluecadet {
-namespace views {
+namespace core {
 
 typedef std::shared_ptr<class ScreenLayout> ScreenLayoutRef;
 

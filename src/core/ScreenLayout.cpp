@@ -6,7 +6,7 @@ using namespace std;
 using namespace bluecadet::views;
 
 namespace bluecadet {
-namespace views {
+namespace core {
 
 ScreenLayout::ScreenLayout() :
 	mNumRows(1),
