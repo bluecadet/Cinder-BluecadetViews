@@ -45,6 +45,7 @@ void ScreenLayout::updateLayout() {
 	}
 
 	mAppSize = mDisplaySize * ivec2(mNumColumns, mNumRows);
+	mAppSizeChanged.emit(mAppSize);
 }
 
 Rectf ScreenLayout::getDisplayBounds(const int displayId) {

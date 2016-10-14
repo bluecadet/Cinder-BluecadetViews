@@ -18,6 +18,11 @@ Comments:
 #include "BaseView.h"
 #include "Touch.h"
 
+// forward declaration for GWC -- temporary solution
+namespace gwc {
+	class GestureEvent;
+}
+
 namespace bluecadet {
 namespace views {
 
@@ -32,8 +37,8 @@ public:
 	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidBeginTouch;		//! Triggered for first touch when touch begins and for subsequent touches if multi-touch is enabled
 	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidMoveTouch;		//! Triggered for moving touches after touch began
 	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidEndTouch;		//! Triggered when touch ends and when touch is canceled
-	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidCancelTouch;	//! Triggered after mDidEndTouch when cancelTouches() is called
 	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidTap;			//! Triggered after mDidEndTouch if the touch fits the parameters for tapping
+	boost::signals2::signal<void(const gwc::GestureEvent& gestureEvent)>mDidReceiveGesture;	//! Triggered after mDidEndTouch if the touch fits the parameters for tapping
 
 
 	//! Setup/Destruction
@@ -63,9 +68,10 @@ public:
 	virtual bool	canAcceptTouch() const;					//! Will return whether this touch object can accept a new touch based on its current state.
 
 	// Used by the touch manager and should not be overriden
-	virtual	void	processTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) final;
-	virtual	void	processTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) final;
-	virtual	void	processTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) final;
+	virtual void	processTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) final;
+	virtual void	processTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) final;
+	virtual void	processTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) final;
+	virtual void	processGesture(const gwc::GestureEvent & gestureEvent) final;
 
 	//! Getters/Setters
 
@@ -113,14 +119,18 @@ public:
 	bool			getDebugDrawTouchPath() const { return mDebugDrawTouchPath; }
 	void			setDebugDrawTouchPath(const bool value) { mDebugDrawTouchPath = value; }
 
+	const std::string & getTouchViewId() const { return mTouchViewId; }
+
 protected:
-	virtual void	draw() override;
+
+	void			draw() override;
 																				
 	// Override these boilerplate methods to react to touch events
 	virtual	void	handleTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) {};
 	virtual void	handleTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) {};
 	virtual void	handleTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) {};
 	virtual void	handleTouchTapped(const bluecadet::touch::TouchEvent& touchEvent) {};
+	virtual void	handleGesture(const gwc::GestureEvent & gestureEvent) {};
 
 	//! Resets all touch-state related variables to a non-touched state
 	virtual void	resetTouchState();
@@ -148,6 +158,8 @@ private:
 	double			mMaxTapDuration;
 
 	bool			mDebugDrawTouchPath;
+
+	std::string		mTouchViewId;
 };
 
 }

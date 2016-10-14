@@ -114,10 +114,10 @@ public:
 	virtual void						setPosition(const ci::vec3& position) { mPosition = ci::vec2(position.x, position.y); invalidate(); }
 
 	//! Shorthand for combining position and size to center the view at `center`
-	virtual void						setCenter(const ci::vec2 center) { setPosition(center  - 0.5f * getSize()); }
+	virtual void						setCenter(const ci::vec2 center) { setPosition(center  - 0.5f * mSize); }
 
 	//! Shorthand for getting the center based on the current position and size
-	virtual ci::vec2					getCenter() { return getPosition().value() + getSize() * 0.5f; }
+	virtual ci::vec2					getCenter() { return getPosition().value() + 0.5f * mSize; }
 
 	//! Local scale relative to parent view
 	virtual ci::Anim<ci::vec2>&			getScale() { return mScale; }
@@ -130,9 +130,15 @@ public:
 	virtual void						setRotation(const float radians) { mRotation = glm::angleAxis(radians, ci::vec3(0, 0, 1)); invalidate(); }
 	virtual void						setRotation(const ci::quat& rotation) { mRotation = rotation; invalidate(); }
 
-	//! Acts as the point of origin for all transforms. Essentially allows for rotating and scaling around a specific point. Defaults to (0,0). Changing this value invalidates transforms.
-	virtual ci::Anim<ci::vec2>&			getTransformOrigin() { return mTransformOrigin; invalidate(); }
-	void								setTransformOrigin(const ci::vec2& value) { mTransformOrigin = value; }
+	//! Acts as the point of origin for all transforms.
+	//! Essentially allows for rotating and scaling around a specific point.
+	//! Changing this value invalidates transforms. Defaults to (0,0).
+	virtual ci::Anim<ci::vec2>&			getTransformOrigin() { return mTransformOrigin; }
+	void								setTransformOrigin(const ci::vec2& value) { mTransformOrigin = value; invalidate(); }
+
+	//! Sets the transform origin. If true is passed for offset compensation then the position will be updated to compensate for the new origin.
+	//! This will have the effect that the view will visually remain locked in position. Passing in false is the same as calling setTransformOrigin(vec2).
+	void								setTransformOrigin(const ci::vec2& value, const bool compensateForOffset);
 
 	//! Size of this view. Defaults to 0, 0 and is not affected by children. Does not affect transforms (position, rotation, scale).
 	virtual const ci::vec2				getSize() { return mSize; }
@@ -180,8 +186,14 @@ public:
 	//! The global transform based on the root view's coordinate space. Since this method validates the transforms them before returning it's non-const.
 	const ci::mat4&						getGlobalTransform()	{ validateTransforms(); return mGlobalTransform; }
 
+	//! A transform that rotates and scales around transform origin. Since this method validates the transforms them before returning it's non-const.
+	const ci::mat4&						getRotationScaleTransform()	{ validateTransforms(); return mRotationScaleTransform; }
+
 	//! Global position in the root view's coordinate space.
 	const ci::vec2						getGlobalPosition()		{ if (!mParent) return mPosition; return mParent->convertLocalToGlobal(mPosition); };
+
+	//! Set the global position in the root view's coordinate space.
+	void								setGlobalPosition(const ci::vec2 pos) { if (!mParent) { setPosition(pos); } else { setPosition(mParent->convertGlobalToLocal(pos)); }};
 	
 	//! Converts a position from the current view's local space to the root view's global space.
 	const ci::vec2						convertLocalToGlobal(const ci::vec2& local) { ci::vec4 global = getGlobalTransform() * ci::vec4(local, 0, 1); return ci::vec2(global.x, global.y); }
@@ -189,15 +201,27 @@ public:
 	//! Converts a position from the root view's global space to the current view's local space.
 	const ci::vec2						convertGlobalToLocal(const ci::vec2& global) { ci::vec4 local = glm::inverse(getGlobalTransform()) * ci::vec4(global, 0, 1); return ci::vec2(local); }
 
-
-
+	
 	//==================================================
-	//! Stores key-based user info. Overrivetes any existing values for this key.
+	// User info
+	//
+	
+	//! Stores key-based user info. Overwrites any existing values for this key and type.
 	template <typename T>
 	void setUserInfo(const std::string& key, const T& value) { mUserInfo[key] = value; }
+	
+	//! Checks if a user info entry exists for this key.
 	bool hasUserInfo(const std::string& key) {
-		auto it = mUserInfo.find(key);
+		const auto it = mUserInfo.find(key);
 		return it != mUserInfo.end();
+	}
+
+	//! Removes a user info entry if it exists for this key.
+	void removeUserInfo(const std::string& key) {
+		const auto it = mUserInfo.find(key);
+		if (it != mUserInfo.end()) {
+			mUserInfo.erase(key);
+		}
 	}
 
 	//! Returns user info if it exists for the key. Will return an empty instance of the requested type if the key is not found.
@@ -206,7 +230,7 @@ public:
 		static T defaultValue;
 		auto it = mUserInfo.find(key);
 		if (it == mUserInfo.end()) return defaultValue;
-		return boost::exists<T>(it->second);
+		return boost::get<T>(it->second);
 	}
 
 
@@ -263,8 +287,9 @@ private:
 	ci::Anim<ci::vec2> mScale;
 	ci::Anim<ci::quat> mRotation;
 
-	ci::mat4 mTransform;
-	ci::mat4 mGlobalTransform;
+	ci::mat4 mTransform;				// contains position, transform origin, rotation and scale
+	ci::mat4 mGlobalTransform;			// current transform multiplied with parent's transform
+	ci::mat4 mRotationScaleTransform;	// contains rotation and scale around transform origin
 	bool mHasInvalidTransforms;
 
 	bool mHasInvalidContent;
@@ -290,11 +315,13 @@ void BaseView::validateTransforms(const bool force) {
 
 	const ci::vec3 origin = ci::vec3(mTransformOrigin.value(), 0.0f);
 
+	mRotationScaleTransform = glm::translate(origin)	// offset by origin
+		* glm::scale(ci::vec3(mScale.value(), 1.0f))
+		* glm::toMat4(mRotation.value())
+		* glm::translate(-origin);						// reset to original position
+
 	mTransform = glm::translate(ci::vec3(mPosition.value(), 0.0f))
-	 * glm::translate(origin)	// offset by origin
-	 * glm::scale(ci::vec3(mScale.value(), 1.0f))
-	 * glm::toMat4(mRotation.value())
-	 * glm::translate(-origin);	// reset to original position
+	 * mRotationScaleTransform;
 
 	mGlobalTransform = mParent ? mParent->getGlobalTransform() * mTransform : mTransform;
 

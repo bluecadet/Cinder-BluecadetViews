@@ -200,6 +200,35 @@ void BaseView::moveChildToIndex(BaseViewList::iterator childIt, size_t index) {
 	mChildren.splice(targetIt, mChildren, childIt);
 }
 
+
+//==================================================
+// Transformation
+// 
+
+void BaseView::setTransformOrigin(const vec2 & value, const bool compensateForOffset) {
+	if (!compensateForOffset) {
+		setTransformOrigin(value); return;
+	}
+
+	// an arbitrary point in our view. needs to be vec4 with w = 1 for mat4 mulitiplication
+	static const vec4 center = vec4(0, 0, 0, 1);
+	
+	// save our point when transformed with the current transform origin
+	const vec2 transformedCenterBefore = vec2(getTransform() * center);
+
+	// set the new origin
+	setTransformOrigin(value);
+	
+	// now see where the same point is in our view if we transform it with the new origin
+	const vec2 transformedCenterAfter = vec2(getTransform() * center);
+
+	// calculate the offset between new and old
+	const vec2 centerOffset = transformedCenterBefore - transformedCenterAfter;
+
+	// apply the offset so that our point visually stays at the same position
+	setPosition(mPosition.value() + centerOffset);
+}
+
 //==================================================
 // Main loop
 // 
@@ -240,7 +269,6 @@ void BaseView::drawScene(const ColorA& parentTint) {
 	{
 		gl::ScopedModelMatrix scopedModelMatrix;
 		gl::ScopedViewMatrix scopedViewMatrix;
-		//gl::ScopedBlendAlpha scopedBlendAlpha; // bb: no real need for this at this point since we're not changing blend modes a lot
 
 		gl::multModelMatrix(mTransform);
 		gl::color(mDrawColor);

@@ -32,11 +32,14 @@ void BaseApp::prepareSettings(ci::app::App::Settings *settings) {
 	settings->setWindowSize(SettingsManager::getInstance()->mDebugWindowSize);
 	settings->setBorderless(SettingsManager::getInstance()->mDebugBorderless);
 	settings->setFullScreen(SettingsManager::getInstance()->mDebugFullscreen);
+	settings->setHighDensityDisplayEnabled(true);
 
 	// Keep window top-left within display bounds
-	ivec2 windowPos = (Display::getMainDisplay()->getSize() - settings->getWindowSize()) / 2;
-	windowPos = glm::max(windowPos, ivec2(0));
-	settings->setWindowPos(windowPos);
+	if (settings->getWindowPos().x == 0 && settings->getWindowPos().y == 0) {
+		ivec2 windowPos = (Display::getMainDisplay()->getSize() - settings->getWindowSize()) / 2;
+		windowPos = glm::max(windowPos, ivec2(0));
+		settings->setWindowPos(windowPos);
+	}
 }
 
 
@@ -70,6 +73,8 @@ void BaseApp::setup() {
 	gl::enableAlphaBlending();
 
 	// Set up touches
+	//TouchManager::getInstance()->setDiscardMissedTouches(false);
+
 	mMouseDriver.connect();
 	mTuioDriver.connect();
 	mSimulatedTouchDriver.setup(Rectf(vec2(0), getWindowSize()), 60);
@@ -82,8 +87,9 @@ void BaseApp::update() {
 
 	// get the screen layout's transform and apply it to all
 	// touch events to convert touches from window into app space
-	auto transform = glm::inverse(ScreenLayout::getInstance()->getTransform());
-	touch::TouchManager::getInstance()->update(mRootView, transform);
+	const auto appTransform = glm::inverse(ScreenLayout::getInstance()->getTransform());
+	const auto appSize = ScreenLayout::getInstance()->getAppSize();
+	touch::TouchManager::getInstance()->update(mRootView, appSize, appTransform);
 	mRootView->updateScene(deltaTime);
 }
 

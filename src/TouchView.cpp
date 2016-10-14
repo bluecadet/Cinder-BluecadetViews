@@ -1,18 +1,20 @@
 
 #include "TouchView.h"
-
-#include "cinder/gl/gl.h"
-#include "boost/lexical_cast.hpp"
-#include <math.h>
-
 #include "TouchManager.h"
 
 using namespace std;
 using namespace ci;
 using namespace ci::app;
 
+// forward declaration for GWC -- temporary solution
+namespace gwc {
+class GestureEvent;
+}
+
 namespace bluecadet {
 namespace views {
+
+static size_t NumTouchViews = 0;
 
 //==================================================
 // Setup/Destruction
@@ -34,7 +36,8 @@ TouchView::TouchView() :
 	mInitialRelTouchPos(0, 0),
 	mInitialAbsTouchPos(0, 0),
 	mInitialPosWhenTouched(0, 0),
-	mInitialTouchTime(0)
+	mInitialTouchTime(0),
+	mTouchViewId("touch_view" + to_string(NumTouchViews++))
 {
 }
 
@@ -87,12 +90,15 @@ void TouchView::draw() {
 void TouchView::processTouchBegan(const touch::TouchEvent& touchEvent) {
 	mObjectTouchIDs.push_back(touchEvent.id);
 
-	mPrevTouchPos = touchEvent.position; // Set to current touchPnt, otherwise prevtouch pos may be anywhere
-	mCurTouchPos = touchEvent.position;
-	mInitialRelTouchPos = touchEvent.position;
-	mInitialAbsTouchPos = convertLocalToGlobal(touchEvent.position);
-	mInitialPosWhenTouched = getGlobalPosition();
-	mInitialTouchTime = getElapsedSeconds();
+	if (mObjectTouchIDs.size() <= 1) {
+		mPrevTouchPos = touchEvent.position; // Set to current touchPnt, otherwise prevtouch pos may be anywhere
+		mCurTouchPos = touchEvent.position;
+		mInitialRelTouchPos = touchEvent.position;
+		mInitialAbsTouchPos = convertLocalToGlobal(touchEvent.position);
+		mInitialPosWhenTouched = getGlobalPosition();
+		mInitialTouchTime = getElapsedSeconds();
+	}
+
 	mIsDragging = getNumTouches() == 1 ? false : mIsDragging;
 	mHasMovingTouches = getNumTouches() == 1 ? false : mHasMovingTouches;
 
@@ -101,7 +107,7 @@ void TouchView::processTouchBegan(const touch::TouchEvent& touchEvent) {
 }
 
 void TouchView::processTouchMoved(const touch::TouchEvent& touchEvent) {
-	if (mObjectTouchIDs.empty() || mObjectTouchIDs.front() != touchEvent.id) {
+	if (mObjectTouchIDs.empty()) {
 		return;
 	}
 
@@ -111,12 +117,14 @@ void TouchView::processTouchMoved(const touch::TouchEvent& touchEvent) {
 		return;
 	}
 
-	mPrevTouchPos = mCurTouchPos;
-	mCurTouchPos = touchEvent.position;
+	if (touchEvent.id == mObjectTouchIDs.front()) {
+		mPrevTouchPos = mCurTouchPos;
+		mCurTouchPos = touchEvent.position;
 
-	if (!mIsDragging) {
-		const float dragDistance2 = glm::distance2(mInitialAbsTouchPos, convertLocalToGlobal(mCurTouchPos));
-		mIsDragging = dragDistance2 > mDragThreshold * mDragThreshold;
+		if (!mIsDragging) {
+			const float dragDistance2 = glm::distance2(mInitialAbsTouchPos, convertLocalToGlobal(mCurTouchPos));
+			mIsDragging = dragDistance2 > mDragThreshold * mDragThreshold;
+		}
 	}
 
 	handleTouchMoved(touchEvent);
@@ -127,7 +135,7 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 	handleTouchEnded(touchEvent);
 	mDidEndTouch(touchEvent);
 
-	bool didTap = (mAllowsTapReleaseOutside || containsPoint(touchEvent.localPosition)) && !touchEvent.canceled;
+	bool didTap = (mAllowsTapReleaseOutside || containsPoint(touchEvent.localPosition)) && !touchEvent.isCanceled;
 
 	// Only allow taps within a certain time
 	if (didTap) {
@@ -146,7 +154,20 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 		handleTouchTapped(touchEvent);
 	}
 
-	resetTouchState();
+	// Remove id from list
+	auto idIt = std::find(mObjectTouchIDs.cbegin(), mObjectTouchIDs.cend(), touchEvent.id);
+	if (idIt != mObjectTouchIDs.end()) {
+		mObjectTouchIDs.erase(idIt);
+	}
+	
+	if (mObjectTouchIDs.empty()) {
+		resetTouchState();
+	}
+}
+
+void TouchView::processGesture(const gwc::GestureEvent & gestureEvent) {
+	handleGesture(gestureEvent);
+	mDidReceiveGesture(gestureEvent);
 }
 
 void TouchView::cancelTouches() {
@@ -198,15 +219,6 @@ void TouchView::setTouchPath(const float radius, const ci::vec2& offset, const i
 	}
 	mTouchPath.close();
 }
-
-//==================================================
-// Debugging
-//
-
-//void TouchView::drawDebugShape() const {
-//	gl::lineWidth(2.0f);
-//	gl::draw(mPath);
-//}
 
 }
 }
