@@ -159,6 +159,9 @@
     <ClCompile Include="..\..\..\src\touch\drivers\TuioDriver.cpp">
       <Filter>Blocks\BluecadetViews\src\touch\drivers</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\views\Event.cpp">
+      <Filter>Blocks\BluecadetViews\src\views</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
@@ -220,6 +223,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\touch\drivers\TuioDriver.h">
       <Filter>Blocks\BluecadetViews\src\touch\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\views\Event.h">
+      <Filter>Blocks\BluecadetViews\src\views</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

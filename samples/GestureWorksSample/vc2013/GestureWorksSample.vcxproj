@@ -291,6 +291,7 @@
     <ClCompile Include="..\..\..\src\touch\drivers\SimulatedTouchDriver.cpp" />
     <ClCompile Include="..\..\..\src\touch\drivers\TuioDriver.cpp" />
     <ClCompile Include="..\..\..\src\touch\TouchManager.cpp" />
+    <ClCompile Include="..\..\..\src\views\Event.cpp" />
     <ClCompile Include="..\src\GestureWorksSampleApp.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\FontManager.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextLayout.cpp" />
@@ -319,6 +320,7 @@
     <ClInclude Include="..\..\..\src\touch\drivers\TuioDriver.h" />
     <ClInclude Include="..\..\..\src\touch\Touch.h" />
     <ClInclude Include="..\..\..\src\touch\TouchManager.h" />
+    <ClInclude Include="..\..\..\src\views\Event.h" />
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\FontManager.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextLayout.h" />

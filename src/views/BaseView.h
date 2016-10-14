@@ -14,41 +14,15 @@
 #include "cinder/Timeline.h"
 
 #include "boost/variant.hpp"
-#include "boost/signals2.hpp"
+//#include "boost/signals2.hpp"
+
+#include "Event.h"
 
 namespace bluecadet {
 namespace views {
 
-
 typedef std::shared_ptr<class BaseView> BaseViewRef;
 typedef std::list<BaseViewRef> BaseViewList;
-
-
-
-//==================================================
-// Events
-// 
-
-struct Event {
-	// Types
-	struct Type {
-		static const std::string GENERIC;
-		static const std::string UPDATED;
-	};
-
-	// Properties
-	const std::string	type;
-	const BaseView *	target;
-	BaseView *			currentTarget = nullptr;
-
-	Event(const std::string & type, BaseView * target) :
-		type(type),
-		target(target) {
-	}
-};
-
-//typedef std::function<void(const Event & event)>			EventCallback;
-//typedef boost::signals2::signal<void(const Event & event)>	EventSignal;
 
 
 //==================================================
@@ -56,6 +30,9 @@ struct Event {
 // 
 
 class BaseView {
+
+	//typedef std::function<void(const Event & event)>			EventCallback;
+	//typedef boost::signals2::signal<void(const Event & event)>	EventSignal;
 
 	typedef boost::variant<
 		bool, int, float, double,

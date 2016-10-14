@@ -8,14 +8,6 @@ namespace bluecadet {
 namespace views {
 
 //==================================================
-// Constants
-// 
-
-const std::string Event::Type::GENERIC = "generic";
-const std::string Event::Type::UPDATED = "updated";
-
-
-//==================================================
 // Lifecycle
 // 
 
