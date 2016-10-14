@@ -14,28 +14,49 @@
 #include "cinder/Timeline.h"
 
 #include "boost/variant.hpp"
+#include "boost/signals2.hpp"
 
 namespace bluecadet {
 namespace views {
 
+
 typedef std::shared_ptr<class BaseView> BaseViewRef;
 typedef std::list<BaseViewRef> BaseViewList;
-typedef BaseViewList::size_type BaseViewListIndexType;
+
+
+
+//==================================================
+// Events
+// 
 
 struct Event {
-	enum class Type {
-		ContentUpdated,
-		Other
+	// Types
+	struct Type {
+		static const std::string GENERIC;
+		static const std::string UPDATED;
 	};
-	Type				type = Type::Other;
-	BaseView*			target = nullptr;
-	BaseView*			currentTarget = nullptr;
 
-	Event(Type eType, BaseView* eTarget) :
-		type(eType), target(eTarget) {} 
+	// Properties
+	const std::string	type;
+	const BaseView *	target;
+	BaseView *			currentTarget = nullptr;
+
+	Event(const std::string & type, BaseView * target) :
+		type(type),
+		target(target) {
+	}
 };
 
+//typedef std::function<void(const Event & event)>			EventCallback;
+//typedef boost::signals2::signal<void(const Event & event)>	EventSignal;
+
+
+//==================================================
+// BaseView
+// 
+
 class BaseView {
+
 	typedef boost::variant<
 		bool, int, float, double,
 		ci::ivec2, ci::ivec3, ci::ivec4,
@@ -49,6 +70,18 @@ public:
 
 	BaseView();
 	virtual ~BaseView();
+
+	//! Signal that will trigger whenever an event is received or dispatched by this view.
+	//virtual EventSignal &			getEventSignal() { return mEventSignal; };
+	//virtual EventSignal::slot_type	addEventCallback(EventCallback callback) { return mEventSignal.connect(callback); }
+	//virtual EventSignal::slot_type	addEventCallback(EventCallback callback, const std::string type);
+
+	//! Dispatch events to this view's children. Will also trigger the event signal.
+	void					dispatchEvent(Event& event);
+
+	//! Override to handle dispatched events from children.
+	virtual void			handleEvent(const Event& event) {}
+
 
 
 	//==================================================
@@ -73,11 +106,6 @@ public:
 	//! Helper that will dispatch a function after a delay.
 	//! The function will be added to the view's timeline and can be canceled with all other animations.
 	virtual ci::CueRef		dispatchAfter(std::function<void()> fn, float delay = 0.0f);
-
-	//! Dispatch events as needed. 
-	void					dispatchEvent(Event& event);
-	//! Override to handle response to dispatched event
-	virtual void			handleEvent(const Event& event) {};
 
 	virtual void			addChild(BaseViewRef child);
 	virtual void			addChild(BaseViewRef child, size_t index);
@@ -114,7 +142,7 @@ public:
 	virtual void						setPosition(const ci::vec3& position) { mPosition = ci::vec2(position.x, position.y); invalidate(); }
 
 	//! Shorthand for combining position and size to center the view at `center`
-	virtual void						setCenter(const ci::vec2 center) { setPosition(center  - 0.5f * mSize); }
+	virtual void						setCenter(const ci::vec2 center) { setPosition(center - 0.5f * mSize); }
 
 	//! Shorthand for getting the center based on the current position and size
 	virtual ci::vec2					getCenter() { return getPosition().value() + 0.5f * mSize; }
@@ -181,35 +209,35 @@ public:
 	// 
 
 	//! The local transform based on this view's coordinate space. Since this method validates the transforms them before returning it's non-const.
-	const ci::mat4&						getTransform()			{ validateTransforms(); return mTransform; }
-	
+	const ci::mat4&						getTransform() { validateTransforms(); return mTransform; }
+
 	//! The global transform based on the root view's coordinate space. Since this method validates the transforms them before returning it's non-const.
-	const ci::mat4&						getGlobalTransform()	{ validateTransforms(); return mGlobalTransform; }
+	const ci::mat4&						getGlobalTransform() { validateTransforms(); return mGlobalTransform; }
 
 	//! A transform that rotates and scales around transform origin. Since this method validates the transforms them before returning it's non-const.
-	const ci::mat4&						getRotationScaleTransform()	{ validateTransforms(); return mRotationScaleTransform; }
+	const ci::mat4&						getRotationScaleTransform() { validateTransforms(); return mRotationScaleTransform; }
 
 	//! Global position in the root view's coordinate space.
-	const ci::vec2						getGlobalPosition()		{ if (!mParent) return mPosition; return mParent->convertLocalToGlobal(mPosition); };
+	const ci::vec2						getGlobalPosition() { if (!mParent) return mPosition; return mParent->convertLocalToGlobal(mPosition); };
 
 	//! Set the global position in the root view's coordinate space.
-	void								setGlobalPosition(const ci::vec2 pos) { if (!mParent) { setPosition(pos); } else { setPosition(mParent->convertGlobalToLocal(pos)); }};
-	
+	void								setGlobalPosition(const ci::vec2 pos) { if (!mParent) { setPosition(pos); } else { setPosition(mParent->convertGlobalToLocal(pos)); } };
+
 	//! Converts a position from the current view's local space to the root view's global space.
 	const ci::vec2						convertLocalToGlobal(const ci::vec2& local) { ci::vec4 global = getGlobalTransform() * ci::vec4(local, 0, 1); return ci::vec2(global.x, global.y); }
-	
+
 	//! Converts a position from the root view's global space to the current view's local space.
 	const ci::vec2						convertGlobalToLocal(const ci::vec2& global) { ci::vec4 local = glm::inverse(getGlobalTransform()) * ci::vec4(global, 0, 1); return ci::vec2(local); }
 
-	
+
 	//==================================================
 	// User info
 	//
-	
+
 	//! Stores key-based user info. Overwrites any existing values for this key and type.
 	template <typename T>
 	void setUserInfo(const std::string& key, const T& value) { mUserInfo[key] = value; }
-	
+
 	//! Checks if a user info entry exists for this key.
 	bool hasUserInfo(const std::string& key) {
 		const auto it = mUserInfo.find(key);
@@ -295,6 +323,7 @@ private:
 	bool mHasInvalidContent;
 
 	std::map<std::string, UserInfoTypes> mUserInfo;
+	//EventSignal mEventSignal;
 
 }; // class BaseView
 
@@ -321,7 +350,7 @@ void BaseView::validateTransforms(const bool force) {
 		* glm::translate(-origin);						// reset to original position
 
 	mTransform = glm::translate(ci::vec3(mPosition.value(), 0.0f))
-	 * mRotationScaleTransform;
+		* mRotationScaleTransform;
 
 	mGlobalTransform = mParent ? mParent->getGlobalTransform() * mTransform : mTransform;
 

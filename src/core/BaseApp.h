@@ -4,12 +4,11 @@
 #include "cinder/gl/gl.h"
 #include "cinder/params/Params.h"
 
-#include <views/BaseView.h>
-
 // These aren't used in the header, but added as convenience includes for BaseApp sub classes.
 #include "SettingsManager.h"
 #include "ScreenLayout.h"
 
+#include <views/BaseView.h>
 #include <touch/TouchManager.h>
 #include <touch/drivers/MouseDriver.h>
 #include <touch/drivers/TuioDriver.h>

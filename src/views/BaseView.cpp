@@ -4,11 +4,20 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+namespace bluecadet {
+namespace views {
+
+//==================================================
+// Constants
+// 
+
+const std::string Event::Type::GENERIC = "generic";
+const std::string Event::Type::UPDATED = "updated";
+
+
 //==================================================
 // Lifecycle
 // 
-namespace bluecadet {
-namespace views {
 
 BaseView::BaseView() :
 	mTransformOrigin(vec2(0.0f, 0.0f)),
@@ -34,8 +43,7 @@ BaseView::BaseView() :
 	mChildren(),
 	mParent(nullptr),
 
-	mSize(0, 0)
-{
+	mSize(0, 0) {
 }
 
 BaseView::~BaseView() {
@@ -92,8 +100,7 @@ void BaseView::addChild(BaseViewRef child, size_t index) {
 	if (index == mChildren.size()) {
 		mChildren.push_back(child);
 
-	}
-	else {
+	} else {
 		auto it = mChildren.begin();
 		std::advance(it, index);
 		mChildren.insert(it, child);
@@ -212,13 +219,13 @@ void BaseView::setTransformOrigin(const vec2 & value, const bool compensateForOf
 
 	// an arbitrary point in our view. needs to be vec4 with w = 1 for mat4 mulitiplication
 	static const vec4 center = vec4(0, 0, 0, 1);
-	
+
 	// save our point when transformed with the current transform origin
 	const vec2 transformedCenterBefore = vec2(getTransform() * center);
 
 	// set the new origin
 	setTransformOrigin(value);
-	
+
 	// now see where the same point is in our view if we transform it with the new origin
 	const vec2 transformedCenterAfter = vec2(getTransform() * center);
 
@@ -238,9 +245,9 @@ void BaseView::updateScene(const double deltaTime) {
 		mTimeline->stepTo(timeline().getCurrentTime());
 		invalidate();
 	}
-	
+
 	if (mHasInvalidContent) {
-		dispatchEvent(Event(Event::Type::ContentUpdated, this));
+		dispatchEvent(Event(Event::Type::UPDATED, this));
 	}
 
 	update(deltaTime);
@@ -327,6 +334,10 @@ CueRef BaseView::dispatchAfter(std::function<void()> fn, float delay) {
 	return getTimeline()->add(fn, getTimeline()->getCurrentTime() + delay);
 }
 
+//==================================================
+// Events
+// 
+
 void BaseView::dispatchEvent(Event& event) {
 	if (!event.target) {
 		event.target = this;
@@ -339,6 +350,15 @@ void BaseView::dispatchEvent(Event& event) {
 	}
 }
 
+//EventSignal::slot_type BaseView::addEventCallback(EventCallback callback, const std::string type) {
+//	return mEventSignal.connect([=](const Event & event) {
+//		if (event.type == type) {
+//			callback(event);
+//		}
+//	});
+//}
+
+
 //==================================================
 // Drawing
 // 
@@ -350,27 +370,27 @@ gl::GlslProgRef BaseView::getDefaultDrawProg() {
 		defaultProg = gl::GlslProg::create(
 			gl::GlslProg::Format().vertex(CI_GLSL(150,
 				uniform vec2	uSize;
-				uniform mat4	ciModelViewProjection;
-				in vec4			ciPosition;
-				in vec4			ciColor;
-				out vec4		color;
-				void main(void) {
-					vec4 pos = vec4(ciPosition.x * uSize.x, ciPosition.y * uSize.y, 0.0f, 1.0f);
-					gl_Position = ciModelViewProjection * pos;
-					color = ciColor;
-				}
-			)).fragment(CI_GLSL(150,
-				in vec4			color;
-				out vec4		oColor;
-				uniform vec4	uBackgroundColor;
-				void main(void) {
-					oColor = color * uBackgroundColor;
-				}
-			))
-		);
+		uniform mat4	ciModelViewProjection;
+		in vec4			ciPosition;
+		in vec4			ciColor;
+		out vec4		color;
+		void main(void) {
+			vec4 pos = vec4(ciPosition.x * uSize.x, ciPosition.y * uSize.y, 0.0f, 1.0f);
+			gl_Position = ciModelViewProjection * pos;
+			color = ciColor;
+		}
+		)).fragment(CI_GLSL(150,
+			in vec4			color;
+		out vec4		oColor;
+		uniform vec4	uBackgroundColor;
+		void main(void) {
+			oColor = color * uBackgroundColor;
+		}
+		))
+			);
 		defaultProg->uniform("uSize", vec2(0, 0));
 	}
-	
+
 	return defaultProg;
 }
 
