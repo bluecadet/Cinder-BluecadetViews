@@ -37,8 +37,7 @@ TouchView::TouchView() :
 	mInitialAbsTouchPos(0, 0),
 	mInitialPosWhenTouched(0, 0),
 	mInitialTouchTime(0),
-	mTouchViewId("touch_view" + to_string(NumTouchViews++))
-{
+	mTouchViewId("touch_view" + to_string(NumTouchViews++)) {
 }
 
 TouchView::~TouchView() {
@@ -55,7 +54,7 @@ void TouchView::setup(const ci::vec2 size) {
 }
 
 void TouchView::setup(const float radius, const ci::vec2& offset, const int numSegments) {
-	setTouchPath(radius,offset,numSegments);
+	setTouchPath(radius, offset, numSegments);
 }
 
 void TouchView::setup(const ci::Path2d& path) {
@@ -68,7 +67,7 @@ void TouchView::setup(const ci::Path2d& path) {
 
 void TouchView::draw() {
 	BaseView::draw();
-	
+
 	if (!mDebugDrawTouchPath) {
 		return;
 	}
@@ -159,7 +158,7 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 	if (idIt != mObjectTouchIDs.end()) {
 		mObjectTouchIDs.erase(idIt);
 	}
-	
+
 	if (mObjectTouchIDs.empty()) {
 		resetTouchState();
 	}
@@ -192,7 +191,7 @@ bool TouchView::containsPoint(const vec2 &point) {
 
 	if (mTouchPath.empty()) {
 		// simply check if within size when no path defined
-		return 
+		return
 			point.x >= 0 && point.x <= size.x &&
 			point.y >= 0 && point.y <= size.y;
 	}
@@ -204,7 +203,7 @@ bool TouchView::canAcceptTouch() const {
 	return mMultiTouchEnabled || mObjectTouchIDs.empty();
 }
 
-void TouchView::setTouchPath(const float radius, const ci::vec2& offset, const int numSegments){
+void TouchView::setTouchPath(const float radius, const ci::vec2& offset, const int numSegments) {
 	mTouchPath.clear();
 
 	static const float twoPi = 2.0f * (float)M_PI;

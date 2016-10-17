@@ -103,6 +103,7 @@ void TouchManager::mainThreadTouchesBegan(const Touch & touch, views::BaseViewRe
 		if (view) {
 			mViewsByTouchId[touchEvent.touchId] = views::TouchViewWeakRef(touchEvent.touchTarget);
 			view->processTouchBegan(touchEvent);
+			view->dispatchEvent(touchEvent); // TODO: move this into processTouch...()
 		}
 
 		if (view || !mDiscardMissedTouches) {
@@ -135,6 +136,7 @@ void TouchManager::mainThreadTouchesMoved(const Touch & touch, views::BaseViewRe
 
 	if (view) {
 		view->processTouchMoved(touchEvent);
+		view->dispatchEvent(touchEvent); // TODO: move this into processTouch...()
 	}
 
 	if (view || !mDiscardMissedTouches) {
@@ -186,6 +188,7 @@ void TouchManager::mainThreadTouchesEnded(const Touch & touch, views::BaseViewRe
 
 	if (view) {
 		view->processTouchEnded(touchEvent);
+		view->dispatchEvent(touchEvent); // TODO: move this into processTouch...()
 	}
 
 	// process event in plugins
