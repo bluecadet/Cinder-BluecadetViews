@@ -71,9 +71,9 @@ void GestureWorksTouchPlugin::processEvent(TouchManager * manager, const TouchEv
 	// but we're emulating events in app space, so we use app size instead of window size.
 	vec2 touchPos = toPixels(event.position) / mAppSize;
 	gwc::touchpoint touchPoint;
-	touchPoint.init(event.id, touchPos.x, touchPos.y, 0, 1, 1);
+	touchPoint.init(event.touchId, touchPos.x, touchPos.y, 0, 1, 1);
 
-	switch (event.phase) {
+	switch (event.touchPhase) {
 		case TouchPhase::Began: touchPoint.status = gwc::touchStatus::TOUCHADDED; break;
 		case TouchPhase::Moved: touchPoint.status = gwc::touchStatus::TOUCHUPDATE; break;
 		case TouchPhase::Ended: touchPoint.status = gwc::touchStatus::TOUCHREMOVED; break;
@@ -81,14 +81,14 @@ void GestureWorksTouchPlugin::processEvent(TouchManager * manager, const TouchEv
 
 	gwc::GestureWorks::getInstance()->addEvent(touchPoint);
 
-	if (event.target) {
-		const auto touchViewId = event.target->getTouchViewId();
+	if (event.touchTarget) {
+		const auto touchViewId = event.touchTarget->getTouchViewId();
 		const auto gestureCountIt = mNumGesturesPerViewId.find(touchViewId);
 
 		if (gestureCountIt == mNumGesturesPerViewId.end()) {
 			// if this is our first gesture on this view: register it
 			mNumGesturesPerViewId[touchViewId] = 0;
-			mViewsById[touchViewId] = TouchViewWeakRef(event.target);
+			mViewsById[touchViewId] = TouchViewWeakRef(event.touchTarget);
 			gwc::GestureWorks::getInstance()->registerTouchObject(touchViewId);
 			gwc::GestureWorks::getInstance()->addGesture(touchViewId, "n-rotate-and-scale");
 		}

@@ -336,7 +336,9 @@ void BaseView::dispatchEvent(Event& event) {
 	} else {
 		handleEvent(event);
 	}
+
 	event.currentTarget = this;
+
 	if (mParent) {
 		mParent->dispatchEvent(event);
 	}

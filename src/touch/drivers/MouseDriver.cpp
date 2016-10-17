@@ -19,15 +19,12 @@ MouseDriver::MouseDriver() :
 	mDidMoveMouse(false),
 	mMousePos(0),
 	mPrevMousePos(0),
-	mTouchId(-1)
+	mTouchId(-1),
+	mVirtualTouchA(-3, vec2(), TouchType::Mouse, TouchPhase::Began),
+	mVirtualTouchB(-4, vec2(), TouchType::Mouse, TouchPhase::Began)
 {
-	mVirtualTouchA.id = mTouchId - 3;
 	mVirtualTouchA.isVirtual = true;
-	mVirtualTouchA.type = TouchType::Mouse;
-
-	mVirtualTouchB.id = mTouchId - 4;
 	mVirtualTouchB.isVirtual = true;
-	mVirtualTouchB.type = TouchType::Mouse;
 }
 
 MouseDriver::~MouseDriver() {
@@ -177,21 +174,21 @@ void MouseDriver::updateSimulatedTouches() {
 
 void MouseDriver::showVirtualTouches() {
 	mShowVirtualTouches = true;
-	mVirtualTouchA.phase = TouchPhase::Began;
-	mVirtualTouchB.phase = TouchPhase::Began;
+	mVirtualTouchA.touchPhase = TouchPhase::Began;
+	mVirtualTouchB.touchPhase = TouchPhase::Began;
 	commitVirtualTouches();
 }
 
 void MouseDriver::updateVirtualTouches() {
-	mVirtualTouchA.phase = TouchPhase::Moved;
-	mVirtualTouchB.phase = TouchPhase::Moved;
+	mVirtualTouchA.touchPhase = TouchPhase::Moved;
+	mVirtualTouchB.touchPhase = TouchPhase::Moved;
 	commitVirtualTouches();
 }
 
 void MouseDriver::hideVirtualTouches() {
 	mShowVirtualTouches = false;
-	mVirtualTouchA.phase = TouchPhase::Ended;
-	mVirtualTouchB.phase = TouchPhase::Ended;
+	mVirtualTouchA.touchPhase = TouchPhase::Ended;
+	mVirtualTouchB.touchPhase = TouchPhase::Ended;
 	commitVirtualTouches();
 }
 

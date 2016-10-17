@@ -46,7 +46,7 @@ void TouchManager::update(BaseViewRef rootView, const vec2 & appSize, const mat4
 
 	// process touches
 	for (auto & event : mEventQueue) {
-		switch (event.phase) {
+		switch (event.touchPhase) {
 			case TouchPhase::Began: mainThreadTouchesBegan(event, rootView); break;
 			case TouchPhase::Moved: mainThreadTouchesMoved(event, rootView); break;
 			case TouchPhase::Ended: mainThreadTouchesEnded(event, rootView); break;
@@ -80,11 +80,11 @@ void TouchManager::addTouchEvent(TouchEvent event)
 	mLatestTouchTime = (float)getElapsedSeconds(); // Update the most recent touch time on the app
 }
 
-void TouchManager::mainThreadTouchesBegan(TouchEvent& touchEvent, views::BaseViewRef rootView) {
+void TouchManager::mainThreadTouchesBegan(TouchEvent & touchEvent, views::BaseViewRef rootView) {
 
 	// only store virtual touches, but don't process further
 	if (touchEvent.isVirtual) {
-		mEventsByTouchId[touchEvent.id] = touchEvent;
+		mEventsByTouchId[touchEvent.touchId] = touchEvent;
 		return;
 	}
 
@@ -93,19 +93,19 @@ void TouchManager::mainThreadTouchesBegan(TouchEvent& touchEvent, views::BaseVie
 		TouchView* view = getTopViewAtPosition(touchEvent.position, rootView);
 
 		if (view) {
-			touchEvent.target = view->shared_from_this();
+			touchEvent.touchTarget = view->shared_from_this();
 			touchEvent.localPosition = view->convertGlobalToLocal(touchEvent.position);
 		}
 
 		mDidBeginTouch(touchEvent);
 
 		if (view) {
-			mViewsByTouchId[touchEvent.id] = views::TouchViewWeakRef(touchEvent.target);
+			mViewsByTouchId[touchEvent.touchId] = views::TouchViewWeakRef(touchEvent.touchTarget);
 			view->processTouchBegan(touchEvent);
 		}
 
 		if (view || !mDiscardMissedTouches) {
-			mEventsByTouchId[touchEvent.id] = touchEvent;
+			mEventsByTouchId[touchEvent.touchId] = touchEvent;
 		}
 
 		// process event in plugins
@@ -118,14 +118,14 @@ void TouchManager::mainThreadTouchesBegan(TouchEvent& touchEvent, views::BaseVie
 void TouchManager::mainThreadTouchesMoved(TouchEvent& touchEvent, views::BaseViewRef rootView) {
 	// only store virtual touches, but don't process further
 	if (touchEvent.isVirtual) {
-		mEventsByTouchId[touchEvent.id] = touchEvent;
+		mEventsByTouchId[touchEvent.touchId] = touchEvent;
 		return;
 	}
 
-	auto view = getViewForTouchId(touchEvent.id);
+	auto view = getViewForTouchId(touchEvent.touchId);
 
 	if (view) {
-		touchEvent.target = view;
+		touchEvent.touchTarget = view;
 		touchEvent.localPosition = view->convertGlobalToLocal(touchEvent.position);
 	}
 
@@ -136,7 +136,7 @@ void TouchManager::mainThreadTouchesMoved(TouchEvent& touchEvent, views::BaseVie
 	}
 
 	if (view || !mDiscardMissedTouches) {
-		mEventsByTouchId[touchEvent.id] = touchEvent;
+		mEventsByTouchId[touchEvent.touchId] = touchEvent;
 	}
 
 	// process event in plugins
@@ -152,7 +152,7 @@ void TouchManager::mainThreadTouchesEnded(TouchEvent& touchEvent, views::BaseVie
 		lock_guard<recursive_mutex> scopedTouchMapLock(mTouchIdMutex);
 
 		// remove view
-		const auto viewIt = mViewsByTouchId.find(touchEvent.id);
+		const auto viewIt = mViewsByTouchId.find(touchEvent.touchId);
 
 		if (viewIt != mViewsByTouchId.end()) {
 			view = viewIt->second.lock();
@@ -160,7 +160,7 @@ void TouchManager::mainThreadTouchesEnded(TouchEvent& touchEvent, views::BaseVie
 		}
 
 		// remove event
-		const auto eventIt = mEventsByTouchId.find(touchEvent.id);
+		const auto eventIt = mEventsByTouchId.find(touchEvent.touchId);
 		if (eventIt != mEventsByTouchId.end()) {
 			mEventsByTouchId.erase(eventIt);
 		}
@@ -168,7 +168,7 @@ void TouchManager::mainThreadTouchesEnded(TouchEvent& touchEvent, views::BaseVie
 	}// scoped lock end
 
 	if (view) {
-		touchEvent.target = view;
+		touchEvent.touchTarget = view;
 		touchEvent.localPosition = view->convertGlobalToLocal(touchEvent.position);
 	}
 
@@ -286,7 +286,7 @@ void TouchManager::debugDrawTouch(const TouchEvent & touchEvent, const ColorA & 
 
 	static gl::FboRef fbo = nullptr;
 
-	const string labelText = to_string(touchEvent.id) +
+	const string labelText = to_string(touchEvent.touchId) +
 		" (" + to_string((int)touchEvent.position.x) +
 		", " + to_string((int)touchEvent.position.y) + ")";
 

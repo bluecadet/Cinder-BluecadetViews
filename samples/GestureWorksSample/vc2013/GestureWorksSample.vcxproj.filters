@@ -162,6 +162,9 @@
     <ClCompile Include="..\..\..\src\views\Event.cpp">
       <Filter>Blocks\BluecadetViews\src\views</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\touch\Touch.cpp">
+      <Filter>Blocks\BluecadetViews\src\touch</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">

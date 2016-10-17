@@ -19,11 +19,11 @@ struct Event {
 	};
 
 	// Properties
-	const std::string	type;
+	std::string			type;
 	BaseView *			target;
 	BaseView *			currentTarget = nullptr;
 
-	Event(const std::string & type, BaseView * target);
+	Event(const std::string & type = Type::GENERIC, BaseView * target = nullptr);
 };
 
 //typedef std::function<void(const Event & event)>			EventCallback;

@@ -88,7 +88,7 @@ void TouchView::draw() {
 //
 
 void TouchView::processTouchBegan(const touch::TouchEvent& touchEvent) {
-	mObjectTouchIDs.push_back(touchEvent.id);
+	mObjectTouchIDs.push_back(touchEvent.touchId);
 
 	if (mObjectTouchIDs.size() <= 1) {
 		mPrevTouchPos = touchEvent.position; // Set to current touchPnt, otherwise prevtouch pos may be anywhere
@@ -117,7 +117,7 @@ void TouchView::processTouchMoved(const touch::TouchEvent& touchEvent) {
 		return;
 	}
 
-	if (touchEvent.id == mObjectTouchIDs.front()) {
+	if (touchEvent.touchId == mObjectTouchIDs.front()) {
 		mPrevTouchPos = mCurTouchPos;
 		mCurTouchPos = touchEvent.position;
 
@@ -155,7 +155,7 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 	}
 
 	// Remove id from list
-	auto idIt = std::find(mObjectTouchIDs.cbegin(), mObjectTouchIDs.cend(), touchEvent.id);
+	auto idIt = std::find(mObjectTouchIDs.cbegin(), mObjectTouchIDs.cend(), touchEvent.touchId);
 	if (idIt != mObjectTouchIDs.end()) {
 		mObjectTouchIDs.erase(idIt);
 	}

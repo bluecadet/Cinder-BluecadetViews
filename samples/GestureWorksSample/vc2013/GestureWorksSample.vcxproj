@@ -290,6 +290,7 @@
     <ClCompile Include="..\..\..\src\touch\drivers\NativeTouchDriver.cpp" />
     <ClCompile Include="..\..\..\src\touch\drivers\SimulatedTouchDriver.cpp" />
     <ClCompile Include="..\..\..\src\touch\drivers\TuioDriver.cpp" />
+    <ClCompile Include="..\..\..\src\touch\Touch.cpp" />
     <ClCompile Include="..\..\..\src\touch\TouchManager.cpp" />
     <ClCompile Include="..\..\..\src\views\Event.cpp" />
     <ClCompile Include="..\src\GestureWorksSampleApp.cpp" />

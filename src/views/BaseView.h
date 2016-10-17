@@ -54,10 +54,10 @@ public:
 	//virtual EventSignal::slot_type	addEventCallback(EventCallback callback, const std::string type);
 
 	//! Dispatch events to this view's children. Will also trigger the event signal.
-	void					dispatchEvent(Event& event);
+	void					dispatchEvent(Event & event);
 
 	//! Override to handle dispatched events from children.
-	virtual void			handleEvent(const Event& event) {}
+	virtual void			handleEvent(const Event & event) {}
 
 
 
