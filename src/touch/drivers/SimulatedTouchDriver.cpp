@@ -72,18 +72,18 @@ void SimulatedTouchDriver::touchSimulationLoop() {
 		const vec2 endPos = beginPos + deltaPos;
 
 		mTimeline->add([=] {
-			touchManager->addTouchEvent(touchId, beginPos, TouchType::Simulator, TouchPhase::Began);
+			touchManager->addTouch(touchId, beginPos, TouchType::Simulator, TouchPhase::Began);
 		}, touchStartTime);
 		for (int j = 0; j < numDragFrames; ++j) {
 			const float progress = (float)j / (float)numDragFrames;
 			const float delay = progress * touchDuration;
 			const vec2 pos = beginPos + progress * deltaPos;
 			mTimeline->add([=] {
-				touchManager->addTouchEvent(touchId, pos, TouchType::Simulator, TouchPhase::Moved);
+				touchManager->addTouch(touchId, pos, TouchType::Simulator, TouchPhase::Moved);
 			}, touchStartTime + delay);
 		}
 		mTimeline->add([=] {
-			touchManager->addTouchEvent(touchId, endPos, TouchType::Simulator, TouchPhase::Ended);
+			touchManager->addTouch(touchId, endPos, TouchType::Simulator, TouchPhase::Ended);
 		}, touchStartTime + touchDuration);
 
 	}

@@ -5,8 +5,8 @@
 namespace bluecadet {
 
 namespace views {
-	// Forward declaration of TouchView class and shared_ptr
-	typedef std::shared_ptr<class TouchView> TouchViewRef;
+// Forward declaration of TouchView class and shared_ptr
+typedef std::shared_ptr<class TouchView> TouchViewRef;
 }
 
 namespace touch {
@@ -15,10 +15,30 @@ namespace touch {
 // Types
 //
 
-enum TouchType { Touch, Mouse, Simulator, Fiducial, Other };
+enum class TouchType { Touch, Mouse, Simulator, Fiducial, Other };
 
-enum TouchPhase { Began, Moved, Ended };
+enum class TouchPhase { Began, Moved, Ended };
 
+
+//! Touches are used to store the state of active touches within the TouchManager.
+struct Touch {
+
+	// Mandatory values
+	int				id				= -1;
+	ci::vec2		appPosition		= ci::vec2(0);	//! Gets calculated by the TouchManager based on app's pan/zoom
+	ci::ivec2		windowPosition	= ci::ivec2(0);	//! Raw touch position in window coordinate space
+	TouchType		type			= TouchType::Other;
+	TouchPhase		phase			= TouchPhase::Began;
+
+	//! Mostly used for touch simulation
+	bool			isVirtual		= false;
+
+	Touch() {};
+	Touch(const int id, const ci::ivec2 windowPosition, const TouchType type, const TouchPhase phase);
+};
+
+
+//! TouchEvents are dispatched by the TouchManager via touched views.
 struct TouchEvent : public views::Event {
 
 	struct Type : public views::Event::Type {
@@ -26,20 +46,21 @@ struct TouchEvent : public views::Event {
 	};
 
 	// Mandatory values
-	int					touchId			= -1;
-	ci::vec2			position		= ci::vec2(0);	//! The global touch position in app coordinate space; (0, 0) is at the top left of your application regardless of zoom/pan.
+	ci::vec2			position		= ci::vec2(0);			//! The global touch position in app coordinate space; (0, 0) is at the top left of your application regardless of zoom/pan.
 	ci::vec2			localPosition	= ci::vec2(0);	//! The local touch position in the target view's coordinate space; (0, 0) is at your view's origin
-	ci::vec2			windowPosition	= ci::vec2(0);	//! The raw touch position in window space. (0, 0) is at the top-left of your window and coordinates are unscaled and true to window pixels.
-	TouchType			touchType		= Other;
-	TouchPhase			touchPhase		= Began;
+	ci::ivec2			windowPosition	= ci::vec2(0);	//! The raw touch position in window space. (0, 0) is at the top-left of your window and coordinates are unscaled and true to window pixels.
+
+	int					touchId			= -1;
+	TouchType			touchType		= TouchType::Other;
+	TouchPhase			touchPhase		= TouchPhase::Began;
 
 	// Optional values
 	views::TouchViewRef	touchTarget		= nullptr;
 	bool				isCanceled		= false;
-	bool				isVirtual		= false;
 
 	TouchEvent() {};
-	TouchEvent(const int touchId, const ci::vec2& position, const TouchType touchType, const TouchPhase phase);
+	TouchEvent(const Touch & touch);
+	TouchEvent(const int touchId, const ci::ivec2 & windowPosition, const ci::vec2 & appPosition, const TouchType touchType, const TouchPhase phase);
 };
 
 }

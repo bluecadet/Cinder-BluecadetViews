@@ -38,7 +38,7 @@ public:
 	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidMoveTouch;		//! Triggered for moving touches after touch began
 	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidEndTouch;		//! Triggered when touch ends and when touch is canceled
 	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidTap;			//! Triggered after mDidEndTouch if the touch fits the parameters for tapping
-	boost::signals2::signal<void(const gwc::GestureEvent& gestureEvent)>mDidReceiveGesture;	//! Triggered after mDidEndTouch if the touch fits the parameters for tapping
+	boost::signals2::signal<void(const gwc::GestureEvent& gestureEvent)>mDidReceiveGesture;
 
 
 	//! Setup/Destruction

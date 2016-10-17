@@ -48,21 +48,21 @@ void NativeTouchDriver::disconnect() {
 void NativeTouchDriver::nativeTouchBegan(const cinder::app::TouchEvent &event) {
 	if (mTouchManager) {
 		for (cinder::app::TouchEvent::Touch touch : event.getTouches())
-			mTouchManager->addTouchEvent(touch.getId(), touch.getPos(), TouchType::Touch, TouchPhase::Began);
+			mTouchManager->addTouch(touch.getId(), touch.getPos(), TouchType::Touch, TouchPhase::Began);
 	}
 }
 
 void NativeTouchDriver::nativeTouchMoved(const cinder::app::TouchEvent &event) {
 	if (mTouchManager) {
 		for (cinder::app::TouchEvent::Touch touch : event.getTouches())
-			mTouchManager->addTouchEvent(touch.getId(), touch.getPos(), TouchType::Touch, TouchPhase::Moved);
+			mTouchManager->addTouch(touch.getId(), touch.getPos(), TouchType::Touch, TouchPhase::Moved);
 	}
 }
 
 void NativeTouchDriver::nativeTouchEnded(const  cinder::app::TouchEvent &event) {
 	if (mTouchManager) {
 		for (cinder::app::TouchEvent::Touch touch : event.getTouches())
-			mTouchManager->addTouchEvent(touch.getId(), touch.getPos(), TouchType::Touch, TouchPhase::Ended);
+			mTouchManager->addTouch(touch.getId(), touch.getPos(), TouchType::Touch, TouchPhase::Ended);
 	}
 }
 

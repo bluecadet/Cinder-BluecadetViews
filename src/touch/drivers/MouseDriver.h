@@ -73,8 +73,8 @@ protected:
 	ci::ivec2		mMousePos;
 
 	bool			mShowVirtualTouches;
-	TouchEvent		mVirtualTouchA;
-	TouchEvent		mVirtualTouchB;
+	Touch			mVirtualTouchA;
+	Touch			mVirtualTouchB;
 
 };
 

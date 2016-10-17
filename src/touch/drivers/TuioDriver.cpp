@@ -51,21 +51,21 @@ void TuioDriver::disconnect() {
 void TuioDriver::touchBegan(const tuio::Cursor2d &cursor) {
 	if (mTouchManager) {
 		ci::app::TouchEvent::Touch touch = cursor.convertToTouch(mWindow);
-		mTouchManager->addTouchEvent(touch.getId(), touch.getPos(), TouchType::Touch, TouchPhase::Began);
+		mTouchManager->addTouch(touch.getId(), touch.getPos(), TouchType::Touch, TouchPhase::Began);
 	}
 }
 
 void TuioDriver::touchMoved(const tuio::Cursor2d &cursor) {
 	if (mTouchManager) {
 		ci::app::TouchEvent::Touch touch = cursor.convertToTouch(mWindow);
-		mTouchManager->addTouchEvent(touch.getId(), touch.getPos(), TouchType::Touch, TouchPhase::Moved);
+		mTouchManager->addTouch(touch.getId(), touch.getPos(), TouchType::Touch, TouchPhase::Moved);
 	}
 }
 
 void TuioDriver::touchEnded(const tuio::Cursor2d &cursor) {
 	if (mTouchManager) {
 		ci::app::TouchEvent::Touch touch = cursor.convertToTouch(mWindow);
-		mTouchManager->addTouchEvent(touch.getId(), touch.getPos(), TouchType::Touch, TouchPhase::Ended);
+		mTouchManager->addTouch(touch.getId(), touch.getPos(), TouchType::Touch, TouchPhase::Ended);
 	}
 }
 

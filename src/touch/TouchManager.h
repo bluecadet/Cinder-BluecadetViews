@@ -51,8 +51,8 @@ public:
 	//
 	
 	//! Adds a touch event to the event queue which will be processed on the main thread and forwarded to views
-	void					addTouchEvent(const int id, const ci::vec2& position, const TouchType type, const TouchPhase phase);
-	void					addTouchEvent(TouchEvent event);
+	void					addTouch(const int id, const ci::vec2& position, const TouchType type, const TouchPhase phase);
+	void					addTouch(Touch & event);
 
 	//! Removes a touch if it exists. Views associated to this event will be notifed with touchEnded.
 	void					cancelTouch(views::TouchViewRef touchView);
@@ -85,7 +85,7 @@ public:
 	//==================================================
 	// Debugging
 	// 
-	void					debugDrawTouch(const TouchEvent & touchEvent, const ci::ColorA & color);
+	void					debugDrawTouch(const Touch & touch, const ci::ColorA & color);
 	void					debugDrawTouches();
 
 
@@ -100,9 +100,9 @@ protected:
 
 	//! TUIO touches aren't always on the main thread. So when we receive touches through TUIO, we want to hold onto the functions in the mRenderFunctionQueue, 
 	//and on each update we will call all of the functions in that deque
-	void					mainThreadTouchesBegan(TouchEvent& touchEvent, views::BaseViewRef rootView);
-	void					mainThreadTouchesMoved(TouchEvent& touchEvent, views::BaseViewRef rootView);
-	void					mainThreadTouchesEnded(TouchEvent& touchEvent, views::BaseViewRef rootView);
+	void					mainThreadTouchesBegan(const Touch & touch, views::BaseViewRef rootView);
+	void					mainThreadTouchesMoved(const Touch & touch, views::BaseViewRef rootView);
+	void					mainThreadTouchesEnded(const Touch & touch, views::BaseViewRef rootView, const bool canceled = false);
 
 	views::TouchViewRef		getViewForTouchId(const int touchId);
 
@@ -117,10 +117,10 @@ protected:
 
 	std::recursive_mutex						mTouchIdMutex;
 	std::map<int, views::TouchViewWeakRef>		mViewsByTouchId;	// Stores views that are currently being touched
-	std::map<int, TouchEvent>					mEventsByTouchId;	// Whatever the latest event is for a touch id
+	std::map<int, Touch>						mTouchesById;		// Whatever the latest event is for a touch id
 
-	std::recursive_mutex						mEventMutex;
-	std::deque<TouchEvent>						mEventQueue; // Collects all touch events until they're processed on the main thread
+	std::recursive_mutex						mQueueMutex;
+	std::deque<Touch>							mTouchQueue;		 // Collects all touch events until they're processed on the main thread
 
 	bool										mDiscardMissedTouches = true;
 	bool										mMultiTouchEnabled;

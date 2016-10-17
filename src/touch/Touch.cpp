@@ -9,16 +9,31 @@ using namespace std;
 namespace bluecadet {
 namespace touch {
 
+Touch::Touch(const int id, const ci::ivec2 windowPosition, const TouchType type, const TouchPhase phase) :
+	id(id),
+	windowPosition(windowPosition),
+	appPosition(windowPosition),
+	type(type),
+	phase(phase) {
+}
+
+
 const string TouchEvent::Type::TOUCH = "touch";
 
-TouchEvent::TouchEvent(const int touchId, const ci::vec2& position, const TouchType touchType, const TouchPhase touchPhase) :
+TouchEvent::TouchEvent(const Touch & touch)	:
+	TouchEvent(touch.id, touch.windowPosition, touch.appPosition, touch.type, touch.phase)
+{
+}
+
+TouchEvent::TouchEvent(const int touchId, const ci::ivec2 & windowPosition, const ci::vec2 & appPosition, const TouchType touchType, const TouchPhase touchPhase) :
 	views::Event("touch", nullptr),
 	touchId(touchId),
-	position(position),
-	windowPosition(position),
-	localPosition(position),
-	touchPhase(touchPhase)
-{}
+	windowPosition(windowPosition),
+	position(appPosition),
+	localPosition(appPosition),
+	touchPhase(touchPhase),
+	touchType(touchType) {
+}
 
 }
 }

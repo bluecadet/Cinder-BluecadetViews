@@ -86,11 +86,11 @@ void MouseDriver::handleUpdate() {
 	const bool mouseMoved = mPrevMousePos != mMousePos;
 
 	if (!mIsSimulatingMultiTouch && mIsMouseDown && (mouseMoved || mDidMoveMouse)) {
-		mTouchManager->addTouchEvent(mTouchId, mMousePos, TouchType::Mouse, TouchPhase::Moved);
+		mTouchManager->addTouch(mTouchId, mMousePos, TouchType::Mouse, TouchPhase::Moved);
 
 	} else if (mIsSimulatingMultiTouch && (mouseMoved || mDidMoveMouse)) {
-		mTouchManager->addTouchEvent(mTouchId - 1, mVirtualMultiTouchCenter + mVirtualMultiTouchOffset, TouchType::Mouse, TouchPhase::Moved);
-		mTouchManager->addTouchEvent(mTouchId - 2, mVirtualMultiTouchCenter - mVirtualMultiTouchOffset, TouchType::Mouse, TouchPhase::Moved);
+		mTouchManager->addTouch(mTouchId - 1, mVirtualMultiTouchCenter + mVirtualMultiTouchOffset, TouchType::Mouse, TouchPhase::Moved);
+		mTouchManager->addTouch(mTouchId - 2, mVirtualMultiTouchCenter - mVirtualMultiTouchOffset, TouchType::Mouse, TouchPhase::Moved);
 
 	} else if (mShowVirtualTouches) {
 		updateVirtualTouches();
@@ -112,10 +112,10 @@ void MouseDriver::handleMouseBegan(const cinder::app::MouseEvent &event) {
 	if (mVirtualMultiTouchEnabled && mIsControlDown) {
 		mIsSimulatingMultiTouch = true;
 		updateSimulatedTouches();
-		mTouchManager->addTouchEvent(mTouchId - 1, mVirtualMultiTouchCenter + mVirtualMultiTouchOffset, TouchType::Mouse, TouchPhase::Began);
-		mTouchManager->addTouchEvent(mTouchId - 2, mVirtualMultiTouchCenter - mVirtualMultiTouchOffset, TouchType::Mouse, TouchPhase::Began);
+		mTouchManager->addTouch(mTouchId - 1, mVirtualMultiTouchCenter + mVirtualMultiTouchOffset, TouchType::Mouse, TouchPhase::Began);
+		mTouchManager->addTouch(mTouchId - 2, mVirtualMultiTouchCenter - mVirtualMultiTouchOffset, TouchType::Mouse, TouchPhase::Began);
 	} else {
-		mTouchManager->addTouchEvent(mTouchId, event.getPos(), TouchType::Mouse, TouchPhase::Began);
+		mTouchManager->addTouch(mTouchId, event.getPos(), TouchType::Mouse, TouchPhase::Began);
 	}
 }
 
@@ -150,11 +150,11 @@ void MouseDriver::handleMouseEnded(const  cinder::app::MouseEvent &event) {
 	if (!mTouchManager) return;
 
 	if (mIsSimulatingMultiTouch) {
-		mTouchManager->addTouchEvent(mTouchId - 1, mVirtualMultiTouchCenter + mVirtualMultiTouchOffset, TouchType::Mouse, TouchPhase::Ended);
-		mTouchManager->addTouchEvent(mTouchId - 2, mVirtualMultiTouchCenter - mVirtualMultiTouchOffset, TouchType::Mouse, TouchPhase::Ended);
+		mTouchManager->addTouch(mTouchId - 1, mVirtualMultiTouchCenter + mVirtualMultiTouchOffset, TouchType::Mouse, TouchPhase::Ended);
+		mTouchManager->addTouch(mTouchId - 2, mVirtualMultiTouchCenter - mVirtualMultiTouchOffset, TouchType::Mouse, TouchPhase::Ended);
 
 	} else {
-		mTouchManager->addTouchEvent(mTouchId, event.getPos(), TouchType::Mouse, TouchPhase::Ended);
+		mTouchManager->addTouch(mTouchId, event.getPos(), TouchType::Mouse, TouchPhase::Ended);
 	}
 
 	mIsSimulatingMultiTouch = false;
@@ -174,29 +174,29 @@ void MouseDriver::updateSimulatedTouches() {
 
 void MouseDriver::showVirtualTouches() {
 	mShowVirtualTouches = true;
-	mVirtualTouchA.touchPhase = TouchPhase::Began;
-	mVirtualTouchB.touchPhase = TouchPhase::Began;
+	mVirtualTouchA.phase = TouchPhase::Began;
+	mVirtualTouchB.phase = TouchPhase::Began;
 	commitVirtualTouches();
 }
 
 void MouseDriver::updateVirtualTouches() {
-	mVirtualTouchA.touchPhase = TouchPhase::Moved;
-	mVirtualTouchB.touchPhase = TouchPhase::Moved;
+	mVirtualTouchA.phase = TouchPhase::Moved;
+	mVirtualTouchB.phase = TouchPhase::Moved;
 	commitVirtualTouches();
 }
 
 void MouseDriver::hideVirtualTouches() {
 	mShowVirtualTouches = false;
-	mVirtualTouchA.touchPhase = TouchPhase::Ended;
-	mVirtualTouchB.touchPhase = TouchPhase::Ended;
+	mVirtualTouchA.phase = TouchPhase::Ended;
+	mVirtualTouchB.phase = TouchPhase::Ended;
 	commitVirtualTouches();
 }
 
 void MouseDriver::commitVirtualTouches() {
-	mVirtualTouchA.position = mVirtualMultiTouchCenter + mVirtualMultiTouchOffset;
-	mVirtualTouchB.position = mVirtualMultiTouchCenter - mVirtualMultiTouchOffset;
-	mTouchManager->addTouchEvent(mVirtualTouchA);
-	mTouchManager->addTouchEvent(mVirtualTouchB);
+	mVirtualTouchA.windowPosition = mVirtualMultiTouchCenter + mVirtualMultiTouchOffset;
+	mVirtualTouchB.windowPosition = mVirtualMultiTouchCenter - mVirtualMultiTouchOffset;
+	mTouchManager->addTouch(mVirtualTouchA);
+	mTouchManager->addTouch(mVirtualTouchB);
 }
 
 }
