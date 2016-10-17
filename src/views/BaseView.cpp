@@ -29,6 +29,7 @@ BaseView::BaseView() :
 	mAlpha(1.0),
 	mIsHidden(false),
 	mShouldForceRedraw(false),
+	mShouldPropagateEvents(true),
 
 	mTimeline(Timeline::create()),
 
@@ -335,6 +336,11 @@ void BaseView::dispatchEvent(Event& event) {
 		event.target = this;
 	} else {
 		handleEvent(event);
+	}
+
+	if (!event.shouldPropagate || !mShouldPropagateEvents) {
+		// cut off propagation if required
+		return;
 	}
 
 	event.currentTarget = this;

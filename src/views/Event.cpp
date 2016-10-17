@@ -10,6 +10,10 @@ namespace views {
 const string Event::Type::UPDATED = "updated";
 const string Event::Type::GENERIC = "generic";
 
+void Event::stopPropagation() {
+	shouldPropagate = false;
+}
+
 Event::Event(const std::string & type, BaseView * target) :
 	type(type),
 	target(target) {

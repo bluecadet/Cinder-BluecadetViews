@@ -23,6 +23,10 @@ struct Event {
 	BaseView *			target;
 	BaseView *			currentTarget = nullptr;
 
+	bool				shouldPropagate = true;
+
+	void				stopPropagation();
+
 	Event(const std::string & type = Type::GENERIC, BaseView * target = nullptr);
 };
 

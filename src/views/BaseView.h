@@ -31,7 +31,7 @@ typedef std::list<BaseViewRef> BaseViewList;
 
 class BaseView {
 
-	//typedef std::function<void(const Event & event)>			EventCallback;
+	//typedef std::function<void(const Event & event)>				EventCallback;
 	//typedef boost::signals2::signal<void(const Event & event)>	EventSignal;
 
 	typedef boost::variant<
@@ -175,10 +175,13 @@ public:
 	virtual bool						isHidden() const { return mIsHidden; }
 	virtual void						setHidden(const bool isHidden) { mIsHidden = isHidden; }
 
-	//! Forces redrawing even when hidden or mAlpha <= 0; Defaults to false
+	//! Forces redrawing even when hidden or alpha <= 0; Defaults to false
 	virtual bool						shouldForceRedraw() const { return mShouldForceRedraw; }
 	virtual void						setShouldForceRedraw(const bool shouldForceRedraw) { mShouldForceRedraw = shouldForceRedraw; }
 
+	//! Setting this to false will prevent events from propagating from this view to its parent. Defaults to true.
+	bool								shouldPropagateEvents() const { return mShouldPropagateEvents; }
+	void								setShouldPropagateEvents(const bool value) { mShouldPropagateEvents = value; }
 
 
 	//==================================================
@@ -284,6 +287,7 @@ private:
 	ci::vec2 mSize;
 	bool mIsHidden;
 	bool mShouldForceRedraw;
+	bool mShouldPropagateEvents;
 
 	ci::ColorA mDrawColor;	//! Combines mAlpha and mTint for faster draw
 
