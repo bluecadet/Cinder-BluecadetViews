@@ -2,6 +2,8 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
+#include "cinder/Rand.h"
+
 #include <core/BaseApp.h>
 #include <views/TouchView.h>
 
@@ -22,15 +24,15 @@ public:
 	void setup() override;
 	void update() override;
 	void draw() override;
-	void makeViewTransformable(TouchViewRef view);
 
-	TouchViewRef mButton;
-	BaseViewRef mAnchor;
+	TouchViewRef createTransformableView();
+	void makeViewTransformable(TouchViewRef view, BaseViewRef anchor);
 };
 
 void GestureWorksSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 	SettingsManager::getInstance()->mDebugWindowSize = ivec2(1280, 720);
-	SettingsManager::getInstance()->mDebugFullscreen = false;
+	SettingsManager::getInstance()->mFps = 60.0f;
+	SettingsManager::getInstance()->mDebugFullscreen = true;
 	SettingsManager::getInstance()->mDebugBorderless = false;
 	SettingsManager::getInstance()->mDebugDrawTouches = true;
 	BaseApp::prepareSettings(settings);
@@ -56,24 +58,49 @@ void GestureWorksSampleApp::setup() {
 	getRootView()->setBackgroundColor(Color::gray(0.5f));
 	getRootView()->setSize(ScreenLayout::getInstance()->getAppSize());
 
-	mButton = TouchViewRef(new TouchView());
-	mButton->setSize(vec2(100, 100));
-	mButton->setPosition((vec2(ScreenLayout::getInstance()->getAppSize()) - mButton->getSize()) * 0.5f);
-	mButton->setTransformOrigin(mButton->getSize() * 0.5f);
-	mButton->setScale(vec2(2));
-	mButton->setBackgroundColor(Color(0, 1, 1));
-	mButton->setMultiTouchEnabled(true);
-	makeViewTransformable(mButton);
-	getRootView()->addChild(mButton);
+	// create views
+	for (int i = 0; i < 1000; ++i) {
+		auto view = createTransformableView();
 
-	mAnchor = BaseViewRef(new BaseView());
-	mAnchor->setBackgroundColor(Color(1, 0, 0));
-	mAnchor->setSize(vec2(10));
-	mAnchor->setTransformOrigin(mAnchor->getSize() * 0.5f);
-	mButton->addChild(mAnchor);
+		view->setScale(vec2(randFloat(0.5, 5.0f)));
+		view->setPosition(vec2(randFloat(getWindowWidth()), randFloat(getWindowHeight())));
+		view->setBackgroundColor(hsvToRgb(vec3(randFloat(), 1.0f, 1.0f)));
+		view->setRotation(randFloat(glm::two_pi<float>()));
+
+		float alphaA = randFloat(0.5, 1.0);
+		float alphaB = randFloat(0.5, 1.0);
+		float duration = randFloat(1.0f, 4.0f);
+
+		view->setAlpha(alphaA);
+		view->getTimeline()->apply(&view->getAlpha(), alphaA, alphaB, duration, easeInOutQuad).pingPong().loop().delay(randFloat(duration));
+
+		getRootView()->addChild(view);
+	}
 }
 
-void GestureWorksSampleApp::makeViewTransformable(TouchViewRef view) {
+TouchViewRef GestureWorksSampleApp::createTransformableView()
+{
+	auto view = TouchViewRef(new TouchView());
+	view->setSize(vec2(100, 100));
+	view->setPosition((vec2(ScreenLayout::getInstance()->getAppSize()) - view->getSize()) * 0.5f);
+	view->setTransformOrigin(view->getSize() * 0.5f);
+	view->setScale(vec2(2));
+	view->setBackgroundColor(Color(0, 1, 1));
+	view->setMultiTouchEnabled(true);
+
+	auto anchor = BaseViewRef(new BaseView());
+	anchor->setBackgroundColor(Color(1, 0, 0));
+	anchor->setSize(vec2(10));
+	anchor->setTransformOrigin(anchor->getSize() * 0.5f);
+	anchor->setPosition(view->getTransformOrigin().value() - anchor->getSize() * 0.5f);
+	view->addChild(anchor);
+
+	makeViewTransformable(view, anchor);
+
+	return view;
+}
+
+void GestureWorksSampleApp::makeViewTransformable(TouchViewRef view, BaseViewRef anchor) {
 	static int i = 0;
 	view->mDidReceiveGesture.connect([=](const gwc::GestureEvent & event) {
 		static string originalTransformOriginKey = "gesture_originalTransformOrigin";
@@ -81,6 +108,8 @@ void GestureWorksSampleApp::makeViewTransformable(TouchViewRef view) {
 		if (event.gesture_id != "n-rotate-and-scale") return;
 		
 		if (event.phase == 0) {
+			view->moveToFront();
+
 			const vec2 originalTransformOrigin = view->getTransformOrigin();
 			view->setUserInfo(originalTransformOriginKey, originalTransformOrigin);
 
@@ -114,12 +143,14 @@ void GestureWorksSampleApp::makeViewTransformable(TouchViewRef view) {
 				view->removeUserInfo(originalTransformOriginKey);
 			}
 		}
+
+		// update anchor
+		anchor->setPosition(view->getTransformOrigin().value() - anchor->getSize() * 0.5f);
 	});
 }
 
 void GestureWorksSampleApp::update() {
 	BaseApp::update();
-	mAnchor->setPosition(mButton->getTransformOrigin().value() - mAnchor->getSize() * 0.5f);
 }
 
 void GestureWorksSampleApp::draw() {
