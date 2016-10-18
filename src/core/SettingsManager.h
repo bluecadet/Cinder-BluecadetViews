@@ -76,11 +76,11 @@ public:
 
 	// Debugging
 	bool			mDebugMode;
-	bool			mDebugDrawTouches;
-	bool			mDebugDrawScreenLayout;
-	bool			mDebugFullscreen;
-	bool			mDebugBorderless;
-	ci::ivec2		mDebugWindowSize;
+	bool			mDrawTouches;
+	bool			mDrawScreenLayout;
+	bool			mFullscreen;
+	bool			mBorderless;
+	ci::ivec2		mWindowSize;
 	bool			mShowMouse;
 	bool			mDrawMinimap;
 

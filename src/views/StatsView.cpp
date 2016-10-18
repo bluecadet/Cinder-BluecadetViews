@@ -6,7 +6,6 @@ using namespace std;
 
 namespace bluecadet {
 namespace views {
-namespace debug {
 
 StatsView::StatsView() : StatsView(ci::Font("Arial", 16.0f)) {}
 
@@ -50,6 +49,5 @@ void StatsView::draw() {
 	}
 }
 
-}
 }
 }

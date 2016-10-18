@@ -3,20 +3,21 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
 
-#include "BaseApp.h"
-#include "BaseView.h"
-#include "EllipseView.h"
-#include "FboView.h"
-#include "LineView.h"
-#include "TouchView.h"
-#include "SettingsManager.h"
+#include <core/BaseApp.h>
+#include <views/BaseView.h>
+#include <views/EllipseView.h>
+#include <views/FboView.h>
+#include <views/LineView.h>
+#include <views/TouchView.h>
+
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+using namespace bluecadet::core;
 using namespace bluecadet::views;
-using namespace bluecadet::utils;
+using namespace bluecadet::touch;
 
 class ViewTypesSampleApp : public BaseApp {
 public:
@@ -29,15 +30,14 @@ public:
 };
 
 void ViewTypesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
+	SettingsManager::getInstance()->mWindowSize = ivec2(1280, 720);
+	SettingsManager::getInstance()->mFullscreen = false;
 	BaseApp::prepareSettings(settings);
-	settings->setWindowSize(ivec2(1024, 768));
-
-	settings->setFullScreen(false);
-	settings->setWindowSize(900, 800);
 }
 
 void ViewTypesSampleApp::setup() {
 	BaseApp::setup();
+	ScreenLayout::getInstance()->setDisplaySize(getWindowSize());
 
 	auto view = BaseViewRef(new BaseView());
 	view->setSize(vec2(100, 100));

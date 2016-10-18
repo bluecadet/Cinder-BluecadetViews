@@ -25,12 +25,12 @@ SettingsManager::SettingsManager() {
 	// Debugging
 	mDebugMode = true;
 	mDrawMinimap = true;
-	mDebugDrawTouches = false;
-	mDebugDrawScreenLayout = false;
-	mDebugFullscreen = true;
-	mDebugBorderless = false;
+	mDrawTouches = false;
+	mDrawScreenLayout = false;
+	mFullscreen = true;
+	mBorderless = false;
 	mShowMouse = true;
-	mDebugWindowSize = ivec2(0);
+	mWindowSize = ivec2(0);
 
 	// Analytics
 	mAnalyticsAppName = "";
@@ -60,10 +60,10 @@ void SettingsManager::setup(const ci::fs::path& jsonPath, ci::app::App::Settings
 			// Debug
 			setFieldFromJsonIfExists(&mDebugMode, "settings.debug.debugMode");
 			setFieldFromJsonIfExists(&mDrawMinimap, "settings.debug.drawMinimap");
-			setFieldFromJsonIfExists(&mDebugDrawTouches, "settings.debug.drawTouches");
-			setFieldFromJsonIfExists(&mDebugDrawScreenLayout, "settings.debug.drawScreenLayout");
-			setFieldFromJsonIfExists(&mDebugFullscreen, "settings.debug.fullscreen");
-			setFieldFromJsonIfExists(&mDebugBorderless, "settings.debug.borderless");
+			setFieldFromJsonIfExists(&mDrawTouches, "settings.debug.drawTouches");
+			setFieldFromJsonIfExists(&mDrawScreenLayout, "settings.debug.drawScreenLayout");
+			setFieldFromJsonIfExists(&mFullscreen, "settings.debug.fullscreen");
+			setFieldFromJsonIfExists(&mBorderless, "settings.debug.borderless");
 			setFieldFromJsonIfExists(&mShowMouse, "settings.debug.showMouse");
 
 			// Analytics
@@ -80,8 +80,8 @@ void SettingsManager::setup(const ci::fs::path& jsonPath, ci::app::App::Settings
 
 	// Parse arguments from command line
 	addCommandLineParser("debug", [&](const string &value) { mDebugMode = value == "true"; });
-	addCommandLineParser("fullscreen", [&](const string &value) { mDebugFullscreen = value == "true"; });
-	addCommandLineParser("borderless", [&](const string &value) { mDebugBorderless = value == "true"; });
+	addCommandLineParser("fullscreen", [&](const string &value) { mFullscreen = value == "true"; });
+	addCommandLineParser("borderless", [&](const string &value) { mBorderless = value == "true"; });
 	addCommandLineParser("vsync", [&](const string &value) { mVerticalSync = value == "true"; });
 	addCommandLineParser("console", [&](const string &value) { mConsoleWindowEnabled = value == "true"; });
 	addCommandLineParser("cursor", [&](const string &value) { mShowMouse = value == "true"; });
@@ -91,15 +91,15 @@ void SettingsManager::setup(const ci::fs::path& jsonPath, ci::app::App::Settings
 		if (commaIndex != string::npos) {
 			string wStr = value.substr(0, commaIndex);
 			string hStr = value.substr(commaIndex + 1, value.size() - commaIndex - 1);
-			mDebugWindowSize = ivec2(stoi(wStr), stoi(hStr));
+			mWindowSize = ivec2(stoi(wStr), stoi(hStr));
 		}
 	});
 	
 	parseCommandLineArgs(appSettings->getCommandLineArgs());
 
 	// Default window size to main display size if no custom size has been determined
-	if (mDebugWindowSize == ivec2(0)) {
-		mDebugWindowSize = Display::getMainDisplay()->getSize();
+	if (mWindowSize == ivec2(0)) {
+		mWindowSize = Display::getMainDisplay()->getSize();
 	}
 }
 
@@ -138,8 +138,8 @@ ci::params::InterfaceGlRef SettingsManager::getParams() {
 	if (!params) {
 		params = ci::params::InterfaceGl::create("Settings", ci::ivec2(250, 500));
 		params->addParam("Show Minimap", &mDrawMinimap);
-		params->addParam("Show Touches", &mDebugDrawTouches);
-		params->addParam("Show Layout", &mDebugDrawScreenLayout);
+		params->addParam("Show Touches", &mDrawTouches);
+		params->addParam("Show Layout", &mDrawScreenLayout);
 		params->addParam("Show Cursor", &mShowMouse).updateFn([&] { mShowMouse ? ci::app::AppBase::get()->showCursor() : ci::app::AppBase::get()->hideCursor(); }).key("m");
 	}
 	return params;

@@ -4,11 +4,10 @@
 #include "cinder/gl/gl.h"
 #include "cinder/gl/TextureFont.h"
 
-#include "../BaseView.h"
+#include "BaseView.h"
 
 namespace bluecadet {
 namespace views {
-namespace debug {
 
 typedef std::shared_ptr<class StatsView> StatsViewRef;
 
@@ -33,6 +32,5 @@ protected:
 	std::map<std::string, StatsFn> mStatFunctions;
 };
 
-}
 }
 }
