@@ -59,7 +59,7 @@ void GestureWorksSampleApp::setup() {
 	getRootView()->setSize(ScreenLayout::getInstance()->getAppSize());
 
 	// create views
-	for (int i = 0; i < 1000; ++i) {
+	for (int i = 0; i < 50; ++i) {
 		auto view = createTransformableView();
 
 		view->setScale(vec2(randFloat(0.5, 5.0f)));
