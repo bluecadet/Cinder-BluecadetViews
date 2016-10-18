@@ -51,28 +51,6 @@ public:
 
 
 	//==================================================
-	// Events
-	// 
-
-	//! Signal that will trigger whenever an event is received or dispatched by this view.
-	EventSignal &			getEventSignal(const std::string & type)										{ return mEventSignalsByType[type]; };
-	EventConnection			addEventCallback(const EventCallback callback, const std::string & type)		{ return mEventSignalsByType[type].connect(callback); };
-	void					removeEventCallback(const EventConnection connection, const std::string & type) { mEventSignalsByType[type].disconnect(connection); };
-	void					removeAllEventCallbacks(const std::string & type)								{ mEventSignalsByType[type].disconnect_all_slots(); };
-	void					removeAllEventCallbacks()														{ for (auto & signal : mEventSignalsByType) signal.second.disconnect_all_slots(); };
-
-	//! Dispatch events to this view's children. Will also trigger the event signal.
-	void					dispatchEvent(ViewEvent & event);
-	
-	//! Dispatch a ViewEvent of `type` to this view's children. Will also trigger the event signal.
-	void					dispatchEvent(const std::string & type)											{ dispatchEvent(ViewEvent(type)); };
-
-	//! Override to handle dispatched events from children.
-	virtual void			handleEvent(const ViewEvent & event) {}
-
-
-
-	//==================================================
 	// Scene graph modification
 	// 
 
@@ -91,10 +69,6 @@ public:
 	//! Cancels all running animations on this timeline and this view's animation properties
 	virtual void			resetAnimations();
 
-	//! Helper that will dispatch a function after a delay.
-	//! The function will be added to the view's timeline and can be canceled with all other animations.
-	virtual ci::CueRef		dispatchAfter(std::function<void()> fn, float delay = 0.0f);
-
 	virtual void			addChild(BaseViewRef child);
 	virtual void			addChild(BaseViewRef child, size_t index);
 
@@ -111,6 +85,30 @@ public:
 	virtual void			moveChildToIndex(BaseViewRef child, size_t index);
 	virtual void			moveChildToIndex(BaseViewList::iterator childIt, size_t index);
 
+
+	//==================================================
+	// Events
+	// 
+
+	//! Signal that will trigger whenever an event is received or dispatched by this view.
+	EventSignal &			getEventSignal(const std::string & type) { return mEventSignalsByType[type]; };
+	EventConnection			addEventCallback(const EventCallback callback, const std::string & type) { return mEventSignalsByType[type].connect(callback); };
+	void					removeEventCallback(const EventConnection connection, const std::string & type) { mEventSignalsByType[type].disconnect(connection); };
+	void					removeAllEventCallbacks(const std::string & type) { mEventSignalsByType[type].disconnect_all_slots(); };
+	void					removeAllEventCallbacks() { for (auto & signal : mEventSignalsByType) signal.second.disconnect_all_slots(); };
+
+	//! Dispatch events to this view's children. Will also trigger the event signal.
+	void					dispatchEvent(ViewEvent & event);
+
+	//! Dispatch a ViewEvent of `type` to this view's children. Will also trigger the event signal.
+	void					dispatchEvent(const std::string & type) { dispatchEvent(ViewEvent(type)); };
+
+	//! Helper that will dispatch a function after a delay.
+	//! The function will be added to the view's timeline and can be canceled with all other animations.
+	virtual ci::CueRef		dispatchAfter(std::function<void()> fn, float delay = 0.0f);
+
+	//! Override to handle dispatched events from children.
+	virtual void			handleEvent(const ViewEvent & event) {}
 
 
 	//==================================================
@@ -256,12 +254,12 @@ public:
 
 protected:
 
-	virtual void update(const double deltaTime);	//! Gets called before draw() and after any parent's update. Override this method to plug into the update loop.
+	virtual void update(const double deltaTime);				//! Gets called before draw() and after any parent's update. Override this method to plug into the update loop.
 
-	inline virtual void	willDraw() {}	//! Called by drawScene before draw()
-	virtual void		draw();			//! Called by drawScene and allows for drawing content for this node. By default draws a rectangle with the current size and background color (only if x/y /bg-alpha > 0)
+	inline virtual void	willDraw() {}							//! Called by drawScene before draw()
+	virtual void		draw();									//! Called by drawScene and allows for drawing content for this node. By default draws a rectangle with the current size and background color (only if x/y /bg-alpha > 0)
 	inline virtual void	drawChildren(const ci::ColorA& parentTint); //! Called by drawScene() after draw() and before didDraw(). Implemented at bottom of class.
-	inline virtual void	didDraw() {}	//! Called by drawScene after draw()
+	inline virtual void	didDraw() {}							//! Called by drawScene after draw()
 
 	inline virtual void didMoveToView(BaseView* parent) {}		//! Called when moved to a parent
 	inline virtual void willMoveFromView(BaseView* parent) {}	//! Called when removed from a parent

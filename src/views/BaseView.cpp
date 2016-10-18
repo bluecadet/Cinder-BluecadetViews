@@ -360,24 +360,26 @@ gl::GlslProgRef BaseView::getDefaultDrawProg() {
 		defaultProg = gl::GlslProg::create(
 			gl::GlslProg::Format().vertex(CI_GLSL(150,
 				uniform vec2	uSize;
-		uniform mat4	ciModelViewProjection;
-		in vec4			ciPosition;
-		in vec4			ciColor;
-		out vec4		color;
-		void main(void) {
-			vec4 pos = vec4(ciPosition.x * uSize.x, ciPosition.y * uSize.y, 0.0f, 1.0f);
-			gl_Position = ciModelViewProjection * pos;
-			color = ciColor;
-		}
-		)).fragment(CI_GLSL(150,
-			in vec4			color;
-		out vec4		oColor;
-		uniform vec4	uBackgroundColor;
-		void main(void) {
-			oColor = color * uBackgroundColor;
-		}
-		))
-			);
+				uniform mat4	ciModelViewProjection;
+				in vec4			ciPosition;
+				in vec4			ciColor;
+				out vec4		color;
+
+				void main(void) {
+					vec4 pos = vec4(ciPosition.x * uSize.x, ciPosition.y * uSize.y, 0.0f, 1.0f);
+					gl_Position = ciModelViewProjection * pos;
+					color = ciColor;
+				}
+			)).fragment(CI_GLSL(150,
+				in vec4			color;
+				out vec4		oColor;
+				uniform vec4	uBackgroundColor;
+
+				void main(void) {
+					oColor = color * uBackgroundColor;
+				}
+			))
+		);
 		defaultProg->uniform("uSize", vec2(0, 0));
 	}
 
