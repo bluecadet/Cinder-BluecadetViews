@@ -1,6 +1,6 @@
 #pragma once
 
-#include <views/Event.h>
+#include <views/ViewEvent.h>
 
 namespace bluecadet {
 
@@ -39,9 +39,9 @@ struct Touch {
 
 
 //! TouchEvents are dispatched by the TouchManager via touched views.
-struct TouchEvent : public views::Event {
+struct TouchEvent : public views::ViewEvent {
 
-	struct Type : public views::Event::Type {
+	struct Type : public views::ViewEvent::Type {
 		static const std::string TOUCH;
 	};
 

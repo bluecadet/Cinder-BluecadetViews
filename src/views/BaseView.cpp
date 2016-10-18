@@ -12,31 +12,25 @@ namespace views {
 // 
 
 BaseView::BaseView() :
-	mTransformOrigin(vec2(0.0f, 0.0f)),
-	mPosition(vec2(0.0f, 0.0f)),
-	mScale(vec2(1.0f, 1.0f)),
+	mTransformOrigin(vec2(0.0f)),
+	mPosition(vec2(0.0f)),
+	mScale(vec2(1.0f)),
 	mRotation(quat()),
-	mTransform(mat4()),
-	mGlobalTransform(mat4()),
 	mHasInvalidTransforms(true),
-
+	mSize(0),
 	mHasInvalidContent(true),
 
-	mTint(Color(1.0f, 1.0f, 1.0f)),
-	mDrawColor(ColorA(1.0f, 1.0f, 1.0f, 1.0f)),
-	mBackgroundColor(ColorA(0, 0, 0, 0)),
+	mTint(Color::white()),
+	mBackgroundColor(ColorA::zero()),
+	mDrawColor(1.0f, 1.0f, 1.0f, 1.0f),
 
 	mAlpha(1.0),
 	mIsHidden(false),
-	mShouldForceRedraw(false),
+	mShouldForceInvisibleDraw(false),
 	mShouldPropagateEvents(true),
 
 	mTimeline(Timeline::create()),
-
-	mChildren(),
-	mParent(nullptr),
-
-	mSize(0, 0) {
+	mParent(nullptr) {
 }
 
 BaseView::~BaseView() {
@@ -51,12 +45,15 @@ void BaseView::reset() {
 	mGlobalTransform = mat4();
 	mHasInvalidTransforms = true;
 	mHasInvalidContent = true;
+	mShouldForceInvisibleDraw = false;
+	mShouldPropagateEvents = true;
 	mTint = Color(1.0f, 1.0f, 1.0f);
 	mDrawColor = ColorA(1.0f, 1.0f, 1.0f, 1.0f);
 	mBackgroundColor = ColorA(0, 0, 0, 0);
 	mSize = vec2(0, 0);
 	mAlpha = 1.0;
 }
+
 
 //==================================================
 // Parent/child relationships
@@ -240,7 +237,7 @@ void BaseView::updateScene(const double deltaTime) {
 	}
 
 	if (mHasInvalidContent) {
-		dispatchEvent(Event(Event::Type::UPDATED, this));
+		dispatchEvent(ViewEvent(ViewEvent::Type::UPDATED, this));
 	}
 
 	update(deltaTime);
@@ -254,7 +251,7 @@ void BaseView::update(const double deltaTime) {
 }
 
 void BaseView::drawScene(const ColorA& parentTint) {
-	if (!mShouldForceRedraw && (mIsHidden || mAlpha <= 0.0f)) {
+	if (!mShouldForceInvisibleDraw && (mIsHidden || mAlpha <= 0.0f)) {
 		return;
 	}
 
@@ -331,12 +328,14 @@ CueRef BaseView::dispatchAfter(std::function<void()> fn, float delay) {
 // Events
 // 
 
-void BaseView::dispatchEvent(Event& event) {
+void BaseView::dispatchEvent(ViewEvent & event) {
 	if (!event.target) {
 		event.target = this;
 	} else {
 		handleEvent(event);
 	}
+
+	mEventSignalsByType[event.type](event);
 
 	if (!event.shouldPropagate || !mShouldPropagateEvents) {
 		// cut off propagation if required
@@ -349,15 +348,6 @@ void BaseView::dispatchEvent(Event& event) {
 		mParent->dispatchEvent(event);
 	}
 }
-
-//EventSignal::slot_type BaseView::addEventCallback(EventCallback callback, const std::string type) {
-//	return mEventSignal.connect([=](const Event & event) {
-//		if (event.type == type) {
-//			callback(event);
-//		}
-//	});
-//}
-
 
 //==================================================
 // Drawing

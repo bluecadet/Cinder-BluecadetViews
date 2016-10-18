@@ -31,7 +31,7 @@ public:
 
 void GestureWorksSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 	SettingsManager::getInstance()->mDebugWindowSize = ivec2(1280, 720);
-	SettingsManager::getInstance()->mFps = 60.0f;
+	SettingsManager::getInstance()->mFps = 60;
 	SettingsManager::getInstance()->mDebugFullscreen = true;
 	SettingsManager::getInstance()->mDebugBorderless = false;
 	SettingsManager::getInstance()->mDebugDrawTouches = true;
@@ -94,6 +94,14 @@ TouchViewRef GestureWorksSampleApp::createTransformableView()
 	anchor->setTransformOrigin(anchor->getSize() * 0.5f);
 	anchor->setPosition(view->getTransformOrigin().value() - anchor->getSize() * 0.5f);
 	view->addChild(anchor);
+
+	anchor->dispatchAfter([=]() {
+		anchor->dispatchEvent("THIS IS A TEST");
+	}, randFloat(5.0f));
+
+	view->addEventCallback([=](const ViewEvent & e) {
+		console() << e.type << endl;
+	}, "THIS IS A TEST");
 
 	makeViewTransformable(view, anchor);
 

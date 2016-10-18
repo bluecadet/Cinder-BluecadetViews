@@ -11,7 +11,7 @@ namespace views {
 
 class BaseView; // forward declaration
 
-struct Event {
+struct ViewEvent {
 	// Types
 	struct Type {
 		static const std::string GENERIC;
@@ -27,11 +27,8 @@ struct Event {
 
 	void				stopPropagation();
 
-	Event(const std::string & type = Type::GENERIC, BaseView * target = nullptr);
+	ViewEvent(const std::string & type = Type::GENERIC, BaseView * target = nullptr);
 };
-
-//typedef std::function<void(const Event & event)>			EventCallback;
-//typedef boost::signals2::signal<void(const Event & event)>	EventSignal;
 
 }
 }

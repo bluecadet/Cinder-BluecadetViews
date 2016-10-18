@@ -14,9 +14,9 @@
 #include "cinder/Timeline.h"
 
 #include "boost/variant.hpp"
-//#include "boost/signals2.hpp"
+#include "boost/signals2.hpp"
 
-#include "Event.h"
+#include "ViewEvent.h"
 
 namespace bluecadet {
 namespace views {
@@ -31,33 +31,44 @@ typedef std::list<BaseViewRef> BaseViewList;
 
 class BaseView {
 
-	//typedef std::function<void(const Event & event)>				EventCallback;
-	//typedef boost::signals2::signal<void(const Event & event)>	EventSignal;
-
 	typedef boost::variant<
 		bool, int, float, double,
 		ci::ivec2, ci::ivec3, ci::ivec4,
 		ci::vec2, ci::vec3, ci::vec4,
 		ci::mat2, ci::mat3, ci::mat4, ci::quat,
 		std::string
-	> UserInfoTypes;
-	typedef std::map<std::string, UserInfoTypes> UserInfo;
+	>																UserInfoTypes;
+	typedef std::map<std::string, UserInfoTypes>					UserInfo;
+
+	typedef boost::signals2::signal<void(const ViewEvent & event)>	EventSignal;
+	typedef boost::signals2::connection								EventConnection;
+	typedef EventSignal::slot_function_type							EventCallback;
 
 public:
 
 	BaseView();
 	virtual ~BaseView();
 
+
+	//==================================================
+	// Events
+	// 
+
 	//! Signal that will trigger whenever an event is received or dispatched by this view.
-	//virtual EventSignal &			getEventSignal() { return mEventSignal; };
-	//virtual EventSignal::slot_type	addEventCallback(EventCallback callback) { return mEventSignal.connect(callback); }
-	//virtual EventSignal::slot_type	addEventCallback(EventCallback callback, const std::string type);
+	EventSignal &			getEventSignal(const std::string & type)										{ return mEventSignalsByType[type]; };
+	EventConnection			addEventCallback(const EventCallback callback, const std::string & type)		{ return mEventSignalsByType[type].connect(callback); };
+	void					removeEventCallback(const EventConnection connection, const std::string & type) { mEventSignalsByType[type].disconnect(connection); };
+	void					removeAllEventCallbacks(const std::string & type)								{ mEventSignalsByType[type].disconnect_all_slots(); };
+	void					removeAllEventCallbacks()														{ for (auto & signal : mEventSignalsByType) signal.second.disconnect_all_slots(); };
 
 	//! Dispatch events to this view's children. Will also trigger the event signal.
-	void					dispatchEvent(Event & event);
+	void					dispatchEvent(ViewEvent & event);
+	
+	//! Dispatch a ViewEvent of `type` to this view's children. Will also trigger the event signal.
+	void					dispatchEvent(const std::string & type)											{ dispatchEvent(ViewEvent(type)); };
 
 	//! Override to handle dispatched events from children.
-	virtual void			handleEvent(const Event & event) {}
+	virtual void			handleEvent(const ViewEvent & event) {}
 
 
 
@@ -176,8 +187,8 @@ public:
 	virtual void						setHidden(const bool isHidden) { mIsHidden = isHidden; }
 
 	//! Forces redrawing even when hidden or alpha <= 0; Defaults to false
-	virtual bool						shouldForceRedraw() const { return mShouldForceRedraw; }
-	virtual void						setShouldForceRedraw(const bool shouldForceRedraw) { mShouldForceRedraw = shouldForceRedraw; }
+	virtual bool						shouldForceInvisibleDraw() const { return mShouldForceInvisibleDraw; }
+	virtual void						setShouldForceInvisibleDraw(const bool value) { mShouldForceInvisibleDraw = value; }
 
 	//! Setting this to false will prevent events from propagating from this view to its parent. Defaults to true.
 	bool								shouldPropagateEvents() const { return mShouldPropagateEvents; }
@@ -286,8 +297,7 @@ private:
 	ci::Anim<ci::ColorA> mBackgroundColor;
 	ci::vec2 mSize;
 	bool mIsHidden;
-	bool mShouldForceRedraw;
-	bool mShouldPropagateEvents;
+	bool mShouldForceInvisibleDraw;
 
 	ci::ColorA mDrawColor;	//! Combines mAlpha and mTint for faster draw
 
@@ -303,8 +313,14 @@ private:
 
 	bool mHasInvalidContent;
 
+
+	// Events
+	bool								mShouldPropagateEvents;
+	std::map<std::string, EventSignal>	mEventSignalsByType;
+
+	// Misc
 	std::map<std::string, UserInfoTypes> mUserInfo;
-	//EventSignal mEventSignal;
+
 
 }; // class BaseView
 

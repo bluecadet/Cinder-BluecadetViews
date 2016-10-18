@@ -78,8 +78,8 @@ inline void FboView::validateContent(){
 
 }
 
-void FboView::handleEvent(const Event& event) {
-	if (event.type == Event::Type::UPDATED) {
+void FboView::handleEvent(const ViewEvent& event) {
+	if (event.type == ViewEvent::Type::UPDATED) {
 		invalidate(false, true);
 	}
 }

@@ -26,7 +26,7 @@ TouchEvent::TouchEvent(const Touch & touch)	:
 }
 
 TouchEvent::TouchEvent(const int touchId, const ci::ivec2 & windowPosition, const ci::vec2 & appPosition, const TouchType touchType, const TouchPhase touchPhase) :
-	views::Event("touch", nullptr),
+	views::ViewEvent("touch", nullptr),
 	touchId(touchId),
 	windowPosition(windowPosition),
 	position(appPosition),
