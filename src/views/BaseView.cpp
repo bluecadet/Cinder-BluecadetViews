@@ -34,7 +34,8 @@ BaseView::BaseView() :
 	mTimeline(Timeline::create()),
 	mParent(nullptr),
 	
-	mViewId(to_string(sNumInstances++))
+	mViewId(sNumInstances++),
+	mViewIdStr(to_string(mViewId))
 	{
 }
 

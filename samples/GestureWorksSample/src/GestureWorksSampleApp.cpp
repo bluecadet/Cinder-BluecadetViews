@@ -70,18 +70,6 @@ void GestureWorksSampleApp::setup() {
 		float duration = randFloat(1.0f, 4.0f);
 		view->setAlpha(alphaA);
 		//view->getTimeline()->apply(&view->getAlpha(), alphaA, alphaB, duration, easeInOutQuad).pingPong().loop().delay(randFloat(duration));
-		
-		/*view->addEventCallback([=](const ViewEvent & e) {
-			console() << "content invalidated event from view " << e.target->getViewId() << " - " << getElapsedFrames() << endl;
-		}, ViewEvent::Type::CONTENT_INVALIDATED);*/
-
-		view->addEventCallback([=](const ViewEvent & e) {
-			console() << "touch event from view " << e.target->getViewId() << " - " << getElapsedFrames() << endl;
-		}, bluecadet::touch::TouchEvent::Type::TOUCH);
-
-		view->addEventCallback([=](const ViewEvent & e) {
-			console() << "custom timed event from view " << e.target->getViewId() << " - " << getElapsedFrames() << endl;
-		}, "timed_test");
 
 		getRootView()->addChild(view);
 	}

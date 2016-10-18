@@ -66,6 +66,9 @@ public:
 	bool disableGesture(std::string object_id, std::string gesture_id);
 	bool deregisterTouchObject(std::string object_id);
 	void addEvent(gwc::touchpoint touch_event);
+
+protected:
+	bool mLoaded = false;
 };
 }
 

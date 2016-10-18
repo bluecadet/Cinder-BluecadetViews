@@ -64,7 +64,6 @@ static HINSTANCE gwcDLL(0);
 
 int GestureWorks::loadGestureWorks(std::string dll_path) {
 
-
 	int success = 0;
 
 	gwcDLL = LoadLibraryA(dll_path.c_str());
@@ -118,20 +117,26 @@ int GestureWorks::loadGestureWorks(std::string dll_path) {
 		success = 1;
 	}
 
+	mLoaded = success == 0;
+
 	return success;
 }
 
 
 void GestureWorks::initializeGestureWorks(int screen_width, int screen_height) {
+	if (!mLoaded) return;
 	_initializeGestureWorks(screen_width, screen_height);
 }
 void GestureWorks::resizeScreen(int screen_width, int screen_height) {
+	if (!mLoaded) return;
 	_resizeScreen(screen_width, screen_height);
 }
 void GestureWorks::processFrame(void) {
+	if (!mLoaded) return;
 	_processFrame();
 }
 std::vector<gwc::PointEvent> GestureWorks::consumePointEvents(void) {
+	if (!mLoaded) return std::vector<gwc::PointEvent>();
 	gwc::PointEventArray* point_events = _consumePointEvents();
 	std::vector<gwc::PointEvent> events;
 	for (int i = 0; i < point_events->size; i++) {
@@ -140,6 +145,7 @@ std::vector<gwc::PointEvent> GestureWorks::consumePointEvents(void) {
 	return events;
 }
 std::vector<gwc::GestureEvent> GestureWorks::consumeGestureEvents(void) {
+	if (!mLoaded) return std::vector<gwc::GestureEvent>();
 	gwc::IntermediateGestureEventArray* gesture_events = _consumeGestureEvents();
 	std::vector<gwc::GestureEvent> events;
 	for (int i = 0; i < gesture_events->size; i++) {
@@ -148,42 +154,55 @@ std::vector<gwc::GestureEvent> GestureWorks::consumeGestureEvents(void) {
 	return events;
 }
 bool GestureWorks::registerWindowForTouchByName(std::string window_name) {
+	if (!mLoaded) return false;
 	return _registerWindowForTouchByName((char*)window_name.c_str());
 }
 bool GestureWorks::registerWindowForTouch(HWND hwnd) {
+	if (!mLoaded) return false;
 	return _registerWindowForTouch(hwnd);
 }
 void GestureWorks::registerTouchObject(std::string object_id) {
+	if (!mLoaded) return;
 	return _registerTouchObject((char*)object_id.c_str());
 }
 bool GestureWorks::assignTouchPoint(std::string object_id, int point_id) {
+	if (!mLoaded) return false;
 	return _assignTouchPoint((char*)object_id.c_str(), point_id);
 }
 bool GestureWorks::loadGML(std::string file_name) {
+	if (!mLoaded) return false;
 	return _loadGML((char*)file_name.c_str());
 }
 bool GestureWorks::addGesture(std::string object_id, std::string gesture_id) {
+	if (!mLoaded) return false;
 	return _addGesture((char*)object_id.c_str(), (char*)gesture_id.c_str());
 }
 bool GestureWorks::addGestureSet(std::string object_id, std::string set_name) {
+	if (!mLoaded) return false;
 	return _addGestureSet((char*)object_id.c_str(), (char*)set_name.c_str());
 }
 bool GestureWorks::removeGesture(std::string object_id, std::string gesture_id) {
+	if (!mLoaded) return false;
 	return _removeGesture((char*)object_id.c_str(), (char*)gesture_id.c_str());
 }
 bool GestureWorks::removeGestureSet(std::string object_id, std::string set_name) {
+	if (!mLoaded) return false;
 	return _removeGestureSet((char*)object_id.c_str(), (char*)set_name.c_str());
 }
 bool GestureWorks::enableGesture(std::string object_id, std::string gesture_id) {
+	if (!mLoaded) return false;
 	return _enableGesture((char*)object_id.c_str(), (char*)gesture_id.c_str());
 }
 bool GestureWorks::disableGesture(std::string object_id, std::string gesture_id) {
+	if (!mLoaded) return false;
 	return _disableGesture((char*)object_id.c_str(), (char*)gesture_id.c_str());
 }
 bool GestureWorks::deregisterTouchObject(std::string object_id) {
+	if (!mLoaded) return false;
 	return _deregisterTouchObject((char*)object_id.c_str());
 }
 void GestureWorks::addEvent(gwc::touchpoint touch_event) {
+	if (!mLoaded) return;
 	_addEvent(touch_event);
 }
 

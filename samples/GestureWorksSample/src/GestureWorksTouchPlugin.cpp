@@ -82,7 +82,7 @@ void GestureWorksTouchPlugin::processEvent(TouchManager * manager, const TouchEv
 	gwc::GestureWorks::getInstance()->addEvent(touchPoint);
 
 	if (event.touchTarget) {
-		const auto touchViewId = event.touchTarget->getViewId();
+		const auto touchViewId = event.touchTarget->getViewIdStr();
 		const auto gestureCountIt = mNumGesturesPerViewId.find(touchViewId);
 
 		if (gestureCountIt == mNumGesturesPerViewId.end()) {

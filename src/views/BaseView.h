@@ -193,7 +193,8 @@ public:
 	void								setShouldPropagateEvents(const bool value) { mShouldPropagateEvents = value; }
 
 	//! Unique ID per view.
-	const std::string					getViewId() const { return mViewId; }
+	const size_t						getViewId() const { return mViewId; }
+	const std::string &					getViewIdStr() const { return mViewIdStr; }
 
 
 	//==================================================
@@ -321,7 +322,8 @@ private:
 	std::map<std::string, EventSignal>	mEventSignalsByType;
 
 	// Misc
-	const std::string						mViewId;
+	const size_t							mViewId;
+	const std::string						mViewIdStr;
 	std::map<std::string, UserInfoTypes>	mUserInfo;
 
 
