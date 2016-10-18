@@ -20,11 +20,14 @@ public:
 	StatsView();
 	virtual ~StatsView();
 
+
+
 	void addStat(const std::string& name, StatsFn fn);
 	void removeStat(const std::string& name);
 
 protected:
 	virtual void draw() override;
+	float getRowHeight() const { return mFont.getSize(); }
 
 	ci::Font mFont;
 	ci::gl::TextureFontRef mTextureFont;

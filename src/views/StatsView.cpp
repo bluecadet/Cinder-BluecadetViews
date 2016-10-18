@@ -26,6 +26,7 @@ void StatsView::addStat(const std::string& name, StatsFn fn)
 		removeStat(name);
 	}
 	mStatFunctions[name] = fn;
+	setSize(vec2(512, getRowHeight() * (float)mStatFunctions.size()));
 }
 
 void StatsView::removeStat(const std::string& name)
@@ -36,10 +37,11 @@ void StatsView::removeStat(const std::string& name)
 		return;
 	}
 	mStatFunctions.erase(statsIt);
+	setSize(vec2(512, getRowHeight() * (float)mStatFunctions.size()));
 }
 
 void StatsView::draw() {
-	const float rowHeight = mFont.getSize();
+	const float rowHeight = getRowHeight();
 	vec2 pos(0, mTextureFont->getAscent());
 
 	for (const auto& it : mStatFunctions) {

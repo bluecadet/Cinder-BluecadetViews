@@ -9,6 +9,7 @@
 #include <views/FboView.h>
 #include <views/LineView.h>
 #include <views/TouchView.h>
+#include <views/StatsView.h>
 
 
 using namespace ci;
@@ -37,7 +38,9 @@ void ViewTypesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 
 void ViewTypesSampleApp::setup() {
 	BaseApp::setup();
+
 	ScreenLayout::getInstance()->setDisplaySize(getWindowSize());
+	SettingsManager::getInstance()->getParams()->minimize();
 
 	auto view = BaseViewRef(new BaseView());
 	view->setSize(vec2(100, 100));
@@ -140,6 +143,7 @@ void ViewTypesSampleApp::setup() {
 	circleInsideFbo->getTimeline()->apply(&circleInsideFbo->getScale(), vec2(3.0f), 2.0f).loop(true);
 	getRootView()->addChild(fboView);
 
+
 	auto cancelView = TouchViewRef(new TouchView());
 	cancelView->setSize(vec2(100, 100));
 	cancelView->setPosition(vec2(100, 250));
@@ -153,6 +157,12 @@ void ViewTypesSampleApp::setup() {
 	});
 
 	getRootView()->addChild(cancelView);
+
+
+	auto statsView = StatsViewRef(new StatsView());
+	statsView->addStat("FPS", [&] { return to_string(getAverageFps()); });
+	statsView->setPosition(vec2(0, ScreenLayout::getInstance()->getAppHeight() - statsView->getHeight()));
+	getRootView()->addChild(statsView);
 
 	getWindow()->getSignalKeyDown().connect(std::bind(&ViewTypesSampleApp::handleKeyDown, this, std::placeholders::_1));
 }
@@ -178,8 +188,6 @@ void ViewTypesSampleApp::update() {
 
 void ViewTypesSampleApp::draw() {
 	BaseApp::draw();
-
-	gl::drawString("FPS: " + to_string(getAverageFps()), vec2(0, 100));
 }
 
 CINDER_APP(ViewTypesSampleApp, RendererGl(RendererGl::Options().msaa(4)), ViewTypesSampleApp::prepareSettings)
