@@ -85,7 +85,7 @@ public:
 	//==================================================
 	// Debugging
 	// 
-	void					debugDrawTouch(const Touch & touch, const ci::ColorA & color);
+	void					debugDrawTouch(const Touch & touch, const bool isVirtual);
 	void					debugDrawTouches();
 
 

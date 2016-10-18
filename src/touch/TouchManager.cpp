@@ -279,45 +279,53 @@ TouchView* TouchManager::getTopViewAtPosition(const ci::vec2 &position, BaseView
 // Debugging
 //
 
-void TouchManager::debugDrawTouch(const const Touch & touch, const ColorA & color) {
-	static const Color labelColor = Color(1, 1, 1);
+void TouchManager::debugDrawTouch(const Touch & touch, const bool isVirtual) {
+	static const ColorA labelColor = ColorA(1, 1, 1, 0.85f);
 	static const Font labelFont = Font("Arial", 16.0f);
 	static const float innerRadius = 12.0f;
 	static const float outerRadius = 16.0f;
 
 	static const float circlePadding = 2.0f;
 	static const float circleScale = 2.0f;
+	static const ColorA circleColor = ColorA(1, 1, 1, 0.85f);
 	static const vec2 circleSize = vec2(2.0f * (outerRadius + circlePadding));
 	static const Rectf circleDestRect = Rectf(-circleSize * 0.5f, circleSize * 0.5f);
 	static const vec2 labelOffset = vec2(outerRadius, -labelFont.getSize() * 0.5f);
 
-	static gl::FboRef fbo = nullptr;
+	static gl::FboRef fboNormal = nullptr;
+	static gl::FboRef fboVirtual = nullptr;
 
 	const string labelText = to_string(touch.id) +
 		" (" + to_string((int)touch.appPosition.x) +
 		", " + to_string((int)touch.appPosition.y) + ")";
 
 	// cached buffer for circle texture
-	if (!fbo) {
-		fbo = gl::Fbo::create((int)(circleSize.x * circleScale), (int)(circleSize.y * circleScale));
+	if (!fboNormal) {
+		fboNormal = gl::Fbo::create((int)(circleSize.x * circleScale), (int)(circleSize.y * circleScale));
+		fboVirtual = gl::Fbo::create((int)(circleSize.x * circleScale), (int)(circleSize.y * circleScale));
 
 		gl::ScopedMatrices scopedMatrices;
-		gl::ScopedViewport scopedViewport(fbo->getSize());
-		gl::setMatricesWindow(fbo->getSize());
+		gl::ScopedViewport scopedViewport(fboNormal->getSize());
 
-		fbo->bindFramebuffer();
-
+		gl::setMatricesWindow(fboNormal->getSize());
 		gl::scale(vec2(circleScale));
+
+		fboNormal->bindFramebuffer();
 		gl::drawSolidCircle(vec2(outerRadius + circlePadding), innerRadius, 32);
 		gl::drawStrokedCircle(vec2(outerRadius + circlePadding), outerRadius, 2, 32);
+		fboNormal->unbindFramebuffer();
 
-		fbo->unbindFramebuffer();
+		fboVirtual->bindFramebuffer();
+		gl::drawStrokedCircle(vec2(outerRadius + circlePadding), outerRadius, 2, 32);
+		fboVirtual->unbindFramebuffer();
 	}
 
 	// draw the event
-	gl::ScopedColor scopedColor(color);
+	gl::ScopedColor scopedColor(circleColor);
 	gl::ScopedMatrices scopedMatrices;
 	gl::translate(touch.appPosition);
+
+	const auto fbo = isVirtual ? fboVirtual : fboNormal;
 
 	gl::draw(fbo->getColorTexture(), circleDestRect);
 	gl::drawString(labelText, labelOffset, labelColor, labelFont);
@@ -325,13 +333,10 @@ void TouchManager::debugDrawTouch(const const Touch & touch, const ColorA & colo
 
 void TouchManager::debugDrawTouches() {
 	lock_guard<recursive_mutex> scopedTouchMapLock(mTouchIdMutex);
-
-	static const ci::ColorA normalColor(1, 0, 1, 0.75f);
-	static const ci::ColorA virtualColor(1, 0, 1, 0.5f);
-
+	gl::ScopedBlendPremult scopedBlend;
 	for (const auto & it : mTouchesById) {
 		const auto & touch = it.second;
-		debugDrawTouch(touch, touch.isVirtual ? virtualColor : normalColor);
+		debugDrawTouch(touch, touch.isVirtual);
 	}
 }
 

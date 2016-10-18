@@ -62,17 +62,19 @@ void GestureWorksSampleApp::setup() {
 	for (int i = 0; i < 50; ++i) {
 		auto view = createTransformableView();
 
-		view->setScale(vec2(randFloat(0.5, 5.0f)));
-		view->setPosition(vec2(randFloat(getWindowWidth()), randFloat(getWindowHeight())));
-		view->setBackgroundColor(hsvToRgb(vec3(randFloat(), 1.0f, 1.0f)));
-		view->setRotation(randFloat(glm::two_pi<float>()));
-
+		vec2 pos = vec2(randFloat((float)getWindowWidth()), randFloat((float)getWindowHeight()));
+		vec2 scale = vec2(randFloat(0.5, 5.0f));
+		Color color = hsvToRgb(vec3(randFloat(), 1.0f, 1.0f));
 		float alphaA = randFloat(0.5, 1.0);
 		float alphaB = randFloat(0.5, 1.0);
 		float duration = randFloat(1.0f, 4.0f);
 
-		view->setAlpha(alphaA);
+		view->setScale(scale);
+		view->setPosition(pos);
+		view->setBackgroundColor(color);
+		view->setRotation(randFloat(glm::two_pi<float>()));
 
+		view->setAlpha(alphaA);
 		//view->getTimeline()->apply(&view->getAlpha(), alphaA, alphaB, duration, easeInOutQuad).pingPong().loop().delay(randFloat(duration));
 		
 		/*view->addEventCallback([=](const ViewEvent & e) {
