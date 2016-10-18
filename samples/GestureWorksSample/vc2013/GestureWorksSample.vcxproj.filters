@@ -16,12 +16,6 @@
     <Filter Include="Blocks">
       <UniqueIdentifier>{C0F2B709-2379-46E3-BDCA-F3311E6465B8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Blocks\BluecadetText">
-      <UniqueIdentifier>{E106803F-4691-4CE2-AFE3-98DC7466E41E}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Blocks\BluecadetText\src">
-      <UniqueIdentifier>{A1A8550B-08AB-4486-925F-F992E75E7A84}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Blocks\BluecadetViews">
       <UniqueIdentifier>{352AEA55-30D7-4792-A149-10A26FAEC449}</UniqueIdentifier>
     </Filter>
@@ -54,6 +48,12 @@
     </Filter>
     <Filter Include="Blocks\BluecadetViews\src\touch\drivers">
       <UniqueIdentifier>{53032f82-6823-4756-8ace-6b6752fd4f49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\BluecadetText">
+      <UniqueIdentifier>{E106803F-4691-4CE2-AFE3-98DC7466E41E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\BluecadetText\src">
+      <UniqueIdentifier>{A1A8550B-08AB-4486-925F-F992E75E7A84}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -165,6 +165,9 @@
     <ClCompile Include="..\..\..\src\views\ViewEvent.cpp">
       <Filter>Blocks\BluecadetViews\src\views</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\views\StatsView.cpp">
+      <Filter>Blocks\BluecadetViews\src\views</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
@@ -228,6 +231,9 @@
       <Filter>Blocks\BluecadetViews\src\touch\drivers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\views\ViewEvent.h">
+      <Filter>Blocks\BluecadetViews\src\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\views\StatsView.h">
       <Filter>Blocks\BluecadetViews\src\views</Filter>
     </ClInclude>
   </ItemGroup>

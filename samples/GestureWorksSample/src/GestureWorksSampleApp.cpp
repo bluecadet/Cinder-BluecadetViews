@@ -6,6 +6,7 @@
 
 #include <core/BaseApp.h>
 #include <views/TouchView.h>
+#include <views/StatsView.h>
 
 #include "gwc/GestureWorksCore.h"
 #include "GestureWorksTouchPlugin.h"
@@ -30,11 +31,11 @@ public:
 };
 
 void GestureWorksSampleApp::prepareSettings(ci::app::App::Settings* settings) {
-	SettingsManager::getInstance()->mDebugWindowSize = ivec2(1280, 720);
+	SettingsManager::getInstance()->mWindowSize = ivec2(1280, 720);
 	SettingsManager::getInstance()->mFps = 60;
-	SettingsManager::getInstance()->mDebugFullscreen = false;
-	SettingsManager::getInstance()->mDebugBorderless = false;
-	SettingsManager::getInstance()->mDebugDrawTouches = true;
+	SettingsManager::getInstance()->mFullscreen = false;
+	SettingsManager::getInstance()->mBorderless = false;
+	SettingsManager::getInstance()->mDrawTouches = true;
 	BaseApp::prepareSettings(settings);
 }
 
@@ -57,10 +58,10 @@ void GestureWorksSampleApp::setup() {
 	getRootView()->setSize(ScreenLayout::getInstance()->getAppSize());
 
 	// create views
-	for (int i = 0; i < 50; ++i) {
+	for (int i = 0; i < 500; ++i) {
 		auto view = createTransformableView();
 
-		view->setScale(vec2(randFloat(0.5, 5.0f)));
+		view->setScale(vec2(randFloat(0.5, 1.5f)));
 		view->setPosition(vec2(randFloat((float)getWindowWidth()), randFloat((float)getWindowHeight())));
 		view->setBackgroundColor(hsvToRgb(vec3(randFloat(), 1.0f, 1.0f)));
 		view->setRotation(randFloat(glm::two_pi<float>()));
@@ -73,6 +74,12 @@ void GestureWorksSampleApp::setup() {
 
 		getRootView()->addChild(view);
 	}
+
+	// stats
+	auto stats = StatsViewRef(new StatsView(Font("Arial", 30.0f)));
+	stats->addStat("FPS", [&] { return to_string(getAverageFps()); });
+	stats->setPosition(getRootView()->getSize() - stats->getSize());
+	getRootView()->addChild(stats);
 }
 
 TouchViewRef GestureWorksSampleApp::createTransformableView()

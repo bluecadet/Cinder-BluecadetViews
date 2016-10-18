@@ -192,6 +192,10 @@ public:
 	bool								shouldPropagateEvents() const { return mShouldPropagateEvents; }
 	void								setShouldPropagateEvents(const bool value) { mShouldPropagateEvents = value; }
 
+	//! Setting this to false will prevent content invalidation events from being dispatched from this view. Defaults to true.
+	bool								shouldDispatchContentInvalidation() const { return mShouldDispatchContentInvalidation; }
+	void								setShouldDispatchContentInvalidation(const bool value) { mShouldDispatchContentInvalidation = value; }
+
 	//! Unique ID per view.
 	const size_t						getViewId() const { return mViewId; }
 	const std::string &					getViewIdStr() const { return mViewIdStr; }
@@ -318,6 +322,7 @@ private:
 
 
 	// Events
+	bool								mShouldDispatchContentInvalidation;
 	bool								mShouldPropagateEvents;
 	std::map<std::string, EventSignal>	mEventSignalsByType;
 

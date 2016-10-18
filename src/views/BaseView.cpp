@@ -29,7 +29,9 @@ BaseView::BaseView() :
 	mAlpha(1.0),
 	mIsHidden(false),
 	mShouldForceInvisibleDraw(false),
+
 	mShouldPropagateEvents(true),
+	mShouldDispatchContentInvalidation(true),
 
 	mTimeline(Timeline::create()),
 	mParent(nullptr),
@@ -242,7 +244,7 @@ void BaseView::updateScene(const double deltaTime) {
 		invalidate();
 	}
 
-	if (mHasInvalidContent) {
+	if (mHasInvalidContent && mShouldDispatchContentInvalidation) {
 		dispatchEvent(ViewEvent(ViewEvent::Type::CONTENT_INVALIDATED, this));
 	}
 
