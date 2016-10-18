@@ -14,8 +14,6 @@ class GestureEvent;
 namespace bluecadet {
 namespace views {
 
-static size_t NumTouchViews = 0;
-
 //==================================================
 // Setup/Destruction
 //
@@ -36,8 +34,7 @@ TouchView::TouchView() :
 	mInitialRelTouchPos(0, 0),
 	mInitialAbsTouchPos(0, 0),
 	mInitialPosWhenTouched(0, 0),
-	mInitialTouchTime(0),
-	mTouchViewId("touch_view" + to_string(NumTouchViews++)) {
+	mInitialTouchTime(0) {
 }
 
 TouchView::~TouchView() {

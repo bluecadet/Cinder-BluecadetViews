@@ -192,6 +192,9 @@ public:
 	bool								shouldPropagateEvents() const { return mShouldPropagateEvents; }
 	void								setShouldPropagateEvents(const bool value) { mShouldPropagateEvents = value; }
 
+	//! Unique ID per view.
+	const std::string					getViewId() const { return mViewId; }
+
 
 	//==================================================
 	// Coordinate space conversions
@@ -250,8 +253,6 @@ public:
 		return boost::get<T>(it->second);
 	}
 
-
-
 protected:
 
 	virtual void update(const double deltaTime);				//! Gets called before draw() and after any parent's update. Override this method to plug into the update loop.
@@ -285,6 +286,8 @@ private:
 	inline static ci::gl::BatchRef		getDefaultDrawBatch();	//! Default shader batch that draws the background in the default implementation of draw().
 	inline static ci::gl::GlslProgRef	getDefaultDrawProg();	//! Default glsl program used by the default batch that draws a rectangular background using background color and size.
 
+	static size_t sNumInstances;
+
 	// Properties
 	BaseView* mParent;
 	BaseViewList mChildren;
@@ -317,7 +320,8 @@ private:
 	std::map<std::string, EventSignal>	mEventSignalsByType;
 
 	// Misc
-	std::map<std::string, UserInfoTypes> mUserInfo;
+	const std::string						mViewId;
+	std::map<std::string, UserInfoTypes>	mUserInfo;
 
 
 }; // class BaseView

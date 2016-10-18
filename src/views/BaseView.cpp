@@ -11,6 +11,8 @@ namespace views {
 // Lifecycle
 // 
 
+size_t BaseView::sNumInstances = 0;
+
 BaseView::BaseView() :
 	mTransformOrigin(vec2(0.0f)),
 	mPosition(vec2(0.0f)),
@@ -30,7 +32,10 @@ BaseView::BaseView() :
 	mShouldPropagateEvents(true),
 
 	mTimeline(Timeline::create()),
-	mParent(nullptr) {
+	mParent(nullptr),
+	
+	mViewId(to_string(sNumInstances++))
+	{
 }
 
 BaseView::~BaseView() {

@@ -119,8 +119,6 @@ public:
 	bool			getDebugDrawTouchPath() const { return mDebugDrawTouchPath; }
 	void			setDebugDrawTouchPath(const bool value) { mDebugDrawTouchPath = value; }
 
-	const std::string & getTouchViewId() const { return mTouchViewId; }
-
 protected:
 
 	void			draw() override;
@@ -158,8 +156,6 @@ private:
 	double			mMaxTapDuration;
 
 	bool			mDebugDrawTouchPath;
-
-	std::string		mTouchViewId;
 };
 
 }

@@ -58,7 +58,7 @@ struct TouchEvent : public views::ViewEvent {
 	views::TouchViewRef	touchTarget		= nullptr;
 	bool				isCanceled		= false;
 
-	TouchEvent() {};
+	TouchEvent() : ViewEvent(TouchEvent::Type::TOUCH) {};
 	TouchEvent(const Touch & touch);
 	TouchEvent(const int touchId, const ci::ivec2 & windowPosition, const ci::vec2 & appPosition, const TouchType touchType, const TouchPhase phase);
 };

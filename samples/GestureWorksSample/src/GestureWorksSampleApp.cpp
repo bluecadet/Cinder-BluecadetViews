@@ -76,16 +76,16 @@ void GestureWorksSampleApp::setup() {
 		//view->getTimeline()->apply(&view->getAlpha(), alphaA, alphaB, duration, easeInOutQuad).pingPong().loop().delay(randFloat(duration));
 		
 		/*view->addEventCallback([=](const ViewEvent & e) {
-			console() << "SO MANY EVENTS" << " - " << getElapsedFrames() << endl;
+			console() << "update event" << e.target->getViewId() << " - " << getElapsedFrames() << endl;
 		}, ViewEvent::Type::UPDATED);*/
 
 		view->addEventCallback([=](const ViewEvent & e) {
-			console() << "very touched by this" << " - " << getElapsedFrames() << endl;
+			console() << "touch event from view " << e.target->getViewId() << " - " << getElapsedFrames() << endl;
 		}, bluecadet::touch::TouchEvent::Type::TOUCH);
 
 		view->addEventCallback([=](const ViewEvent & e) {
-			console() << e.type << " - " << getElapsedFrames() << endl;
-		}, "test");
+			console() << "custom timed event from view " << e.target->getViewId() << " - " << getElapsedFrames() << endl;
+		}, "timed_test");
 
 		getRootView()->addChild(view);
 	}
@@ -109,7 +109,7 @@ TouchViewRef GestureWorksSampleApp::createTransformableView()
 	view->addChild(anchor);
 
 	anchor->dispatchAfter([=]() {
-		anchor->dispatchEvent("test");
+		anchor->dispatchEvent("timed_test");
 	}, randFloat(5.0f));
 
 	makeViewTransformable(view, anchor);
