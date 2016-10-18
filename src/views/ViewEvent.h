@@ -14,7 +14,7 @@ class BaseView; // forward declaration
 struct ViewEvent {
 	// Types
 	struct Type {
-		static const std::string UPDATED;
+		static const std::string CONTENT_INVALIDATED;
 	};
 
 	// Properties

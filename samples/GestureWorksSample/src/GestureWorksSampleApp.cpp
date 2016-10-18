@@ -41,8 +41,6 @@ void GestureWorksSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 void GestureWorksSampleApp::setup() {
 	// configure app
 	ScreenLayout::getInstance()->setDisplaySize(getWindowSize());
-	ScreenLayout::getInstance()->setNumRows(1);
-	ScreenLayout::getInstance()->setNumColumns(1);
 
 	SettingsManager::getInstance()->getParams()->minimize();
 	SettingsManager::getInstance()->getParams()->setSize(vec2(200, 200));
@@ -62,24 +60,20 @@ void GestureWorksSampleApp::setup() {
 	for (int i = 0; i < 50; ++i) {
 		auto view = createTransformableView();
 
-		vec2 pos = vec2(randFloat((float)getWindowWidth()), randFloat((float)getWindowHeight()));
-		vec2 scale = vec2(randFloat(0.5, 5.0f));
-		Color color = hsvToRgb(vec3(randFloat(), 1.0f, 1.0f));
+		view->setScale(vec2(randFloat(0.5, 5.0f)));
+		view->setPosition(vec2(randFloat((float)getWindowWidth()), randFloat((float)getWindowHeight())));
+		view->setBackgroundColor(hsvToRgb(vec3(randFloat(), 1.0f, 1.0f)));
+		view->setRotation(randFloat(glm::two_pi<float>()));
+
 		float alphaA = randFloat(0.5, 1.0);
 		float alphaB = randFloat(0.5, 1.0);
 		float duration = randFloat(1.0f, 4.0f);
-
-		view->setScale(scale);
-		view->setPosition(pos);
-		view->setBackgroundColor(color);
-		view->setRotation(randFloat(glm::two_pi<float>()));
-
 		view->setAlpha(alphaA);
 		//view->getTimeline()->apply(&view->getAlpha(), alphaA, alphaB, duration, easeInOutQuad).pingPong().loop().delay(randFloat(duration));
 		
 		/*view->addEventCallback([=](const ViewEvent & e) {
-			console() << "update event" << e.target->getViewId() << " - " << getElapsedFrames() << endl;
-		}, ViewEvent::Type::UPDATED);*/
+			console() << "content invalidated event from view " << e.target->getViewId() << " - " << getElapsedFrames() << endl;
+		}, ViewEvent::Type::CONTENT_INVALIDATED);*/
 
 		view->addEventCallback([=](const ViewEvent & e) {
 			console() << "touch event from view " << e.target->getViewId() << " - " << getElapsedFrames() << endl;

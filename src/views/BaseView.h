@@ -274,8 +274,9 @@ protected:
 	//! When content is true, marks the content as invalid and will dispatch a content updated event
 	inline void invalidate(const bool transforms = true, const bool content = true);
 
-	const bool hasInvalidContent() { return mHasInvalidContent; }
-	inline virtual void validateContent() { mHasInvalidContent = false; }
+	//! True if any properties that visually modifies this view has been changed since the last call of validateContent().
+	const bool hasInvalidContent() const	{ return mHasInvalidContent; }
+	virtual void validateContent()			{ mHasInvalidContent = false; }
 
 private:
 

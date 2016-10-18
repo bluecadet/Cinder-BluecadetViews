@@ -7,7 +7,7 @@ using namespace std;
 namespace bluecadet {
 namespace views {
 
-const string ViewEvent::Type::UPDATED = "updated";
+const string ViewEvent::Type::CONTENT_INVALIDATED = "updated";
 
 void ViewEvent::stopPropagation() {
 	shouldPropagate = false;

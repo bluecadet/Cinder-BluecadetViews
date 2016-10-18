@@ -306,6 +306,7 @@ void TouchManager::debugDrawTouch(const Touch & touch, const bool isVirtual) {
 
 		gl::ScopedMatrices scopedMatrices;
 		gl::ScopedViewport scopedViewport(fboNormal->getSize());
+		gl::ScopedColor scopedColor(circleColor);
 
 		gl::setMatricesWindow(fboNormal->getSize());
 		gl::scale(vec2(circleScale));
@@ -321,7 +322,6 @@ void TouchManager::debugDrawTouch(const Touch & touch, const bool isVirtual) {
 	}
 
 	// draw the event
-	gl::ScopedColor scopedColor(circleColor);
 	gl::ScopedMatrices scopedMatrices;
 	gl::translate(touch.appPosition);
 
