@@ -14,7 +14,6 @@ class BaseView; // forward declaration
 struct ViewEvent {
 	// Types
 	struct Type {
-		static const std::string GENERIC;
 		static const std::string UPDATED;
 	};
 
@@ -27,7 +26,7 @@ struct ViewEvent {
 
 	void				stopPropagation();
 
-	ViewEvent(const std::string & type = Type::GENERIC, BaseView * target = nullptr);
+	ViewEvent(const std::string & type, BaseView * target = nullptr);
 };
 
 }

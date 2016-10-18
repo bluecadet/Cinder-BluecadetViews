@@ -233,6 +233,7 @@ void BaseView::setTransformOrigin(const vec2 & value, const bool compensateForOf
 void BaseView::updateScene(const double deltaTime) {
 	if (mTimeline && !mTimeline->empty()) {
 		mTimeline->stepTo(timeline().getCurrentTime());
+		//console() << "invalidating" << " - " << getElapsedFrames() << endl;
 		invalidate();
 	}
 

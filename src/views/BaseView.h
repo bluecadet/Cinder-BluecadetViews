@@ -274,7 +274,7 @@ protected:
 	inline void invalidate(const bool transforms = true, const bool content = true);
 
 	const bool hasInvalidContent() { return mHasInvalidContent; }
-	inline virtual void validateContent() { if (!mHasInvalidContent) return; mHasInvalidContent = false; }
+	inline virtual void validateContent() { mHasInvalidContent = false; }
 
 private:
 

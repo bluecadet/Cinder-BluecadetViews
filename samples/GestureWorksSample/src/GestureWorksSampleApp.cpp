@@ -32,7 +32,7 @@ public:
 void GestureWorksSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 	SettingsManager::getInstance()->mDebugWindowSize = ivec2(1280, 720);
 	SettingsManager::getInstance()->mFps = 60;
-	SettingsManager::getInstance()->mDebugFullscreen = true;
+	SettingsManager::getInstance()->mDebugFullscreen = false;
 	SettingsManager::getInstance()->mDebugBorderless = false;
 	SettingsManager::getInstance()->mDebugDrawTouches = true;
 	BaseApp::prepareSettings(settings);
@@ -72,7 +72,20 @@ void GestureWorksSampleApp::setup() {
 		float duration = randFloat(1.0f, 4.0f);
 
 		view->setAlpha(alphaA);
-		view->getTimeline()->apply(&view->getAlpha(), alphaA, alphaB, duration, easeInOutQuad).pingPong().loop().delay(randFloat(duration));
+
+		//view->getTimeline()->apply(&view->getAlpha(), alphaA, alphaB, duration, easeInOutQuad).pingPong().loop().delay(randFloat(duration));
+		
+		/*view->addEventCallback([=](const ViewEvent & e) {
+			console() << "SO MANY EVENTS" << " - " << getElapsedFrames() << endl;
+		}, ViewEvent::Type::UPDATED);*/
+
+		view->addEventCallback([=](const ViewEvent & e) {
+			console() << "very touched by this" << " - " << getElapsedFrames() << endl;
+		}, bluecadet::touch::TouchEvent::Type::TOUCH);
+
+		view->addEventCallback([=](const ViewEvent & e) {
+			console() << e.type << " - " << getElapsedFrames() << endl;
+		}, "test");
 
 		getRootView()->addChild(view);
 	}
@@ -96,12 +109,8 @@ TouchViewRef GestureWorksSampleApp::createTransformableView()
 	view->addChild(anchor);
 
 	anchor->dispatchAfter([=]() {
-		anchor->dispatchEvent("THIS IS A TEST");
+		anchor->dispatchEvent("test");
 	}, randFloat(5.0f));
-
-	view->addEventCallback([=](const ViewEvent & e) {
-		console() << e.type << endl;
-	}, "THIS IS A TEST");
 
 	makeViewTransformable(view, anchor);
 
