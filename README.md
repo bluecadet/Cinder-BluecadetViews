@@ -89,9 +89,8 @@ CINDER_APP(BaseAppSampleApp, RendererGl(RendererGl::Options().msaa(4)), BaseAppS
 
 * Cinder-BluecadetUtils (https://github.com/bluecadet/Cinder-BluecadetUtils)
 * Cinder-BluecadetText (https://github.com/bluecadet/Cinder-BluecadetText)
-* Cinder-BluecadetTouch (https://github.com/bluecadet/Cinder-BluecadetTouch)
-	* Requires Cinder OSC block   
-	* Requires Cinder TUIO block   
+* Cinder OSC block
+* Cinder TUIO block
 
 1. Clone each of the above dependency blocks into your `Cinder\blocks` folder (Cinder OSC & TUIO will come automatically when you download Cinder). 
 2. Create a new project with TinderBox and make sure to select *relative* when including all Bluecadet blocks
