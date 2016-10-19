@@ -15,7 +15,6 @@ Clone the block and check the dependencies below to make sure you're all set to 
 You can use the boilerplate below for your main application file:
 
 ```c++
-
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
