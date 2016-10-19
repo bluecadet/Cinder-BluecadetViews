@@ -1,9 +1,12 @@
 #include "DetailImage.h"
 
+#include <ImageManager.h>
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 using namespace bluecadet::views;
+using namespace bluecadet::utils;
 
 //==================================================
 // Class Lifecycle
@@ -22,7 +25,7 @@ void DetailImage::setup(int id) {
 	// Create bg
 	mBgImage = ImageViewRef(new ImageView());
 	string iconFileName = "bluecadetIcon.png";
-	mBgImage->setup(iconFileName);
+	mBgImage->setup(ImageManager::getInstance()->getTexture(iconFileName));
 
 	// Center the bgImage within the container
 	mBgImage->setPosition(-0.5f * mBgImage->getSize());
@@ -72,12 +75,12 @@ void DetailImage::handleTouchBegan(const bluecadet::touch::TouchEvent& touchEven
 }
 
 void DetailImage::handleTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) {
-	// Remove hit state gradually on touch up
-	getTimeline()->apply(&mBgImageContainer->getScale(), vec2(1), 0.25f, easeOutQuad);
-}
-
-void DetailImage::handleTouchCanceled(const bluecadet::touch::TouchEvent& touchEvent) {
-	// Remove hit state immediately on cancel
-	getTimeline()->removeTarget(&mBgImageContainer->getScale());
-	mBgImage->setScale(vec2(1.0f));
+	if (touchEvent.isCanceled) {
+		// Remove hit state immediately on cancel
+		getTimeline()->removeTarget(&mBgImageContainer->getScale());
+		mBgImage->setScale(vec2(1.0f));
+	} else {
+		// Remove hit state gradually on touch up
+		getTimeline()->apply(&mBgImageContainer->getScale(), vec2(1), 0.25f, easeOutQuad);
+	}
 }
