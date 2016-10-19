@@ -338,7 +338,7 @@ CueRef BaseView::dispatchAfter(std::function<void()> fn, float delay) {
 
 void BaseView::dispatchEvent(ViewEvent & event) {
 	if (!event.target) {
-		event.target = shared_from_this();
+		event.target = getSharedViewPtr();
 	} else {
 		handleEvent(event);
 	}
@@ -350,7 +350,7 @@ void BaseView::dispatchEvent(ViewEvent & event) {
 		return;
 	}
 
-	event.currentTarget = shared_from_this();
+	event.currentTarget = getSharedViewPtr();
 
 	if (mParent) {
 		mParent->dispatchEvent(event);

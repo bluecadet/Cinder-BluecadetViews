@@ -64,7 +64,7 @@ public:
 	ci::TimelineRef			getTimeline();
 
 	//! Returns a shared pointer to this instance
-	BaseViewRef				getSharedViewPtr() { return shared_from_this(); }
+	inline BaseViewRef		getSharedViewPtr() { return shared_from_this(); }
 
 	//! Resets all animatable properties to their defaults and resets all animations. Does not remove children.
 	virtual void			reset();
@@ -104,7 +104,7 @@ public:
 	void					dispatchEvent(ViewEvent & event);
 
 	//! Dispatch a ViewEvent of `type` to this view's children. Will also trigger the event signal.
-	void					dispatchEvent(const std::string & type) { dispatchEvent(ViewEvent(type)); };
+	void					dispatchEvent(const std::string & type) { dispatchEvent(ViewEvent(type, getSharedViewPtr())); };
 
 	//! Helper that will dispatch a function after a delay.
 	//! The function will be added to the view's timeline and can be canceled with all other animations.
