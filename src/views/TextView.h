@@ -8,9 +8,9 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include "Text.h"
-#include "StyledTextLayout.h"
-#include "StyleManager.h"
+#include <Text.h>
+#include <StyledTextLayout.h>
+#include <StyleManager.h>
 
 #include "BaseView.h"
 

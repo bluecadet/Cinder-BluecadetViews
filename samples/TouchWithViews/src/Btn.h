@@ -8,8 +8,8 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include "TouchView.h"
-#include "EllipseView.h"
+#include <views/TouchView.h>
+#include <views/EllipseView.h>
 
 typedef std::shared_ptr<class Btn> BtnRef;
 
@@ -30,5 +30,4 @@ private:
 	// Callbacks
 	virtual void handleTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) override;
 	virtual void handleTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) override;
-	virtual void handleTouchCanceled(const bluecadet::touch::TouchEvent& touchEvent) override;
 };

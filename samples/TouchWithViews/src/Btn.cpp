@@ -50,12 +50,12 @@ void Btn::handleTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) {
 }
 
 void Btn::handleTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) {
-	// Remove hit state gradually on touch up
-	getTimeline()->apply(&mBg->getAlpha(), 0.5f, 0.25f, easeOutQuad);
-}
-
-void Btn::handleTouchCanceled(const bluecadet::touch::TouchEvent& touchEvent) {
-	// Remove hit state immediately on cancel
-	getTimeline()->removeTarget(&mBg->getAlpha());
-	mBg->setAlpha(0.5f);
+	if (touchEvent.isCanceled) {
+		// Remove hit state immediately on cancel
+		getTimeline()->removeTarget(&mBg->getAlpha());
+		mBg->setAlpha(0.5f);
+	} else {
+		// Remove hit state gradually on touch up
+		getTimeline()->apply(&mBg->getAlpha(), 0.5f, 0.25f, easeOutQuad);
+	}
 }
