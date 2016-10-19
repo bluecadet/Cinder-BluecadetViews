@@ -8,8 +8,9 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include "TouchView.h"
-#include "ImageView.h"
+#include <views/BaseView.h>
+#include <views/ImageView.h>
+#include <views/TouchView.h>
 
 typedef std::shared_ptr<class DetailImage> DetailImageRef;
 
@@ -30,6 +31,5 @@ private:
 	
 	//! Callbacks
 	virtual	void	handleTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) override;
-	virtual void	handleTouchCanceled(const bluecadet::touch::TouchEvent& touchEvent) override;
 	virtual void	handleTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) override;
 };
