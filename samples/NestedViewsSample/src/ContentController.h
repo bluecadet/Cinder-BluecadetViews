@@ -8,7 +8,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include "BaseView.h"
+#include <views/BaseView.h>
 #include "content/Header.h"
 #include "content/DetailImage.h"
 

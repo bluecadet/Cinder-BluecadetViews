@@ -46,7 +46,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;"..\..\..\..\..\include";..\..\..\..\Cinder-BluecadetText\src;..\..\..\..\Cinder-BluecadetTouch\src;..\..\..\..\Cinder-BluecadetUtils\src;..\..\..\src;..\..\..\..\OSC\src;..\..\..\..\TUIO\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\..\..\..\..\include;..\..\..\..\Cinder-BluecadetText\src;..\..\..\..\Cinder-BluecadetUtils\src;..\..\..\src;..\..\..\..\OSC\src;..\..\..\..\TUIO\src</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -103,13 +103,24 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\MouseDriver.cpp" />
-    <ClCompile Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\NativeTouchDriver.cpp" />
-    <ClCompile Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\SimulatedTouchDriver.cpp" />
-    <ClCompile Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\TuioDriver.cpp" />
-    <ClCompile Include="..\..\..\..\Cinder-BluecadetUtils\src\SettingsManager.cpp" />
-    <ClCompile Include="..\..\..\src\EllipseView.cpp" />
-    <ClCompile Include="..\..\..\src\LineView.cpp" />
+    <ClCompile Include="..\..\..\src\core\BaseApp.cpp" />
+    <ClCompile Include="..\..\..\src\core\ScreenLayout.cpp" />
+    <ClCompile Include="..\..\..\src\core\SettingsManager.cpp" />
+    <ClCompile Include="..\..\..\src\touch\drivers\MouseDriver.cpp" />
+    <ClCompile Include="..\..\..\src\touch\drivers\NativeTouchDriver.cpp" />
+    <ClCompile Include="..\..\..\src\touch\drivers\SimulatedTouchDriver.cpp" />
+    <ClCompile Include="..\..\..\src\touch\drivers\TuioDriver.cpp" />
+    <ClCompile Include="..\..\..\src\touch\Touch.cpp" />
+    <ClCompile Include="..\..\..\src\touch\TouchManager.cpp" />
+    <ClCompile Include="..\..\..\src\views\BaseView.cpp" />
+    <ClCompile Include="..\..\..\src\views\EllipseView.cpp" />
+    <ClCompile Include="..\..\..\src\views\FboView.cpp" />
+    <ClCompile Include="..\..\..\src\views\ImageView.cpp" />
+    <ClCompile Include="..\..\..\src\views\LineView.cpp" />
+    <ClCompile Include="..\..\..\src\views\StatsView.cpp" />
+    <ClCompile Include="..\..\..\src\views\TextView.cpp" />
+    <ClCompile Include="..\..\..\src\views\TouchView.cpp" />
+    <ClCompile Include="..\..\..\src\views\ViewEvent.cpp" />
     <ClCompile Include="..\src\ContentController.cpp" />
     <ClCompile Include="..\src\Content\DetailImage.cpp" />
     <ClCompile Include="..\src\Content\Header.cpp" />
@@ -118,36 +129,36 @@
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextLayout.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextParser.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\StyleManager.cpp" />
-    <ClCompile Include="..\..\..\..\Cinder-BluecadetTouch\src\TouchManager.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetUtils\src\ImageManager.cpp" />
-    <ClCompile Include="..\..\..\src\BaseView.cpp" />
-    <ClCompile Include="..\..\..\src\ImageView.cpp" />
-    <ClCompile Include="..\..\..\src\TextView.cpp" />
-    <ClCompile Include="..\..\..\src\TouchView.cpp" />
     <ClCompile Include="..\..\..\..\OSC\src\Osc.cpp" />
     <ClCompile Include="..\..\..\..\TUIO\src\Tuio.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\MouseDriver.h" />
-    <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\NativeTouchDriver.h" />
-    <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\SimulatedTouchDriver.h" />
-    <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\drivers\TuioDriver.h" />
-    <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\Touch.h" />
-    <ClInclude Include="..\..\..\..\Cinder-BluecadetUtils\src\SettingsManager.h" />
-    <ClInclude Include="..\..\..\src\EllipseView.h" />
-    <ClInclude Include="..\..\..\src\LineView.h" />
+    <ClInclude Include="..\..\..\src\core\BaseApp.h" />
+    <ClInclude Include="..\..\..\src\core\ScreenLayout.h" />
+    <ClInclude Include="..\..\..\src\core\SettingsManager.h" />
+    <ClInclude Include="..\..\..\src\touch\drivers\MouseDriver.h" />
+    <ClInclude Include="..\..\..\src\touch\drivers\NativeTouchDriver.h" />
+    <ClInclude Include="..\..\..\src\touch\drivers\SimulatedTouchDriver.h" />
+    <ClInclude Include="..\..\..\src\touch\drivers\TuioDriver.h" />
+    <ClInclude Include="..\..\..\src\touch\Touch.h" />
+    <ClInclude Include="..\..\..\src\touch\TouchManager.h" />
+    <ClInclude Include="..\..\..\src\views\BaseView.h" />
+    <ClInclude Include="..\..\..\src\views\EllipseView.h" />
+    <ClInclude Include="..\..\..\src\views\FboView.h" />
+    <ClInclude Include="..\..\..\src\views\ImageView.h" />
+    <ClInclude Include="..\..\..\src\views\LineView.h" />
+    <ClInclude Include="..\..\..\src\views\StatsView.h" />
+    <ClInclude Include="..\..\..\src\views\TextView.h" />
+    <ClInclude Include="..\..\..\src\views\TouchView.h" />
+    <ClInclude Include="..\..\..\src\views\ViewEvent.h" />
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\FontManager.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextLayout.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextParser.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\StyleManager.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\Text.h" />
-    <ClInclude Include="..\..\..\..\Cinder-BluecadetTouch\src\TouchManager.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetUtils\src\ImageManager.h" />
-    <ClInclude Include="..\..\..\src\BaseView.h" />
-    <ClInclude Include="..\..\..\src\ImageView.h" />
-    <ClInclude Include="..\..\..\src\TextView.h" />
-    <ClInclude Include="..\..\..\src\TouchView.h" />
     <ClInclude Include="..\..\..\..\OSC\src\Osc.h" />
     <ClInclude Include="..\..\..\..\TUIO\src\Tuio.h" />
     <ClInclude Include="..\src\ContentController.h" />

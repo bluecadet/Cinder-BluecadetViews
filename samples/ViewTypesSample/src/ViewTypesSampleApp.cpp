@@ -3,20 +3,22 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
 
-#include "BaseApp.h"
-#include "BaseView.h"
-#include "EllipseView.h"
-#include "FboView.h"
-#include "LineView.h"
-#include "TouchView.h"
-#include "SettingsManager.h"
+#include <core/BaseApp.h>
+#include <views/BaseView.h>
+#include <views/EllipseView.h>
+#include <views/FboView.h>
+#include <views/LineView.h>
+#include <views/TouchView.h>
+#include <views/StatsView.h>
+
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+using namespace bluecadet::core;
 using namespace bluecadet::views;
-using namespace bluecadet::utils;
+using namespace bluecadet::touch;
 
 class ViewTypesSampleApp : public BaseApp {
 public:
@@ -29,15 +31,16 @@ public:
 };
 
 void ViewTypesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
+	SettingsManager::getInstance()->mWindowSize = ivec2(1280, 720);
+	SettingsManager::getInstance()->mFullscreen = false;
 	BaseApp::prepareSettings(settings);
-	settings->setWindowSize(ivec2(1024, 768));
-
-	settings->setFullScreen(false);
-	settings->setWindowSize(900, 800);
 }
 
 void ViewTypesSampleApp::setup() {
 	BaseApp::setup();
+
+	ScreenLayout::getInstance()->setDisplaySize(getWindowSize());
+	SettingsManager::getInstance()->getParams()->minimize();
 
 	auto view = BaseViewRef(new BaseView());
 	view->setSize(vec2(100, 100));
@@ -140,6 +143,7 @@ void ViewTypesSampleApp::setup() {
 	circleInsideFbo->getTimeline()->apply(&circleInsideFbo->getScale(), vec2(3.0f), 2.0f).loop(true);
 	getRootView()->addChild(fboView);
 
+
 	auto cancelView = TouchViewRef(new TouchView());
 	cancelView->setSize(vec2(100, 100));
 	cancelView->setPosition(vec2(100, 250));
@@ -153,6 +157,12 @@ void ViewTypesSampleApp::setup() {
 	});
 
 	getRootView()->addChild(cancelView);
+
+
+	auto statsView = StatsViewRef(new StatsView());
+	statsView->addStat("FPS", [&] { return to_string(getAverageFps()); });
+	statsView->setPosition(vec2(0, ScreenLayout::getInstance()->getAppHeight() - statsView->getHeight()));
+	getRootView()->addChild(statsView);
 
 	getWindow()->getSignalKeyDown().connect(std::bind(&ViewTypesSampleApp::handleKeyDown, this, std::placeholders::_1));
 }
@@ -178,8 +188,6 @@ void ViewTypesSampleApp::update() {
 
 void ViewTypesSampleApp::draw() {
 	BaseApp::draw();
-
-	gl::drawString("FPS: " + to_string(getAverageFps()), vec2(0, 100));
 }
 
 CINDER_APP(ViewTypesSampleApp, RendererGl(RendererGl::Options().msaa(4)), ViewTypesSampleApp::prepareSettings)

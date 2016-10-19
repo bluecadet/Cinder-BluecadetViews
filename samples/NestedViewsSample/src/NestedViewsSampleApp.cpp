@@ -2,78 +2,68 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
+#include <core/BaseApp.h>
+#include <views/TouchView.h>
+
 #include "ContentController.h"
-#include "TouchManager.h"
-#include "drivers/TuioDriver.h"
-#include "drivers/MouseDriver.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+
+using namespace bluecadet::core;
+using namespace bluecadet::views;
 using namespace bluecadet::touch;
-using namespace bluecadet::touch::drivers;
 
-class NestedViewsSampleApp : public App {
+class NestedViewsSampleApp : public BaseApp {
 public:
-	static void prepareSettings(App::Settings *settings);
-
+	static void prepareSettings(ci::app::App::Settings* settings);
 	void setup() override;
 	void update() override;
 	void draw() override;
 
 private:
-	// Touches
-	TouchManagerRef			mTouchManager;
-	MouseDriver				mMouseDriver;
-	TuioDriver				mTuioDriver;	
-
-	// Views and content
-	ContentControllerRef	mContentController;
+	ContentControllerRef mContentController;
 };
 
-void NestedViewsSampleApp::prepareSettings(App::Settings *settings) {
-	// Separate console window
-	settings->setConsoleWindowEnabled(true);
-	settings->setResizable(false);
-	settings->setWindowSize(vec2(1536, 512));
+void NestedViewsSampleApp::prepareSettings(ci::app::App::Settings* settings) {
+	// Use this method to set up your window
+	SettingsManager::getInstance()->mFullscreen = false;
+	SettingsManager::getInstance()->mWindowSize = ivec2(1280, 720);
+	SettingsManager::getInstance()->mBorderless = false;
+
+	BaseApp::prepareSettings(settings);
+
+	// Optional: configure a multi-screen layout
+	ScreenLayout::getInstance()->setDisplaySize(ivec2(1080, 1920));
+	ScreenLayout::getInstance()->setNumRows(1);
+	ScreenLayout::getInstance()->setNumColumns(3);
 }
 
 void NestedViewsSampleApp::setup() {
-	// Setup touches
-	mTouchManager = TouchManager::getInstance();
-	mMouseDriver.connect();
-	mTuioDriver.connect();
+
+	BaseApp::setup();
+	BaseApp::addTouchSimulatorParams();
+
+	// Optional: configure the size and background of your root view
+	getRootView()->setBackgroundColor(Color::gray(0.5f));
+	getRootView()->setSize(ScreenLayout::getInstance()->getAppSize());
 
 	// Create shared pointer to content controller. All child views will be added here, so we only need to update and draw this one main container view.
 	mContentController = ContentControllerRef(new ContentController());
 	mContentController->setup();
+	getRootView()->addChild(mContentController);
 }
 
 void NestedViewsSampleApp::update() {
-	// Update touches
-	mTouchManager->update(mContentController);
-
-	// Update views & content
-	mContentController->updateScene(0);
+	// Optional override. BaseApp::update() will update all views.
+	BaseApp::update();
 }
 
 void NestedViewsSampleApp::draw() {
-	gl::clear(Color(0, 0, 0));
-
-	// Draw touches (debugging)
-	mTouchManager->debugDrawTouches();
-
-	// Draw views & content
-	mContentController->drawScene();
+	// Optional override. BaseApp::draw() will draw all views.
+	BaseApp::draw();
 }
 
-
-//==================================================
-// Cinder app setup
-// 
-
-CINDER_APP(
-	NestedViewsSampleApp,
-	RendererGl(RendererGl::Options().msaa(8)), // enable MSAA to smoothly animate text and thin lines
-	NestedViewsSampleApp::prepareSettings
-)
+// Make sure to pass a reference to prepareSettings to configure the app correctly. MSAA and other render options are optional.
+CINDER_APP(NestedViewsSampleApp, RendererGl(RendererGl::Options().msaa(4)), NestedViewsSampleApp::prepareSettings);
