@@ -168,7 +168,7 @@ void TouchView::processGesture(const gwc::GestureEvent & gestureEvent) {
 
 void TouchView::cancelTouches() {
 	std::shared_ptr<touch::TouchManager> touchManager = touch::TouchManager::getInstance();
-	touchManager->cancelTouch(shared_from_this());
+	touchManager->cancelTouch(getSharedTouchViewPtr());
 }
 
 void TouchView::resetTouchState() {

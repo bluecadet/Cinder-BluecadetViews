@@ -245,7 +245,7 @@ void BaseView::updateScene(const double deltaTime) {
 	}
 
 	if (mHasInvalidContent && mShouldDispatchContentInvalidation) {
-		dispatchEvent(ViewEvent(ViewEvent::Type::CONTENT_INVALIDATED, this));
+		dispatchEvent(ViewEvent(ViewEvent::Type::CONTENT_INVALIDATED, getSharedViewPtr()));
 	}
 
 	update(deltaTime);
@@ -338,7 +338,7 @@ CueRef BaseView::dispatchAfter(std::function<void()> fn, float delay) {
 
 void BaseView::dispatchEvent(ViewEvent & event) {
 	if (!event.target) {
-		event.target = this;
+		event.target = shared_from_this();
 	} else {
 		handleEvent(event);
 	}
@@ -350,7 +350,7 @@ void BaseView::dispatchEvent(ViewEvent & event) {
 		return;
 	}
 
-	event.currentTarget = this;
+	event.currentTarget = shared_from_this();
 
 	if (mParent) {
 		mParent->dispatchEvent(event);

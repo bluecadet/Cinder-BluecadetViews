@@ -13,7 +13,7 @@ void ViewEvent::stopPropagation() {
 	shouldPropagate = false;
 }
 
-ViewEvent::ViewEvent(const std::string & type, BaseView * target) :
+ViewEvent::ViewEvent(const std::string & type, BaseViewRef target) :
 	type(type),
 	target(target) {
 }

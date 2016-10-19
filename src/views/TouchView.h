@@ -30,7 +30,7 @@ typedef std::shared_ptr<class TouchView>		TouchViewRef;
 typedef std::shared_ptr<const class TouchView>	TouchViewConstRef;
 typedef std::weak_ptr<class TouchView>			TouchViewWeakRef;
 
-class TouchView : public BaseView, public std::enable_shared_from_this<TouchView> {
+class TouchView : public BaseView {
 
 public:
 
@@ -58,6 +58,10 @@ public:
 
 	//! Sets a touch path with a custom shape in local coordinate space. You can also just call setTouchPath().
 	virtual void	setup(const ci::Path2d& path);
+
+	//! Returns a shared pointer to this instance. Use this instead of shared_from_this() if you want the shared pointer to be of type TouchViewRef.
+	TouchViewRef	getSharedTouchViewPtr() { return std::dynamic_pointer_cast<TouchView>(shared_from_this()); }
+
 
 	//==================================================
 	// Touch Management

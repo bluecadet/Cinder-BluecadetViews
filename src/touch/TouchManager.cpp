@@ -94,7 +94,9 @@ void TouchManager::mainThreadTouchesBegan(const Touch & touch, views::BaseViewRe
 		TouchView* view = getTopViewAtPosition(touch.appPosition, rootView);
 
 		if (view) {
-			touchEvent.touchTarget = view->shared_from_this();
+			auto viewRef = view->getSharedTouchViewPtr();
+			touchEvent.target = viewRef;
+			touchEvent.touchTarget = viewRef;
 			touchEvent.localPosition = view->convertGlobalToLocal(touchEvent.position);
 		}
 
@@ -128,6 +130,7 @@ void TouchManager::mainThreadTouchesMoved(const Touch & touch, views::BaseViewRe
 	auto view = getViewForTouchId(touchEvent.touchId);
 
 	if (view) {
+		touchEvent.target = view;
 		touchEvent.touchTarget = view;
 		touchEvent.localPosition = view->convertGlobalToLocal(touchEvent.position);
 	}
@@ -175,6 +178,7 @@ void TouchManager::mainThreadTouchesEnded(const Touch & touch, views::BaseViewRe
 	}// scoped lock end
 
 	if (view) {
+		touchEvent.target = view;
 		touchEvent.touchTarget = view;
 		touchEvent.localPosition = view->convertGlobalToLocal(touchEvent.position);
 	}

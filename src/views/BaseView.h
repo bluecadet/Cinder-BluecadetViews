@@ -29,7 +29,7 @@ typedef std::list<BaseViewRef> BaseViewList;
 // BaseView
 // 
 
-class BaseView {
+class BaseView : public std::enable_shared_from_this<BaseView> {
 
 	typedef boost::variant<
 		bool, int, float, double,
@@ -62,6 +62,9 @@ public:
 
 	//! Used for all internal animations
 	ci::TimelineRef			getTimeline();
+
+	//! Returns a shared pointer to this instance
+	BaseViewRef				getSharedViewPtr() { return shared_from_this(); }
 
 	//! Resets all animatable properties to their defaults and resets all animations. Does not remove children.
 	virtual void			reset();
