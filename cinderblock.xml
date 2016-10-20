@@ -9,6 +9,7 @@
 	license="MIT"
 	>
 
+	<requires>org.libcinder.tuio</requires>
 	<requires>com.bluecadet.cinder.text</requires>
 
 	<headerPattern>src/*.h</headerPattern>
