@@ -33,24 +33,20 @@ void GraphViewSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 void GraphViewSampleApp::setup() {
 	BaseApp::setup();
 
-	SettingsManager::getInstance()->getParams()->minimize();
-
 	getRootView()->setBackgroundColor(Color::gray(0.5f));
 	getRootView()->setSize(ScreenLayout::getInstance()->getAppSize());
 
-	mGraph = GraphViewRef(new GraphView(getWindowSize(), 1));
-	//mGraph->addGraph("fps", 0, getFrameRate());
+	mGraph = GraphViewRef(new GraphView(getWindowSize()));
 	mGraph->addGraph("mouse_x", 0, getWindowWidth(), ColorA(0, 1, 0, 0.5f), ColorA(1, 0, 0, 0.5f));
 	mGraph->addGraph("mouse_y", 0, getWindowHeight(), ColorA(0, 0, 1, 0.5f), ColorA(1, 0, 0, 0.5f));
-
-	setFpsSampleInterval(0.1);
-
 	getRootView()->addChild(mGraph);
+
+	SettingsManager::getInstance()->getParams()->addParam<bool>("Show labels", [=](bool v) { mGraph->setLabelsEnabled(v); }, [=] { return mGraph->getLabelsEnabled(); });
+	SettingsManager::getInstance()->getParams()->minimize();
 }
 
 void GraphViewSampleApp::update() {
 	BaseApp::update();
-	//mGraph->addValue("fps", getAverageFps());
 	mGraph->addValue("mouse_x", (getMousePos() - getWindowPos()).x);
 	mGraph->addValue("mouse_y", (getMousePos() - getWindowPos()).y);
 }

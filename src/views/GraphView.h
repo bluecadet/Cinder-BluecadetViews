@@ -14,7 +14,7 @@ class GraphView : public views::BaseView {
 
 public:
 
-	GraphView(const ci::ivec2 & size, const int pxPerValue = 1);
+	GraphView(const ci::ivec2 & size);
 	~GraphView();
 
 	//! Creates a graph with green min and red max colors
@@ -32,6 +32,13 @@ public:
 	//! Replaces all current values and resets the scroll position.
 	void setValues(const std::string & id, const std::vector<float> & values);
 
+	//! Size can't be changed using setSize().
+	void setSize(const ci::vec2 & size) override { ci::app::console() << "GraphView: Warning: Size can't be changed using setSize()." << std::endl; }
+
+	//! Draws labels with the current values of each graph if enabled. Defaults to true.
+	bool getLabelsEnabled() const { return mLabelsEnabled; }
+	void setLabelsEnabled(const bool value) { mLabelsEnabled = value; }
+
 protected:
 
 	struct Graph {
@@ -48,12 +55,11 @@ protected:
 	void setupShaders(const int numValues);
 
 	std::map<std::string, Graph> mGraphs;
+	size_t mCapacity;
 	bool mNeedsUpdate;
+	bool mLabelsEnabled;
 
 	ci::gl::FboRef mFbo;
-	size_t mCapacity;
-	int mPxPerValue;
-
 	ci::gl::GlslProgRef mGlsl;
 	ci::gl::BatchRef mBatch;
 };

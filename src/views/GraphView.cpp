@@ -9,10 +9,10 @@ using namespace std;
 namespace bluecadet {
 namespace views {
 
-GraphView::GraphView(const ci::ivec2& size, const int pxPerValue) : BaseView(),
+GraphView::GraphView(const ci::ivec2 & size) : BaseView(),
 mNeedsUpdate(false),
-mPxPerValue(pxPerValue),
-mCapacity(size.x / pxPerValue)
+mLabelsEnabled(true),
+mCapacity(size.x)
 {
 	gl::Texture::Format texFormat;
 	texFormat
@@ -31,8 +31,10 @@ mCapacity(size.x / pxPerValue)
 		return;
 	};
 
-	mFbo = ci::gl::Fbo::create(size.x / mPxPerValue, size.y / mPxPerValue, fboFormat);
-	setSize(mFbo->getSize() * mPxPerValue);
+	mFbo = ci::gl::Fbo::create(size.x, size.y, fboFormat);
+
+	BaseView::setSize(mFbo->getSize());
+
 	setupShaders((int)mCapacity);
 }
 
@@ -90,11 +92,7 @@ void GraphView::setValues(const std::string & id, const std::vector<float> & val
 
 void GraphView::draw() {
 	if (!mFbo) return;
-
 	render();
-
-	gl::ScopedMatrices scopedMatrices;
-	gl::scale(vec2((float)mPxPerValue));
 	gl::draw(mFbo->getColorTexture());
 }
 
@@ -112,6 +110,10 @@ inline void GraphView::render() {
 
 	gl::clear(ColorA(0, 0, 0, 0.25));
 
+	static const Font labelFont("Arial", 16);
+	static const ColorA labelColor(1, 1, 1, 0.75f);
+	vec2 labelPos(0, 0);
+
 	for (const auto & graphPair : mGraphs) {
 		const auto & graph = graphPair.second;
 		mGlsl->uniform("uMinColor", graph.minColor);
@@ -122,6 +124,13 @@ inline void GraphView::render() {
 		mGlsl->uniform("uIndex", (int)graph.index);
 		mGlsl->uniform("uValues", graph.values.data(), (int)graph.values.capacity());
 		mBatch->draw();
+
+		if (mLabelsEnabled) {
+			int index = (mCapacity - graph.index) % mCapacity;
+			const string labelText = graphPair.first + ": " + to_string(graph.values[index]);
+			gl::drawString(labelText, labelPos, labelColor, labelFont);
+			labelPos.y += labelFont.getSize();
+		}
 	}
 
 	mFbo->unbindFramebuffer();
