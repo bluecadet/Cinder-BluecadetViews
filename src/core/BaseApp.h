@@ -51,6 +51,8 @@ public:
 	//! The last time that update was called in seconds since app launch.
 	double		getLastUpdateTime() const	{ return mLastUpdateTime; }
 
+	//! Debug view to render stats like fps in a graph.
+	views::GraphViewRef	getStats() const { return mStats; };
 
 	//! The main touch driver running on TUIO. Automatically connected at app launch.
 	touch::drivers::TuioDriver				getTouchDriver() const		{ return mTuioDriver; }
