@@ -117,6 +117,7 @@
     <ClCompile Include="..\..\..\src\views\GraphView.cpp" />
     <ClCompile Include="..\..\..\src\views\ImageView.cpp" />
     <ClCompile Include="..\..\..\src\views\LineView.cpp" />
+    <ClCompile Include="..\..\..\src\views\MiniMapView.cpp" />
     <ClCompile Include="..\..\..\src\views\StatsView.cpp" />
     <ClCompile Include="..\..\..\src\views\TextView.cpp" />
     <ClCompile Include="..\..\..\src\views\TouchView.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="..\..\..\src\views\GraphView.h" />
     <ClInclude Include="..\..\..\src\views\ImageView.h" />
     <ClInclude Include="..\..\..\src\views\LineView.h" />
+    <ClInclude Include="..\..\..\src\views\MiniMapView.h" />
     <ClInclude Include="..\..\..\src\views\StatsView.h" />
     <ClInclude Include="..\..\..\src\views\TextView.h" />
     <ClInclude Include="..\..\..\src\views\TouchView.h" />

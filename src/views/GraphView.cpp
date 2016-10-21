@@ -126,7 +126,7 @@ inline void GraphView::render() {
 		mBatch->draw();
 
 		if (mLabelsEnabled) {
-			int index = (mCapacity - graph.index) % mCapacity;
+			int index = (int)((mCapacity - graph.index) % mCapacity);
 			const string labelText = graphPair.first + ": " + to_string(graph.values[index]);
 			gl::drawString(labelText, labelPos, labelColor, labelFont);
 			labelPos.y += labelFont.getSize();
@@ -134,30 +134,32 @@ inline void GraphView::render() {
 	}
 
 	mFbo->unbindFramebuffer();
+
+	mNeedsUpdate = false;
 }
 
 void GraphView::setupShaders(const int numValues) {
 	try {
 		string vert = CI_GLSL(150,
 			uniform mat4 ciModelViewProjection;
-		uniform ivec2 uSize;
-		in vec4 ciPosition;
-		out vec4 vPosition;
-		void main(void) {
-			vPosition = ciPosition;
-			gl_Position = ciModelViewProjection * (ciPosition * vec4(uSize, 1, 1));
-		}
-		);
-		string frag = CI_GLSL(150,
-			const int numValues = $NUM_VALUES$;
-		uniform vec4 uMinColor = vec4(0, 1, 0, 1);
-		uniform vec4 uMaxColor = vec4(1, 0, 0, 1);
-		uniform float uValues[numValues];
-		uniform int uIndex = 0;
-		uniform float uMin = 0.0;
-		uniform float uMax = 1.0;
-		in vec4 vPosition;
-		out vec4 oColor;
+			uniform ivec2 uSize;
+			in vec4 ciPosition;
+			out vec4 vPosition;
+			void main(void) {
+				vPosition = ciPosition;
+				gl_Position = ciModelViewProjection * (ciPosition * vec4(uSize, 1, 1));
+			}
+			);
+			string frag = CI_GLSL(150,
+				const int numValues = $NUM_VALUES$;
+			uniform vec4 uMinColor = vec4(0, 1, 0, 1);
+			uniform vec4 uMaxColor = vec4(1, 0, 0, 1);
+			uniform float uValues[numValues];
+			uniform int uIndex = 0;
+			uniform float uMin = 0.0;
+			uniform float uMax = 1.0;
+			in vec4 vPosition;
+			out vec4 oColor;
 
 		void main(void) {
 			float range = uMax - uMin;

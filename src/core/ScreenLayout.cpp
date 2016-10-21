@@ -31,6 +31,7 @@ void ScreenLayout::setup(const ci::ivec2& dislaySize, const int numRows, const i
 	// Connect w low priority to give other parts of app first dibs on key events.
 	// E.g. this prevents zooming/panning when typing into gl::InterfaceGl params.
 	getWindow()->getSignalKeyDown().connect(-1, std::bind(&ScreenLayout::handleKeyDown, this, std::placeholders::_1));
+	getWindow()->getSignalResize().connect(-1, std::bind(&ScreenLayout::handleWindowResize, this));
 }
 
 void ScreenLayout::updateLayout() {
@@ -45,6 +46,7 @@ void ScreenLayout::updateLayout() {
 
 	mAppSize = mDisplaySize * ivec2(mNumColumns, mNumRows);
 	mAppSizeChanged.emit(mAppSize);
+	updateViewport();
 }
 
 Rectf ScreenLayout::getDisplayBounds(const int displayId) {
@@ -78,6 +80,7 @@ void ScreenLayout::draw() {
 
 void ScreenLayout::zoomToDisplay(const int displayId) {
 	zoomToDisplay(getRowFromDisplayId(displayId), getColFromDisplayId(displayId));
+	updateViewport();
 }
 
 void ScreenLayout::zoomToDisplay(const int row, const int col) {
@@ -85,10 +88,15 @@ void ScreenLayout::zoomToDisplay(const int row, const int col) {
 	const vec2 winSize = getWindowSize();
 	const float scale = getScaleToFitBounds(displayBounds, winSize);
 
+	const vec2 offset = (winSize - scale * displayBounds.getSize()) * 0.5f;
+
 	mPlaceholderView->setScale(scale);
 	mPlaceholderView->setPosition(vec2(0, 0));
+	
 	const vec2 pos = mPlaceholderView->convertLocalToGlobal(displayBounds.getUpperLeft());
-	mPlaceholderView->setPosition(-pos);
+
+	mPlaceholderView->setPosition(offset - pos);
+	updateViewport();
 }
 
 void ScreenLayout::zoomToFitWindow() {
@@ -100,6 +108,7 @@ void ScreenLayout::zoomToFitWindow() {
 
 	mPlaceholderView->setScale(scale);
 	mPlaceholderView->setPosition(pos);
+	updateViewport();
 }
 
 void ScreenLayout::zoomAtLocation(const float targetScale, const vec2 location) {
@@ -113,6 +122,7 @@ void ScreenLayout::zoomAtLocation(const float targetScale, const vec2 location) 
 
 	mPlaceholderView->setScale(targetScale);
 	mPlaceholderView->setPosition(targetPos);
+	updateViewport();
 }
 
 float ScreenLayout::getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding) const {
@@ -128,11 +138,18 @@ float ScreenLayout::getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 
 // Event Handlers
 // 
 
+void ScreenLayout::handleWindowResize() {
+	updateViewport();
+}
+
 void ScreenLayout::handleKeyDown(KeyEvent event) {
 	if (event.isHandled()) {
 		// Don't change layout when event has been handled by other parts of the app
 		return;
 	}
+
+	float panSpeed = (float)min(getWindowWidth(), getWindowHeight()) * (event.isShiftDown() ? 0.5f : 0.125f);
+	float zoomSpeed = event.isShiftDown() ? 1.25f : 1.1f;
 
 	switch (event.getCode()) {
 		case KeyEvent::KEY_KP_PLUS:
@@ -144,8 +161,7 @@ void ScreenLayout::handleKeyDown(KeyEvent event) {
 			// zoom in/out
 			const auto code = event.getCode();
 			const bool zoomIn = (code == KeyEvent::KEY_KP_PLUS || code == KeyEvent::KEY_PLUS || code == KeyEvent::KEY_EQUALS);
-			const float speed = event.isShiftDown() ? 1.25f : 1.1f;
-			const float deltaScale = (zoomIn ? speed : 1.0f / speed);
+			const float deltaScale = (zoomIn ? zoomSpeed : 1.0f / zoomSpeed);
 			const float targetScale = mPlaceholderView->getScale().value().x * deltaScale;
 			zoomAtWindowCenter(targetScale);
 			break;
@@ -153,25 +169,29 @@ void ScreenLayout::handleKeyDown(KeyEvent event) {
 		case KeyEvent::KEY_UP:
 		{
 			// pan up
-			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x, mPlaceholderView->getPosition().value().y += getWindowHeight() * (event.isShiftDown() ? 1.0f : 0.125f)));
+			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x, mPlaceholderView->getPosition().value().y += panSpeed));
+			updateViewport();
 			break;
 		}
 		case KeyEvent::KEY_DOWN:
 		{
 			// pan down
-			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x, mPlaceholderView->getPosition().value().y -= getWindowHeight() * (event.isShiftDown() ? 1.0f : 0.125f)));
+			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x, mPlaceholderView->getPosition().value().y -= panSpeed));
+			updateViewport();
 			break;
 		}
 		case KeyEvent::KEY_LEFT:
 		{
 			// pan left
-			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x += getWindowWidth() * (event.isShiftDown() ? 1.0f : 0.125f), mPlaceholderView->getPosition().value().y));
+			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x += panSpeed, mPlaceholderView->getPosition().value().y));
+			updateViewport();
 			break;
 		}
 		case KeyEvent::KEY_RIGHT:
 		{
 			// pan right
-			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x -= getWindowWidth() * (event.isShiftDown() ? 1.0f : 0.125f), mPlaceholderView->getPosition().value().y));
+			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x -= panSpeed, mPlaceholderView->getPosition().value().y));
+			updateViewport();
 			break;
 		}
 		case KeyEvent::KEY_0:
@@ -196,7 +216,14 @@ void ScreenLayout::handleKeyDown(KeyEvent event) {
 	}
 }
 
-
+void ScreenLayout::updateViewport() {
+	ivec2 winSize = (AppBase::get() && getWindow()) ? getWindowSize() : ivec2(0);
+	float scale = mPlaceholderView->getScale().value().x;
+	ivec2 size = ivec2(vec2(winSize) / scale);
+	ivec2 pos = -ivec2(mPlaceholderView->getPosition().value() / scale);
+	mViewport = Area(pos, pos + size);
+	mViewportChangedSignal.emit(mViewport);
+}
 
 }
 }

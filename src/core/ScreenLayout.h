@@ -42,6 +42,9 @@ public:
 	//! Dispatched whenever a property chnage affects the app size.
 	ci::signals::Signal<void(const ci::ivec2 & appSize)> & getAppSizeChangedSignal() { return mAppSizeChanged; };
 
+	//! Dispatched whenever the current viewport (pan/zoom) is changed.
+	ci::signals::Signal<void(const ci::Area & viewport)> & getViewportChangedSignal() { return mViewportChangedSignal; };
+
 
 
 	//! The width of a single display in the display matrix
@@ -118,12 +121,19 @@ public:
 	float				getBordeSize() const { return mBorderSize; }
 	void				setBorderSize(const float value) { mBorderSize = value; }
 
+	//! The current camera transform.
 	const ci::mat4&		getTransform() const { return mPlaceholderView->getTransform(); };
+
+	//! The current viewport in app coordinates.
+	const ci::Area &	getViewport() const { return mViewport; }
 
 protected:
 	float				getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding = 0.0f) const;
 
+	void				updateViewport();
 	void				updateLayout();
+
+	void				handleWindowResize();
 	void				handleKeyDown(ci::app::KeyEvent event);
 
 
@@ -136,12 +146,14 @@ protected:
 
 	float		mBorderSize;
 	ci::ColorA	mBorderColor;
+	ci::Area	mViewport;
 
 private:
 	//! Used to draw bounds of each display
 	std::vector<ci::Rectf>	mDisplayBounds;
 	views::BaseViewRef		mPlaceholderView;
 	ci::signals::Signal<void(const ci::ivec2 & appSize)> mAppSizeChanged;
+	ci::signals::Signal<void(const ci::Area & viewport)> mViewportChangedSignal;
 };
 
 }
