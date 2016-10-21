@@ -114,6 +114,7 @@
     <ClCompile Include="..\..\..\src\views\BaseView.cpp" />
     <ClCompile Include="..\..\..\src\views\EllipseView.cpp" />
     <ClCompile Include="..\..\..\src\views\FboView.cpp" />
+    <ClCompile Include="..\..\..\src\views\GraphView.cpp" />
     <ClCompile Include="..\..\..\src\views\ImageView.cpp" />
     <ClCompile Include="..\..\..\src\views\LineView.cpp" />
     <ClCompile Include="..\..\..\src\views\StatsView.cpp" />
@@ -142,6 +143,7 @@
     <ClInclude Include="..\..\..\src\views\BaseView.h" />
     <ClInclude Include="..\..\..\src\views\EllipseView.h" />
     <ClInclude Include="..\..\..\src\views\FboView.h" />
+    <ClInclude Include="..\..\..\src\views\GraphView.h" />
     <ClInclude Include="..\..\..\src\views\ImageView.h" />
     <ClInclude Include="..\..\..\src\views\LineView.h" />
     <ClInclude Include="..\..\..\src\views\StatsView.h" />

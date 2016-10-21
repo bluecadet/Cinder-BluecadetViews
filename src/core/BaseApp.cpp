@@ -148,21 +148,9 @@ void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
 	mSimulatedTouchDriver.setTouchesPerSecond(touchesPerSecond);
 
 	const string groupName = "Touch-Sim";
-	
-	SettingsManager::getInstance()->getParams()->addParam<bool>("Show Missed Touches", [&](bool v) {
-		TouchManager::getInstance()->setDiscardMissedTouches(!v);
-	}, [&]() {
-		return !TouchManager::getInstance()->getDiscardMissedTouches();
-	}).group(groupName);
 
-	SettingsManager::getInstance()->getParams()->addParam<float>("Touches/s", [&](float v) {
-		mSimulatedTouchDriver.setTouchesPerSecond(v);
-	}, [&]() {
-		return mSimulatedTouchDriver.getTouchesPerSecond();
-	}).group(groupName);
-
-	SettingsManager::getInstance()->getParams()->addParam<bool>("Stress Test", [&](bool v) {
-		if (!mSimulatedTouchDriver.isRunning()){
+	SettingsManager::getInstance()->getParams()->addParam<bool>("Enabled", [&](bool v) {
+		if (!mSimulatedTouchDriver.isRunning()) {
 			SettingsManager::getInstance()->mDrawTouches = true;
 			mSimulatedTouchDriver.setBounds(Rectf(vec2(0), getWindowSize()));
 			mSimulatedTouchDriver.start();
@@ -174,32 +162,37 @@ void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
 		return SettingsManager::getInstance()->mDrawTouches && mSimulatedTouchDriver.isRunning();
 	}).group(groupName);
 
-	SettingsManager::getInstance()->getParams()->addButton("Stress Test Tap + Drag", [&] {
-		SettingsManager::getInstance()->mDrawTouches = true;
-		mSimulatedTouchDriver.setBounds(Rectf(vec2(0), getWindowSize()));
-		mSimulatedTouchDriver.setMinTouchDuration(0);
-		mSimulatedTouchDriver.setMaxTouchDuration(1.f);
-		mSimulatedTouchDriver.setMaxDragDistance(200.f);
-		mSimulatedTouchDriver.start();
-	}, "group=" + groupName);
+	static int stressTestMode = 0;
+	static vector<string> stressTestModes = { "Tap & Drag", "Slow Drag", "Tap" };
 
-	SettingsManager::getInstance()->getParams()->addButton("Stress Test Long Drag", [&] {
-		SettingsManager::getInstance()->mDrawTouches = true;
-		mSimulatedTouchDriver.setBounds(Rectf(vec2(0), getWindowSize()));
-		mSimulatedTouchDriver.setMinTouchDuration(4.f);
-		mSimulatedTouchDriver.setMaxTouchDuration(8.f);
-		mSimulatedTouchDriver.setMaxDragDistance(200.f);
-		mSimulatedTouchDriver.start();
-	}, "group=" + groupName);
+	SettingsManager::getInstance()->getParams()->addText("Stress Test");
+	SettingsManager::getInstance()->getParams()->addParam("Mode", stressTestModes, &stressTestMode).updateFn([&] {
+		if (stressTestMode == 0) {
+			mSimulatedTouchDriver.setMinTouchDuration(0);
+			mSimulatedTouchDriver.setMaxTouchDuration(1.f);
+			mSimulatedTouchDriver.setMaxDragDistance(200.f);
+		} else if (stressTestMode == 1) {
+			mSimulatedTouchDriver.setMinTouchDuration(4.f);
+			mSimulatedTouchDriver.setMaxTouchDuration(8.f);
+			mSimulatedTouchDriver.setMaxDragDistance(200.f);
+		} else if (stressTestMode == 2) {
+			mSimulatedTouchDriver.setMinTouchDuration(0);
+			mSimulatedTouchDriver.setMaxTouchDuration(0.1f);
+			mSimulatedTouchDriver.setMaxDragDistance(0.f);
+		}
+	}).group(groupName);
 
-	SettingsManager::getInstance()->getParams()->addButton("Stress Test Tap Only", [&] {
-		SettingsManager::getInstance()->mDrawTouches = true;
-		mSimulatedTouchDriver.setBounds(Rectf(vec2(0), getWindowSize()));
-		mSimulatedTouchDriver.setMinTouchDuration(0);
-		mSimulatedTouchDriver.setMaxTouchDuration(0.1f);
-		mSimulatedTouchDriver.setMaxDragDistance(0.f);
-		mSimulatedTouchDriver.start();
-	}, "group=" + groupName);
+	SettingsManager::getInstance()->getParams()->addParam<float>("Touches/s", [&](float v) {
+		mSimulatedTouchDriver.setTouchesPerSecond(v);
+	}, [&]() {
+		return mSimulatedTouchDriver.getTouchesPerSecond();
+	}).group(groupName);
+
+	SettingsManager::getInstance()->getParams()->addParam<bool>("Show Missed Touches", [&](bool v) {
+		TouchManager::getInstance()->setDiscardMissedTouches(!v);
+	}, [&]() {
+		return !TouchManager::getInstance()->getDiscardMissedTouches();
+	}).group(groupName);
 
 }
 

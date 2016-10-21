@@ -16,9 +16,9 @@ SimulatedTouchDriver::SimulatedTouchDriver() :
 	mIsRunning(false),
 	mTouchesPerSecond(0),
 	mMinTouchDuration(0),
-	mMaxTouchDuration(0),
+	mMaxTouchDuration(1.0f),
 	mMinDragDistance(0),
-	mMaxDragDistance(0),
+	mMaxDragDistance(200.0f),
 	touchCounter(10000)
 {
 }

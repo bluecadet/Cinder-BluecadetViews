@@ -168,6 +168,9 @@
     <ClCompile Include="..\..\..\src\views\ViewEvent.cpp">
       <Filter>Blocks\BluecadetViews\src\views</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\views\GraphView.cpp">
+      <Filter>Blocks\BluecadetViews\src\views</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
@@ -225,6 +228,9 @@
       <Filter>Blocks\BluecadetViews\src\views</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\views\TouchView.h">
+      <Filter>Blocks\BluecadetViews\src\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\views\GraphView.h">
       <Filter>Blocks\BluecadetViews\src\views</Filter>
     </ClInclude>
   </ItemGroup>

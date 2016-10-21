@@ -29,7 +29,7 @@ void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 
 	BaseApp::prepareSettings(settings);
 
-	// Optional: configure a multi-screen layout
+	// Optional: configure a multi-screen layout (defaults to 1x1 1080p landscape)
 	ScreenLayout::getInstance()->setDisplaySize(ivec2(1080, 1920));
 	ScreenLayout::getInstance()->setNumRows(1);
 	ScreenLayout::getInstance()->setNumColumns(3);
@@ -48,6 +48,7 @@ void BaseAppSampleApp::setup() {
 	button->setSize(getRootView()->getSize() * 0.75f);
 	button->setPosition((getRootView()->getSize() - button->getSize()) * 0.5f);
 	button->setBackgroundColor(ColorA(1, 0, 0, 0.75f));
+	button->setMultiTouchEnabled(true);
 	button->mDidTap.connect([=](bluecadet::touch::TouchEvent e) { CI_LOG_I("Button tapped"); });
 	getRootView()->addChild(button);
 }
