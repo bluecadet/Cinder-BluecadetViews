@@ -14,9 +14,11 @@ MiniMapView::MiniMapView(const float mapScale, const float padding) :
 	mDisplaySize(0),
 	mMapScale(mapScale),
 	mPadding(padding),
-	mViewportView(new BaseView())
+	mViewportView(new BaseView()),
+	mBorderColor(ColorA(1, 1, 1, 0.75f))
 {
-	mViewportView->setBackgroundColor(ColorA(0.5f, 1, 0.5f, 0.5f));
+	setBackgroundColor(ColorA(0, 0, 0, 0.25f));
+	mViewportView->setBackgroundColor(ColorA(1, 1, 1, 0.25f));
 	addChild(mViewportView);
 	setupShaders();
 }
@@ -49,6 +51,7 @@ void MiniMapView::setViewport(const ci::Area & viewport) {
 
 void MiniMapView::draw() {
 	updateContent();
+	gl::translate(vec2(mPadding));
 	gl::draw(mFbo->getColorTexture());
 }
 
@@ -63,16 +66,13 @@ void MiniMapView::updateContent() {
 
 	mFbo->bindFramebuffer();
 
-	gl::clear(ColorA(0, 0, 0, 0.25));
-	gl::ScopedColor scopedColor(Color::white());
+	gl::clear(getBackgroundColor().value());
 
-	mGlsl->uniform("uAppSize", mScaledSize);
-	mGlsl->uniform("uScaledSize", mScaledSize);
-	mGlsl->uniform("uDisplaySize", mDisplaySize);
-	mGlsl->uniform("uCols", mCols);
-	mGlsl->uniform("uRows", mRows);
+	mGlsl->uniform("uAppSize", vec2(mAppSize));
+	mGlsl->uniform("uScaledSize", vec2(mScaledSize));
+	mGlsl->uniform("uDisplaySize", vec2(mDisplaySize));
+	mGlsl->uniform("uBorderColor", mBorderColor);
 
-	gl::translate(vec2(mPadding));
 	mBatch->draw();
 
 	mFbo->unbindFramebuffer();
@@ -81,31 +81,41 @@ void MiniMapView::updateContent() {
 }
 
 void MiniMapView::setupShaders() {
-	mGlsl = gl::GlslProg::create(gl::GlslProg::Format().vertex(CI_GLSL(150,
-		uniform vec2	uAppSize;
-		uniform vec2	uScaledSize;
-		uniform vec2	uDisplaySize;
-		uniform vec2	uCols;
-		uniform vec2	uRows;
+	mGlsl = gl::GlslProg::create(
+		gl::GlslProg::Format().vertex(CI_GLSL(150,
+			uniform vec2	uAppSize;
+			uniform vec2	uScaledSize;
+			uniform mat4	ciModelViewProjection;
+			in vec4			ciPosition;
+			out vec2		vAppPosition;
 
-		uniform mat4	ciModelViewProjection;
-		in vec4			ciPosition;
-		in vec4			ciColor;
-		out vec4		color;
+			void main(void) {
+				vAppPosition = ciPosition.xy * uAppSize;
+				vec4 pos = vec4(ciPosition.x * uScaledSize.x, ciPosition.y * uScaledSize.y, 0.0f, 1.0f);
+				gl_Position = ciModelViewProjection * pos;
+			}
+		)).fragment(CI_GLSL(150,
+			uniform vec2	uAppSize;
+			uniform vec2	uScaledSize;
+			uniform vec2	uDisplaySize;
+			uniform vec4	uBackgroundColor;
+			uniform vec4	uBorderColor;
+			in vec2			vAppPosition;
+			out vec4		oColor;
 
-		void main(void) {
-			vec4 pos = vec4(ciPosition.x * uScaledSize.x, ciPosition.y * uScaledSize.y, 0.0f, 1.0f);
-			gl_Position = ciModelViewProjection * pos;
-			color = ciColor;
-		}
-	)).fragment(CI_GLSL(150,
-		in vec4			color;
-		out vec4		oColor;
+			void main(void) {
+				vec2 scale = uScaledSize / uAppSize;
+				vec2 edgeDist = abs(mod(vAppPosition, uDisplaySize)) * scale;
 
-		void main(void) {
-			oColor = color;
-		}
-	)));
+				if (edgeDist.x <= 1.0 || edgeDist.x >= uDisplaySize.x * scale.x - 1.0 ||
+					edgeDist.y <= 1.0 || edgeDist.y >= uDisplaySize.y * scale.y - 1.0) {
+					oColor = uBorderColor;
+				} else {
+					discard;
+				}
+			}
+		))
+	);
 
 	mBatch = gl::Batch::create(geom::Rect(Rectf(0, 0, 1, 1)), mGlsl);
 }

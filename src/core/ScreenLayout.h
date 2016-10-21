@@ -121,13 +121,19 @@ public:
 	float				getBordeSize() const { return mBorderSize; }
 	void				setBorderSize(const float value) { mBorderSize = value; }
 
+	//! The current camera transform.
 	const ci::mat4&		getTransform() const { return mPlaceholderView->getTransform(); };
+
+	//! The current viewport in app coordinates.
+	const ci::Area &	getViewport() const { return mViewport; }
 
 protected:
 	float				getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding = 0.0f) const;
 
-	void				dispatchViewportChange();
+	void				updateViewport();
 	void				updateLayout();
+
+	void				handleWindowResize();
 	void				handleKeyDown(ci::app::KeyEvent event);
 
 
@@ -140,6 +146,7 @@ protected:
 
 	float		mBorderSize;
 	ci::ColorA	mBorderColor;
+	ci::Area	mViewport;
 
 private:
 	//! Used to draw bounds of each display

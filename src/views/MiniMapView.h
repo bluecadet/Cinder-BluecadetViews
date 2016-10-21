@@ -22,6 +22,10 @@ public:
 	void setLayout(const int cols, const int rows, const ci::ivec2 & displaySize);
 	void setViewport(const ci::Area & viewport);
 
+	//! Defaults to white
+	ci::ColorA getBorderColor() const { return mBorderColor; }
+	void setBorderColor(const ci::ColorA value) { mBorderColor = value; }
+
 protected:
 	void draw() override;
 	virtual void updateContent();
@@ -31,6 +35,7 @@ protected:
 
 	float mMapScale;
 	float mPadding;
+	ci::ColorA mBorderColor;
 
 	int mCols;
 	int mRows;
