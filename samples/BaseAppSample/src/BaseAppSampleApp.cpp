@@ -1,4 +1,3 @@
-
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
@@ -66,3 +65,4 @@ void BaseAppSampleApp::draw() {
 
 // Make sure to pass a reference to prepareSettings to configure the app correctly. MSAA and other render options are optional.
 CINDER_APP(BaseAppSampleApp, RendererGl(RendererGl::Options().msaa(4)), BaseAppSampleApp::prepareSettings);
+

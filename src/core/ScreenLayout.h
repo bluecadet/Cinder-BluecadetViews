@@ -18,8 +18,11 @@ typedef std::shared_ptr<class ScreenLayout> ScreenLayoutRef;
 class ScreenLayout {
 
 public:
+
+
 	ScreenLayout();
 	~ScreenLayout();
+
 
 	static ScreenLayoutRef getInstance() {
 		static ScreenLayoutRef instance = nullptr;

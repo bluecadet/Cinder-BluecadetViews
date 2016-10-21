@@ -136,11 +136,11 @@ void SettingsManager::parseCommandLineArgs(const std::vector<std::string>& args)
 ci::params::InterfaceGlRef SettingsManager::getParams() {
 	static ci::params::InterfaceGlRef params = nullptr;
 	if (!params) {
-		params = ci::params::InterfaceGl::create("Settings", ci::ivec2(250, 500));
-		params->addParam("Show Minimap", &mDrawMinimap);
-		params->addParam("Show Touches", &mDrawTouches);
-		params->addParam("Show Layout", &mDrawScreenLayout);
-		params->addParam("Show Cursor", &mShowMouse).updateFn([&] { mShowMouse ? ci::app::AppBase::get()->showCursor() : ci::app::AppBase::get()->hideCursor(); }).key("m");
+		params = ci::params::InterfaceGl::create("Settings", ci::ivec2(250, 250));
+		params->addParam("Show Layout", &mDrawScreenLayout).group("App");
+		params->addParam("Show Touches", &mDrawTouches).group("App");
+		params->addParam("Show Minimap", &mDrawMinimap).group("App");
+		params->addParam("Show Cursor", &mShowMouse).updateFn([&] { mShowMouse ? ci::app::AppBase::get()->showCursor() : ci::app::AppBase::get()->hideCursor(); }).key("m").group("App");
 	}
 	return params;
 }
