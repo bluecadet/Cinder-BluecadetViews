@@ -40,9 +40,8 @@ void BaseAppSampleApp::setup() {
 	BaseApp::setup();
 	BaseApp::addTouchSimulatorParams();
 
-	// Optional: configure the size and background of your root view
+	// Optional: configure your root view
 	getRootView()->setBackgroundColor(Color::gray(0.5f));
-	getRootView()->setSize(ScreenLayout::getInstance()->getAppSize());
 
 	// Sample content
 	auto button = TouchViewRef(new TouchView());

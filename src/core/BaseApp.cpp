@@ -52,6 +52,7 @@ void BaseApp::setup() {
 	int rows = settings->hasField("settings.display.rows") ? settings->getField<int>("settings.display.rows") : ScreenLayout::getInstance()->getNumRows();
 	int cols = settings->hasField("settings.display.columns") ? settings->getField<int>("settings.display.columns") : ScreenLayout::getInstance()->getNumColumns();
 	
+	ScreenLayout::getInstance()->getAppSizeChangedSignal().connect(bind(&BaseApp::handleAppSizeChange, this));
 	ScreenLayout::getInstance()->setup(ivec2(displayWidth, displayHeight), rows, cols);
 	ScreenLayout::getInstance()->zoomToFitWindow();
 	
@@ -137,6 +138,10 @@ void BaseApp::keyDown(KeyEvent event) {
 			setFullScreen(SettingsManager::getInstance()->mFullscreen);
 			break;
 	}
+}
+
+void BaseApp::handleAppSizeChange() {
+	getRootView()->setSize(vec2(ScreenLayout::getInstance()->getAppSize()));
 }
 
 void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
