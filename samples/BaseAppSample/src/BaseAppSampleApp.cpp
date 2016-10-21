@@ -31,8 +31,8 @@ void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 
 	// Optional: configure a multi-screen layout (defaults to 1x1 1080p landscape)
 	ScreenLayout::getInstance()->setDisplaySize(ivec2(1080, 1920));
-	ScreenLayout::getInstance()->setNumRows(3);
-	ScreenLayout::getInstance()->setNumColumns(7);
+	ScreenLayout::getInstance()->setNumRows(1);
+	ScreenLayout::getInstance()->setNumColumns(3);
 }
 
 void BaseAppSampleApp::setup() {
