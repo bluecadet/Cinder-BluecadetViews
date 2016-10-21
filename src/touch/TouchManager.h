@@ -52,7 +52,7 @@ public:
 	
 	//! Adds a touch event to the event queue which will be processed on the main thread and forwarded to views
 	void					addTouch(const int id, const ci::vec2& position, const TouchType type, const TouchPhase phase);
-	void					addTouch(Touch & event);
+	void					addTouch(Touch & touch);
 
 	//! Removes a touch if it exists. Views associated to this event will be notifed with touchEnded.
 	void					cancelTouch(views::TouchViewRef touchView);

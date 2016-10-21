@@ -74,8 +74,6 @@ void BaseApp::setup() {
 	gl::enableAlphaBlending();
 
 	// Set up touches
-	//TouchManager::getInstance()->setDiscardMissedTouches(false);
-
 	mMouseDriver.connect();
 	mTuioDriver.connect();
 	mSimulatedTouchDriver.setup(Rectf(vec2(0), getWindowSize()), 60);
@@ -149,6 +147,12 @@ void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
 	mSimulatedTouchDriver.setTouchesPerSecond(touchesPerSecond);
 
 	const string groupName = "Touch-Sim";
+	
+	SettingsManager::getInstance()->getParams()->addParam<bool>("Show Missed Touches", [&](bool v) {
+		TouchManager::getInstance()->setDiscardMissedTouches(!v);
+	}, [&]() {
+		return !TouchManager::getInstance()->getDiscardMissedTouches();
+	}).group(groupName);
 
 	SettingsManager::getInstance()->getParams()->addParam<float>("Touches/s", [&](float v) {
 		mSimulatedTouchDriver.setTouchesPerSecond(v);

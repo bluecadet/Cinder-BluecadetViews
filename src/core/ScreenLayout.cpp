@@ -15,8 +15,7 @@ ScreenLayout::ScreenLayout() :
 	mAppSize(mDisplaySize),
 	mBorderSize(2.0f),
 	mBorderColor(ColorA(1.0f, 0.0f, 1.0f, 1.0f)),
-	mPlaceholderView(new BaseView())
-{
+	mPlaceholderView(new BaseView()) {
 }
 
 ScreenLayout::~ScreenLayout() {
@@ -68,7 +67,7 @@ void ScreenLayout::draw() {
 
 	gl::multModelMatrix(getTransform());
 
-	for (const auto &outline : mDisplayBounds) {
+	for (const auto & outline : mDisplayBounds) {
 		gl::drawStrokedRect(outline);
 	}
 }
@@ -140,7 +139,8 @@ void ScreenLayout::handleKeyDown(KeyEvent event) {
 		case KeyEvent::KEY_KP_MINUS:
 		case KeyEvent::KEY_PLUS:
 		case KeyEvent::KEY_EQUALS:
-		case KeyEvent::KEY_MINUS: {
+		case KeyEvent::KEY_MINUS:
+		{
 			// zoom in/out
 			const auto code = event.getCode();
 			const bool zoomIn = (code == KeyEvent::KEY_KP_PLUS || code == KeyEvent::KEY_PLUS || code == KeyEvent::KEY_EQUALS);
@@ -150,28 +150,33 @@ void ScreenLayout::handleKeyDown(KeyEvent event) {
 			zoomAtWindowCenter(targetScale);
 			break;
 		}
-		case KeyEvent::KEY_UP: {
+		case KeyEvent::KEY_UP:
+		{
 			// pan up
-			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x, mPlaceholderView->getPosition().value().y += getWindowHeight() * (event.isShiftDown() ? 1.0f : 0.25f)));
+			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x, mPlaceholderView->getPosition().value().y += getWindowHeight() * (event.isShiftDown() ? 1.0f : 0.125f)));
 			break;
 		}
-		case KeyEvent::KEY_DOWN: {
+		case KeyEvent::KEY_DOWN:
+		{
 			// pan down
-			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x, mPlaceholderView->getPosition().value().y -= getWindowHeight() * (event.isShiftDown() ? 1.0f : 0.25f)));
+			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x, mPlaceholderView->getPosition().value().y -= getWindowHeight() * (event.isShiftDown() ? 1.0f : 0.125f)));
 			break;
 		}
-		case KeyEvent::KEY_LEFT: {
+		case KeyEvent::KEY_LEFT:
+		{
 			// pan left
-			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x += getWindowWidth() * (event.isShiftDown() ? 1.0f : 0.25f), mPlaceholderView->getPosition().value().y));
+			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x += getWindowWidth() * (event.isShiftDown() ? 1.0f : 0.125f), mPlaceholderView->getPosition().value().y));
 			break;
 		}
-		case KeyEvent::KEY_RIGHT: {
+		case KeyEvent::KEY_RIGHT:
+		{
 			// pan right
-			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x -= getWindowWidth() * (event.isShiftDown() ? 1.0f : 0.25f), mPlaceholderView->getPosition().value().y));
+			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x -= getWindowWidth() * (event.isShiftDown() ? 1.0f : 0.125f), mPlaceholderView->getPosition().value().y));
 			break;
 		}
 		case KeyEvent::KEY_0:
-		case KeyEvent::KEY_KP0: {
+		case KeyEvent::KEY_KP0:
+		{
 			// toggle zoom to fit window
 			if (mPlaceholderView->getScale().value().x != 1.0f) {
 				zoomAtWindowCenter(1.0f);
@@ -181,7 +186,8 @@ void ScreenLayout::handleKeyDown(KeyEvent event) {
 			break;
 		}
 		case KeyEvent::KEY_KP1: case KeyEvent::KEY_KP2: case KeyEvent::KEY_KP3: case KeyEvent::KEY_KP4: case KeyEvent::KEY_KP5: case KeyEvent::KEY_KP6: case KeyEvent::KEY_KP7: case KeyEvent::KEY_KP8: case KeyEvent::KEY_KP9:
-		case KeyEvent::KEY_1: case KeyEvent::KEY_2: case KeyEvent::KEY_3: case KeyEvent::KEY_4: case KeyEvent::KEY_5: case KeyEvent::KEY_6: case KeyEvent::KEY_7: case KeyEvent::KEY_8: case KeyEvent::KEY_9: {
+		case KeyEvent::KEY_1: case KeyEvent::KEY_2: case KeyEvent::KEY_3: case KeyEvent::KEY_4: case KeyEvent::KEY_5: case KeyEvent::KEY_6: case KeyEvent::KEY_7: case KeyEvent::KEY_8: case KeyEvent::KEY_9:
+		{
 			// zoom into display on top-most row
 			int displayId = (event.getChar() - (int)'0') - 1; // parse int from char, make 0-based
 			zoomToDisplay(displayId);

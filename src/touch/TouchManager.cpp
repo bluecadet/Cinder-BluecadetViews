@@ -17,8 +17,7 @@ using namespace bluecadet::views;
 
 TouchManager::TouchManager() :
 	mDiscardMissedTouches(true),
-	mMultiTouchEnabled(true)
-{
+	mMultiTouchEnabled(true) {
 }
 
 TouchManager::~TouchManager() {
@@ -35,7 +34,7 @@ TouchManagerRef TouchManager::getInstance() {
 void TouchManager::update(BaseViewRef rootView, const vec2 & appSize, const mat4 & appTransform) {
 	lock_guard<recursive_mutex> scopedUpdateLock(mQueueMutex);
 	lock_guard<recursive_mutex> scopedTouchMapLock(mTouchIdMutex);
-	
+
 	mAppSize = appSize;
 	mAppTransform = appTransform;
 
@@ -69,8 +68,7 @@ void TouchManager::addTouch(const int id, const ci::vec2 & position, const Touch
 	addTouch(Touch(id, position, type, phase));
 }
 
-void TouchManager::addTouch(Touch & touch)
-{
+void TouchManager::addTouch(Touch & touch) {
 	// transform position from window into app space
 	const vec2 transformedPos = vec2(mAppTransform * vec4(touch.windowPosition, 0, 1));
 	touch.appPosition = transformedPos;
@@ -88,34 +86,39 @@ void TouchManager::mainThreadTouchesBegan(const Touch & touch, views::BaseViewRe
 		return;
 	}
 
-	// checks if MultiTouch is enabled OR it's not enabled AND touch map had no views in it
-	if (mMultiTouchEnabled || (!mMultiTouchEnabled && mViewsByTouchId.size() == 0)) {
-		TouchEvent touchEvent(touch);
-		TouchView* view = getTopViewAtPosition(touch.appPosition, rootView);
+	// cancel if multi touch is not enabled and we already have touches
+	if (!mMultiTouchEnabled && !mViewsByTouchId.empty()) {
+		return;
+	}
 
-		if (view) {
-			auto viewRef = view->getSharedTouchViewPtr();
-			touchEvent.target = viewRef;
-			touchEvent.touchTarget = viewRef;
-			touchEvent.localPosition = view->convertGlobalToLocal(touchEvent.position);
-		}
+	TouchEvent touchEvent(touch);
+	TouchView* view = getTopViewAtPosition(touch.appPosition, rootView);
 
-		mDidBeginTouch(touchEvent);
+	if (view) {
+		auto viewRef = view->getSharedTouchViewPtr();
+		touchEvent.target = viewRef;
+		touchEvent.touchTarget = viewRef;
+		touchEvent.localPosition = view->convertGlobalToLocal(touchEvent.position);
+	}
 
-		if (view) {
-			mViewsByTouchId[touchEvent.touchId] = views::TouchViewWeakRef(touchEvent.touchTarget);
-			view->processTouchBegan(touchEvent);
-			view->dispatchEvent(touchEvent); // TODO: move this into processTouch...()
-		}
+	mDidBeginTouch(touchEvent);
 
-		if (view || !mDiscardMissedTouches) {
-			mTouchesById[touchEvent.touchId] = touch;
-		}
+	if (view) {
+		// save and process touch
+		mViewsByTouchId[touchEvent.touchId] = views::TouchViewWeakRef(touchEvent.touchTarget);
+		view->processTouchBegan(touchEvent);
+		view->dispatchEvent(touchEvent); // TODO: move this into processTouch...()
+		mTouchesById[touchEvent.touchId] = touch;
 
-		// process event in plugins
-		for (auto plugin : mPlugins) {
-			plugin->processEvent(this, touchEvent);
-		}
+	} else if (!mDiscardMissedTouches) {
+		// make touch virtual if it's discarded
+		mTouchesById[touchEvent.touchId] = Touch(touch);
+		mTouchesById[touchEvent.touchId].isVirtual = true;
+	}
+
+	// process event in plugins
+	for (auto plugin : mPlugins) {
+		plugin->processEvent(this, touchEvent);
 	}
 }
 
@@ -138,12 +141,15 @@ void TouchManager::mainThreadTouchesMoved(const Touch & touch, views::BaseViewRe
 	mDidMoveTouch(touchEvent);
 
 	if (view) {
+		// save and process touch
 		view->processTouchMoved(touchEvent);
 		view->dispatchEvent(touchEvent); // TODO: move this into processTouch...()
-	}
-
-	if (view || !mDiscardMissedTouches) {
 		mTouchesById[touchEvent.touchId] = touch;
+
+	} else if (!mDiscardMissedTouches) {
+		// make touch virtual if it's discarded
+		mTouchesById[touchEvent.touchId] = Touch(touch);
+		mTouchesById[touchEvent.touchId].isVirtual = true;
 	}
 
 	// process event in plugins
@@ -284,14 +290,15 @@ TouchView* TouchManager::getTopViewAtPosition(const ci::vec2 &position, BaseView
 //
 
 void TouchManager::debugDrawTouch(const Touch & touch, const bool isVirtual) {
-	static const ColorA labelColor = ColorA(1, 1, 1, 0.85f);
+	static const ColorA labelColor = ColorA(1, 1, 1, 0.75f);
 	static const Font labelFont = Font("Arial", 16.0f);
 	static const float innerRadius = 12.0f;
 	static const float outerRadius = 16.0f;
 
 	static const float circlePadding = 2.0f;
 	static const float circleScale = 2.0f;
-	static const ColorA circleColor = ColorA(1, 1, 1, 0.85f);
+	static const ColorA circleColorNormal = ColorA(1, 1, 1, 0.75f);
+	static const ColorA circleColorVirtual = ColorA(1, 1, 1, 0.25f);
 	static const vec2 circleSize = vec2(2.0f * (outerRadius + circlePadding));
 	static const Rectf circleDestRect = Rectf(-circleSize * 0.5f, circleSize * 0.5f);
 	static const vec2 labelOffset = vec2(outerRadius, -labelFont.getSize() * 0.5f);
@@ -310,7 +317,7 @@ void TouchManager::debugDrawTouch(const Touch & touch, const bool isVirtual) {
 
 		gl::ScopedMatrices scopedMatrices;
 		gl::ScopedViewport scopedViewport(fboNormal->getSize());
-		gl::ScopedColor scopedColor(circleColor);
+		gl::ScopedColor scopedColor(Color::white());
 
 		gl::setMatricesWindow(fboNormal->getSize());
 		gl::scale(vec2(circleScale));
@@ -330,14 +337,16 @@ void TouchManager::debugDrawTouch(const Touch & touch, const bool isVirtual) {
 	gl::translate(touch.appPosition);
 
 	const auto fbo = isVirtual ? fboVirtual : fboNormal;
+	const auto color = isVirtual ? circleColorVirtual : circleColorNormal;
 
+	gl::ScopedColor scopedColor(color);
 	gl::draw(fbo->getColorTexture(), circleDestRect);
 	gl::drawString(labelText, labelOffset, labelColor, labelFont);
 }
 
 void TouchManager::debugDrawTouches() {
 	lock_guard<recursive_mutex> scopedTouchMapLock(mTouchIdMutex);
-	gl::ScopedBlendPremult scopedBlend;
+	//gl::ScopedBlendPremult scopedBlend;
 	for (const auto & it : mTouchesById) {
 		const auto & touch = it.second;
 		debugDrawTouch(touch, touch.isVirtual);

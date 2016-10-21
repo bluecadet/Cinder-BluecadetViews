@@ -45,9 +45,9 @@ void BaseAppSampleApp::setup() {
 
 	// Sample content
 	auto button = TouchViewRef(new TouchView());
-	button->setPosition(vec2(100, 100));
-	button->setSize(vec2(200, 100));
-	button->setBackgroundColor(Color(1, 0, 0));
+	button->setSize(getRootView()->getSize() * 0.75f);
+	button->setPosition((getRootView()->getSize() - button->getSize()) * 0.5f);
+	button->setBackgroundColor(ColorA(1, 0, 0, 0.75f));
 	button->mDidTap.connect([=](bluecadet::touch::TouchEvent e) { CI_LOG_I("Button tapped"); });
 	getRootView()->addChild(button);
 }
