@@ -165,7 +165,6 @@ void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
 	static int stressTestMode = 0;
 	static vector<string> stressTestModes = { "Tap & Drag", "Slow Drag", "Tap" };
 
-	SettingsManager::getInstance()->getParams()->addText("Stress Test");
 	SettingsManager::getInstance()->getParams()->addParam("Mode", stressTestModes, &stressTestMode).updateFn([&] {
 		if (stressTestMode == 0) {
 			mSimulatedTouchDriver.setMinTouchDuration(0);
