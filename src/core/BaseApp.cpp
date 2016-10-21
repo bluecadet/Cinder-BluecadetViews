@@ -15,8 +15,10 @@ namespace core {
 BaseApp::BaseApp() :
 	ci::app::App(),
 	mLastUpdateTime(0),
-	mRootView(views::BaseViewRef(new BaseView())),
-	mMiniMap(views::MiniMapViewRef(new MiniMapView(0.025f, 16.0f))) {
+	mDebugUiPadding(16.0f),
+	mRootView(new BaseView()),
+	mMiniMap(new MiniMapView(0.025f)),
+	mStats(new GraphView(ivec2(128, 48))) {
 }
 
 BaseApp::~BaseApp() {
@@ -78,6 +80,12 @@ void BaseApp::setup() {
 	mMouseDriver.connect();
 	mTuioDriver.connect();
 	mSimulatedTouchDriver.setup(Rectf(vec2(0), getWindowSize()), 60);
+
+	// Debugging
+	const float fps = (float)SettingsManager::getInstance()->mFps;
+	mStats->setBackgroundColor(ColorA(0, 0, 0, 0.1f));
+	//mStats->addGraph("FPS", 0, fps, ColorA(1, 1, 1, 0.75f), ColorA(1, 1, 1, 0.25f));
+	mStats->addGraph("Delta Time", 1.0f / fps, 0.1f, ColorA(1, 1, 0, 0.5f), ColorA(1, 0, 0, 0.5f));
 }
 
 void BaseApp::update() {
@@ -91,6 +99,9 @@ void BaseApp::update() {
 	const auto appSize = ScreenLayout::getInstance()->getAppSize();
 	touch::TouchManager::getInstance()->update(mRootView, appSize, appTransform);
 	mRootView->updateScene(deltaTime);
+
+	//mStats->addValue("FPS", getAverageFps());
+	mStats->addValue("Delta Time", (float)deltaTime);
 }
 
 void BaseApp::draw(const bool clear) {
@@ -120,6 +131,9 @@ void BaseApp::draw(const bool clear) {
 		if (settings->mDrawMinimap) {
 			mMiniMap->drawScene();
 		}
+		if (settings->mDrawStats) {
+			mStats->drawScene();
+		}
 		settings->getParams()->draw();
 	}
 }
@@ -134,7 +148,6 @@ void BaseApp::keyDown(KeyEvent event) {
 		case KeyEvent::KEY_q:
 			quit();
 			break;
-
 		case KeyEvent::KEY_f:
 			SettingsManager::getInstance()->mFullscreen = !isFullScreen();
 			setFullScreen(SettingsManager::getInstance()->mFullscreen);
@@ -154,7 +167,9 @@ void BaseApp::handleAppSizeChange(const ci::ivec2 & appSize) {
 
 void BaseApp::handleViewportChange(const ci::Area & viewport) {
 	mMiniMap->setViewport(viewport);
-	mMiniMap->setPosition(vec2(getWindowSize()) - mMiniMap->getSize());
+	mMiniMap->setPosition(vec2(getWindowSize()) - mMiniMap->getSize() - vec2(mDebugUiPadding));
+	mStats->setPosition(vec2(mDebugUiPadding, (float)getWindowHeight() - mStats->getHeight() - mDebugUiPadding));
+	SettingsManager::getInstance()->getParams()->setPosition(vec2(mDebugUiPadding));
 }
 
 void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {

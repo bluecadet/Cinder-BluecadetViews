@@ -10,6 +10,7 @@
 
 #include <views/BaseView.h>
 #include <views/MiniMapView.h>
+#include <views/GraphView.h>
 #include <touch/TouchManager.h>
 #include <touch/drivers/MouseDriver.h>
 #include <touch/drivers/TuioDriver.h>
@@ -63,7 +64,9 @@ public:
 private:
 	views::BaseViewRef						mRootView;
 	views::MiniMapViewRef					mMiniMap;
+	views::GraphViewRef						mStats;
 	double									mLastUpdateTime;
+	float									mDebugUiPadding;
 
 	touch::drivers::TuioDriver				mTuioDriver;
 	touch::drivers::MouseDriver				mMouseDriver;
