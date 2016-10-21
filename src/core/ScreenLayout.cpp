@@ -45,6 +45,7 @@ void ScreenLayout::updateLayout() {
 
 	mAppSize = mDisplaySize * ivec2(mNumColumns, mNumRows);
 	mAppSizeChanged.emit(mAppSize);
+	dispatchViewportChange();
 }
 
 Rectf ScreenLayout::getDisplayBounds(const int displayId) {
@@ -78,6 +79,7 @@ void ScreenLayout::draw() {
 
 void ScreenLayout::zoomToDisplay(const int displayId) {
 	zoomToDisplay(getRowFromDisplayId(displayId), getColFromDisplayId(displayId));
+	dispatchViewportChange();
 }
 
 void ScreenLayout::zoomToDisplay(const int row, const int col) {
@@ -85,10 +87,15 @@ void ScreenLayout::zoomToDisplay(const int row, const int col) {
 	const vec2 winSize = getWindowSize();
 	const float scale = getScaleToFitBounds(displayBounds, winSize);
 
+	const vec2 offset = (winSize - scale * displayBounds.getSize()) * 0.5f;
+
 	mPlaceholderView->setScale(scale);
 	mPlaceholderView->setPosition(vec2(0, 0));
+	
 	const vec2 pos = mPlaceholderView->convertLocalToGlobal(displayBounds.getUpperLeft());
-	mPlaceholderView->setPosition(-pos);
+
+	mPlaceholderView->setPosition(offset - pos);
+	dispatchViewportChange();
 }
 
 void ScreenLayout::zoomToFitWindow() {
@@ -100,6 +107,7 @@ void ScreenLayout::zoomToFitWindow() {
 
 	mPlaceholderView->setScale(scale);
 	mPlaceholderView->setPosition(pos);
+	dispatchViewportChange();
 }
 
 void ScreenLayout::zoomAtLocation(const float targetScale, const vec2 location) {
@@ -113,6 +121,7 @@ void ScreenLayout::zoomAtLocation(const float targetScale, const vec2 location) 
 
 	mPlaceholderView->setScale(targetScale);
 	mPlaceholderView->setPosition(targetPos);
+	dispatchViewportChange();
 }
 
 float ScreenLayout::getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding) const {
@@ -153,25 +162,29 @@ void ScreenLayout::handleKeyDown(KeyEvent event) {
 		case KeyEvent::KEY_UP:
 		{
 			// pan up
-			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x, mPlaceholderView->getPosition().value().y += getWindowHeight() * (event.isShiftDown() ? 1.0f : 0.125f)));
+			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x, mPlaceholderView->getPosition().value().y += getWindowHeight() * (event.isShiftDown() ? 0.5f : 0.125f)));
+			dispatchViewportChange();
 			break;
 		}
 		case KeyEvent::KEY_DOWN:
 		{
 			// pan down
-			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x, mPlaceholderView->getPosition().value().y -= getWindowHeight() * (event.isShiftDown() ? 1.0f : 0.125f)));
+			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x, mPlaceholderView->getPosition().value().y -= getWindowHeight() * (event.isShiftDown() ? 0.5f : 0.125f)));
+			dispatchViewportChange();
 			break;
 		}
 		case KeyEvent::KEY_LEFT:
 		{
 			// pan left
-			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x += getWindowWidth() * (event.isShiftDown() ? 1.0f : 0.125f), mPlaceholderView->getPosition().value().y));
+			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x += getWindowWidth() * (event.isShiftDown() ? 0.5f : 0.125f), mPlaceholderView->getPosition().value().y));
+			dispatchViewportChange();
 			break;
 		}
 		case KeyEvent::KEY_RIGHT:
 		{
 			// pan right
-			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x -= getWindowWidth() * (event.isShiftDown() ? 1.0f : 0.125f), mPlaceholderView->getPosition().value().y));
+			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x -= getWindowWidth() * (event.isShiftDown() ? 0.5f : 0.125f), mPlaceholderView->getPosition().value().y));
+			dispatchViewportChange();
 			break;
 		}
 		case KeyEvent::KEY_0:
@@ -196,7 +209,13 @@ void ScreenLayout::handleKeyDown(KeyEvent event) {
 	}
 }
 
-
+void ScreenLayout::dispatchViewportChange() {
+	ivec2 winSize = (AppBase::get() && getWindow()) ? getWindowSize() : ivec2(0);
+	float scale = mPlaceholderView->getScale().value().x;
+	ivec2 size = ivec2(vec2(winSize) / scale);
+	ivec2 pos = -ivec2(mPlaceholderView->getPosition().value() / scale);
+	mViewportChangedSignal.emit(Area(pos, pos + size));
+}
 
 }
 }

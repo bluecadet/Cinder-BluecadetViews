@@ -42,6 +42,9 @@ public:
 	//! Dispatched whenever a property chnage affects the app size.
 	ci::signals::Signal<void(const ci::ivec2 & appSize)> & getAppSizeChangedSignal() { return mAppSizeChanged; };
 
+	//! Dispatched whenever the current viewport (pan/zoom) is changed.
+	ci::signals::Signal<void(const ci::Area & viewport)> & getViewportChangedSignal() { return mViewportChangedSignal; };
+
 
 
 	//! The width of a single display in the display matrix
@@ -123,6 +126,7 @@ public:
 protected:
 	float				getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding = 0.0f) const;
 
+	void				dispatchViewportChange();
 	void				updateLayout();
 	void				handleKeyDown(ci::app::KeyEvent event);
 
@@ -142,6 +146,7 @@ private:
 	std::vector<ci::Rectf>	mDisplayBounds;
 	views::BaseViewRef		mPlaceholderView;
 	ci::signals::Signal<void(const ci::ivec2 & appSize)> mAppSizeChanged;
+	ci::signals::Signal<void(const ci::Area & viewport)> mViewportChangedSignal;
 };
 
 }

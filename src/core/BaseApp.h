@@ -9,6 +9,7 @@
 #include "ScreenLayout.h"
 
 #include <views/BaseView.h>
+#include <views/MiniMapView.h>
 #include <touch/TouchManager.h>
 #include <touch/drivers/MouseDriver.h>
 #include <touch/drivers/TuioDriver.h>
@@ -33,7 +34,9 @@ public:
 	virtual void draw(const bool clear);
 
 	void keyDown(ci::app::KeyEvent event) override;
-	virtual void handleAppSizeChange();
+
+	virtual void handleAppSizeChange(const ci::ivec2 & appSize);
+	virtual void handleViewportChange(const ci::Area & viewport);
 
 	//! Call this method when initializing your app with the CINDER_APP macro
 	static void prepareSettings(ci::app::App::Settings *settings);
@@ -59,6 +62,7 @@ public:
 
 private:
 	views::BaseViewRef						mRootView;
+	views::MiniMapViewRef					mMiniMap;
 	double									mLastUpdateTime;
 
 	touch::drivers::TuioDriver				mTuioDriver;

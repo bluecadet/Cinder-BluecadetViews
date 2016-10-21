@@ -15,8 +15,8 @@ namespace core {
 BaseApp::BaseApp() :
 	ci::app::App(),
 	mLastUpdateTime(0),
-	mRootView(views::BaseViewRef(new views::BaseView()))
-{
+	mRootView(views::BaseViewRef(new BaseView())),
+	mMiniMap(views::MiniMapViewRef(new MiniMapView(0.05f, 16.0f))) {
 }
 
 BaseApp::~BaseApp() {
@@ -51,11 +51,12 @@ void BaseApp::setup() {
 	int displayHeight = settings->hasField("settings.display.height") ? settings->getField<int>("settings.display.height") : ScreenLayout::getInstance()->getDisplayHeight();
 	int rows = settings->hasField("settings.display.rows") ? settings->getField<int>("settings.display.rows") : ScreenLayout::getInstance()->getNumRows();
 	int cols = settings->hasField("settings.display.columns") ? settings->getField<int>("settings.display.columns") : ScreenLayout::getInstance()->getNumColumns();
-	
-	ScreenLayout::getInstance()->getAppSizeChangedSignal().connect(bind(&BaseApp::handleAppSizeChange, this));
+
+	ScreenLayout::getInstance()->getAppSizeChangedSignal().connect(bind(&BaseApp::handleAppSizeChange, this, placeholders::_1));
+	ScreenLayout::getInstance()->getViewportChangedSignal().connect(bind(&BaseApp::handleViewportChange, this, placeholders::_1));
 	ScreenLayout::getInstance()->setup(ivec2(displayWidth, displayHeight), rows, cols);
 	ScreenLayout::getInstance()->zoomToFitWindow();
-	
+
 	// Apply run-time settings
 	if (settings->mShowMouse) {
 		showCursor();
@@ -112,9 +113,12 @@ void BaseApp::draw(const bool clear) {
 	}
 
 	if (settings->mDebugMode) {
-		// draw params in window coordinate space
+		// draw params and debug layers in window coordinate space
 		if (settings->mDrawScreenLayout) {
 			ScreenLayout::getInstance()->draw();
+		}
+		if (settings->mDrawMinimap) {
+			mMiniMap->drawScene();
 		}
 		settings->getParams()->draw();
 	}
@@ -139,8 +143,18 @@ void BaseApp::keyDown(KeyEvent event) {
 	}
 }
 
-void BaseApp::handleAppSizeChange() {
-	getRootView()->setSize(vec2(ScreenLayout::getInstance()->getAppSize()));
+void BaseApp::handleAppSizeChange(const ci::ivec2 & appSize) {
+	mRootView->setSize(vec2(appSize));
+	mMiniMap->setLayout(
+		ScreenLayout::getInstance()->getNumColumns(),
+		ScreenLayout::getInstance()->getNumRows(),
+		ScreenLayout::getInstance()->getDisplaySize()
+	);
+}
+
+void BaseApp::handleViewportChange(const ci::Area & viewport) {
+	mMiniMap->setViewport(viewport);
+	mMiniMap->setPosition(vec2(getWindowSize()) - mMiniMap->getSize());
 }
 
 void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
