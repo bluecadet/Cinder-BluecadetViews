@@ -41,6 +41,14 @@ public:
 	void setBounds(const ci::Rectf value) { mBounds = value; }
 
 private:
+	struct SimulatedTouch {
+		SimulatedTouch(const SimulatedTouch & touch) : id(touch.id) {}
+		SimulatedTouch(const int id) : id(id) {}
+		SimulatedTouch() : id(id) {}
+		const int id;
+		ci::Anim<ci::vec2> position;
+	};
+
 	void update();
 	void touchSimulationLoop(); //! Called regularly when connected
 
@@ -57,6 +65,8 @@ private:
 	ci::signals::Connection	mConnection;
 	ci::TimelineRef	mTimeline;
 	ci::CueRef mSimLoopCue;
+
+	std::map<int, SimulatedTouch> mSimulatedTouches;
 };
 
 }

@@ -1,3 +1,4 @@
+
 #include "TuioDriver.h"
 
 using namespace ci;
@@ -40,8 +41,7 @@ void TuioDriver::connect() {
 void TuioDriver::disconnect() {
 	try {
 		if (mTuioReceiver) mTuioReceiver->disconnect();
-	}
-	catch (...) {
+	} catch (...) {
 		cout << "TuioDriver: Couldn't disconnect TuioDriver From the TouchManager. TouchManager may have already been deleted." << endl;
 	}
 	mTouchManager = nullptr;
