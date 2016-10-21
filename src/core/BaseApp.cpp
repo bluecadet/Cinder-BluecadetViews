@@ -134,6 +134,7 @@ void BaseApp::keyDown(KeyEvent event) {
 		case KeyEvent::KEY_f:
 			SettingsManager::getInstance()->mFullscreen = !isFullScreen();
 			setFullScreen(SettingsManager::getInstance()->mFullscreen);
+			ScreenLayout::getInstance()->zoomToFitWindow();
 			break;
 	}
 }

@@ -297,8 +297,8 @@ void TouchManager::debugDrawTouch(const Touch & touch, const bool isVirtual) {
 
 	static const float circlePadding = 2.0f;
 	static const float circleScale = 2.0f;
-	static const ColorA circleColorNormal = ColorA(1, 1, 1, 0.75f);
-	static const ColorA circleColorVirtual = ColorA(1, 1, 1, 0.25f);
+	static const ColorA circleColorNormal = ColorA(1, 1, 1, 0.85f);
+	static const ColorA circleColorVirtual = ColorA(1, 1, 1, 0.5f);
 	static const vec2 circleSize = vec2(2.0f * (outerRadius + circlePadding));
 	static const Rectf circleDestRect = Rectf(-circleSize * 0.5f, circleSize * 0.5f);
 	static const vec2 labelOffset = vec2(outerRadius, -labelFont.getSize() * 0.5f);
@@ -317,18 +317,31 @@ void TouchManager::debugDrawTouch(const Touch & touch, const bool isVirtual) {
 
 		gl::ScopedMatrices scopedMatrices;
 		gl::ScopedViewport scopedViewport(fboNormal->getSize());
-		gl::ScopedColor scopedColor(Color::white());
 
 		gl::setMatricesWindow(fboNormal->getSize());
 		gl::scale(vec2(circleScale));
 
 		fboNormal->bindFramebuffer();
-		gl::drawSolidCircle(vec2(outerRadius + circlePadding), innerRadius, 32);
-		gl::drawStrokedCircle(vec2(outerRadius + circlePadding), outerRadius, 2, 32);
+		{
+			gl::ScopedColor scopedColor(ColorA(0, 0, 0, 0.5f));
+			gl::drawSolidCircle(vec2(outerRadius + circlePadding), outerRadius, 32);
+		}
+		{
+			gl::ScopedColor scopedColor(Color::white());
+			gl::drawSolidCircle(vec2(outerRadius + circlePadding), innerRadius, 32);
+			gl::drawStrokedCircle(vec2(outerRadius + circlePadding), outerRadius, 2, 32);
+		}
 		fboNormal->unbindFramebuffer();
 
 		fboVirtual->bindFramebuffer();
-		gl::drawStrokedCircle(vec2(outerRadius + circlePadding), outerRadius, 2, 32);
+		{
+			gl::ScopedColor scopedColor(ColorA(0, 0, 0, 0.5f));
+			gl::drawSolidCircle(vec2(outerRadius + circlePadding), outerRadius, 32);
+		}
+		{
+			gl::ScopedColor scopedColor(Color::white());
+			gl::drawStrokedCircle(vec2(outerRadius + circlePadding), outerRadius, 2, 32);
+		}
 		fboVirtual->unbindFramebuffer();
 	}
 
