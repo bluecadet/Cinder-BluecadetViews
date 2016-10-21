@@ -16,7 +16,7 @@ BaseApp::BaseApp() :
 	ci::app::App(),
 	mLastUpdateTime(0),
 	mRootView(views::BaseViewRef(new BaseView())),
-	mMiniMap(views::MiniMapViewRef(new MiniMapView(0.05f, 16.0f))) {
+	mMiniMap(views::MiniMapViewRef(new MiniMapView(0.025f, 16.0f))) {
 }
 
 BaseApp::~BaseApp() {

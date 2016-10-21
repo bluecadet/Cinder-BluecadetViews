@@ -148,6 +148,9 @@ void ScreenLayout::handleKeyDown(KeyEvent event) {
 		return;
 	}
 
+	float panSpeed = (float)min(getWindowWidth(), getWindowHeight()) * (event.isShiftDown() ? 0.5f : 0.125f);
+	float zoomSpeed = event.isShiftDown() ? 1.25f : 1.1f;
+
 	switch (event.getCode()) {
 		case KeyEvent::KEY_KP_PLUS:
 		case KeyEvent::KEY_KP_MINUS:
@@ -158,8 +161,7 @@ void ScreenLayout::handleKeyDown(KeyEvent event) {
 			// zoom in/out
 			const auto code = event.getCode();
 			const bool zoomIn = (code == KeyEvent::KEY_KP_PLUS || code == KeyEvent::KEY_PLUS || code == KeyEvent::KEY_EQUALS);
-			const float speed = event.isShiftDown() ? 1.25f : 1.1f;
-			const float deltaScale = (zoomIn ? speed : 1.0f / speed);
+			const float deltaScale = (zoomIn ? zoomSpeed : 1.0f / zoomSpeed);
 			const float targetScale = mPlaceholderView->getScale().value().x * deltaScale;
 			zoomAtWindowCenter(targetScale);
 			break;
@@ -167,28 +169,28 @@ void ScreenLayout::handleKeyDown(KeyEvent event) {
 		case KeyEvent::KEY_UP:
 		{
 			// pan up
-			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x, mPlaceholderView->getPosition().value().y += getWindowHeight() * (event.isShiftDown() ? 0.5f : 0.125f)));
+			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x, mPlaceholderView->getPosition().value().y += panSpeed));
 			updateViewport();
 			break;
 		}
 		case KeyEvent::KEY_DOWN:
 		{
 			// pan down
-			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x, mPlaceholderView->getPosition().value().y -= getWindowHeight() * (event.isShiftDown() ? 0.5f : 0.125f)));
+			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x, mPlaceholderView->getPosition().value().y -= panSpeed));
 			updateViewport();
 			break;
 		}
 		case KeyEvent::KEY_LEFT:
 		{
 			// pan left
-			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x += getWindowWidth() * (event.isShiftDown() ? 0.5f : 0.125f), mPlaceholderView->getPosition().value().y));
+			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x += panSpeed, mPlaceholderView->getPosition().value().y));
 			updateViewport();
 			break;
 		}
 		case KeyEvent::KEY_RIGHT:
 		{
 			// pan right
-			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x -= getWindowWidth() * (event.isShiftDown() ? 0.5f : 0.125f), mPlaceholderView->getPosition().value().y));
+			mPlaceholderView->setPosition(vec2(mPlaceholderView->getPosition().value().x -= panSpeed, mPlaceholderView->getPosition().value().y));
 			updateViewport();
 			break;
 		}
