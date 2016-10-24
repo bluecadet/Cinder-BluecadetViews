@@ -30,6 +30,7 @@ SettingsManager::SettingsManager() {
 	mFullscreen = true;
 	mBorderless = false;
 	mShowMouse = true;
+	mDrawStats = true;
 	mWindowSize = ivec2(0);
 
 	// Analytics
@@ -59,12 +60,13 @@ void SettingsManager::setup(const ci::fs::path& jsonPath, ci::app::App::Settings
 
 			// Debug
 			setFieldFromJsonIfExists(&mDebugMode, "settings.debug.debugMode");
-			setFieldFromJsonIfExists(&mDrawMinimap, "settings.debug.drawMinimap");
-			setFieldFromJsonIfExists(&mDrawTouches, "settings.debug.drawTouches");
-			setFieldFromJsonIfExists(&mDrawScreenLayout, "settings.debug.drawScreenLayout");
 			setFieldFromJsonIfExists(&mFullscreen, "settings.debug.fullscreen");
 			setFieldFromJsonIfExists(&mBorderless, "settings.debug.borderless");
 			setFieldFromJsonIfExists(&mShowMouse, "settings.debug.showMouse");
+			setFieldFromJsonIfExists(&mDrawStats, "settings.debug.drawStats");
+			setFieldFromJsonIfExists(&mDrawMinimap, "settings.debug.drawMinimap");
+			setFieldFromJsonIfExists(&mDrawTouches, "settings.debug.drawTouches");
+			setFieldFromJsonIfExists(&mDrawScreenLayout, "settings.debug.drawScreenLayout");
 
 			// Analytics
 			setFieldFromJsonIfExists(&mAnalyticsAppName, "settings.analytics.appName");
@@ -137,10 +139,11 @@ ci::params::InterfaceGlRef SettingsManager::getParams() {
 	static ci::params::InterfaceGlRef params = nullptr;
 	if (!params) {
 		params = ci::params::InterfaceGl::create("Settings", ci::ivec2(250, 250));
-		params->addParam("Show Layout", &mDrawScreenLayout).group("App");
-		params->addParam("Show Touches", &mDrawTouches).group("App");
-		params->addParam("Show Minimap", &mDrawMinimap).group("App");
-		params->addParam("Show Cursor", &mShowMouse).updateFn([&] { mShowMouse ? ci::app::AppBase::get()->showCursor() : ci::app::AppBase::get()->hideCursor(); }).key("m").group("App");
+		params->addParam("Show Layout", &mDrawScreenLayout).group("App").key("l");
+		params->addParam("Show Touches", &mDrawTouches).group("App").key("t");
+		params->addParam("Show Minimap", &mDrawMinimap).group("App").key("m");
+		params->addParam("Show Stats", &mDrawStats).group("App").key("s");
+		params->addParam("Show Cursor", &mShowMouse).updateFn([&] { mShowMouse ? ci::app::AppBase::get()->showCursor() : ci::app::AppBase::get()->hideCursor(); }).key("c").group("App");
 	}
 	return params;
 }
