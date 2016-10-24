@@ -103,6 +103,7 @@
   <ItemGroup />
   <ItemGroup>
     <ClCompile Include="..\..\..\src\core\BaseApp.cpp" />
+    <ClCompile Include="..\..\..\src\core\ScreenCamera.cpp" />
     <ClCompile Include="..\..\..\src\core\ScreenLayout.cpp" />
     <ClCompile Include="..\..\..\src\core\SettingsManager.cpp" />
     <ClCompile Include="..\..\..\src\touch\drivers\MouseDriver.cpp" />
@@ -133,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\core\BaseApp.h" />
+    <ClInclude Include="..\..\..\src\core\ScreenCamera.h" />
     <ClInclude Include="..\..\..\src\core\ScreenLayout.h" />
     <ClInclude Include="..\..\..\src\core\SettingsManager.h" />
     <ClInclude Include="..\..\..\src\touch\drivers\MouseDriver.h" />

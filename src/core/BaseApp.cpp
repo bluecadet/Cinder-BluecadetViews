@@ -1,6 +1,7 @@
 #include "BaseApp.h"
 #include "SettingsManager.h"
 #include "ScreenLayout.h"
+#include "ScreenCamera.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -55,9 +56,11 @@ void BaseApp::setup() {
 	int cols = settings->hasField("settings.display.columns") ? settings->getField<int>("settings.display.columns") : ScreenLayout::getInstance()->getNumColumns();
 
 	ScreenLayout::getInstance()->getAppSizeChangedSignal().connect(bind(&BaseApp::handleAppSizeChange, this, placeholders::_1));
-	ScreenLayout::getInstance()->getViewportChangedSignal().connect(bind(&BaseApp::handleViewportChange, this, placeholders::_1));
 	ScreenLayout::getInstance()->setup(ivec2(displayWidth, displayHeight), rows, cols);
-	ScreenLayout::getInstance()->zoomToFitWindow();
+
+	ScreenCamera::getInstance()->setup(ScreenLayout::getInstance());
+	ScreenCamera::getInstance()->getViewportChangedSignal().connect(bind(&BaseApp::handleViewportChange, this, placeholders::_1));
+	ScreenCamera::getInstance()->zoomToFitWindow();
 
 	// Apply run-time settings
 	if (settings->mShowMouse) {
@@ -95,7 +98,7 @@ void BaseApp::update() {
 
 	// get the screen layout's transform and apply it to all
 	// touch events to convert touches from window into app space
-	const auto appTransform = glm::inverse(ScreenLayout::getInstance()->getTransform());
+	const auto appTransform = glm::inverse(ScreenCamera::getInstance()->getTransform());
 	const auto appSize = ScreenLayout::getInstance()->getAppSize();
 	touch::TouchManager::getInstance()->update(mRootView, appSize, appTransform);
 	mRootView->updateScene(deltaTime);
@@ -114,7 +117,7 @@ void BaseApp::draw(const bool clear) {
 	{
 		gl::ScopedModelMatrix scopedMatrix;
 		// apply screen layout transform to root view
-		gl::multModelMatrix(ScreenLayout::getInstance()->getTransform());
+		gl::multModelMatrix(ScreenCamera::getInstance()->getTransform());
 		mRootView->drawScene();
 
 		// draw debug touches in app coordinate space
@@ -126,6 +129,8 @@ void BaseApp::draw(const bool clear) {
 	if (settings->mDebugMode) {
 		// draw params and debug layers in window coordinate space
 		if (settings->mDrawScreenLayout) {
+			gl::ScopedModelMatrix scopedMatrix;
+			gl::multModelMatrix(ScreenCamera::getInstance()->getTransform());
 			ScreenLayout::getInstance()->draw();
 		}
 		if (settings->mDrawMinimap) {
@@ -151,7 +156,7 @@ void BaseApp::keyDown(KeyEvent event) {
 		case KeyEvent::KEY_f:
 			SettingsManager::getInstance()->mFullscreen = !isFullScreen();
 			setFullScreen(SettingsManager::getInstance()->mFullscreen);
-			ScreenLayout::getInstance()->zoomToFitWindow();
+			ScreenCamera::getInstance()->zoomToFitWindow();
 			break;
 	}
 }
