@@ -168,6 +168,15 @@
     <ClCompile Include="..\..\..\src\views\StatsView.cpp">
       <Filter>Blocks\BluecadetViews\src\views</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\views\MiniMapView.cpp">
+      <Filter>Blocks\BluecadetViews\src\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\views\GraphView.cpp">
+      <Filter>Blocks\BluecadetViews\src\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\core\ScreenCamera.cpp">
+      <Filter>Blocks\BluecadetViews\src\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
@@ -235,6 +244,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\views\StatsView.h">
       <Filter>Blocks\BluecadetViews\src\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\views\GraphView.h">
+      <Filter>Blocks\BluecadetViews\src\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\views\MiniMapView.h">
+      <Filter>Blocks\BluecadetViews\src\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\core\ScreenCamera.h">
+      <Filter>Blocks\BluecadetViews\src\core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

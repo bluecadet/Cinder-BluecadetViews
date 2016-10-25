@@ -57,9 +57,8 @@ void BaseAppSampleApp::setup() {
 	BaseApp::setup();
 	BaseApp::addTouchSimulatorParams();
 
-	// Optional: configure the size and background of your root view
+	// Optional: configure your root view
 	getRootView()->setBackgroundColor(Color::gray(0.5f));
-	getRootView()->setSize(ScreenLayout::getInstance()->getAppSize());
 
 	// Sample content
 	auto button = TouchViewRef(new TouchView());
@@ -89,13 +88,12 @@ CINDER_APP(BaseAppSampleApp, RendererGl(RendererGl::Options().msaa(4)), BaseAppS
 
 * Cinder-BluecadetUtils (https://github.com/bluecadet/Cinder-BluecadetUtils)
 * Cinder-BluecadetText (https://github.com/bluecadet/Cinder-BluecadetText)
-* Cinder-BluecadetTouch (https://github.com/bluecadet/Cinder-BluecadetTouch)
-	* Requires Cinder OSC block   
-	* Requires Cinder TUIO block   
+* Cinder OSC block
+* Cinder TUIO block
 
 1. Clone each of the above dependency blocks into your `Cinder\blocks` folder (Cinder OSC & TUIO will come automatically when you download Cinder). 
 2. Create a new project with TinderBox and make sure to select *relative* when including all Bluecadet blocks
 
 ## Notes
 
-Version 1.1.0
+Version 1.1.1

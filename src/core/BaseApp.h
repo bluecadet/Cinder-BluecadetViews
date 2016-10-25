@@ -9,6 +9,8 @@
 #include "ScreenLayout.h"
 
 #include <views/BaseView.h>
+#include <views/MiniMapView.h>
+#include <views/GraphView.h>
 #include <touch/TouchManager.h>
 #include <touch/drivers/MouseDriver.h>
 #include <touch/drivers/TuioDriver.h>
@@ -27,12 +29,15 @@ public:
 	virtual ~BaseApp();
 
 	// Cinder app events
-	virtual void setup() override;
-	virtual void update() override;
-	virtual void draw() override { draw(true); };
+	void setup() override;
+	void update() override;
+	void draw() override { draw(true); };
 	virtual void draw(const bool clear);
 
-	virtual void keyDown(ci::app::KeyEvent event) override;
+	void keyDown(ci::app::KeyEvent event) override;
+
+	virtual void handleAppSizeChange(const ci::ivec2 & appSize);
+	virtual void handleViewportChange(const ci::Area & viewport);
 
 	//! Call this method when initializing your app with the CINDER_APP macro
 	static void prepareSettings(ci::app::App::Settings *settings);
@@ -46,6 +51,8 @@ public:
 	//! The last time that update was called in seconds since app launch.
 	double		getLastUpdateTime() const	{ return mLastUpdateTime; }
 
+	//! Debug view to render stats like fps in a graph.
+	views::GraphViewRef	getStats() const { return mStats; };
 
 	//! The main touch driver running on TUIO. Automatically connected at app launch.
 	touch::drivers::TuioDriver				getTouchDriver() const		{ return mTuioDriver; }
@@ -58,7 +65,10 @@ public:
 
 private:
 	views::BaseViewRef						mRootView;
+	views::MiniMapViewRef					mMiniMap;
+	views::GraphViewRef						mStats;
 	double									mLastUpdateTime;
+	float									mDebugUiPadding;
 
 	touch::drivers::TuioDriver				mTuioDriver;
 	touch::drivers::MouseDriver				mMouseDriver;

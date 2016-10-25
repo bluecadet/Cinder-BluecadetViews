@@ -1,4 +1,3 @@
-
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
@@ -30,7 +29,7 @@ void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 
 	BaseApp::prepareSettings(settings);
 
-	// Optional: configure a multi-screen layout
+	// Optional: configure a multi-screen layout (defaults to 1x1 1080p landscape)
 	ScreenLayout::getInstance()->setDisplaySize(ivec2(1080, 1920));
 	ScreenLayout::getInstance()->setNumRows(1);
 	ScreenLayout::getInstance()->setNumColumns(3);
@@ -41,15 +40,15 @@ void BaseAppSampleApp::setup() {
 	BaseApp::setup();
 	BaseApp::addTouchSimulatorParams();
 
-	// Optional: configure the size and background of your root view
+	// Optional: configure your root view
 	getRootView()->setBackgroundColor(Color::gray(0.5f));
-	getRootView()->setSize(ScreenLayout::getInstance()->getAppSize());
 
 	// Sample content
 	auto button = TouchViewRef(new TouchView());
-	button->setPosition(vec2(100, 100));
-	button->setSize(vec2(200, 100));
-	button->setBackgroundColor(Color(1, 0, 0));
+	button->setSize(getRootView()->getSize() * 0.75f);
+	button->setPosition((getRootView()->getSize() - button->getSize()) * 0.5f);
+	button->setBackgroundColor(ColorA(1, 0, 0, 0.75f));
+	button->setMultiTouchEnabled(true);
 	button->mDidTap.connect([=](bluecadet::touch::TouchEvent e) { CI_LOG_I("Button tapped"); });
 	getRootView()->addChild(button);
 }
@@ -66,3 +65,4 @@ void BaseAppSampleApp::draw() {
 
 // Make sure to pass a reference to prepareSettings to configure the app correctly. MSAA and other render options are optional.
 CINDER_APP(BaseAppSampleApp, RendererGl(RendererGl::Options().msaa(4)), BaseAppSampleApp::prepareSettings);
+

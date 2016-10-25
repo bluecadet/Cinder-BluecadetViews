@@ -9,15 +9,20 @@
 	license="MIT"
 	>
 
-	<requires>com.bluecadet.cinder.touch</requires>
+	<requires>org.libcinder.tuio</requires>
 	<requires>com.bluecadet.cinder.text</requires>
-	<requires>com.bluecadet.cinder.utils</requires>
 
 	<headerPattern>src/*.h</headerPattern>
 	<sourcePattern>src/*.cpp</sourcePattern>
 	
-	<headerPattern>src/debug/*.h</headerPattern>
-	<sourcePattern>src/debug/*.cpp</sourcePattern>
+	<headerPattern>src/core/*.h</headerPattern>
+	<sourcePattern>src/core/*.cpp</sourcePattern>
+	<headerPattern>src/views/*.h</headerPattern>
+	<sourcePattern>src/views/*.cpp</sourcePattern>
+	<headerPattern>src/touch/*.h</headerPattern>
+	<sourcePattern>src/touch/*.cpp</sourcePattern>
+	<headerPattern>src/touch/drivers/*.h</headerPattern>
+	<sourcePattern>src/touch/drivers/*.cpp</sourcePattern>
 	
 	<includePath>src</includePath>
 </block>
