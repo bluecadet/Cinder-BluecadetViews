@@ -38,13 +38,8 @@ public:
 	void			draw();
 
 
-
 	//! Dispatched whenever a property chnage affects the app size.
 	ci::signals::Signal<void(const ci::ivec2 & appSize)> & getAppSizeChangedSignal() { return mAppSizeChanged; };
-
-	//! Dispatched whenever the current viewport (pan/zoom) is changed.
-	ci::signals::Signal<void(const ci::Area & viewport)> & getViewportChangedSignal() { return mViewportChangedSignal; };
-
 
 
 	//! The width of a single display in the display matrix
@@ -95,23 +90,6 @@ public:
 	//! Overall app height when scaled at 100%
 	int				getAppHeight() const { return getAppSize().y; }
 
-	
-	//! Zooms to fit the display at displayId into the current application window.
-	void			zoomToDisplay(const int displayId);
-	
-	//! Zooms to fit the display at col/row into the current application window.
-	void			zoomToDisplay(const int row, const int col);
-
-	//! Zooms around a location in window coordinate space
-	void			zoomAtLocation(const float scale, const ci::vec2 location);
-
-	//! Zooms around the application window's center
-	inline void		zoomAtWindowCenter(const float scale) { zoomAtLocation(scale, ci::app::getWindowCenter()); }
-
-	//! Zooms the app to fit centered into the current window
-	void			zoomToFitWindow();
-
-
 
 	//! The border color used when drawing the display bounds. Defaults to opaque magenta.
 	const ci::ColorA&	getBorderColor() { return mBorderColor; };
@@ -121,39 +99,20 @@ public:
 	float				getBordeSize() const { return mBorderSize; }
 	void				setBorderSize(const float value) { mBorderSize = value; }
 
-	//! The current camera transform.
-	const ci::mat4&		getTransform() const { return mPlaceholderView->getTransform(); };
-
-	//! The current viewport in app coordinates.
-	const ci::Area &	getViewport() const { return mViewport; }
-
 protected:
-	float				getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding = 0.0f) const;
-
-	void				updateViewport();
 	void				updateLayout();
 
-	void				handleWindowResize();
-	void				handleKeyDown(ci::app::KeyEvent event);
+	int					mNumRows;
+	int					mNumColumns;
 
+	ci::ivec2			mDisplaySize;
+	ci::ivec2			mAppSize;
 
-	//! Layout
-	int			mNumRows;
-	int			mNumColumns;
+	float				mBorderSize;
+	ci::ColorA			mBorderColor;
 
-	ci::ivec2	mDisplaySize;
-	ci::ivec2	mAppSize;
-
-	float		mBorderSize;
-	ci::ColorA	mBorderColor;
-	ci::Area	mViewport;
-
-private:
-	//! Used to draw bounds of each display
-	std::vector<ci::Rectf>	mDisplayBounds;
-	views::BaseViewRef		mPlaceholderView;
+	std::vector<ci::Rectf>	mDisplayBounds;	//! Used to draw bounds of each display
 	ci::signals::Signal<void(const ci::ivec2 & appSize)> mAppSizeChanged;
-	ci::signals::Signal<void(const ci::Area & viewport)> mViewportChangedSignal;
 };
 
 }

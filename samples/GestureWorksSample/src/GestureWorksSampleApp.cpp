@@ -8,6 +8,8 @@
 #include <views/TouchView.h>
 #include <views/StatsView.h>
 
+#include <touch/drivers/NativeTouchDriver.h>
+
 #include "gwc/GestureWorksCore.h"
 #include "GestureWorksTouchPlugin.h"
 
@@ -28,6 +30,9 @@ public:
 
 	TouchViewRef createTransformableView();
 	void makeViewTransformable(TouchViewRef view, BaseViewRef anchor);
+
+	drivers::NativeTouchDriver mNativeDriver;
+
 };
 
 void GestureWorksSampleApp::prepareSettings(ci::app::App::Settings* settings) {
@@ -37,6 +42,7 @@ void GestureWorksSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 	SettingsManager::getInstance()->mBorderless = false;
 	SettingsManager::getInstance()->mDrawTouches = true;
 	BaseApp::prepareSettings(settings);
+	settings->setMultiTouchEnabled(true);
 }
 
 void GestureWorksSampleApp::setup() {
@@ -48,6 +54,8 @@ void GestureWorksSampleApp::setup() {
 
 	BaseApp::setup();
 	BaseApp::addTouchSimulatorParams();
+
+	mNativeDriver.connect();
 
 	// configure gestures
 	auto gesturePlugin = GestureWorksTouchPluginRef(new GestureWorksTouchPlugin());
