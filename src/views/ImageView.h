@@ -29,9 +29,6 @@ public:
 
 	virtual void setSize(const ci::vec2& size) override;
 
-	//inline void setImage(const std::string& fileName);
-	inline void setImage(const ci::gl::TextureRef texture);
-
 	inline void setTexture(const ci::gl::TextureRef value);
 	inline ci::gl::TextureRef getTexture() const { return mTexture; }
 
