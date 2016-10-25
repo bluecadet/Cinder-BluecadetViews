@@ -7,13 +7,12 @@ using namespace std;
 namespace bluecadet {
 namespace views {
 
-MiniMapView::MiniMapView(const float mapScale, const float padding) :
+MiniMapView::MiniMapView(const float mapScale) :
 	mRequiresContentUpdate(true),
 	mCols(0),
 	mRows(0),
 	mDisplaySize(0),
 	mMapScale(mapScale),
-	mPadding(padding),
 	mViewportView(new BaseView()),
 	mBorderColor(ColorA(1, 1, 1, 0.75f))
 {
@@ -34,7 +33,7 @@ void MiniMapView::setLayout(const int cols, const int rows, const ci::ivec2 & di
 	mAppSize = mDisplaySize * ivec2(mCols, mRows);
 	mScaledSize = ivec2(round(vec2(mAppSize) * mMapScale));
 
-	setSize(vec2(mScaledSize) + 2.0f * vec2(mPadding));
+	setSize(vec2(mScaledSize));
 
 	mFbo = gl::Fbo::create((int)mScaledSize.x, (int)mScaledSize.y, true, false, false);
 }
@@ -51,7 +50,6 @@ void MiniMapView::setViewport(const ci::Area & viewport) {
 
 void MiniMapView::draw() {
 	updateContent();
-	gl::translate(vec2(mPadding));
 	gl::draw(mFbo->getColorTexture());
 }
 

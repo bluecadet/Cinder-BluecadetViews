@@ -83,6 +83,7 @@ public:
 	ci::ivec2		mWindowSize;
 	bool			mShowMouse;
 	bool			mDrawMinimap;
+	bool			mDrawStats;
 
 	// Analytics
 	std::string		mAnalyticsAppName;

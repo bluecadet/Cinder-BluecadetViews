@@ -16,7 +16,7 @@ class MiniMapView : public BaseView {
 public:
 	typedef std::function<std::string()> StatsFn;
 
-	MiniMapView(const float mapScale = 0.05f, const float padding = 0.0f);
+	MiniMapView(const float mapScale = 0.05f);
 	virtual ~MiniMapView();
 
 	void setLayout(const int cols, const int rows, const ci::ivec2 & displaySize);
@@ -34,7 +34,6 @@ protected:
 	bool mRequiresContentUpdate;
 
 	float mMapScale;
-	float mPadding;
 	ci::ColorA mBorderColor;
 
 	int mCols;
