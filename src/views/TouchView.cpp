@@ -1,6 +1,6 @@
 
 #include "TouchView.h"
-#include <touch/TouchManager.h>
+#include "../touch/TouchManager.h"
 
 using namespace std;
 using namespace ci;

@@ -101,10 +101,10 @@ public:
 	void					removeAllEventCallbacks() { for (auto & signal : mEventSignalsByType) signal.second.disconnect_all_slots(); };
 
 	//! Dispatch events to this view's children. Will also trigger the event signal.
-	void					dispatchEvent(ViewEvent & event);
+	void					dispatchEvent(ViewEvent event);
 
 	//! Dispatch a ViewEvent of `type` to this view's children. Will also trigger the event signal.
-	void					dispatchEvent(const std::string & type) { dispatchEvent(ViewEvent(type, getSharedViewPtr())); };
+    void					dispatchEvent(const std::string & type) { dispatchEvent(ViewEvent(type, getSharedViewPtr())); };
 
 	//! Helper that will dispatch a function after a delay.
 	//! The function will be added to the view's timeline and can be canceled with all other animations.

@@ -36,11 +36,13 @@ private:
 	void objectEnded(const tuio::Object2d &object);
 	*/
 
-	std::shared_ptr<ci::tuio::Receiver> mTuioReceiver;
+    
+    ci::osc::ReceiverUdp mOscReceiver;
+    ci::tuio::Receiver mTuio;
 	ci::app::WindowRef mWindow;
 	TouchManagerRef	mTouchManager;
 };
-
+    
 }
 }
 }
