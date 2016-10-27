@@ -44,7 +44,7 @@ private:
 	struct SimulatedTouch {
 		SimulatedTouch(const SimulatedTouch & touch) : id(touch.id) {}
 		SimulatedTouch(const int id) : id(id) {}
-		SimulatedTouch() : id(id) {}
+		SimulatedTouch() : id(-1) {}
 		const int id;
 		ci::Anim<ci::vec2> position;
 	};
