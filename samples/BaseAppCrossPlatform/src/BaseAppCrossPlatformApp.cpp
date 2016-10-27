@@ -65,4 +65,3 @@ void BaseAppCrossPlatformApp::draw() {
 
 // Make sure to pass a reference to prepareSettings to configure the app correctly. MSAA and other render options are optional.
 CINDER_APP(BaseAppCrossPlatformApp, RendererGl(RendererGl::Options().msaa(4)), BaseAppCrossPlatformApp::prepareSettings);
-
