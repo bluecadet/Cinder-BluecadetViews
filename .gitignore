@@ -174,3 +174,5 @@ $RECYCLE.BIN/
 # Mac files
 .DS_Store
 ._.DS_Store
+
+*.xcuserstate
