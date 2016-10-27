@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Touch.h"
 
 using namespace ci;

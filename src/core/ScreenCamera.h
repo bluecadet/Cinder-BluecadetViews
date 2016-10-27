@@ -9,7 +9,7 @@
 #include "cinder/gl/gl.h"
 
 #include "ScreenLayout.h"
-#include <views/BaseView.h>
+#include "../views/BaseView.h"
 
 namespace bluecadet {
 namespace core {

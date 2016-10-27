@@ -65,7 +65,8 @@ void TouchManager::update(BaseViewRef rootView, const vec2 & appSize, const mat4
 //
 
 void TouchManager::addTouch(const int id, const ci::vec2 & position, const TouchType type, const TouchPhase phase) {
-	addTouch(Touch(id, position, type, phase));
+    Touch t = Touch(id, position, type, phase);
+	addTouch(t);
 }
 
 void TouchManager::addTouch(Touch & touch) {

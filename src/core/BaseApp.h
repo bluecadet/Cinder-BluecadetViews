@@ -1,4 +1,5 @@
 #pragma once
+
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
@@ -8,13 +9,13 @@
 #include "SettingsManager.h"
 #include "ScreenLayout.h"
 
-#include <views/BaseView.h>
-#include <views/MiniMapView.h>
-#include <views/GraphView.h>
-#include <touch/TouchManager.h>
-#include <touch/drivers/MouseDriver.h>
-#include <touch/drivers/TuioDriver.h>
-#include <touch/drivers/SimulatedTouchDriver.h>
+#include "../views/BaseView.h"
+#include "../views/MiniMapView.h"
+#include "../views/GraphView.h"
+#include "../touch/TouchManager.h"
+#include "../touch/drivers/MouseDriver.h"
+#include "../touch/drivers/TuioDriver.h"
+#include "../touch/drivers/SimulatedTouchDriver.h"
 
 namespace bluecadet {
 namespace core {
@@ -55,13 +56,13 @@ public:
 	views::GraphViewRef	getStats() const { return mStats; };
 
 	//! The main touch driver running on TUIO. Automatically connected at app launch.
-	touch::drivers::TuioDriver				getTouchDriver() const		{ return mTuioDriver; }
+	touch::drivers::TuioDriver &            getTouchDriver()		{ return mTuioDriver; }
 
 	//! The main mouse driver. Automatically connected at app launch.
-	touch::drivers::MouseDriver				getMouseDriver() const { return mMouseDriver; }
+	touch::drivers::MouseDriver &           getMouseDriver()        { return mMouseDriver; }
 	
 	//! The main mouse driver. Configured with the current window size at app launch, but needs to be started explicitly.
-	touch::drivers::SimulatedTouchDriver	getTouchSimDriver() const	{ return mSimulatedTouchDriver; }
+	touch::drivers::SimulatedTouchDriver &	getTouchSimDriver()     { return mSimulatedTouchDriver; }
 
 private:
 	views::BaseViewRef						mRootView;

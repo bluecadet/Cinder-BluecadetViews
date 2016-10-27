@@ -78,8 +78,8 @@ void ScreenCamera::zoomAtLocation(const float targetScale, const vec2 location) 
 
 float ScreenCamera::getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding) const {
 	Rectf paddedBounds = bounds.inflated(vec2(padding));
-	float xScale = maxSize.x / (float)bounds.getWidth();
-	float yScale = maxSize.y / (float)bounds.getHeight();
+	float xScale = maxSize.x / (float)paddedBounds.getWidth();
+	float yScale = maxSize.y / (float)paddedBounds.getHeight();
 	float scale = std::min(xScale, yScale); // scale to fit
 	return scale;
 }
