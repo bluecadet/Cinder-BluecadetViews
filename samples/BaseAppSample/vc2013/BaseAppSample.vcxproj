@@ -46,7 +46,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;"..\..\..\..\..\include";..\..\..\..\Cinder-BluecadetText\src;..\..\..\..\Cinder-BluecadetTouch\src;..\..\..\..\Cinder-BluecadetUtils\src;..\..\..\src;..\..\..\..\OSC\src;..\..\..\..\TUIO\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\..\..\..\..\include;..\..\..\..\Cinder-BluecadetText\src;..\..\..\..\Cinder-BluecadetTouch\src;..\..\..\..\Cinder-BluecadetUtils\src;..\..\..\src;..\..\..\..\OSC\src;..\..\..\..\TUIO\src</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -70,7 +70,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;"..\..\..\..\..\include";..\..\..\..\Cinder-BluecadetText\src;..\..\..\..\Cinder-BluecadetTouch\src;..\..\..\..\Cinder-BluecadetUtils\src;..\..\..\src;..\..\..\..\OSC\src;..\..\..\..\TUIO\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\..\..\..\..\include;..\..\..\..\Cinder-BluecadetText\src;..\..\..\..\Cinder-BluecadetTouch\src;..\..\..\..\Cinder-BluecadetUtils\src;..\..\..\src;..\..\..\..\OSC\src;..\..\..\..\TUIO\src</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
@@ -102,6 +102,8 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\OSC\src\cinder\osc\Osc.cpp" />
+    <ClCompile Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.cpp" />
     <ClCompile Include="..\..\..\src\core\BaseApp.cpp" />
     <ClCompile Include="..\..\..\src\core\ScreenCamera.cpp" />
     <ClCompile Include="..\..\..\src\core\ScreenLayout.cpp" />
@@ -129,10 +131,10 @@
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextParser.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\StyleManager.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetUtils\src\ImageManager.cpp" />
-    <ClCompile Include="..\..\..\..\OSC\src\Osc.cpp" />
-    <ClCompile Include="..\..\..\..\TUIO\src\Tuio.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\OSC\src\cinder\osc\Osc.h" />
+    <ClInclude Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.h" />
     <ClInclude Include="..\..\..\src\core\BaseApp.h" />
     <ClInclude Include="..\..\..\src\core\ScreenCamera.h" />
     <ClInclude Include="..\..\..\src\core\ScreenLayout.h" />
@@ -161,8 +163,6 @@
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\StyleManager.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\Text.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetUtils\src\ImageManager.h" />
-    <ClInclude Include="..\..\..\..\OSC\src\Osc.h" />
-    <ClInclude Include="..\..\..\..\TUIO\src\Tuio.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

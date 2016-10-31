@@ -58,6 +58,18 @@
     <Filter Include="Blocks\BluecadetViews\src\touch\drivers">
       <UniqueIdentifier>{f93fc7f7-eaa5-4c65-984f-3709a6bdbcb0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Blocks\TUIO\src\cinder">
+      <UniqueIdentifier>{62b9f0d7-d950-401f-ba70-178f96c97dd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\TUIO\src\cinder\tuio">
+      <UniqueIdentifier>{41f7e842-d6e3-4022-946e-a914293c0d9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\OSC\src\cinder">
+      <UniqueIdentifier>{d67418f5-523d-4681-873e-0cbe53910b77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\OSC\src\cinder\osc">
+      <UniqueIdentifier>{44d954c3-91d7-4250-b28e-08f1470a141a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\BaseAppSampleApp.cpp">
@@ -101,18 +113,6 @@
     </ClCompile>
     <ClInclude Include="..\..\..\..\Cinder-BluecadetUtils\src\ImageManager.h">
       <Filter>Blocks\BluecadetUtils\src</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\..\OSC\src\Osc.cpp">
-      <Filter>Blocks\OSC\src</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\..\OSC\src\Osc.h">
-      <Filter>Blocks\OSC\src</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\..\TUIO\src\Tuio.cpp">
-      <Filter>Blocks\TUIO\src</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\..\TUIO\src\Tuio.h">
-      <Filter>Blocks\TUIO\src</Filter>
     </ClInclude>
     <ClCompile Include="..\..\..\src\core\BaseApp.cpp">
       <Filter>Blocks\BluecadetViews\src\core</Filter>
@@ -176,6 +176,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\core\ScreenCamera.cpp">
       <Filter>Blocks\BluecadetViews\src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.cpp">
+      <Filter>Blocks\TUIO\src\cinder\tuio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\OSC\src\cinder\osc\Osc.cpp">
+      <Filter>Blocks\OSC\src\cinder\osc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -244,6 +250,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\core\ScreenCamera.h">
       <Filter>Blocks\BluecadetViews\src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.h">
+      <Filter>Blocks\TUIO\src\cinder\tuio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\OSC\src\cinder\osc\Osc.h">
+      <Filter>Blocks\OSC\src\cinder\osc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
