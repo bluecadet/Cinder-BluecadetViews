@@ -1,7 +1,5 @@
 
 #include "TuioDriver.h"
-#include "Tuio.h"
-#include "Osc.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -24,8 +22,6 @@ TuioDriver::~TuioDriver() {
 }
 
 void TuioDriver::connect() {
-
-//    mTuioReceiver = shared_ptr<ci::tuio::Receiver>(new ci::tuio::Receiver());
     try {
         mOscReceiver.bind();
     } catch( const ci::Exception & e ) {
@@ -47,7 +43,7 @@ void TuioDriver::connect() {
 	mTuio.setUpdatedFn<tuio::Cursor2d>(bind(&TuioDriver::touchMoved, this, placeholders::_1));
 	mTuio.setRemovedFn<tuio::Cursor2d>(bind(&TuioDriver::touchEnded, this, placeholders::_1));
 
-	// Callbacks for objects
+	// Callbacks for marker objects
 	/*
 	//! TODO: @SM Complete when we have objects for testing
 
