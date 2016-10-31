@@ -47,9 +47,10 @@ void BaseAppCrossPlatformApp::setup() {
     auto button = TouchViewRef(new TouchView());
     button->setSize(getRootView()->getSize() * 0.75f);
     button->setPosition((getRootView()->getSize() - button->getSize()) * 0.5f);
-    button->setBackgroundColor(ColorA(1, 0, 0, 0.75f));
+    button->setBackgroundColor(ColorA(1, 0, 0));
     button->setMultiTouchEnabled(true);
-    button->mDidTap.connect([=](bluecadet::touch::TouchEvent e) { CI_LOG_I("Button tapped"); });
+	button->mDidBeginTouch.connect([](bluecadet::touch::TouchEvent e) { e.touchTarget->setAlpha(0.75f); });
+	button->mDidEndTouch.connect([](bluecadet::touch::TouchEvent e) { e.touchTarget->setAlpha(1.0f); });
     getRootView()->addChild(button);
 }
 
