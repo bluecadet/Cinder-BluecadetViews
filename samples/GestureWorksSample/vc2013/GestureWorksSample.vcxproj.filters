@@ -93,17 +93,17 @@
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\Text.h">
       <Filter>Blocks\BluecadetText\src</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\..\..\OSC\src\Osc.cpp">
-      <Filter>Blocks\OSC\src</Filter>
+    <ClCompile Include="..\..\..\..\OSC\src\cinder\osc\Osc.cpp">
+      <Filter>Blocks\OSC\src\cinder\osc</Filter>
     </ClCompile>
-    <ClInclude Include="..\..\..\..\OSC\src\Osc.h">
-      <Filter>Blocks\OSC\src</Filter>
+    <ClInclude Include="..\..\..\..\OSC\src\cinder\osc\Osc.h">
+      <Filter>Blocks\OSC\src\cinder\osc</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\..\..\TUIO\src\Tuio.cpp">
-      <Filter>Blocks\TUIO\src</Filter>
+    <ClCompile Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.cpp">
+      <Filter>Blocks\TUIO\src\cinder\tuio</Filter>
     </ClCompile>
-    <ClInclude Include="..\..\..\..\TUIO\src\Tuio.h">
-      <Filter>Blocks\TUIO\src</Filter>
+    <ClInclude Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.h">
+      <Filter>Blocks\TUIO\src\cinder\tuio</Filter>
     </ClInclude>
     <ClCompile Include="..\src\GestureWorksTouchPlugin.cpp">
       <Filter>Source Files</Filter>

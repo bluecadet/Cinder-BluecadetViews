@@ -17,90 +17,62 @@ class TextViewSampleApp : public BaseApp {
 public:
 	static void prepareSettings(ci::app::App::Settings* settings);
 	void setup() override;
-	void update() override;
-	void draw() override;
-	void mouseDown(MouseEvent event) override;
-	TextViewRef	mTitle;
-	int count;
+	void mouseMove(MouseEvent event) override;
+	TextViewRef	mTextView;
 };
 
 void TextViewSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 	// Use this method to set up your window
 	SettingsManager::getInstance()->mFullscreen = false;
-	SettingsManager::getInstance()->mWindowSize = ivec2(1280, 720);
+	SettingsManager::getInstance()->mWindowSize = ivec2(640, 480);
 	SettingsManager::getInstance()->mBorderless = false;
 
 	BaseApp::prepareSettings(settings);
 
 	// Optional: configure a multi-screen layout
-	ScreenLayout::getInstance()->setDisplaySize(ivec2(1080, 1920));
-	ScreenLayout::getInstance()->setNumRows(1);
-	ScreenLayout::getInstance()->setNumColumns(3);
+	ScreenLayout::getInstance()->setDisplaySize(SettingsManager::getInstance()->mWindowSize);
 }
 
 void TextViewSampleApp::setup() {
 
 	BaseApp::setup();
-	BaseApp::addTouchSimulatorParams();
+
+	// Get the params out of the way
+	SettingsManager::getInstance()->getParams()->minimize();
 
 	// Optional: configure the size and background of your root view
 	getRootView()->setBackgroundColor(Color::gray(0.5f));
 	getRootView()->setSize(ScreenLayout::getInstance()->getAppSize());
 
 	// Sample content
-	mTitle = TextViewRef(new TextView());
+	mTextView = TextViewRef(new TextView());
 
-	// Set a size to wrap text; -1.0 will let the textview grow in that direction.
-	mTitle->setSize(vec2(200.0f, -1.0f));
+	// Setting only the width will cause the text to break and flow automatically. This is the same as calling setSize(400, -1)
+	mTextView->setWidth(400.0f);
+	//mTextView->setHeight(400.0f); // this would cause any text beyond 400 px to be cut off vertically
 
-	// Background color and text color can both be set independently
-	mTitle->setBackgroundColor(Color(1, 0, 0));
-	mTitle->setTextColor(Color(1.0f, 1.0f, 1.0f));
+	// Background color is independent of text styles
+	mTextView->setBackgroundColor(ColorA(1, 0, 1, 0.75f));
 
-	// Change font size
-	mTitle->setFontSize(64.0f);
+	// Set all styles before setting your text
+	mTextView->setTextColor(Color(1.0f, 1.0f, 1.0f));
+	mTextView->setFontSize(32.0f);
+	mTextView->setTextAlign(TextAlign::Center);
 
 	// All styles will be applied to text now
-	mTitle->setTextAlign(TextAlign::Center);
-	mTitle->setText("Sample Title " + toString(count));
+	mTextView->setText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nec vero alia sunt quaerenda contra Carneadeam illam sententiam. Atque haec coniunctio confusioque virtutum tamen a philosophis ratione quadam distinguitur. ");
 
-	getRootView()->addChild(mTitle);
+	// Set new styles for additional text
+	mTextView->setTextColor(Color(0.25f, 0.25f, 1.0f));
+	//mTextView->setTextColor(Color(0.25f, 0.25f, 1.0f), true); // this would apply the text color to all existing text
+	mTextView->appendText("Sit hoc ultimum bonorum, quod nunc a me defenditur; Duo Reges: constructio interrete. Quid est, quod ab ea absolvi et perfici debeat? Nunc haec primum fortasse audientis servire debemus. Scaevola tribunus plebis ferret ad plebem vellentne de ea re quaeri. Sed in rebus apertissimis nimium longi sumus.");
 
-	// init
-	count = -1;
-	mouseDown(MouseEvent());
+	getRootView()->addChild(mTextView);
 }
 
-void TextViewSampleApp::update() {
-	// Optional override. BaseApp::update() will update all views.
-	BaseApp::update();
-}
-
-void TextViewSampleApp::draw() {
-	// Optional override. BaseApp::draw() will draw all views.
-	BaseApp::draw();
-}
-
-void TextViewSampleApp::mouseDown(MouseEvent event) {
-	// Increase count to be displayed
-	count++;
-
-	// Clear and reset the text
-	mTitle->setWidth(400.0f);
-	mTitle->setHeight(400.0f);
-	mTitle->setText("Sample Title " + toString(count));
-
-	vec2 padding = vec2(16.f, 16.f);
-
-	// top left plus padding
-	vec2 pos = vec2(0) + padding;
-
-	if (count % 2) {
-		// bottom right minus padding
-		pos = vec2(getWindowSize()) - mTitle->getSize() - padding;
-	}
-
-	mTitle->getTimeline()->apply(&mTitle->getPosition(), pos, 0.33f, EaseOutElastic(1.1f, 0.75f));
+void TextViewSampleApp::mouseMove(MouseEvent event) {
+	float x = event.getX();
+	mTextView->setWidth(x - mTextView->getPosition().value().x);
 }
 
 // Make sure to pass a reference to prepareSettings to configure the app correctly. MSAA and other render options are optional.
