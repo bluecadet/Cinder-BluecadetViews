@@ -53,8 +53,7 @@ void SimulatedTouchDriver::touchSimulationLoop() {
 		mTimeline->remove(mSimLoopCue);
 		mSimLoopCue = nullptr;
 	}
-
-	const float fps = AppBase::get()->getFrameRate();
+    
 	const float loopDelay = 1.0f;
 	const float touchStartTime = mTimeline->getCurrentTime();
 

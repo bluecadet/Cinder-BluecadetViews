@@ -102,8 +102,10 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\OSC\src\Osc.cpp" />
-    <ClCompile Include="..\..\..\..\TUIO\src\Tuio.cpp" />
+    <ClCompile Include="..\..\..\..\OSC\src\cinder\osc\Osc.cpp" />
+    <ClCompile Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.cpp" />
+    <ClCompile Include="..\..\..\src\core\ScreenCamera.cpp" />
+    <ClCompile Include="..\..\..\src\views\MiniMapView.cpp" />
     <ClCompile Include="..\src\GraphViewSampleApp.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\FontManager.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextLayout.cpp" />
@@ -130,8 +132,10 @@
     <ClCompile Include="..\..\..\src\touch\drivers\TuioDriver.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\OSC\src\Osc.h" />
-    <ClInclude Include="..\..\..\..\TUIO\src\Tuio.h" />
+    <ClInclude Include="..\..\..\..\OSC\src\cindder\osc\Osc.h" />
+    <ClInclude Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.h" />
+    <ClInclude Include="..\..\..\src\core\ScreenCamera.h" />
+    <ClInclude Include="..\..\..\src\views\MiniMapView.h" />
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\FontManager.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextLayout.h" />

@@ -14,7 +14,7 @@
 #include <boost/signals2.hpp>
 
 #include "Touch.h"
-#include <views/TouchView.h>
+#include "../views/TouchView.h"
 
 namespace bluecadet {
 namespace touch {

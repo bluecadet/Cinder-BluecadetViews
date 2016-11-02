@@ -53,8 +53,6 @@ inline void FboView::validateContent(){
 	}
 
 	if (mFbo) {
-		auto vp = gl::getViewport();
-
 		gl::ScopedMatrices scopedMatrices;
 		gl::ScopedViewport scopedViewport(ivec2(0), mFbo->getSize());
 

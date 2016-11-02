@@ -106,7 +106,10 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\OSC\src\cinder\osc\Osc.cpp" />
+    <ClCompile Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.cpp" />
     <ClCompile Include="..\..\..\src\core\BaseApp.cpp" />
+    <ClCompile Include="..\..\..\src\core\ScreenCamera.cpp" />
     <ClCompile Include="..\..\..\src\core\ScreenLayout.cpp" />
     <ClCompile Include="..\..\..\src\core\SettingsManager.cpp" />
     <ClCompile Include="..\..\..\src\touch\drivers\MouseDriver.cpp" />
@@ -118,8 +121,10 @@
     <ClCompile Include="..\..\..\src\views\BaseView.cpp" />
     <ClCompile Include="..\..\..\src\views\EllipseView.cpp" />
     <ClCompile Include="..\..\..\src\views\FboView.cpp" />
+    <ClCompile Include="..\..\..\src\views\GraphView.cpp" />
     <ClCompile Include="..\..\..\src\views\ImageView.cpp" />
     <ClCompile Include="..\..\..\src\views\LineView.cpp" />
+    <ClCompile Include="..\..\..\src\views\MiniMapView.cpp" />
     <ClCompile Include="..\..\..\src\views\StatsView.cpp" />
     <ClCompile Include="..\..\..\src\views\TextView.cpp" />
     <ClCompile Include="..\..\..\src\views\TouchView.cpp" />
@@ -130,11 +135,12 @@
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextParser.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\StyleManager.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetUtils\src\ImageManager.cpp" />
-    <ClCompile Include="..\..\..\..\OSC\src\Osc.cpp" />
-    <ClCompile Include="..\..\..\..\TUIO\src\Tuio.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\OSC\src\cinder\osc\Osc.h" />
+    <ClInclude Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.h" />
     <ClInclude Include="..\..\..\src\core\BaseApp.h" />
+    <ClInclude Include="..\..\..\src\core\ScreenCamera.h" />
     <ClInclude Include="..\..\..\src\core\ScreenLayout.h" />
     <ClInclude Include="..\..\..\src\core\SettingsManager.h" />
     <ClInclude Include="..\..\..\src\touch\drivers\MouseDriver.h" />
@@ -146,8 +152,10 @@
     <ClInclude Include="..\..\..\src\views\BaseView.h" />
     <ClInclude Include="..\..\..\src\views\EllipseView.h" />
     <ClInclude Include="..\..\..\src\views\FboView.h" />
+    <ClInclude Include="..\..\..\src\views\GraphView.h" />
     <ClInclude Include="..\..\..\src\views\ImageView.h" />
     <ClInclude Include="..\..\..\src\views\LineView.h" />
+    <ClInclude Include="..\..\..\src\views\MiniMapView.h" />
     <ClInclude Include="..\..\..\src\views\StatsView.h" />
     <ClInclude Include="..\..\..\src\views\TextView.h" />
     <ClInclude Include="..\..\..\src\views\TouchView.h" />
@@ -159,8 +167,6 @@
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\StyleManager.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\Text.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetUtils\src\ImageManager.h" />
-    <ClInclude Include="..\..\..\..\OSC\src\Osc.h" />
-    <ClInclude Include="..\..\..\..\TUIO\src\Tuio.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

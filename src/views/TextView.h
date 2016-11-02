@@ -8,6 +8,12 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
+#if !defined(CINDER_MSW)
+
+#warning "TextView: Error: This class is only supported on Windows 7+"
+
+#else
+
 #include <Text.h>
 #include <StyledTextLayout.h>
 #include <StyleManager.h>
@@ -86,3 +92,5 @@ protected:
 
 }
 }
+
+#endif

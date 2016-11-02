@@ -8,7 +8,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include <views/BaseView.h>
+#include "../views/BaseView.h"
 
 namespace bluecadet {
 namespace core {

@@ -65,7 +65,8 @@ void TouchManager::update(BaseViewRef rootView, const vec2 & appSize, const mat4
 //
 
 void TouchManager::addTouch(const int id, const ci::vec2 & position, const TouchType type, const TouchPhase phase) {
-	addTouch(Touch(id, position, type, phase));
+    Touch t = Touch(id, position, type, phase);
+	addTouch(t);
 }
 
 void TouchManager::addTouch(Touch & touch) {
@@ -246,7 +247,7 @@ TouchViewRef TouchManager::getViewForTouchId(const int touchId) {
 	return touchViewIt->second.lock();
 }
 
-TouchView* TouchManager::getTopViewAtPosition(const ci::vec2 &position, BaseViewRef rootView) {
+TouchView * TouchManager::getTopViewAtPosition(const ci::vec2 &position, BaseViewRef rootView) {
 	if (!rootView) {
 		return nullptr;
 	}
@@ -266,7 +267,7 @@ TouchView* TouchManager::getTopViewAtPosition(const ci::vec2 &position, BaseView
 	// Go through children first
 	const auto & children = rootView->getChildren();
 	for (auto it = children.rbegin(); it != children.rend(); ++it) {
-		const auto & touchedChild = getTopViewAtPosition(position, *it);
+		const auto touchedChild = getTopViewAtPosition(position, *it);
 		if (touchedChild) {
 			return touchedChild;
 		}

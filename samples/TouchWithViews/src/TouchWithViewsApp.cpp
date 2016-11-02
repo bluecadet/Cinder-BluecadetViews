@@ -21,22 +21,13 @@ class BaseAppSampleApp : public BaseApp {
 public:
 	static void prepareSettings(ci::app::App::Settings* settings);
 	void setup() override;
-	void update() override;
-	void draw() override;
 };
 
 void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings) {
-	// Use this method to set up your window
 	SettingsManager::getInstance()->mFullscreen = false;
 	SettingsManager::getInstance()->mWindowSize = ivec2(1280, 720);
 	SettingsManager::getInstance()->mBorderless = false;
-
 	BaseApp::prepareSettings(settings);
-
-	// Optional: configure a multi-screen layout
-	ScreenLayout::getInstance()->setDisplaySize(ivec2(1080, 1920));
-	ScreenLayout::getInstance()->setNumRows(1);
-	ScreenLayout::getInstance()->setNumColumns(3);
 }
 
 void BaseAppSampleApp::setup() {
@@ -53,7 +44,7 @@ void BaseAppSampleApp::setup() {
 		auto btn = BtnRef(new Btn());
 		btn->setup();
 		btn->setDebugDrawTouchPath(true);
-		btn->setPosition(vec2(randFloat((float)getWindowWidth()), randFloat((float)getWindowHeight())));
+		btn->setPosition(vec2(randFloat(getRootView()->getWidth()), randFloat(getRootView()->getHeight())));
 		btn->setTint(Color::hex(randInt(0xffffff)));
 
 		btn->mDidBeginTouch.connect([=](const bluecadet::touch::TouchEvent& event) { event.target->setScale(2.0f); });
@@ -61,16 +52,6 @@ void BaseAppSampleApp::setup() {
 
 		getRootView()->addChild(btn);
 	}
-}
-
-void BaseAppSampleApp::update() {
-	// Optional override. BaseApp::update() will update all views.
-	BaseApp::update();
-}
-
-void BaseAppSampleApp::draw() {
-	// Optional override. BaseApp::draw() will draw all views.
-	BaseApp::draw();
 }
 
 // Make sure to pass a reference to prepareSettings to configure the app correctly. MSAA and other render options are optional.

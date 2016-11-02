@@ -1,4 +1,5 @@
 #pragma once
+
 #include "cinder/Json.h"
 #include "cinder/app/App.h"
 #include "cinder/params/Params.h"
@@ -93,13 +94,12 @@ public:
 protected:
 	//! Set fields within the settings manager class if the setting is defined in the json
 	template <typename T> void setFieldFromJsonIfExists(T* target, const std::string& jsonFieldName); // Implemented at end of this file
-	
-	//! Helpers to get string from primitive types and strings since we can't call to_string on strings
-	template <typename T> std::string toString(T* target) { return std::to_string(*target); }
-	template <> std::string toString<std::string>(std::string* target) { return *target; }
 
 	void parseCommandLineArgs(const std::vector<std::string>& args);
-
+    
+    //! Helpers to get string from primitive types and strings since we can't call to_string on strings
+    template <typename T> inline std::string toString(T* target) { return std::to_string(*target); }
+    
 	//! Key-based callbacks that are called when a command line argument with that key is passed in
 	std::map<std::string, std::vector<CommandLineArgParserFn>> mCommandLineArgsHandlers;
 
@@ -118,12 +118,12 @@ template <typename T>
 T SettingsManager::getField(const std::string& field) {
 	try {
 		if (!hasField(field)) {
-			console() << "SettingsManager: Could not find settings value for field name '" << field << "' in json file" << endl;
+            ci::app::console() << "SettingsManager: Could not find settings value for field name '" << field << "' in json file" << std::endl;
 			return T();
 		}
 		return mAppSettingsDoc.getValueForKey<T>(field);
-	} catch (Exception e) {
-		console() << "SettingsManager: Could not find '" << field << "' in json file: " << e.what() << endl;
+	} catch (cinder::Exception e) {
+//		ci::app::console() << "SettingsManager: Could not find '" << field << "' in json file: " << e.what() << std::endl;
 		return T();
 	}
 };
@@ -132,15 +132,23 @@ template <typename T>
 void SettingsManager::setFieldFromJsonIfExists(T* target, const std::string& jsonFieldName) {
 	try {
 		if (!hasField(jsonFieldName)) {
-			console() << "SettingsManager: Could not find settings value for field name '" << jsonFieldName << "' in json file" << endl;
+//            cinder::app::console() << "SettingsManager: Could not find settings value for field name '" << jsonFieldName << "' in json file" << std::endl;
 			return;
 		}
 		*target = mAppSettingsDoc.getValueForKey<T>(jsonFieldName);
-		console() << "SettingsManager: Set '" << jsonFieldName << "' to '" << SettingsManager::toString<T>(target) << "' from json file" << endl;
-	} catch (Exception e) {
-		console() << "SettingsManager: Could not set '" << jsonFieldName << "' from json file: " << e.what() << endl;
+//		ci::app::console() << "SettingsManager: Set '" << jsonFieldName << "' to '" << SettingsManager::toString<T>(target) << "' from json file" << std::endl;
+    } catch (cinder::Exception e) {
+//		ci::app::console() << "SettingsManager: Could not set '" << jsonFieldName << "' from json file: " << e.what() << std::endl;
 	}
 }
+    
+template <>
+std::string inline SettingsManager::toString<std::string>(std::string* target) {
+    return *target;
+}
+    
+    
+
 
 } // namespace utils
 } // namespace bluecadet
