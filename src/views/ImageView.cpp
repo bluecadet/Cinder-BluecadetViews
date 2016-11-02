@@ -1,11 +1,9 @@
 #include "ImageView.h"
-//#include "ImageManager.h"
 #include "cinder/Timeline.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
-//using namespace bluecadet::utils;
 
 namespace bluecadet {
 namespace views {
@@ -19,18 +17,15 @@ mAutoSizeToTexture(true)
 ImageView::~ImageView() {
 }
 
-//void ImageView::setup(const std::string &fileName, const ci::vec2 &size) {
-//	setup(ImageManager::getInstance()->getTexture(fileName), size);
-//}
-
 void ImageView::reset() {
-	mTexture = nullptr;
-	mDrawingDestRect = Rectf();
-	mDrawingArea = Area();
+    BaseView::reset();
+    clearTexture();
 }
 
-void ImageView::stopAnimation() {
-	resetAnimations();
+void ImageView::clearTexture() {
+    mTexture = nullptr;
+    mDrawingDestRect = Rectf();
+    mDrawingArea = Area();
 }
 
 void ImageView::setup(const gl::TextureRef texture, const ci::vec2 &size) {

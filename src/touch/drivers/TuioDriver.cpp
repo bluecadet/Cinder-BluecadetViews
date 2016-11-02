@@ -9,9 +9,12 @@ namespace bluecadet {
 namespace touch {
 namespace drivers {
 
-TuioDriver::TuioDriver() {
-	mTouchManager = touch::TouchManager::getInstance();
-	mWindow = getWindow();
+TuioDriver::TuioDriver() :
+    mOscReceiver(tuio::Receiver::DEFAULT_TUIO_PORT),
+    mTuio(app::getWindow(), &mOscReceiver),
+    mTouchManager(touch::TouchManager::getInstance()),
+    mWindow(getWindow())
+{
 }
 
 TuioDriver::~TuioDriver() {
@@ -19,16 +22,28 @@ TuioDriver::~TuioDriver() {
 }
 
 void TuioDriver::connect() {
-
-	mTuioReceiver = shared_ptr<tuio::Receiver>(new tuio::Receiver());
-	mTuioReceiver->connect();
-
+    try {
+        mOscReceiver.bind();
+    } catch( const ci::Exception & e ) {
+        CI_LOG_EXCEPTION("OscReceiver bind", e);
+        return;
+    }
+    
+    mOscReceiver.listen([] (asio::error_code ec, asio::ip::udp::endpoint ep) -> bool {
+        if (ec) {
+            CI_LOG_E("Error on listener: " << ec.message() << " Error Value: " << ec.value());
+            return false;
+        } else {
+            return true;
+        }
+    });
+    
 	// Callbacks for touches
-	mTuioReceiver->setAddedFn<tuio::Cursor2d>(bind(&TuioDriver::touchBegan, this, placeholders::_1));
-	mTuioReceiver->setUpdatedFn<tuio::Cursor2d>(bind(&TuioDriver::touchMoved, this, placeholders::_1));
-	mTuioReceiver->setRemovedFn<tuio::Cursor2d>(bind(&TuioDriver::touchEnded, this, placeholders::_1));
+	mTuio.setAddedFn<tuio::Cursor2d>(bind(&TuioDriver::touchBegan, this, placeholders::_1));
+	mTuio.setUpdatedFn<tuio::Cursor2d>(bind(&TuioDriver::touchMoved, this, placeholders::_1));
+	mTuio.setRemovedFn<tuio::Cursor2d>(bind(&TuioDriver::touchEnded, this, placeholders::_1));
 
-	// Callbacks for objects
+	// Callbacks for marker objects
 	/*
 	//! TODO: @SM Complete when we have objects for testing
 
@@ -40,7 +55,7 @@ void TuioDriver::connect() {
 
 void TuioDriver::disconnect() {
 	try {
-		if (mTuioReceiver) mTuioReceiver->disconnect();
+        mOscReceiver.close();
 	} catch (...) {
 		cout << "TuioDriver: Couldn't disconnect TuioDriver From the TouchManager. TouchManager may have already been deleted." << endl;
 	}

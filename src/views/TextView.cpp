@@ -1,6 +1,8 @@
 #include "TextView.h"
 #include "StyleManager.h"
 
+#if defined(CINDER_MSW)
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -152,3 +154,5 @@ ci::gl::Texture::Format TextView::createTextureFormat(bool smoothScaling) const 
 
 }
 }
+
+#endif

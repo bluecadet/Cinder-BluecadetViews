@@ -7,7 +7,9 @@
 
 #pragma once
 #include "cinder/app/App.h"
-#include "Tuio.h"
+#include "cinder/tuio/Tuio.h"
+#include "cinder/osc/Osc.h"
+
 #include "../TouchManager.h"
 
 namespace bluecadet {
@@ -30,17 +32,19 @@ private:
 	void touchEnded(const ci::tuio::Cursor2d &cursor);
 
 	/*
-	//! TODO: @SM Complete when we have objects for testing
+	//! TODO: @SM Complete when we have marker objects for testing
 	void objectBegan(const tuio::Object2d &object);
 	void objectMoved(const tuio::Object2d &object);
 	void objectEnded(const tuio::Object2d &object);
 	*/
 
-	std::shared_ptr<ci::tuio::Receiver> mTuioReceiver;
+    
+    ci::osc::ReceiverUdp mOscReceiver;
+    ci::tuio::Receiver mTuio;
 	ci::app::WindowRef mWindow;
 	TouchManagerRef	mTouchManager;
 };
-
+    
 }
 }
 }

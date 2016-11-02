@@ -396,8 +396,8 @@
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextLayout.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextParser.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\StyleManager.cpp" />
-    <ClCompile Include="..\..\..\..\OSC\src\Osc.cpp" />
-    <ClCompile Include="..\..\..\..\TUIO\src\Tuio.cpp" />
+    <ClCompile Include="..\..\..\..\OSC\src\cinder\osc\Osc.cpp" />
+    <ClCompile Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.cpp" />
     <ClCompile Include="..\src\GestureWorksTouchPlugin.cpp" />
     <ClCompile Include="..\src\gwc\GestureWorksCore.cpp" />
     <ClCompile Include="..\src\gwc\GWCUtils.cpp" />
@@ -430,8 +430,8 @@
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\StyledTextParser.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\StyleManager.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\Text.h" />
-    <ClInclude Include="..\..\..\..\OSC\src\Osc.h" />
-    <ClInclude Include="..\..\..\..\TUIO\src\Tuio.h" />
+    <ClInclude Include="..\..\..\..\OSC\src\cinder\osc\Osc.h" />
+    <ClInclude Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.h" />
     <ClInclude Include="..\src\GestureWorksTouchPlugin.h" />
     <ClInclude Include="..\src\gwc\GestureWorksCore.h" />
     <ClInclude Include="..\src\gwc\GWCUtils.h" />

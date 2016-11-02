@@ -204,22 +204,34 @@
     <ClCompile Include="..\..\..\src\touch\drivers\TuioDriver.cpp">
       <Filter>Blocks\BluecadetViews\src\touch\drivers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\TUIO\src\Tuio.cpp">
-      <Filter>Blocks\TUIO\src</Filter>
+    <ClCompile Include="..\..\..\..\OSC\src\cinder\osc\Osc.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\OSC\src\Osc.cpp">
-      <Filter>Blocks\OSC\src</Filter>
+    <ClCompile Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\core\ScreenCamera.cpp">
+      <Filter>Blocks\BluecadetViews\src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\views\MiniMapView.cpp">
+      <Filter>Blocks\BluecadetViews\src\views</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\TUIO\src\Tuio.h">
-      <Filter>Blocks\TUIO\src</Filter>
+    <ClInclude Include="..\..\..\..\OSC\src\cindder\osc\Osc.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\OSC\src\Osc.h">
-      <Filter>Blocks\OSC\src</Filter>
+    <ClInclude Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\core\ScreenCamera.h">
+      <Filter>Blocks\BluecadetViews\src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\views\MiniMapView.h">
+      <Filter>Blocks\BluecadetViews\src\views</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

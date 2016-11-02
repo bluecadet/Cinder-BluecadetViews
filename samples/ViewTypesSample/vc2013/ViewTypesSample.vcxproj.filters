@@ -102,18 +102,6 @@
     <ClInclude Include="..\..\..\..\Cinder-BluecadetUtils\src\ImageManager.h">
       <Filter>Blocks\BluecadetUtils\src</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\..\..\OSC\src\Osc.cpp">
-      <Filter>Blocks\OSC\src</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\..\OSC\src\Osc.h">
-      <Filter>Blocks\OSC\src</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\..\TUIO\src\Tuio.cpp">
-      <Filter>Blocks\TUIO\src</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\..\TUIO\src\Tuio.h">
-      <Filter>Blocks\TUIO\src</Filter>
-    </ClInclude>
     <ClCompile Include="..\..\..\src\views\BaseView.cpp">
       <Filter>Blocks\BluecadetViews\src\views</Filter>
     </ClCompile>
@@ -167,6 +155,21 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\core\SettingsManager.cpp">
       <Filter>Blocks\BluecadetViews\src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\core\ScreenCamera.cpp">
+      <Filter>Blocks\BluecadetViews\src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\views\MiniMapView.cpp">
+      <Filter>Blocks\BluecadetViews\src\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\views\GraphView.cpp">
+      <Filter>Blocks\BluecadetViews\src\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\OSC\src\cinder\osc\Osc.cpp">
+      <Filter>Blocks\OSC\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.cpp">
+      <Filter>Blocks\TUIO\src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -226,6 +229,21 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\core\SettingsManager.h">
       <Filter>Blocks\BluecadetViews\src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\core\ScreenCamera.h">
+      <Filter>Blocks\BluecadetViews\src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\views\MiniMapView.h">
+      <Filter>Blocks\BluecadetViews\src\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\views\GraphView.h">
+      <Filter>Blocks\BluecadetViews\src\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\OSC\src\cinder\osc\Osc.h">
+      <Filter>Blocks\OSC\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.h">
+      <Filter>Blocks\TUIO\src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

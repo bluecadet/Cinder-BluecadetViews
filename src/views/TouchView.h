@@ -16,7 +16,7 @@ Comments:
 #include <boost/signals2.hpp>
 
 #include "BaseView.h"
-#include <touch/Touch.h>
+#include "../touch/Touch.h"
 
 // forward declaration for GWC -- temporary solution
 namespace gwc {

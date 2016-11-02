@@ -1,9 +1,11 @@
+#pragma once
+
 //+---------------------------------------------------------------------------
 //  Bluecadet Interactive 2016
-//  Contents: 
-//  Comments: 
+//  Contents:
+//  Comments:
 //----------------------------------------------------------------------------
-#pragma once
+
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
@@ -21,10 +23,9 @@ public:
 	ImageView();
 	virtual ~ImageView();
 
-	virtual void reset();
-	virtual void stopAnimation();
+	void reset() override;
+    virtual void clearTexture();
 
-	//virtual void setup(const std::string& fileName, const ci::vec2& size = ci::vec2(0));
 	virtual void setup(const ci::gl::TextureRef texture, const ci::vec2& size = ci::vec2(0));
 
 	virtual void setSize(const ci::vec2& size) override;
