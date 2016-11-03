@@ -65,22 +65,30 @@ void TuioDriver::disconnect() {
 
 void TuioDriver::touchBegan(const tuio::Cursor2d &cursor) {
 	if (mTouchManager) {
-		ci::app::TouchEvent::Touch touch = cursor.convertToTouch(mWindow);
-		mTouchManager->addTouch(touch.getId(), touch.getPos(), TouchType::Touch, TouchPhase::Began);
+//		ci::app::TouchEvent::Touch touch = cursor.convertToTouch(mWindow);
+//		mTouchManager->addTouch(touch.getId(), touch.getPos(), TouchType::Touch, TouchPhase::Began);
+		vec2 windowSize = vec2(getWindowSize());
+		vec2 pos = cursor.getPosition() * windowSize;
+		mTouchManager->addTouch(cursor.getSessionId(), pos, TouchType::Touch, TouchPhase::Began);
 	}
 }
 
 void TuioDriver::touchMoved(const tuio::Cursor2d &cursor) {
 	if (mTouchManager) {
-		ci::app::TouchEvent::Touch touch = cursor.convertToTouch(mWindow);
-		mTouchManager->addTouch(touch.getId(), touch.getPos(), TouchType::Touch, TouchPhase::Moved);
+//		ci::app::TouchEvent::Touch touch = cursor.convertToTouch(mWindow);
+		vec2 windowSize = vec2(getWindowSize());
+		vec2 pos = cursor.getPosition() * windowSize;
+		mTouchManager->addTouch(cursor.getSessionId(), pos, TouchType::Touch, TouchPhase::Moved);
 	}
 }
 
 void TuioDriver::touchEnded(const tuio::Cursor2d &cursor) {
 	if (mTouchManager) {
-		ci::app::TouchEvent::Touch touch = cursor.convertToTouch(mWindow);
-		mTouchManager->addTouch(touch.getId(), touch.getPos(), TouchType::Touch, TouchPhase::Ended);
+//		ci::app::TouchEvent::Touch touch = cursor.convertToTouch(mWindow);
+//		mTouchManager->addTouch(touch.getId(), touch.getPos(), TouchType::Touch, TouchPhase::Ended);
+		vec2 windowSize = vec2(getWindowSize());
+		vec2 pos = cursor.getPosition() * windowSize;
+		mTouchManager->addTouch(cursor.getSessionId(), pos, TouchType::Touch, TouchPhase::Ended);
 	}
 }
 
