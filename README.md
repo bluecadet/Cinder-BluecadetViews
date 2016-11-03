@@ -96,5 +96,5 @@ CINDER_APP(BaseAppSampleApp, RendererGl(RendererGl::Options().msaa(4)), BaseAppS
 
 ## Notes
 
-Version 1.2.0
+Version 1.2.1
 Based on Cinder commit [0b24d643e3b19a4ae6875b92899bae9376f7a64a](https://github.com/cinder/Cinder/commit/0b24d643e3b19a4ae6875b92899bae9376f7a64a)
