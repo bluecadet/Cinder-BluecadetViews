@@ -93,6 +93,8 @@ void FboView::draw() {
 		validateContent();
 	}
 
+	BaseView::draw();
+
 	if (mFbo) {
 		gl::draw(mFbo->getColorTexture());
 	}
