@@ -33,11 +33,10 @@ void BaseApp::prepareSettings(ci::app::App::Settings *settings) {
 #ifdef CINDER_MSW
 	settings->setConsoleWindowEnabled(SettingsManager::getInstance()->mConsoleWindowEnabled);
 #endif
-//	settings->setFrameRate((float)SettingsManager::getInstance()->mFps);
-//	settings->setWindowSize(SettingsManager::getInstance()->mWindowSize);
-//	settings->setBorderless(SettingsManager::getInstance()->mBorderless);
-//	settings->setFullScreen(SettingsManager::getInstance()->mFullscreen);
-//	settings->setHighDensityDisplayEnabled(true);
+	settings->setFrameRate((float)SettingsManager::getInstance()->mFps);
+	settings->setWindowSize(SettingsManager::getInstance()->mWindowSize);
+	settings->setBorderless(SettingsManager::getInstance()->mBorderless);
+	settings->setFullScreen(SettingsManager::getInstance()->mFullscreen);
 
 	// Keep window top-left within display bounds
 	if (settings->getWindowPos().x == 0 && settings->getWindowPos().y == 0) {

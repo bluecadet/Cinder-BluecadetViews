@@ -54,7 +54,13 @@ public:
 	void				zoomToFitWindow();
 
 	//! The current camera transform.
-	const ci::mat4&		getTransform() const { return mPlaceholderView->getTransform(); };
+	const ci::mat4 &	getTransform() const { return mPlaceholderView->getTransform(); };
+	
+	//! The current camera translation.
+	const ci::vec2 &	getTranslation() const { return mPlaceholderView->getPosition().value(); };
+	
+	//! The current camera scale.
+	const ci::vec2 &	getScale() const { return mPlaceholderView->getScale().value(); };
 
 	//! The current viewport in app coordinates.
 	const ci::Area &	getViewport() const { return mViewport; }
