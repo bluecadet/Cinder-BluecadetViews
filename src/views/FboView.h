@@ -35,7 +35,7 @@ public:
 	void			setForceRedraw(const bool value) { mForceRedraw = value; }
 
 	//! Listens for contentUpdated events. This fires with it's own or a child view's size, scale, rotation, transform or position are updated.
-	void			handleEvent(const ViewEvent& event) override;
+	void			handleEvent(ViewEvent& event) override;
 
 protected:
 

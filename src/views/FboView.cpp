@@ -76,7 +76,7 @@ inline void FboView::validateContent(){
 
 }
 
-void FboView::handleEvent(const ViewEvent& event) {
+void FboView::handleEvent(ViewEvent& event) {
 	if (event.type == ViewEvent::Type::CONTENT_INVALIDATED) {
 		invalidate(false, true);
 	}
