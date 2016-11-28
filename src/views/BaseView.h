@@ -111,7 +111,7 @@ public:
 	virtual ci::CueRef		dispatchAfter(std::function<void()> fn, float delay = 0.0f);
 
 	//! Override to handle dispatched events from children.
-	virtual void			handleEvent(const ViewEvent & event) {}
+	virtual void			handleEvent(ViewEvent & event) {}
 
 
 	//==================================================
