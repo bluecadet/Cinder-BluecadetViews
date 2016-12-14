@@ -313,9 +313,19 @@ void TouchManager::debugDrawTouch(const Touch & touch, const bool isVirtual) {
 
 	// cached buffer for circle texture
 	if (!fboNormal) {
+		
+		gl::Texture::Format texFormat;
+		texFormat.setMinFilter(GL_LINEAR);
+		texFormat.setMagFilter(GL_LINEAR);
+		texFormat.enableMipmapping();
+		texFormat.setMaxMipmapLevel(16);
+							   
+		gl::Fbo::Format fboFormat;
+		fboFormat.setColorTextureFormat(texFormat);
+		
 		fboNormal = gl::Fbo::create((int)(circleSize.x * circleScale), (int)(circleSize.y * circleScale));
 		fboVirtual = gl::Fbo::create((int)(circleSize.x * circleScale), (int)(circleSize.y * circleScale));
-
+		
 		gl::ScopedMatrices scopedMatrices;
 		gl::ScopedViewport scopedViewport(fboNormal->getSize());
 
@@ -323,6 +333,8 @@ void TouchManager::debugDrawTouch(const Touch & touch, const bool isVirtual) {
 		gl::scale(vec2(circleScale));
 
 		fboNormal->bindFramebuffer();
+		gl::clear(ColorA(1 ,1, 1, 0));
+		
 		{
 			gl::ScopedColor scopedColor(ColorA(0, 0, 0, 0.5f));
 			gl::drawSolidCircle(vec2(outerRadius + circlePadding), outerRadius, 32);
@@ -335,6 +347,8 @@ void TouchManager::debugDrawTouch(const Touch & touch, const bool isVirtual) {
 		fboNormal->unbindFramebuffer();
 
 		fboVirtual->bindFramebuffer();
+		gl::clear(ColorA(1 ,1, 1, 0));
+		
 		{
 			gl::ScopedColor scopedColor(ColorA(0, 0, 0, 0.5f));
 			gl::drawSolidCircle(vec2(outerRadius + circlePadding), outerRadius, 32);
