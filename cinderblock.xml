@@ -26,4 +26,5 @@
 	
 	<includePath>src</includePath>
 </block>
+<template>templates/Basic Bluecadet Views/template.xml</template>
 </cinder>
