@@ -99,7 +99,7 @@ void TouchView::processTouchBegan(const touch::TouchEvent& touchEvent) {
 	mHasMovingTouches = getNumTouches() == 1 ? false : mHasMovingTouches;
 
 	handleTouchBegan(touchEvent);
-	mDidBeginTouch(touchEvent);
+	mDidBeginTouch.emit(touchEvent);
 }
 
 void TouchView::processTouchMoved(const touch::TouchEvent& touchEvent) {
@@ -124,12 +124,12 @@ void TouchView::processTouchMoved(const touch::TouchEvent& touchEvent) {
 	}
 
 	handleTouchMoved(touchEvent);
-	mDidMoveTouch(touchEvent);
+	mDidMoveTouch.emit(touchEvent);
 }
 
 void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 	handleTouchEnded(touchEvent);
-	mDidEndTouch(touchEvent);
+	mDidEndTouch.emit(touchEvent);
 
 	bool didTap = (mAllowsTapReleaseOutside || containsPoint(touchEvent.localPosition)) && !touchEvent.isCanceled;
 
@@ -146,7 +146,7 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 
 	// Trigger tap if we had one
 	if (didTap) {
-		mDidTap(touchEvent);
+		mDidTap.emit(touchEvent);
 		handleTouchTapped(touchEvent);
 	}
 
@@ -163,7 +163,7 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 
 void TouchView::processGesture(const gwc::GestureEvent & gestureEvent) {
 	handleGesture(gestureEvent);
-	mDidReceiveGesture(gestureEvent);
+	mDidReceiveGesture.emit(gestureEvent);
 }
 
 void TouchView::cancelTouches() {

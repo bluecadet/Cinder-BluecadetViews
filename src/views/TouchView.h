@@ -12,8 +12,7 @@ Comments:
 #include "cinder/app/App.h"
 #include "cinder/Timeline.h"
 #include "cinder/Shape2d.h"
-
-#include <boost/signals2.hpp>
+#include "cinder/Signals.h"
 
 #include "BaseView.h"
 #include "../touch/Touch.h"
@@ -34,11 +33,11 @@ class TouchView : public BaseView {
 
 public:
 
-	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidBeginTouch;		//! Triggered for first touch when touch begins and for subsequent touches if multi-touch is enabled
-	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidMoveTouch;		//! Triggered for moving touches after touch began
-	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidEndTouch;		//! Triggered when touch ends and when touch is canceled
-	boost::signals2::signal<void(const touch::TouchEvent& touchEvent)>	mDidTap;			//! Triggered after mDidEndTouch if the touch fits the parameters for tapping
-	boost::signals2::signal<void(const gwc::GestureEvent& gestureEvent)>mDidReceiveGesture;
+	ci::signals::Signal<void(const touch::TouchEvent& touchEvent)>	mDidBeginTouch;		//! Triggered for first touch when touch begins and for subsequent touches if multi-touch is enabled
+	ci::signals::Signal<void(const touch::TouchEvent& touchEvent)>	mDidMoveTouch;		//! Triggered for moving touches after touch began
+	ci::signals::Signal<void(const touch::TouchEvent& touchEvent)>	mDidEndTouch;		//! Triggered when touch ends and when touch is canceled
+	ci::signals::Signal<void(const touch::TouchEvent& touchEvent)>	mDidTap;			//! Triggered after mDidEndTouch if the touch fits the parameters for tapping
+	ci::signals::Signal<void(const gwc::GestureEvent& gestureEvent)>mDidReceiveGesture;
 
 
 	//! Setup/Destruction
