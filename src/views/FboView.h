@@ -17,7 +17,7 @@ public:
 	FboView();
 	virtual ~FboView();
 
-	//! Shorthand to get a rectangle with a size set up. Will create a new fbo.
+	//! Same as setSize(). Shorthand to get a rectangle with a size set up. Will create a new fbo. 
 	void			setup(const ci::ivec2 & size);
 
 	//! Will create a new fbo.
@@ -34,8 +34,24 @@ public:
 	bool			getForceRedraw() const { return mForceRedraw; }
 	void			setForceRedraw(const bool value) { mForceRedraw = value; }
 
+	bool			hasInvalidContent() const override { return mForceRedraw || BaseView::hasInvalidContent(); };
+
 	//! Listens for contentUpdated events. This fires with it's own or a child view's size, scale, rotation, transform or position are updated.
 	void			handleEvent(ViewEvent& event) override;
+
+	//! Returns the fbo for this view. Be careful with this method since
+	//!  - The result might be nullptr if the FBO hasn't been initialized (e.g. if setup was called).
+	//!  - A new FBO might be recreated if the view's size is changed, so don't retain this FBO anywhere else.
+	ci::gl::FboRef			getFbo() const { return mFbo; }
+
+	//! Returns the FBO's color texture if the FBO is initialized. Otherwise returns nullptr.
+	ci::gl::TextureRef		getTexture() const { return mFbo ? mFbo->getColorTexture() : nullptr; }
+
+	//! When this value is set to true, this view will draw the color texture to the current frame buffer.
+	//! If it's set to false, drawing this view will only draw its contents to the FBO, but not to screen.
+	//! Defaults to true.
+	void			setDrawsToScreen(const bool value) { mDrawsToScreen = value; }
+	bool			getDrawsToScreen() const { return mDrawsToScreen; }
 
 protected:
 
@@ -53,6 +69,7 @@ protected:
 	void			drawChildren(const ci::ColorA& parentTint) override {};
 
 	bool					mForceRedraw;
+	bool					mDrawsToScreen;
 
 	ci::gl::Fbo::Format		mFboFormat;
 	ci::gl::FboRef			mFbo; //! Careful, if fbo is invalidated this could be NULL!

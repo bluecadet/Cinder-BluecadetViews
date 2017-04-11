@@ -9,7 +9,8 @@ namespace views {
 
 FboView::FboView() : BaseView(),
 mFbo(nullptr),
-mForceRedraw(false)
+mForceRedraw(false),
+mDrawsToScreen(true)
 {
 	gl::Texture2d::Format fboTexFormat;
 	fboTexFormat.enableMipmapping(true);
@@ -54,18 +55,14 @@ inline void FboView::validateContent(){
 
 	if (mFbo) {
 		gl::ScopedMatrices scopedMatrices;
-		gl::ScopedViewport scopedViewport(ivec2(0), mFbo->getSize());
 
 		gl::setMatricesWindow(mFbo->getSize());
-
-		mFbo->bindFramebuffer();
-
-		gl::viewport(mFbo->getSize());
+		gl::ScopedViewport scopedViewport(mFbo->getSize());
+		gl::ScopedFramebuffer scopedFbo(mFbo);
+		
 		gl::clear(ColorA(0, 0, 0, 0));
 
 		BaseView::drawChildren(getDrawColor());
-
-		mFbo->unbindFramebuffer();
 
 		// Set mHasInvalidContent back to false so it doesn't continue to validate on every draw
 		BaseView::validateContent();
@@ -95,7 +92,7 @@ void FboView::draw() {
 
 	BaseView::draw();
 
-	if (mFbo) {
+	if (mFbo && mDrawsToScreen) {
 		gl::draw(mFbo->getColorTexture());
 	}
 }
