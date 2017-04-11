@@ -1,11 +1,24 @@
 #include "BaseView.h"
 
+#ifdef _DEBUG
+#include "cinder/Rand.h"
+#endif
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
 namespace bluecadet {
 namespace views {
+
+//==================================================
+// Defaults
+// 
+
+bool BaseView::sEventPropagationEnabled = true;
+bool BaseView::sContentInvalidationEnabled = true;
+bool BaseView::sDebugDrawBounds = false;
+bool BaseView::sDebugDrawInvisibleBounds = false;
 
 //==================================================
 // Lifecycle
@@ -30,8 +43,8 @@ BaseView::BaseView() :
 	mIsHidden(false),
 	mShouldForceInvisibleDraw(false),
 
-	mShouldPropagateEvents(true),
-	mShouldDispatchContentInvalidation(true),
+	mShouldPropagateEvents(sEventPropagationEnabled),
+	mShouldDispatchContentInvalidation(sContentInvalidationEnabled),
 
 	mTimeline(Timeline::create()),
 	mParent(nullptr),
@@ -259,19 +272,17 @@ void BaseView::update(const double deltaTime) {
 }
 
 void BaseView::drawScene(const ColorA& parentTint) {
-	if (!mShouldForceInvisibleDraw && (mIsHidden || mAlpha <= 0.0f)) {
-		return;
-	}
+	const bool shouldDraw = mShouldForceInvisibleDraw || (!mIsHidden && mAlpha > 0.0f);
 
-	validateTransforms();
-	validateContent();
+	if (shouldDraw || (sDebugDrawBounds && sDebugDrawInvisibleBounds)) {
+		validateTransforms();
+		validateContent();
 
-	mDrawColor.r = mTint.value().r * parentTint.r;
-	mDrawColor.g = mTint.value().g * parentTint.g;
-	mDrawColor.b = mTint.value().b * parentTint.b;
-	mDrawColor.a = mAlpha.value() * parentTint.a;
+		mDrawColor.r = mTint.value().r * parentTint.r;
+		mDrawColor.g = mTint.value().g * parentTint.g;
+		mDrawColor.b = mTint.value().b * parentTint.b;
+		mDrawColor.a = mAlpha.value() * parentTint.a;
 
-	{
 		gl::ScopedModelMatrix scopedModelMatrix;
 		gl::ScopedViewMatrix scopedViewMatrix;
 
@@ -279,19 +290,25 @@ void BaseView::drawScene(const ColorA& parentTint) {
 		gl::color(mDrawColor);
 
 		willDraw();
+
 		draw();
+
 		drawChildren(mDrawColor);
+
+		if (sDebugDrawBounds && sDebugDrawInvisibleBounds) {
+			debugDrawOutline();
+		}
+
 		didDraw();
 	}
 }
 
 void BaseView::draw() {
 	// override this method for custom drawing
-
-	const auto& bgColor = mBackgroundColor.value();
 	const auto size = getSize();
+	const auto & color = getBackgroundColor().value();
 
-	if (size.x <= 0 && size.y <= 0 && bgColor.a <= 0) {
+	if (size.x <= 0 && size.y <= 0 && color.a <= 0) {
 		return;
 	}
 
@@ -299,8 +316,15 @@ void BaseView::draw() {
 	auto batch = getDefaultDrawBatch();
 
 	prog->uniform("uSize", size);
-	prog->uniform("uBackgroundColor", vec4(bgColor.r, bgColor.g, bgColor.b, bgColor.a));
+	prog->uniform("uBackgroundColor", vec4(color));
 	batch->draw();
+}
+
+inline void BaseView::debugDrawOutline() {
+	const float hue = (float)mViewId / (float)sNumInstances;
+	const auto color = ColorAf(ci::hsvToRgb(vec3(hue, 1.0f, 1.0f)), 0.66f);
+	gl::color(color);
+	gl::drawStrokedRect(Rectf(vec2(0), getSize()));
 }
 
 //==================================================

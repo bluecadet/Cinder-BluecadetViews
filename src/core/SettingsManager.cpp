@@ -1,5 +1,7 @@
 #include "SettingsManager.h"
 
+#include "../views/BaseView.h"
+
 #include <algorithm>
 #include <string>	
 
@@ -144,6 +146,8 @@ ci::params::InterfaceGlRef SettingsManager::getParams() {
 		params->addParam("Show Minimap", &mDrawMinimap).group("App").key("m");
 		params->addParam("Show Stats", &mDrawStats).group("App").key("s");
 		params->addParam("Show Cursor", &mShowMouse).updateFn([&] { mShowMouse ? ci::app::AppBase::get()->showCursor() : ci::app::AppBase::get()->hideCursor(); }).key("c").group("App");
+		params->addParam("Show Bounds", &bluecadet::views::BaseView::sDebugDrawBounds).group("App").key("b");
+		params->addParam("Show Invisible Bounds", &bluecadet::views::BaseView::sDebugDrawInvisibleBounds).group("App");
 	}
 	return params;
 }

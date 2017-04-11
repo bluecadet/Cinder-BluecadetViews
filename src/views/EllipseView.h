@@ -33,6 +33,7 @@ public:
 
 protected:
 	virtual void draw() override;
+	virtual void debugDrawOutline() override;
 
 	static ci::gl::BatchRef		getSharedEllipseBatch();
 	static ci::gl::GlslProgRef	getSharedEllipseProg();
