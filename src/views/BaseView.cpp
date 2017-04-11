@@ -295,7 +295,7 @@ void BaseView::drawScene(const ColorA& parentTint) {
 
 		drawChildren(mDrawColor);
 
-		if (sDebugDrawBounds && sDebugDrawInvisibleBounds) {
+		if (sDebugDrawBounds) {
 			debugDrawOutline();
 		}
 
