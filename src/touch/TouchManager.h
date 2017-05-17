@@ -9,9 +9,9 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/Signals.h"
 
 #include <mutex>
-#include <boost/signals2.hpp>
 
 #include "Touch.h"
 #include "../views/TouchView.h"
@@ -30,9 +30,9 @@ public:
 	//==================================================
 	// Broadcast signals
 	//
-	boost::signals2::signal<void(const TouchEvent& touchEvent)>	mDidBeginTouch;	//! Fired before any touch objects receive this event
-	boost::signals2::signal<void(const TouchEvent& touchEvent)>	mDidMoveTouch;	//! Fired before any touch objects receive this event
-	boost::signals2::signal<void(const TouchEvent& touchEvent)>	mDidEndTouch;	//! Fired before any touch objects receive this event
+	ci::signals::Signal<void(const TouchEvent& touchEvent)>	mDidBeginTouch;	//! Fired before any touch objects receive this event
+	ci::signals::Signal<void(const TouchEvent& touchEvent)>	mDidMoveTouch;	//! Fired before any touch objects receive this event
+	ci::signals::Signal<void(const TouchEvent& touchEvent)>	mDidEndTouch;	//! Fired before any touch objects receive this event
 
 
 	//==================================================
