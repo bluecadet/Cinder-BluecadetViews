@@ -41,6 +41,14 @@ public:
 	boost::signals2::signal<void(const gwc::GestureEvent& gestureEvent)>mDidReceiveGesture;
 
 
+	//==================================================
+	// Global defaults
+	//
+
+	//! The minimum alpha required for touches to be accepted (alpha has to be greater than the min). Defaults to 0, so that when alpha = 0 touches are not accepted.
+	static float			sDefaultMinAlphaForTouches;
+
+
 	//! Setup/Destruction
 	TouchView();
 	virtual ~TouchView();
@@ -100,7 +108,11 @@ public:
 	//! True if this object has any moving touches, even if they are below the drag threshold
 	bool			hasMovingTouches() const { return mHasMovingTouches; };
 
-	const ci::vec2&	getCurTouchPosition() { return mCurTouchPos; };
+	//! Touch position within this view with 0,0 being at this view's origin
+	const ci::vec2 &	getLocalTouchPos() const { return mLocalTouchPos; };
+
+	//! Touch position in app coordinate space with 0,0 at the app's origin
+	const ci::vec2 &	getGlobalTouchPos() const { return mGlobalTouchPos; };
 
 	//! Maximum allowed distance to move a touch up to which it's considered a tap
 	float			getDragThreshold() const { return mDragThreshold; }
@@ -114,6 +126,10 @@ public:
 	bool			getAllowsTapReleaseOutside() const { return mAllowsTapReleaseOutside; }
 	void			setAllowsTapReleaseOutside(const bool value) { mAllowsTapReleaseOutside = value; }
 
+	//! The minimum alpha required for touches to be accepted (alpha has to be greater than the min). Defaults to sDefaultMinAlphaForTouches.
+	float			getMinAlphaForTouches() const { return mMinAlphaForTouches; }
+	void			setMinAlphaForTouches(const float value) { mMinAlphaForTouches = value; }
+
 	//! Custom path that determines touchable area if configured. If no path is set, size will be used for hit detection.
 	const ci::Path2d&	getTouchPath() const { return mTouchPath; }
 	void				setTouchPath(const ci::Path2d value) { mTouchPath = value; }
@@ -122,6 +138,9 @@ public:
 	//! If set to true, will draw the touch path with a debug color
 	bool			getDebugDrawTouchPath() const { return mDebugDrawTouchPath; }
 	void			setDebugDrawTouchPath(const bool value) { mDebugDrawTouchPath = value; }
+
+	//! Returns true if this view is currently handling and owning the touch with touchId
+	bool			isHandlingTouch(const int touchId) const;
 
 protected:
 
@@ -137,11 +156,14 @@ protected:
 	//! Resets all touch-state related variables to a non-touched state
 	virtual void	resetTouchState();
 
-	ci::vec2		mCurTouchPos;
-	ci::vec2		mPrevTouchPos;
-	ci::vec2		mInitialRelTouchPos;
-	ci::vec2		mInitialAbsTouchPos;
-	ci::vec2		mInitialPosWhenTouched;
+	ci::vec2		mLocalTouchPos;
+	ci::vec2		mGlobalTouchPos;
+	ci::vec2		mPrevLocalTouchPos;
+	ci::vec2		mPrevGlobalTouchPos;
+	ci::vec2		mInitialLocalTouchPos;
+	ci::vec2		mInitialGlobalTouchPos;
+	ci::vec2		mInitialLocalPosWhenTouched;
+	ci::vec2		mInitialGlobalPosWhenTouched;
 	double			mInitialTouchTime;
 
 	std::vector<int>mObjectTouchIDs;	//! Vector containing the touch IDs of the touches within this object
@@ -156,6 +178,7 @@ private:
 	bool			mHasMovingTouches;
 	bool			mAllowsTapReleaseOutside;
 
+	float			mMinAlphaForTouches;
 	float			mDragThreshold;
 	double			mMaxTapDuration;
 
