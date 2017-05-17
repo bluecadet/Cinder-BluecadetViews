@@ -14,6 +14,7 @@
 #include "../views/GraphView.h"
 #include "../touch/TouchManager.h"
 #include "../touch/drivers/MouseDriver.h"
+#include "../touch/drivers/NativeTouchDriver.h"
 #include "../touch/drivers/TuioDriver.h"
 #include "../touch/drivers/SimulatedTouchDriver.h"
 
@@ -60,6 +61,9 @@ public:
 
 	//! The main mouse driver. Automatically connected at app launch.
 	touch::drivers::MouseDriver &           getMouseDriver()        { return mMouseDriver; }
+
+	//! The main native driver. Disconnected by default at app launch.
+	touch::drivers::NativeTouchDriver &     getNativeTouchDriver()	{ return mNativeTouchDriver; }
 	
 	//! The main mouse driver. Configured with the current window size at app launch, but needs to be started explicitly.
 	touch::drivers::SimulatedTouchDriver &	getTouchSimDriver()     { return mSimulatedTouchDriver; }
@@ -73,6 +77,7 @@ private:
 
 	touch::drivers::TuioDriver				mTuioDriver;
 	touch::drivers::MouseDriver				mMouseDriver;
+	touch::drivers::NativeTouchDriver		mNativeTouchDriver;
 	touch::drivers::SimulatedTouchDriver	mSimulatedTouchDriver;
 };
 

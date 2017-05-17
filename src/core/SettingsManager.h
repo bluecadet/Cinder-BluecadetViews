@@ -76,15 +76,19 @@ public:
 	ci::ColorA		mClearColor; //! The color used when clearing the screen before draw(). Defaults to opaque black.
 
 	// Debugging
-	bool			mDebugMode;
-	bool			mDrawTouches;
-	bool			mDrawScreenLayout;
-	bool			mFullscreen;
-	bool			mBorderless;
+	bool			mDebugMode = false;
+	bool			mDrawTouches = false;
+	bool			mNativeTouchEnabled = false;
+	bool			mTuioTouchEnabled = true;
+	bool			mMouseEnabled = true;
+	bool			mDrawScreenLayout = false;
+	bool			mFullscreen = true;
+	bool			mBorderless = true;
 	ci::ivec2		mWindowSize;
-	bool			mShowMouse;
-	bool			mDrawMinimap;
-	bool			mDrawStats;
+	bool			mShowMouse = false;
+	bool			mDrawMinimap = false;
+	bool			mDrawStats = false;
+	bool			mMinimizeParams = false;
 
 	// Analytics
 	std::string		mAnalyticsAppName;

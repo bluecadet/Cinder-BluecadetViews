@@ -1,6 +1,7 @@
 #include "SettingsManager.h"
 
 #include "../views/BaseView.h"
+#include "cinder/Log.h"
 
 #include <algorithm>
 #include <string>	
@@ -69,6 +70,12 @@ void SettingsManager::setup(const ci::fs::path& jsonPath, ci::app::App::Settings
 			setFieldFromJsonIfExists(&mDrawMinimap, "settings.debug.drawMinimap");
 			setFieldFromJsonIfExists(&mDrawTouches, "settings.debug.drawTouches");
 			setFieldFromJsonIfExists(&mDrawScreenLayout, "settings.debug.drawScreenLayout");
+			setFieldFromJsonIfExists(&mMinimizeParams, "settings.debug.minimizeParams");
+
+			// Touch
+			setFieldFromJsonIfExists(&mMouseEnabled, "settings.touch.mouse");
+			setFieldFromJsonIfExists(&mTuioTouchEnabled, "settings.touch.tuio");
+			setFieldFromJsonIfExists(&mNativeTouchEnabled, "settings.touch.native");
 
 			// Analytics
 			setFieldFromJsonIfExists(&mAnalyticsAppName, "settings.analytics.appName");
@@ -89,7 +96,15 @@ void SettingsManager::setup(const ci::fs::path& jsonPath, ci::app::App::Settings
 	addCommandLineParser("vsync", [&](const string &value) { mVerticalSync = value == "true"; });
 	addCommandLineParser("console", [&](const string &value) { mConsoleWindowEnabled = value == "true"; });
 	addCommandLineParser("cursor", [&](const string &value) { mShowMouse = value == "true"; });
-	addCommandLineParser("mouse", [&](const string &value) { mShowMouse = value == "true"; });
+	addCommandLineParser("mouse", [&](const string &value) { mMouseEnabled = value == "true"; });
+	addCommandLineParser("tuio", [&](const string &value) { mTuioTouchEnabled = value == "true"; });
+	addCommandLineParser("native", [&](const string &value) { mNativeTouchEnabled = value == "true"; });
+	addCommandLineParser("drawTouches", [&](const string &value) { mDrawTouches = value == "true"; });
+	addCommandLineParser("draw_touches", [&](const string &value) { mDrawTouches = value == "true"; });
+	addCommandLineParser("drawStats", [&](const string &value) { mDrawStats = value == "true"; });
+	addCommandLineParser("draw_stats", [&](const string &value) { mDrawStats = value == "true"; });
+	addCommandLineParser("minimizeParams", [&](const string &value) { mMinimizeParams = value == "true"; });
+	addCommandLineParser("minimize_params", [&](const string &value) { mMinimizeParams = value == "true"; });
 	addCommandLineParser("size", [&](const string &value) {
 		int commaIndex = (int)value.find(",");
 		if (commaIndex != string::npos) {
@@ -107,13 +122,16 @@ void SettingsManager::setup(const ci::fs::path& jsonPath, ci::app::App::Settings
 	}
 }
 
-void SettingsManager::addCommandLineParser(const std::string &key, CommandLineArgParserFn callback)
+void SettingsManager::addCommandLineParser(const std::string& key, CommandLineArgParserFn callback)
 {
-	auto callbackListIt = mCommandLineArgsHandlers.find(key);
+	string lowercaseKey = key;
+	std::transform(lowercaseKey.begin(), lowercaseKey.end(), lowercaseKey.begin(), ::tolower);
+
+	auto callbackListIt = mCommandLineArgsHandlers.find(lowercaseKey);
 
 	if (callbackListIt == mCommandLineArgsHandlers.end()) {
-		mCommandLineArgsHandlers[key] = vector<CommandLineArgParserFn>();
-		callbackListIt = mCommandLineArgsHandlers.find(key);
+		mCommandLineArgsHandlers[lowercaseKey] = vector<CommandLineArgParserFn>();
+		callbackListIt = mCommandLineArgsHandlers.find(lowercaseKey);
 	}
 
 	callbackListIt->second.push_back(callback);
@@ -126,7 +144,6 @@ void SettingsManager::parseCommandLineArgs(const std::vector<std::string>& args)
 			std::transform(arg.begin(), arg.end(), arg.begin(), ::tolower);
 			std::string key = arg.substr(0, splitIndex);
 			std::string value = arg.substr(splitIndex + 1, arg.size() - splitIndex - 1);
-
 			auto callbackListIt = mCommandLineArgsHandlers.find(key);
 			if (callbackListIt == mCommandLineArgsHandlers.end()) continue;
 
@@ -148,6 +165,10 @@ ci::params::InterfaceGlRef SettingsManager::getParams() {
 		params->addParam("Show Cursor", &mShowMouse).updateFn([&] { mShowMouse ? ci::app::AppBase::get()->showCursor() : ci::app::AppBase::get()->hideCursor(); }).key("c").group("App");
 		params->addParam("Show Bounds", &bluecadet::views::BaseView::sDebugDrawBounds).group("App").key("b");
 		params->addParam("Show Invisible Bounds", &bluecadet::views::BaseView::sDebugDrawInvisibleBounds).group("App");
+
+		if (mMinimizeParams) {
+			params->minimize();
+		}
 	}
 	return params;
 }

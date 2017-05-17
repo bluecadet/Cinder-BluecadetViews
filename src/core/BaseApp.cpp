@@ -37,6 +37,10 @@ void BaseApp::prepareSettings(ci::app::App::Settings *settings) {
 	settings->setWindowSize(SettingsManager::getInstance()->mWindowSize);
 	settings->setBorderless(SettingsManager::getInstance()->mBorderless);
 	settings->setFullScreen(SettingsManager::getInstance()->mFullscreen);
+	
+	if (SettingsManager::getInstance()->mNativeTouchEnabled) {
+		settings->setMultiTouchEnabled(true);
+	}
 
 	// Keep window top-left within display bounds
 	if (settings->getWindowPos().x == 0 && settings->getWindowPos().y == 0) {
@@ -81,15 +85,23 @@ void BaseApp::setup() {
 	gl::enableAlphaBlending();
 
 	// Set up touches
-	mMouseDriver.connect();
-	mTuioDriver.connect();
+	if (SettingsManager::getInstance()->mMouseEnabled) {
+		mMouseDriver.connect();
+		mMouseDriver.setVirtualMultiTouchEnabled(true);
+	}
+	if (SettingsManager::getInstance()->mTuioTouchEnabled) {
+		mTuioDriver.connect();
+	}
+	if (SettingsManager::getInstance()->mNativeTouchEnabled) {
+		mNativeTouchDriver.connect();
+	}
+
 	mSimulatedTouchDriver.setup(Rectf(vec2(0), getWindowSize()), 60);
 
 	// Debugging
-	const float fps = (float)SettingsManager::getInstance()->mFps;
+	const float targetFps = (float)SettingsManager::getInstance()->mFps;
 	mStats->setBackgroundColor(ColorA(0, 0, 0, 0.1f));
-	//mStats->addGraph("FPS", 0, fps, ColorA(1, 1, 1, 0.75f), ColorA(1, 1, 1, 0.25f));
-	mStats->addGraph("Delta Time", 1.0f / fps, 0.1f, ColorA(1, 1, 0, 0.5f), ColorA(1, 0, 0, 0.5f));
+	mStats->addGraph("FPS", 0, targetFps, ColorA(1.0f, 0.0f, 0.0f, 0.75f), ColorA(0.0f, 1.0f, 0.25f, 0.75f));
 }
 
 void BaseApp::update() {
@@ -104,8 +116,7 @@ void BaseApp::update() {
 	touch::TouchManager::getInstance()->update(mRootView, appSize, appTransform);
 	mRootView->updateScene(deltaTime);
 
-	//mStats->addValue("FPS", getAverageFps());
-	mStats->addValue("Delta Time", (float)deltaTime);
+	mStats->addValue("FPS", 1.0f / (float)deltaTime);
 }
 
 void BaseApp::draw(const bool clear) {
@@ -158,6 +169,18 @@ void BaseApp::keyDown(KeyEvent event) {
 			SettingsManager::getInstance()->mFullscreen = !isFullScreen();
 			setFullScreen(SettingsManager::getInstance()->mFullscreen);
 			ScreenCamera::getInstance()->zoomToFitWindow();
+			break;
+		case KeyEvent::KEY_F1:
+			if (!SettingsManager::getInstance()->getParams()->isVisible()) {
+				SettingsManager::getInstance()->getParams()->show();
+				SettingsManager::getInstance()->getParams()->maximize();
+
+			} else if (SettingsManager::getInstance()->getParams()->isMaximized()) {
+				SettingsManager::getInstance()->getParams()->minimize();
+
+			} else {
+				SettingsManager::getInstance()->getParams()->maximize();
+			}
 			break;
 	}
 }
