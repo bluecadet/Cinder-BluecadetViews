@@ -1,4 +1,5 @@
 #include "BaseView.h"
+#include <cinder/Log.h>
 
 #ifdef _DEBUG
 #include "cinder/Rand.h"
@@ -42,6 +43,7 @@ BaseView::BaseView() :
 	mAlpha(1.0),
 	mIsHidden(false),
 	mShouldForceInvisibleDraw(false),
+	mBlendMode(BlendMode::INHERIT),
 
 	mShouldPropagateEvents(sEventPropagationEnabled),
 	mShouldDispatchContentInvalidation(sContentInvalidationEnabled),
@@ -86,17 +88,17 @@ void BaseView::addChild(BaseViewRef child) {
 
 void BaseView::addChild(BaseViewRef child, size_t index) {
 	if (!child) {
-		cout << "Trying to add empty child; aborting" << endl;
+		CI_LOG_W("Trying to add empty child; aborting");
 		return;
 	}
 
 	if (child.get() == this) {
-		cout << "Can't add self as child" << endl;
+		CI_LOG_W("Can't add self as child");
 		return;
 	}
 
 	if (child.get() == mParent) {
-		cout << "Can't add own parent as child" << endl;
+		CI_LOG_W("Can't add own parent as child");
 		return;
 	}
 
@@ -122,12 +124,12 @@ void BaseView::addChild(BaseViewRef child, size_t index) {
 
 void BaseView::removeChild(BaseViewRef child) {
 	if (!child) {
-		cout << "Trying to remove empty child; aborting" << endl;
+		CI_LOG_W("Trying to remove empty child; aborting");
 		return;
 	}
 
 	if (child->mParent != this) {
-		cout << "Can't remove node that's not a child; aborting" << endl;
+		CI_LOG_W("Can't remove node that's not a child; aborting");
 		return;
 	}
 
@@ -139,7 +141,7 @@ void BaseView::removeChild(BaseViewRef child) {
 void BaseView::removeChild(BaseView* childPtr) {
 	auto childIt = getChildIt(childPtr);
 	if (childIt == mChildren.end()) {
-		cout << "Could not find child" << endl;
+		CI_LOG_W("Could not find child");
 		return;
 	}
 	removeChild(childIt);
@@ -187,7 +189,7 @@ void BaseView::moveToBack() {
 void BaseView::moveChildToIndex(BaseView* childPtr, size_t index) {
 	auto childIt = getChildIt(childPtr);
 	if (childIt == mChildren.end()) {
-		cout << "Could not find child" << endl;
+		CI_LOG_W("Could not find child");
 		return;
 	}
 	moveChildToIndex(childIt, index);
@@ -196,7 +198,7 @@ void BaseView::moveChildToIndex(BaseView* childPtr, size_t index) {
 void BaseView::moveChildToIndex(BaseViewRef child, size_t index) {
 	auto childIt = getChildIt(child);
 	if (childIt == mChildren.end()) {
-		cout << "Could not find child" << endl;
+		CI_LOG_W("Could not find child");
 		return;
 	}
 	moveChildToIndex(childIt, index);
@@ -291,9 +293,23 @@ void BaseView::drawScene(const ColorA& parentTint) {
 
 		willDraw();
 
-		draw();
-
-		drawChildren(mDrawColor);
+		switch (mBlendMode) {
+			case BlendMode::INHERIT: {
+				draw();
+				drawChildren(mDrawColor);
+				break;
+			} case BlendMode::ALPHA: {
+				gl::ScopedBlendAlpha scopedBlend;
+				draw();
+				drawChildren(mDrawColor);
+				break;
+			} case BlendMode::PREMULT: {
+				gl::ScopedBlendPremult scopedBlend;
+				draw();
+				drawChildren(mDrawColor);
+				break;
+			}
+		}
 
 		if (sDebugDrawBounds) {
 			debugDrawOutline();

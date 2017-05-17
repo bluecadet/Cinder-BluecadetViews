@@ -67,6 +67,11 @@ public:
 	//! Defaults to false. When sDebugDrawBounds is set to true, this setting will also draw any invisible views
 	static bool				sDebugDrawInvisibleBounds;
 
+	enum class BlendMode {
+		ALPHA,
+		PREMULT,
+		INHERIT
+	};
 
 	//==================================================
 	// Scene graph modification
@@ -201,6 +206,13 @@ public:
 	virtual ci::Anim<float>&			getAlpha() { return mAlpha; }
 	virtual void						setAlpha(const float alpha) { mAlpha = alpha; }
 
+	//! Returns a constant reference of getAlpha(). Allows for const access.
+	virtual const ci::Anim<float>&		getAlphaConst() const { return mAlpha; }
+	
+	//! Defaults to inherit (doesn't change the blend mode).
+	BlendMode							getBlendMode() const { return mBlendMode; }
+	void								setBlendMode(const BlendMode value) { mBlendMode = value; }
+
 	//! Disables drawing; Update calls are not affected; Defaults to false
 	virtual bool						isHidden() const { return mIsHidden; }
 	virtual void						setHidden(const bool isHidden) { mIsHidden = isHidden; }
@@ -325,8 +337,10 @@ private:
 	ci::Anim<ci::Color> mTint;
 	ci::Anim<ci::ColorA> mBackgroundColor;
 	ci::vec2 mSize;
+
 	bool mIsHidden;
 	bool mShouldForceInvisibleDraw;
+	BlendMode mBlendMode;
 
 	ci::ColorA mDrawColor;	//! Combines mAlpha and mTint for faster draw
 
@@ -339,7 +353,6 @@ private:
 	ci::mat4 mGlobalTransform;			// current transform multiplied with parent's transform
 	ci::mat4 mRotationScaleTransform;	// contains rotation and scale around transform origin
 	bool mHasInvalidTransforms;
-
 	bool mHasInvalidContent;
 
 
