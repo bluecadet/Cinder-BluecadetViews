@@ -18,7 +18,7 @@ public:
 	virtual ~FboView();
 
 	//! Same as setSize(). Shorthand to get a rectangle with a size set up. Will create a new fbo. 
-	void			setup(const ci::ivec2 & size);
+	void			setup(const ci::ivec2 & size, const float resolution = 1.0f);
 
 	//! Will create a new fbo.
 	void			setSize(const ci::vec2 & size) override;
@@ -53,6 +53,10 @@ public:
 	void			setDrawsToScreen(const bool value) { mDrawsToScreen = value; }
 	bool			getDrawsToScreen() const { return mDrawsToScreen; }
 
+	//! Scale value that gets applied to the size of the fbo. All views are scaled by the same value, so they appear proportionally the same size.
+	float			getResolution() const { return mResolution; }
+	void			setFboScale(const float value);
+
 protected:
 
 	virtual ci::gl::FboRef	createFbo(const ci::ivec2 & size, const ci::gl::Fbo::Format & format);
@@ -70,6 +74,7 @@ protected:
 
 	bool					mForceRedraw;
 	bool					mDrawsToScreen;
+	float					mResolution;
 
 	ci::gl::Fbo::Format		mFboFormat;
 	ci::gl::FboRef			mFbo; //! Careful, if fbo is invalidated this could be NULL!
