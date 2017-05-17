@@ -21,8 +21,7 @@ MouseDriver::MouseDriver() :
 	mPrevMousePos(0),
 	mTouchId(-1),
 	mVirtualTouchA(-3, vec2(), TouchType::Mouse, TouchPhase::Began),
-	mVirtualTouchB(-4, vec2(), TouchType::Mouse, TouchPhase::Began)
-{
+	mVirtualTouchB(-4, vec2(), TouchType::Mouse, TouchPhase::Began) {
 	mVirtualTouchA.isVirtual = true;
 	mVirtualTouchB.isVirtual = true;
 }
@@ -77,7 +76,7 @@ void MouseDriver::handleKeyUp(const ci::app::KeyEvent & event) {
 	mIsControlDown = event.isControlDown();
 	mIsShiftDown = event.isShiftDown();
 
-	if (!mIsControlDown && controlWasDown) {
+	if (mShowVirtualTouches && !mIsControlDown && controlWasDown) {
 		hideVirtualTouches();
 	}
 }
@@ -124,7 +123,7 @@ void MouseDriver::handleMouseMoved(const cinder::app::MouseEvent &event) {
 
 	if (!mTouchManager) return;
 
-	if (mIsMouseDown ||  !mIsControlDown) {
+	if (mIsMouseDown || !mIsControlDown) {
 		mShowVirtualTouches = false;
 	}
 
@@ -166,6 +165,7 @@ void MouseDriver::updateSimulatedTouches() {
 		// move center position
 		ivec2 distance = mMousePos - mVirtualMultiTouchInitial;
 		mVirtualMultiTouchCenter = mVirtualMultiTouchInitial + distance - mVirtualMultiTouchOffset;
+
 	} else if (mIsControlDown || mIsSimulatingMultiTouch) {
 		// change offset from center
 		mVirtualMultiTouchOffset = mMousePos - mVirtualMultiTouchCenter;
