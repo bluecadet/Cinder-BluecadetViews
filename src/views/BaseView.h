@@ -12,9 +12,9 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Tween.h"
 #include "cinder/Timeline.h"
+#include "cinder/Signals.h"
 
 #include "boost/variant.hpp"
-#include "boost/signals2.hpp"
 
 #include "ViewEvent.h"
 
@@ -31,6 +31,13 @@ typedef std::list<BaseViewRef> BaseViewList;
 
 class BaseView : public std::enable_shared_from_this<BaseView> {
 
+public:
+
+
+	//==================================================
+	// Typedefs
+	// 
+
 	typedef boost::variant<
 		bool, int, float, double,
 		ci::ivec2, ci::ivec3, ci::ivec4,
@@ -40,15 +47,41 @@ class BaseView : public std::enable_shared_from_this<BaseView> {
 	>																UserInfoTypes;
 	typedef std::map<std::string, UserInfoTypes>					UserInfo;
 
-	typedef boost::signals2::signal<void(const ViewEvent & event)>	EventSignal;
-	typedef boost::signals2::connection								EventConnection;
-	typedef EventSignal::slot_function_type							EventCallback;
+	typedef ci::signals::Signal<void(const ViewEvent & event)>	EventSignal;
+	typedef ci::signals::Connection								EventConnection;
+	typedef EventSignal::CallbackFn								EventCallback;
 
-public:
+
+	//==================================================
+	// Construct/destruct
+	// 
 
 	BaseView();
 	virtual ~BaseView();
 
+
+	//==================================================
+	// Global defaults
+	//
+
+	//! Defaults to true.
+	static bool				sEventPropagationEnabled;
+
+	//! Defaults to true. If set to false, all views that should still dispatch this event
+	//! (especially views that are childre nof FboViews) will need this flag to be explicitly set to true.
+	static bool				sContentInvalidationEnabled;
+
+	//! Defaults to false. Draws all views with debug color to illustrate the view hierarchy.
+	static bool				sDebugDrawBounds;
+
+	//! Defaults to false. When sDebugDrawBounds is set to true, this setting will also draw any invisible views
+	static bool				sDebugDrawInvisibleBounds;
+
+	enum class BlendMode {
+		ALPHA,
+		PREMULT,
+		INHERIT
+	};
 
 	//==================================================
 	// Scene graph modification
@@ -95,10 +128,10 @@ public:
 
 	//! Signal that will trigger whenever an event is received or dispatched by this view.
 	EventSignal &			getEventSignal(const std::string & type) { return mEventSignalsByType[type]; };
-	EventConnection			addEventCallback(const EventCallback callback, const std::string & type) { return mEventSignalsByType[type].connect(callback); };
-	void					removeEventCallback(const EventConnection connection, const std::string & type) { mEventSignalsByType[type].disconnect(connection); };
-	void					removeAllEventCallbacks(const std::string & type) { mEventSignalsByType[type].disconnect_all_slots(); };
-	void					removeAllEventCallbacks() { for (auto & signal : mEventSignalsByType) signal.second.disconnect_all_slots(); };
+	EventConnection			addEventCallback(const std::string & type, const EventCallback callback) { return mEventSignalsByType[type].connect(callback); };
+	void					removeEventCallback(const std::string & type, EventConnection & connection) { connection.disconnect(); };
+	//void					removeAllEventCallbacks(const std::string & type) { mEventSignalsByType[type].disconnect_all_slots(); }; // TODO: implement
+	//void					removeAllEventCallbacks() { for (auto & signal : mEventSignalsByType) signal.second.disconnect_all_slots(); }; // TODO: implement
 
 	//! Dispatch events to this view's children. Will also trigger the event signal.
 	void					dispatchEvent(ViewEvent event);
@@ -111,7 +144,7 @@ public:
 	virtual ci::CueRef		dispatchAfter(std::function<void()> fn, float delay = 0.0f);
 
 	//! Override to handle dispatched events from children.
-	virtual void			handleEvent(const ViewEvent & event) {}
+	virtual void			handleEvent(ViewEvent & event) {}
 
 
 	//==================================================
@@ -182,6 +215,13 @@ public:
 	//! Applied before each draw together with mTint; Gets multiplied with parent alpha; Defaults to 1.0f
 	virtual ci::Anim<float>&			getAlpha() { return mAlpha; }
 	virtual void						setAlpha(const float alpha) { mAlpha = alpha; }
+
+	//! Returns a constant reference of getAlpha(). Allows for const access.
+	virtual const ci::Anim<float>&		getAlphaConst() const { return mAlpha; }
+	
+	//! Defaults to inherit (doesn't change the blend mode).
+	BlendMode							getBlendMode() const { return mBlendMode; }
+	void								setBlendMode(const BlendMode value) { mBlendMode = value; }
 
 	//! Disables drawing; Update calls are not affected; Defaults to false
 	virtual bool						isHidden() const { return mIsHidden; }
@@ -267,6 +307,7 @@ protected:
 
 	inline virtual void	willDraw() {}							//! Called by drawScene before draw()
 	virtual void		draw();									//! Called by drawScene and allows for drawing content for this node. By default draws a rectangle with the current size and background color (only if x/y /bg-alpha > 0)
+	virtual void		debugDrawOutline();						//! Called in DEBUG if sDebugDrawBounds is set to true.
 	inline virtual void	drawChildren(const ci::ColorA& parentTint); //! Called by drawScene() after draw() and before didDraw(). Implemented at bottom of class.
 	inline virtual void	didDraw() {}							//! Called by drawScene after draw()
 
@@ -283,7 +324,7 @@ protected:
 	inline void invalidate(const bool transforms = true, const bool content = true);
 
 	//! True if any properties that visually modifies this view has been changed since the last call of validateContent().
-	const bool hasInvalidContent() const	{ return mHasInvalidContent; }
+	virtual bool hasInvalidContent() const	{ return mHasInvalidContent; }
 	virtual void validateContent()			{ mHasInvalidContent = false; }
 
 private:
@@ -306,8 +347,10 @@ private:
 	ci::Anim<ci::Color> mTint;
 	ci::Anim<ci::ColorA> mBackgroundColor;
 	ci::vec2 mSize;
+
 	bool mIsHidden;
 	bool mShouldForceInvisibleDraw;
+	BlendMode mBlendMode;
 
 	ci::ColorA mDrawColor;	//! Combines mAlpha and mTint for faster draw
 
@@ -320,14 +363,14 @@ private:
 	ci::mat4 mGlobalTransform;			// current transform multiplied with parent's transform
 	ci::mat4 mRotationScaleTransform;	// contains rotation and scale around transform origin
 	bool mHasInvalidTransforms;
-
 	bool mHasInvalidContent;
 
 
 	// Events
-	bool								mShouldDispatchContentInvalidation;
-	bool								mShouldPropagateEvents;
-	std::map<std::string, EventSignal>	mEventSignalsByType;
+	bool												mShouldDispatchContentInvalidation;
+	bool												mShouldPropagateEvents;
+	std::map<std::string, EventSignal>					mEventSignalsByType;
+	std::map<std::string, std::set<EventConnection>>	mEventConnectionsByType;
 
 	// Misc
 	const size_t							mViewId;

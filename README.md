@@ -8,6 +8,8 @@ In addition to nested transformations and drawing, this block connects to the te
 
 To combine all pieces conveniently, this block comes with a `BaseApp` class that provides a basic implementation with a root view, touch manager and various utilities.
 
+Built for and tested with [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/v0.9.1). See [notes below](#Notes) for setup instructions.
+
 ## Getting Started
 
 Clone the block and check the dependencies below to make sure you're all set to start your first project.
@@ -96,5 +98,15 @@ CINDER_APP(BaseAppSampleApp, RendererGl(RendererGl::Options().msaa(4)), BaseAppS
 
 ## Notes
 
-Version 1.2.1
-Based on Cinder commit [0b24d643e3b19a4ae6875b92899bae9376f7a64a](https://github.com/cinder/Cinder/commit/0b24d643e3b19a4ae6875b92899bae9376f7a64a)
+Version 1.3.0
+
+Based on [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/v0.9.1)
+
+Cinder setup instructions:
+
+
+```bash
+git clone --recursive git@github.com:cinder/Cinder.git
+git checkout tags/v0.9.1
+git submodule update --init
+```

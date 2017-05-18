@@ -67,15 +67,15 @@ void SimulatedTouchDriver::touchSimulationLoop() {
 		const float duration = randFloat(mMinTouchDuration, mMaxTouchDuration);
 		const float distance = randFloat(mMinDragDistance, mMaxDragDistance);
 
-		touch.position = vec2(randFloat(mBounds.x1, mBounds.x2), randFloat(mBounds.y1, mBounds.y2));
-		const vec2 endPos = touch.position.value() + randVec2() * distance;
+		touch.relPosition = vec2(randFloat(mBounds.x1, mBounds.x2), randFloat(mBounds.y1, mBounds.y2));
+		const vec2 endPos = touch.relPosition.value() + randVec2() * distance;
 
-		mTimeline->apply(&touch.position, endPos, duration, easeInOutQuad).startFn([&] {
-			TouchManager::getInstance()->addTouch(touch.id, touch.position.value(), TouchType::Simulator, TouchPhase::Began);
+		mTimeline->apply(&touch.relPosition, endPos, duration, easeInOutQuad).startFn([&] {
+			TouchManager::getInstance()->addTouch(touch.id, touch.relPosition.value(), TouchType::Simulator, TouchPhase::Began);
 		}).updateFn([&] {
-			TouchManager::getInstance()->addTouch(touch.id, touch.position.value(), TouchType::Simulator, TouchPhase::Moved);
+			TouchManager::getInstance()->addTouch(touch.id, touch.relPosition.value(), TouchType::Simulator, TouchPhase::Moved);
 		}).finishFn([&] {
-			TouchManager::getInstance()->addTouch(touch.id, touch.position.value(), TouchType::Simulator, TouchPhase::Ended);
+			TouchManager::getInstance()->addTouch(touch.id, touch.relPosition.value(), TouchType::Simulator, TouchPhase::Ended);
 			auto it = mSimulatedTouches.find(touch.id);
 			if (it != mSimulatedTouches.end()) {
 				mSimulatedTouches.erase(it);

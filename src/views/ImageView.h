@@ -20,31 +20,38 @@ typedef std::shared_ptr<class ImageView> ImageViewRef;
 class ImageView : public BaseView {
 
 public:
+
+	enum class ScaleMode {
+		NONE,
+		STRETCH,
+		FIT,
+		COVER
+	};
+
 	ImageView();
 	virtual ~ImageView();
 
 	void reset() override;
     virtual void clearTexture();
 
-	virtual void setup(const ci::gl::TextureRef texture, const ci::vec2& size = ci::vec2(0));
+	virtual void setup(const ci::gl::TextureRef texture, const ci::vec2& size = ci::vec2(0), const ScaleMode scaleMode = ScaleMode::COVER);
 
 	virtual void setSize(const ci::vec2& size) override;
 
-	inline void setTexture(const ci::gl::TextureRef value);
 	inline ci::gl::TextureRef getTexture() const { return mTexture; }
+	inline void			setTexture(const ci::gl::TextureRef value, const bool resizeToTexture = true);
 
-	inline bool getAutoSizeToTexture() const { return mAutoSizeToTexture; }
-	inline void setAutoSizeToTexture(const bool value) { mAutoSizeToTexture = value; }
+	inline ScaleMode	getScaleMode() const { return mScaleMode; }
+	inline void			setScaleMode(const ScaleMode scaleMode) { mScaleMode = scaleMode; }
 
 private:
 
 	virtual void draw() override;
 
 	ci::gl::TextureRef	mTexture;
-
-	bool				mAutoSizeToTexture;
 	ci::Rectf			mDrawingDestRect;
 	ci::Area			mDrawingArea;
+	ScaleMode			mScaleMode;
 };
 
 }

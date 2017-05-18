@@ -9,10 +9,11 @@ using namespace std;
 namespace bluecadet {
 namespace views {
 
-GraphView::GraphView(const ci::ivec2 & size) : BaseView(),
+GraphView::GraphView(const ci::ivec2 & size, const Style style) : BaseView(),
 mNeedsUpdate(false),
 mLabelsEnabled(true),
-mCapacity(size.x)
+mCapacity(size.x),
+mStyle(style)
 {
 	gl::Texture::Format texFormat;
 	texFormat
@@ -111,8 +112,7 @@ inline void GraphView::render() {
 	gl::clear(ColorA(0, 0, 0, 0.25));
 
 	static const Font labelFont("Arial", 16);
-	static const ColorA labelColor(1, 1, 1, 0.75f);
-	vec2 labelPos(0, 0);
+	vec2 labelPos(0, getSize().y);
 
 	for (const auto & graphPair : mGraphs) {
 		const auto & graph = graphPair.second;
@@ -123,13 +123,16 @@ inline void GraphView::render() {
 		mGlsl->uniform("uMax", graph.max);
 		mGlsl->uniform("uIndex", (int)graph.index);
 		mGlsl->uniform("uValues", graph.values.data(), (int)graph.values.capacity());
+		mGlsl->uniform("uStyle", mStyle == Style::Line ? 0 : 1);
 		mBatch->draw();
 
 		if (mLabelsEnabled) {
-			int index = (int)((mCapacity - graph.index) % mCapacity);
-			const string labelText = graphPair.first + ": " + to_string(graph.values[index]);
+			labelPos.y -= labelFont.getSize();
+			const int index = (int)((mCapacity - graph.index) % mCapacity);
+			const float value = graph.values[index];
+			const ColorA labelColor = graph.maxColor;
+			const string labelText = graphPair.first + ": " + to_string(value);
 			gl::drawString(labelText, labelPos, labelColor, labelFont);
-			labelPos.y += labelFont.getSize();
 		}
 	}
 
@@ -149,46 +152,51 @@ void GraphView::setupShaders(const int numValues) {
 				vPosition = ciPosition;
 				gl_Position = ciModelViewProjection * (ciPosition * vec4(uSize, 1, 1));
 			}
-			);
-			string frag = CI_GLSL(150,
-				const int numValues = $NUM_VALUES$;
+		);
+		string frag = CI_GLSL(150,
+			uniform ivec2 uSize;
+			uniform int uStyle; // 0 = line, 1 = gradient
 			uniform vec4 uMinColor = vec4(0, 1, 0, 1);
 			uniform vec4 uMaxColor = vec4(1, 0, 0, 1);
-			uniform float uValues[numValues];
+			uniform float uValues[NUM_VALUES];
 			uniform int uIndex = 0;
 			uniform float uMin = 0.0;
 			uniform float uMax = 1.0;
 			in vec4 vPosition;
 			out vec4 oColor;
 
-		void main(void) {
-			float range = uMax - uMin;
+			void main(void) {
+				float range = uMax - uMin;
 
-			if (numValues <= 0 || range == 0) {
-				discard;
+				if (NUM_VALUES <= 0 || range == 0) {
+					discard;
+				}
+
+				int column = int(vPosition.x * float(NUM_VALUES));
+				int index = NUM_VALUES - int(mod(uIndex + column, NUM_VALUES)) - 1;
+				float value = (uValues[index] - uMin) / range;
+				float y = 1.0 - vPosition.y;
+				float pxHeight = 1.0 / uSize.y;
+
+				if (value < y) {
+					discard;
+
+				} else if (uStyle == 0 && value <= y + pxHeight) {
+					// line
+					oColor = mix(uMinColor, uMaxColor, y);
+
+				} else if (uStyle == 1) {
+					// gradient
+					oColor = mix(uMinColor, uMaxColor, y);
+				}
 			}
-
-			int column = int(vPosition.x * float(numValues));
-			int index = numValues - int(mod(uIndex + column, numValues)) - 1;
-			float value = (uValues[index] - uMin) / range;
-			float y = 1.0 - vPosition.y;
-
-			if (value < y) {
-				discard;
-			} else {
-				oColor = mix(uMinColor, uMaxColor, y);
-			}
-		}
 		);
 
-		const string key = "$NUM_VALUES$";
-		const string value = to_string(numValues);
-
-		for (size_t i = frag.find(key); i != string::npos; i = frag.find(key)) {
-			frag.replace(i, key.length(), value);
-		}
-
-		mGlsl = gl::GlslProg::create(gl::GlslProg::Format().vertex(vert).fragment(frag));
+		mGlsl = gl::GlslProg::create(gl::GlslProg::Format()
+			.vertex(vert)
+			.fragment(frag)
+			.define("NUM_VALUES " + to_string(numValues))
+		);
 		mBatch = gl::Batch::create(geom::Rect(Rectf(0, 0, 1, 1)), mGlsl);
 
 	} catch (Exception e) {

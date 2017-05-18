@@ -1,4 +1,9 @@
 #include "BaseView.h"
+#include <cinder/Log.h>
+
+#ifdef _DEBUG
+#include "cinder/Rand.h"
+#endif
 
 using namespace ci;
 using namespace ci::app;
@@ -6,6 +11,15 @@ using namespace std;
 
 namespace bluecadet {
 namespace views {
+
+//==================================================
+// Defaults
+// 
+
+bool BaseView::sEventPropagationEnabled = true;
+bool BaseView::sContentInvalidationEnabled = true;
+bool BaseView::sDebugDrawBounds = false;
+bool BaseView::sDebugDrawInvisibleBounds = false;
 
 //==================================================
 // Lifecycle
@@ -29,9 +43,10 @@ BaseView::BaseView() :
 	mAlpha(1.0),
 	mIsHidden(false),
 	mShouldForceInvisibleDraw(false),
+	mBlendMode(BlendMode::INHERIT),
 
-	mShouldPropagateEvents(true),
-	mShouldDispatchContentInvalidation(true),
+	mShouldPropagateEvents(sEventPropagationEnabled),
+	mShouldDispatchContentInvalidation(sContentInvalidationEnabled),
 
 	mTimeline(Timeline::create()),
 	mParent(nullptr),
@@ -73,17 +88,17 @@ void BaseView::addChild(BaseViewRef child) {
 
 void BaseView::addChild(BaseViewRef child, size_t index) {
 	if (!child) {
-		cout << "Trying to add empty child; aborting" << endl;
+		CI_LOG_W("Trying to add empty child; aborting");
 		return;
 	}
 
 	if (child.get() == this) {
-		cout << "Can't add self as child" << endl;
+		CI_LOG_W("Can't add self as child");
 		return;
 	}
 
 	if (child.get() == mParent) {
-		cout << "Can't add own parent as child" << endl;
+		CI_LOG_W("Can't add own parent as child");
 		return;
 	}
 
@@ -109,12 +124,12 @@ void BaseView::addChild(BaseViewRef child, size_t index) {
 
 void BaseView::removeChild(BaseViewRef child) {
 	if (!child) {
-		cout << "Trying to remove empty child; aborting" << endl;
+		CI_LOG_W("Trying to remove empty child; aborting");
 		return;
 	}
 
 	if (child->mParent != this) {
-		cout << "Can't remove node that's not a child; aborting" << endl;
+		CI_LOG_W("Can't remove node that's not a child; aborting");
 		return;
 	}
 
@@ -126,7 +141,7 @@ void BaseView::removeChild(BaseViewRef child) {
 void BaseView::removeChild(BaseView* childPtr) {
 	auto childIt = getChildIt(childPtr);
 	if (childIt == mChildren.end()) {
-		cout << "Could not find child" << endl;
+		CI_LOG_W("Could not find child");
 		return;
 	}
 	removeChild(childIt);
@@ -174,7 +189,7 @@ void BaseView::moveToBack() {
 void BaseView::moveChildToIndex(BaseView* childPtr, size_t index) {
 	auto childIt = getChildIt(childPtr);
 	if (childIt == mChildren.end()) {
-		cout << "Could not find child" << endl;
+		CI_LOG_W("Could not find child");
 		return;
 	}
 	moveChildToIndex(childIt, index);
@@ -183,7 +198,7 @@ void BaseView::moveChildToIndex(BaseView* childPtr, size_t index) {
 void BaseView::moveChildToIndex(BaseViewRef child, size_t index) {
 	auto childIt = getChildIt(child);
 	if (childIt == mChildren.end()) {
-		cout << "Could not find child" << endl;
+		CI_LOG_W("Could not find child");
 		return;
 	}
 	moveChildToIndex(childIt, index);
@@ -259,19 +274,17 @@ void BaseView::update(const double deltaTime) {
 }
 
 void BaseView::drawScene(const ColorA& parentTint) {
-	if (!mShouldForceInvisibleDraw && (mIsHidden || mAlpha <= 0.0f)) {
-		return;
-	}
+	const bool shouldDraw = mShouldForceInvisibleDraw || (!mIsHidden && mAlpha > 0.0f);
 
-	validateTransforms();
-	validateContent();
+	if (shouldDraw || (sDebugDrawBounds && sDebugDrawInvisibleBounds)) {
+		validateTransforms();
+		validateContent();
 
-	mDrawColor.r = mTint.value().r * parentTint.r;
-	mDrawColor.g = mTint.value().g * parentTint.g;
-	mDrawColor.b = mTint.value().b * parentTint.b;
-	mDrawColor.a = mAlpha.value() * parentTint.a;
+		mDrawColor.r = mTint.value().r * parentTint.r;
+		mDrawColor.g = mTint.value().g * parentTint.g;
+		mDrawColor.b = mTint.value().b * parentTint.b;
+		mDrawColor.a = mAlpha.value() * parentTint.a;
 
-	{
 		gl::ScopedModelMatrix scopedModelMatrix;
 		gl::ScopedViewMatrix scopedViewMatrix;
 
@@ -279,19 +292,39 @@ void BaseView::drawScene(const ColorA& parentTint) {
 		gl::color(mDrawColor);
 
 		willDraw();
-		draw();
-		drawChildren(mDrawColor);
+
+		switch (mBlendMode) {
+			case BlendMode::INHERIT: {
+				draw();
+				drawChildren(mDrawColor);
+				break;
+			} case BlendMode::ALPHA: {
+				gl::ScopedBlendAlpha scopedBlend;
+				draw();
+				drawChildren(mDrawColor);
+				break;
+			} case BlendMode::PREMULT: {
+				gl::ScopedBlendPremult scopedBlend;
+				draw();
+				drawChildren(mDrawColor);
+				break;
+			}
+		}
+
+		if (sDebugDrawBounds) {
+			debugDrawOutline();
+		}
+
 		didDraw();
 	}
 }
 
 void BaseView::draw() {
 	// override this method for custom drawing
-
-	const auto& bgColor = mBackgroundColor.value();
 	const auto size = getSize();
+	const auto & color = getBackgroundColor().value();
 
-	if (size.x <= 0 && size.y <= 0 && bgColor.a <= 0) {
+	if (size.x <= 0 && size.y <= 0 && color.a <= 0) {
 		return;
 	}
 
@@ -299,8 +332,15 @@ void BaseView::draw() {
 	auto batch = getDefaultDrawBatch();
 
 	prog->uniform("uSize", size);
-	prog->uniform("uBackgroundColor", vec4(bgColor.r, bgColor.g, bgColor.b, bgColor.a));
+	prog->uniform("uBackgroundColor", vec4(color));
 	batch->draw();
+}
+
+inline void BaseView::debugDrawOutline() {
+	const float hue = (float)mViewId / (float)sNumInstances;
+	const auto color = ColorAf(ci::hsvToRgb(vec3(hue, 1.0f, 1.0f)), 0.66f);
+	gl::color(color);
+	gl::drawStrokedRect(Rectf(vec2(0), getSize()));
 }
 
 //==================================================
@@ -343,7 +383,7 @@ void BaseView::dispatchEvent(ViewEvent event) {
 		handleEvent(event);
 	}
 
-	mEventSignalsByType[event.type](event);
+	mEventSignalsByType[event.type].emit(event);
 
 	if (!event.shouldPropagate || !mShouldPropagateEvents) {
 		// cut off propagation if required

@@ -9,7 +9,9 @@ namespace views {
 
 FboView::FboView() : BaseView(),
 mFbo(nullptr),
-mForceRedraw(false)
+mForceRedraw(false),
+mDrawsToScreen(true),
+mResolution(1.0f)
 {
 	gl::Texture2d::Format fboTexFormat;
 	fboTexFormat.enableMipmapping(true);
@@ -22,7 +24,8 @@ mForceRedraw(false)
 FboView::~FboView() {
 }
 
-void FboView::setup(const ci::ivec2 & size) {
+void FboView::setup(const ci::ivec2 & size, const float resolution) {
+	setFboScale(resolution);
 	setSize(size);
 }
 
@@ -31,13 +34,19 @@ void FboView::setSize(const ci::vec2 & size){
 	invalidateFbo();
 }
 
+void FboView::setFboScale(const float value) {
+	mResolution = value;
+	invalidateFbo();
+}
+
 ci::gl::FboRef FboView::createFbo(const ci::ivec2 & size, const ci::gl::Fbo::Format & format){
 	return gl::Fbo::create(size.x, size.y, format);
 }
 
 void FboView::validateFbo(){
-	if (getSize().x > 0 && getSize().y > 0) {
-		mFbo = createFbo(getSize(), getFboFormat());
+	const ivec2 size = glm::ceil(mResolution * getSize());
+	if (size.x > 0 && size.y > 0) {
+		mFbo = createFbo(size, getFboFormat());
 		// Invalidate content to confirm it will redraw to fbo
 		invalidate(false, true);
 	}
@@ -54,18 +63,21 @@ inline void FboView::validateContent(){
 
 	if (mFbo) {
 		gl::ScopedMatrices scopedMatrices;
-		gl::ScopedViewport scopedViewport(ivec2(0), mFbo->getSize());
 
 		gl::setMatricesWindow(mFbo->getSize());
-
-		mFbo->bindFramebuffer();
-
-		gl::viewport(mFbo->getSize());
+		gl::ScopedViewport scopedViewport(mFbo->getSize());
+		gl::ScopedFramebuffer scopedFbo(mFbo);
+		
 		gl::clear(ColorA(0, 0, 0, 0));
+		gl::scale(vec3(mResolution, mResolution, 1.0f));
 
-		BaseView::drawChildren(getDrawColor());
+		if (getBlendMode() == BlendMode::PREMULT) {
+			gl::ScopedBlendPremult scopedBlend;
+			BaseView::drawChildren(getDrawColor());
 
-		mFbo->unbindFramebuffer();
+		} else {
+			BaseView::drawChildren(getDrawColor());
+		}
 
 		// Set mHasInvalidContent back to false so it doesn't continue to validate on every draw
 		BaseView::validateContent();
@@ -76,7 +88,7 @@ inline void FboView::validateContent(){
 
 }
 
-void FboView::handleEvent(const ViewEvent& event) {
+void FboView::handleEvent(ViewEvent& event) {
 	if (event.type == ViewEvent::Type::CONTENT_INVALIDATED) {
 		invalidate(false, true);
 	}
@@ -93,7 +105,11 @@ void FboView::draw() {
 		validateContent();
 	}
 
-	if (mFbo) {
+	BaseView::draw();
+
+	if (mFbo && mDrawsToScreen) {
+		const float inverseScale = 1.0f / mResolution;
+		gl::scale(vec3(inverseScale, inverseScale, 1.0));
 		gl::draw(mFbo->getColorTexture());
 	}
 }

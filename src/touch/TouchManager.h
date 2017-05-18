@@ -9,9 +9,9 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/Signals.h"
 
 #include <mutex>
-#include <boost/signals2.hpp>
 
 #include "Touch.h"
 #include "../views/TouchView.h"
@@ -30,9 +30,9 @@ public:
 	//==================================================
 	// Broadcast signals
 	//
-	boost::signals2::signal<void(const TouchEvent& touchEvent)>	mDidBeginTouch;	//! Fired before any touch objects receive this event
-	boost::signals2::signal<void(const TouchEvent& touchEvent)>	mDidMoveTouch;	//! Fired before any touch objects receive this event
-	boost::signals2::signal<void(const TouchEvent& touchEvent)>	mDidEndTouch;	//! Fired before any touch objects receive this event
+	ci::signals::Signal<void(const TouchEvent& touchEvent)>	mDidBeginTouch;	//! Fired before any touch objects receive this event
+	ci::signals::Signal<void(const TouchEvent& touchEvent)>	mDidMoveTouch;	//! Fired before any touch objects receive this event
+	ci::signals::Signal<void(const TouchEvent& touchEvent)>	mDidEndTouch;	//! Fired before any touch objects receive this event
 
 
 	//==================================================
@@ -51,7 +51,7 @@ public:
 	//
 	
 	//! Adds a touch event to the event queue which will be processed on the main thread and forwarded to views
-	void					addTouch(const int id, const ci::vec2& position, const TouchType type, const TouchPhase phase);
+	void					addTouch(const int id, const ci::vec2& relPosition, const TouchType type, const TouchPhase phase);
 	void					addTouch(Touch & touch);
 
 	//! Removes a touch if it exists. Views associated to this event will be notifed with touchEnded.
@@ -107,7 +107,7 @@ protected:
 	views::TouchViewRef		getViewForTouchId(const int touchId);
 
 	//! Find the object that the current touch is hitting by navigating up the view hierarchy
-	views::TouchView*		getTopViewAtPosition(const ci::vec2 &position, views::BaseViewRef rootView);
+	views::TouchView*		getTopViewAtPosition(const ci::vec2 &relPosition, views::BaseViewRef rootView);
 	
 	//! This enables/disables MultiTouch on a global app level where setMultiTouchEnabled in BaseView is on a view by view basis.
 	void					setMultiTouchEnabled(bool enabled) { mMultiTouchEnabled = enabled; };
