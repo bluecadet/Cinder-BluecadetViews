@@ -46,7 +46,7 @@ private:
 		SimulatedTouch(const int id) : id(id) {}
 		SimulatedTouch() : id(-1) {}
 		const int id;
-		ci::Anim<ci::vec2> position;
+		ci::Anim<ci::vec2> relPosition;
 	};
 
 	void update();

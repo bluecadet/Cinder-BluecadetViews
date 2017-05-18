@@ -46,7 +46,7 @@ struct TouchEvent : public views::ViewEvent {
 	};
 
 	// Mandatory values
-	ci::vec2			position		= ci::vec2(0);			//! The global touch position in app coordinate space; (0, 0) is at the top left of your application regardless of zoom/pan.
+	ci::vec2			globalPosition	= ci::vec2(0);	//! The global touch position in app coordinate space; (0, 0) is at the top left of your application regardless of zoom/pan.
 	ci::vec2			localPosition	= ci::vec2(0);	//! The local touch position in the target view's coordinate space; (0, 0) is at your view's origin
 	ci::ivec2			windowPosition	= ci::vec2(0);	//! The raw touch position in window space. (0, 0) is at the top-left of your window and coordinates are unscaled and true to window pixels.
 
@@ -60,7 +60,7 @@ struct TouchEvent : public views::ViewEvent {
 
 	TouchEvent() : ViewEvent(TouchEvent::Type::TOUCH) {};
 	TouchEvent(const Touch & touch);
-	TouchEvent(const int touchId, const ci::ivec2 & windowPosition, const ci::vec2 & appPosition, const TouchType touchType, const TouchPhase phase);
+	TouchEvent(const int touchId, const ci::ivec2 & windowPosition, const ci::vec2 & globalPosition, const TouchType touchType, const TouchPhase phase);
 };
 
 }

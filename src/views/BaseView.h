@@ -61,6 +61,29 @@ public:
 
 
 	//==================================================
+	// Global defaults
+	//
+
+	//! Defaults to true.
+	static bool				sEventPropagationEnabled;
+
+	//! Defaults to true. If set to false, all views that should still dispatch this event
+	//! (especially views that are childre nof FboViews) will need this flag to be explicitly set to true.
+	static bool				sContentInvalidationEnabled;
+
+	//! Defaults to false. Draws all views with debug color to illustrate the view hierarchy.
+	static bool				sDebugDrawBounds;
+
+	//! Defaults to false. When sDebugDrawBounds is set to true, this setting will also draw any invisible views
+	static bool				sDebugDrawInvisibleBounds;
+
+	enum class BlendMode {
+		ALPHA,
+		PREMULT,
+		INHERIT
+	};
+
+	//==================================================
 	// Scene graph modification
 	// 
 
@@ -193,6 +216,13 @@ public:
 	virtual ci::Anim<float>&			getAlpha() { return mAlpha; }
 	virtual void						setAlpha(const float alpha) { mAlpha = alpha; }
 
+	//! Returns a constant reference of getAlpha(). Allows for const access.
+	virtual const ci::Anim<float>&		getAlphaConst() const { return mAlpha; }
+	
+	//! Defaults to inherit (doesn't change the blend mode).
+	BlendMode							getBlendMode() const { return mBlendMode; }
+	void								setBlendMode(const BlendMode value) { mBlendMode = value; }
+
 	//! Disables drawing; Update calls are not affected; Defaults to false
 	virtual bool						isHidden() const { return mIsHidden; }
 	virtual void						setHidden(const bool isHidden) { mIsHidden = isHidden; }
@@ -277,6 +307,7 @@ protected:
 
 	inline virtual void	willDraw() {}							//! Called by drawScene before draw()
 	virtual void		draw();									//! Called by drawScene and allows for drawing content for this node. By default draws a rectangle with the current size and background color (only if x/y /bg-alpha > 0)
+	virtual void		debugDrawOutline();						//! Called in DEBUG if sDebugDrawBounds is set to true.
 	inline virtual void	drawChildren(const ci::ColorA& parentTint); //! Called by drawScene() after draw() and before didDraw(). Implemented at bottom of class.
 	inline virtual void	didDraw() {}							//! Called by drawScene after draw()
 
@@ -293,7 +324,7 @@ protected:
 	inline void invalidate(const bool transforms = true, const bool content = true);
 
 	//! True if any properties that visually modifies this view has been changed since the last call of validateContent().
-	const bool hasInvalidContent() const	{ return mHasInvalidContent; }
+	virtual bool hasInvalidContent() const	{ return mHasInvalidContent; }
 	virtual void validateContent()			{ mHasInvalidContent = false; }
 
 private:
@@ -316,8 +347,10 @@ private:
 	ci::Anim<ci::Color> mTint;
 	ci::Anim<ci::ColorA> mBackgroundColor;
 	ci::vec2 mSize;
+
 	bool mIsHidden;
 	bool mShouldForceInvisibleDraw;
+	BlendMode mBlendMode;
 
 	ci::ColorA mDrawColor;	//! Combines mAlpha and mTint for faster draw
 
@@ -330,7 +363,6 @@ private:
 	ci::mat4 mGlobalTransform;			// current transform multiplied with parent's transform
 	ci::mat4 mRotationScaleTransform;	// contains rotation and scale around transform origin
 	bool mHasInvalidTransforms;
-
 	bool mHasInvalidContent;
 
 

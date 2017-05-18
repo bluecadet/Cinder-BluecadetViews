@@ -14,7 +14,12 @@ class GraphView : public views::BaseView {
 
 public:
 
-	GraphView(const ci::ivec2 & size);
+	enum class Style {
+		Line,
+		Gradient
+	};
+
+	GraphView(const ci::ivec2 & size, const Style style = Style::Line);
 	~GraphView();
 
 	//! Creates a graph with green min and red max colors
@@ -39,6 +44,9 @@ public:
 	bool getLabelsEnabled() const { return mLabelsEnabled; }
 	void setLabelsEnabled(const bool value) { mLabelsEnabled = value; }
 
+	Style getStyle() const { return mStyle; }
+	void setStyle(const Style value) { mStyle = value; }
+
 protected:
 
 	struct Graph {
@@ -58,6 +66,7 @@ protected:
 	size_t mCapacity;
 	bool mNeedsUpdate;
 	bool mLabelsEnabled;
+	Style mStyle;
 
 	ci::gl::FboRef mFbo;
 	ci::gl::GlslProgRef mGlsl;

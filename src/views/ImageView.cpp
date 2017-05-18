@@ -10,7 +10,7 @@ namespace views {
 
 ImageView::ImageView() : BaseView(),
 mTexture(nullptr),
-mAutoSizeToTexture(true)
+mScaleMode(ScaleMode::NONE)
 {
 }
 
@@ -26,20 +26,25 @@ void ImageView::clearTexture() {
     mTexture = nullptr;
     mDrawingDestRect = Rectf();
     mDrawingArea = Area();
+	mScaleMode = ScaleMode::NONE;
 }
 
-void ImageView::setup(const gl::TextureRef texture, const ci::vec2 &size) {
-	setTexture(texture);
+void ImageView::setup(const gl::TextureRef texture, const ci::vec2 &size, const ScaleMode scaleMode) {
+	const bool resizeToTexture = size.x == 0 && size.y == 0;
 
-	if (size.x != 0 && size.y != 0) {
+	setScaleMode(scaleMode);
+	
+	setTexture(texture, resizeToTexture);
+
+	if (!resizeToTexture) {
 		setSize(size);
 	}
 }
 
-void ImageView::setTexture(ci::gl::TextureRef texture) {
+void ImageView::setTexture(ci::gl::TextureRef texture, const bool resizeToTexture) {
 	mTexture = texture;
 
-	if (mAutoSizeToTexture) {
+	if (resizeToTexture) {
 		if (mTexture) {
 			// apply texture size
 			setSize(vec2(mTexture->getSize()));
@@ -67,7 +72,21 @@ void ImageView::setSize(const ci::vec2& size) {
 
 void ImageView::draw() {
 	if (!mTexture) return;
-	gl::draw(mTexture, mDrawingArea, mDrawingDestRect);
+	
+	switch (mScaleMode) {
+		case ScaleMode::NONE:
+			gl::draw(mTexture);
+			break;
+		case ScaleMode::STRETCH:
+			gl::draw(mTexture, mDrawingDestRect);
+			break;
+		case ScaleMode::FIT:
+			gl::draw(mTexture, Rectf(mTexture->getBounds()).getCenteredFit(mDrawingDestRect, true));
+			break;
+		case ScaleMode::COVER:
+			gl::draw(mTexture, mDrawingArea, mDrawingDestRect);
+			break;
+	}
 }
 
 }
