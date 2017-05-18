@@ -93,18 +93,6 @@
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\Text.h">
       <Filter>Blocks\BluecadetText\src</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\..\..\OSC\src\cinder\osc\Osc.cpp">
-      <Filter>Blocks\OSC\src\cinder\osc</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\..\OSC\src\cinder\osc\Osc.h">
-      <Filter>Blocks\OSC\src\cinder\osc</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.cpp">
-      <Filter>Blocks\TUIO\src\cinder\tuio</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.h">
-      <Filter>Blocks\TUIO\src\cinder\tuio</Filter>
-    </ClInclude>
     <ClCompile Include="..\src\GestureWorksTouchPlugin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -176,6 +164,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\core\ScreenCamera.cpp">
       <Filter>Blocks\BluecadetViews\src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\OSC\src\cinder\osc\Osc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -253,6 +247,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\core\ScreenCamera.h">
       <Filter>Blocks\BluecadetViews\src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\OSC\src\cinder\osc\Osc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

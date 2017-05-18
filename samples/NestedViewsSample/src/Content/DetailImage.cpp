@@ -61,7 +61,7 @@ void DetailImage::update() {
 	// Drag this view to match the location of the current touch if it has moving touches
 	// *Another way to do this could be to make a handleMovedTouch() signal callback instead of having this check in the update
 	if (hasMovingTouches()) {
-		setPosition(getCurTouchPosition());
+		setGlobalPosition(getGlobalTouchPos());
 	}
 }
 
