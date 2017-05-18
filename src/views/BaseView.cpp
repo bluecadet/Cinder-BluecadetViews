@@ -343,7 +343,7 @@ void BaseView::dispatchEvent(ViewEvent event) {
 		handleEvent(event);
 	}
 
-	mEventSignalsByType[event.type](event);
+	mEventSignalsByType[event.type].emit(event);
 
 	if (!event.shouldPropagate || !mShouldPropagateEvents) {
 		// cut off propagation if required
