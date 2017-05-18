@@ -31,6 +31,13 @@ typedef std::list<BaseViewRef> BaseViewList;
 
 class BaseView : public std::enable_shared_from_this<BaseView> {
 
+public:
+
+
+	//==================================================
+	// Typedefs
+	// 
+
 	typedef boost::variant<
 		bool, int, float, double,
 		ci::ivec2, ci::ivec3, ci::ivec4,
@@ -44,7 +51,10 @@ class BaseView : public std::enable_shared_from_this<BaseView> {
 	typedef ci::signals::Connection								EventConnection;
 	typedef EventSignal::CallbackFn								EventCallback;
 
-public:
+
+	//==================================================
+	// Construct/destruct
+	// 
 
 	BaseView();
 	virtual ~BaseView();
@@ -94,9 +104,9 @@ public:
 	// 
 
 	//! Signal that will trigger whenever an event is received or dispatched by this view.
-	EventSignal &			getEventSignal(const std::string & type) { return mEventSignalsByType[type]; };
-	EventConnection			addEventCallback(const EventCallback callback, const std::string & type) { return mEventSignalsByType[type].connect(callback); };
-	void					removeEventCallback(EventConnection connection, const std::string & type) { connection.disconnect(); };
+	//EventSignal &			getEventSignal(const std::string & type) { return mEventSignalsByType[type]; };
+	EventConnection	&		addEventCallback(const std::string & type, const EventCallback callback) { return mEventSignalsByType[type].connect(callback); };
+	void					removeEventCallback(const std::string & type, EventConnection & connection) { connection.disconnect(); };
 	//void					removeAllEventCallbacks(const std::string & type) { mEventSignalsByType[type].disconnect_all_slots(); }; // TODO: implement
 	//void					removeAllEventCallbacks() { for (auto & signal : mEventSignalsByType) signal.second.disconnect_all_slots(); }; // TODO: implement
 
@@ -325,9 +335,10 @@ private:
 
 
 	// Events
-	bool								mShouldDispatchContentInvalidation;
-	bool								mShouldPropagateEvents;
-	std::map<std::string, EventSignal>	mEventSignalsByType;
+	bool												mShouldDispatchContentInvalidation;
+	bool												mShouldPropagateEvents;
+	std::map<std::string, EventSignal>					mEventSignalsByType;
+	std::map<std::string, std::set<EventConnection>>	mEventConnectionsByType;
 
 	// Misc
 	const size_t							mViewId;
