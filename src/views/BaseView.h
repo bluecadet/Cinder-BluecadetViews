@@ -105,7 +105,7 @@ public:
 
 	//! Signal that will trigger whenever an event is received or dispatched by this view.
 	EventSignal &			getEventSignal(const std::string & type) { return mEventSignalsByType[type]; };
-	EventConnection	&		addEventCallback(const std::string & type, const EventCallback callback) { return mEventSignalsByType[type].connect(callback); };
+	EventConnection			addEventCallback(const std::string & type, const EventCallback callback) { return mEventSignalsByType[type].connect(callback); };
 	void					removeEventCallback(const std::string & type, EventConnection & connection) { connection.disconnect(); };
 	//void					removeAllEventCallbacks(const std::string & type) { mEventSignalsByType[type].disconnect_all_slots(); }; // TODO: implement
 	//void					removeAllEventCallbacks() { for (auto & signal : mEventSignalsByType) signal.second.disconnect_all_slots(); }; // TODO: implement
