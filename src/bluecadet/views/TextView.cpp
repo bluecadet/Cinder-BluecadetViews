@@ -1,5 +1,6 @@
 #include "TextView.h"
-#include "StyleManager.h"
+
+#include "bluecadet/text/StyleManager.h"
 
 #if defined(CINDER_MSW)
 

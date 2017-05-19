@@ -1,12 +1,9 @@
 #include "ContentController.h"
 
-#include "ImageManager.h"
-
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 using namespace bluecadet::views;
-using namespace bluecadet::utils;
 
 ContentController::ContentController() : BaseView(){
 }
@@ -15,9 +12,6 @@ ContentController::~ContentController(){
 }
 
 void ContentController::setup() {
-
-	// Preload assets in "testImages" folder
-	ImageManager::getInstance()->loadAllImagesInDirectory("testImages");
 
 	// Create one header
 	mHeader = HeaderRef(new Header());

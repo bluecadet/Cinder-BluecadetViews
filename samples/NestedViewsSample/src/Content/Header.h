@@ -8,9 +8,9 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include <views/BaseView.h>
-#include <views/TextView.h>
-#include <views/LineView.h>
+#include "bluecadet/views/BaseView.h"
+#include "bluecadet/views/TextView.h"
+#include "bluecadet/views/LineView.h"
 
 typedef std::shared_ptr<class Header> HeaderRef;
 

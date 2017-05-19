@@ -21,8 +21,8 @@ You can use the boilerplate below for your main application file:
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include <core/BaseApp.h>
-#include <views/TouchView.h>
+#include "bluecadet/core/BaseApp.h"
+#include "bluecadet/views/TouchView.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -98,7 +98,7 @@ CINDER_APP(BaseAppSampleApp, RendererGl(RendererGl::Options().msaa(4)), BaseAppS
 
 ## Notes
 
-Version 1.3.0
+Version 1.3.1
 
 Based on [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/v0.9.1)
 

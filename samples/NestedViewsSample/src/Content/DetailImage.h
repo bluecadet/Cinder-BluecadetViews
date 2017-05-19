@@ -8,9 +8,9 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include <views/BaseView.h>
-#include <views/ImageView.h>
-#include <views/TouchView.h>
+#include "bluecadet/views/BaseView.h"
+#include "bluecadet/views/ImageView.h"
+#include "bluecadet/views/TouchView.h"
 
 typedef std::shared_ptr<class DetailImage> DetailImageRef;
 

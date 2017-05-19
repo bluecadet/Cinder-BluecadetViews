@@ -8,7 +8,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include <views/BaseView.h>
+#include "bluecadet/views/BaseView.h"
 #include "content/Header.h"
 #include "content/DetailImage.h"
 

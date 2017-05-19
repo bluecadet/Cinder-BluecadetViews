@@ -3,13 +3,13 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
 
-#include <core/BaseApp.h>
-#include <views/BaseView.h>
-#include <views/EllipseView.h>
-#include <views/FboView.h>
-#include <views/LineView.h>
-#include <views/TouchView.h>
-#include <views/StatsView.h>
+#include "bluecadet/core/BaseApp.h"
+#include "bluecadet/views/BaseView.h"
+#include "bluecadet/views/EllipseView.h"
+#include "bluecadet/views/FboView.h"
+#include "bluecadet/views/LineView.h"
+#include "bluecadet/views/TouchView.h"
+#include "bluecadet/views/StatsView.h"
 
 
 using namespace ci;

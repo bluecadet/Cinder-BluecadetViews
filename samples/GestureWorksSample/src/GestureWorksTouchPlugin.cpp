@@ -1,7 +1,7 @@
 #include "GestureWorksTouchPlugin.h"
 
 #include "gwc/GestureWorksCore.h"
-#include <views/TouchView.h>
+#include "bluecadet/views/TouchView.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -69,7 +69,7 @@ void GestureWorksTouchPlugin::preUpdate(TouchManager * manager) {
 void GestureWorksTouchPlugin::processEvent(TouchManager * manager, const TouchEvent & event) {
 	// GW expects touch coordinates to be normalized. Normally this would be in screen coords,
 	// but we're emulating events in app space, so we use app size instead of window size.
-	vec2 touchPos = toPixels(event.position) / mAppSize;
+	vec2 touchPos = toPixels(event.globalPosition) / mAppSize;
 	gwc::touchpoint touchPoint;
 	touchPoint.init(event.touchId, touchPos.x, touchPos.y, 0, 1, 1);
 

@@ -4,11 +4,10 @@
 
 #include "cinder/Rand.h"
 
-#include <core/BaseApp.h>
-#include <views/TouchView.h>
-#include <views/StatsView.h>
-
-#include <touch/drivers/NativeTouchDriver.h>
+#include "bluecadet/core/BaseApp.h"
+#include "bluecadet/views/TouchView.h"
+#include "bluecadet/views/StatsView.h"
+#include "bluecadet/touch/drivers/NativeTouchDriver.h"
 
 #include "gwc/GestureWorksCore.h"
 #include "GestureWorksTouchPlugin.h"
