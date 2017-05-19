@@ -14,9 +14,9 @@
 
 #else
 
-#include <Text.h>
-#include <StyledTextLayout.h>
-#include <StyleManager.h>
+#include "bluecadet/text/Text.h"
+#include "bluecadet/text/StyledTextLayout.h"
+#include "bluecadet/text/StyleManager.h"
 
 #include "BaseView.h"
 

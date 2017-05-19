@@ -1,12 +1,9 @@
 #include "DetailImage.h"
 
-#include <ImageManager.h>
-
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 using namespace bluecadet::views;
-using namespace bluecadet::utils;
 
 //==================================================
 // Class Lifecycle
@@ -24,8 +21,10 @@ void DetailImage::setup(int id) {
 
 	// Create bg
 	mBgImage = ImageViewRef(new ImageView());
-	string iconFileName = "bluecadetIcon.png";
-	mBgImage->setup(ImageManager::getInstance()->getTexture(iconFileName));
+	string iconPath = "testImages/bluecadetIcon.png";
+	auto surface = loadImage(getAssetPath(iconPath));
+	auto texture = gl::Texture::create(surface);
+	mBgImage->setup(texture);
 
 	// Center the bgImage within the container
 	mBgImage->setPosition(-0.5f * mBgImage->getSize());

@@ -7,7 +7,7 @@
 	author="Bluecadet"
 	summary="Scene graph with nested transforms, events, touch/mouse delegation and app boilerplates."
 	license="MIT"
-	version="1.3.0"
+	version="1.3.1"
 	url="https://github.com/bluecadet/Cinder-BluecadetViews"
 	>
 
@@ -17,14 +17,14 @@
 	<headerPattern>src/*.h</headerPattern>
 	<sourcePattern>src/*.cpp</sourcePattern>
 	
-	<headerPattern>src/core/*.h</headerPattern>
-	<sourcePattern>src/core/*.cpp</sourcePattern>
-	<headerPattern>src/views/*.h</headerPattern>
-	<sourcePattern>src/views/*.cpp</sourcePattern>
-	<headerPattern>src/touch/*.h</headerPattern>
-	<sourcePattern>src/touch/*.cpp</sourcePattern>
-	<headerPattern>src/touch/drivers/*.h</headerPattern>
-	<sourcePattern>src/touch/drivers/*.cpp</sourcePattern>
+	<headerPattern>src/bluecadet/core/*.h</headerPattern>
+	<sourcePattern>src/bluecadet/core/*.cpp</sourcePattern>
+	<headerPattern>src/bluecadet/views/*.h</headerPattern>
+	<sourcePattern>src/bluecadet/views/*.cpp</sourcePattern>
+	<headerPattern>src/bluecadet/touch/*.h</headerPattern>
+	<sourcePattern>src/bluecadet/touch/*.cpp</sourcePattern>
+	<headerPattern>src/bluecadet/touch/drivers/*.h</headerPattern>
+	<sourcePattern>src/bluecadet/touch/drivers/*.cpp</sourcePattern>
 	
 	<includePath>src</includePath>
 </block>

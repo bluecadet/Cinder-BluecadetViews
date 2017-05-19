@@ -3,8 +3,8 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include <touch/TouchManager.h>
-#include <views/TouchView.h>
+#include "bluecadet/touch/TouchManager.h"
+#include "bluecadet/views/TouchView.h"
 
 namespace bluecadet {
 namespace touch {

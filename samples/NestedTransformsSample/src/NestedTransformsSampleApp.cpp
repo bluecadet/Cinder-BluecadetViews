@@ -3,8 +3,8 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
 
-#include <core/BaseApp.h>
-#include <views/TouchView.h>
+#include "bluecadet/core/BaseApp.h"
+#include "bluecadet/views/TouchView.h"
 
 using namespace ci;
 using namespace ci::app;

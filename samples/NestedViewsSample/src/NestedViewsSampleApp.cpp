@@ -2,8 +2,8 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include <core/BaseApp.h>
-#include <views/TouchView.h>
+#include "bluecadet/core/BaseApp.h"
+#include "bluecadet/views/TouchView.h"
 
 #include "ContentController.h"
 
