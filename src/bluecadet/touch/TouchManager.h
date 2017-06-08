@@ -14,6 +14,7 @@
 #include <mutex>
 
 #include "Touch.h"
+#include "TouchManagerPlugin.h"
 #include "../views/TouchView.h"
 
 namespace bluecadet {
@@ -21,7 +22,6 @@ namespace touch {
 
 // Forward type definitions
 typedef std::shared_ptr<class TouchManager> TouchManagerRef;
-typedef std::shared_ptr<class TouchManagerPlugin> TouchManagerPluginRef;
 
 class TouchManager {
 
@@ -107,7 +107,7 @@ protected:
 	views::TouchViewRef		getViewForTouchId(const int touchId);
 
 	//! Find the object that the current touch is hitting by navigating up the view hierarchy
-	views::TouchView*		getTopViewAtPosition(const ci::vec2 &relPosition, views::BaseViewRef rootView);
+	views::TouchView*		getTopViewForTouch(const Touch & touch, views::BaseViewRef rootView);
 	
 	//! This enables/disables MultiTouch on a global app level where setMultiTouchEnabled in BaseView is on a view by view basis.
 	void					setMultiTouchEnabled(bool enabled) { mMultiTouchEnabled = enabled; };
@@ -130,26 +130,6 @@ protected:
 	ci::vec2									mAppSize;
 
 	std::vector<TouchManagerPluginRef>			mPlugins;
-};
-
-
-//==================================================
-// TouchManagerPlugin Base Class
-// 
-
-class TouchManagerPlugin {
-
-public:
-	TouchManagerPlugin() {};
-	virtual ~TouchManagerPlugin() {};
-
-	virtual void wasAddedTo(TouchManager * manager) {};
-	virtual void willBeRemovedFrom(TouchManager * manager) {};
-
-	virtual void preUpdate(TouchManager * manager) {};
-	virtual void processEvent(TouchManager * manager, const TouchEvent & event) {};
-	virtual void postUpdate(TouchManager * manager) {};
-
 };
 
 }

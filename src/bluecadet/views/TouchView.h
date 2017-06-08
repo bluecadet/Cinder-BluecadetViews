@@ -76,7 +76,7 @@ public:
 
 	virtual void	cancelTouches();						//! Remove whatever touches are currently within the object and causes touchesEndedHandler() to be called
 	virtual bool	containsPoint(const ci::vec2& point);	//! Used for touch detection. Passes in a local point. Override this method to define more complex hit areas.
-	virtual bool	canAcceptTouch() const;					//! Will return whether this touch object can accept a new touch based on its current state.
+	virtual bool	canAcceptTouch(const bluecadet::touch::Touch & touch) const;					//! Will return whether this touch object can accept a new touch based on its current state.
 
 	// Used by the touch manager and should not be overriden
 	virtual void	processTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) final;

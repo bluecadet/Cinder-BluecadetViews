@@ -217,7 +217,7 @@ bool TouchView::containsPoint(const vec2 &point) {
 	return mTouchPath.contains(point);
 }
 
-bool TouchView::canAcceptTouch() const {
+bool TouchView::canAcceptTouch(const bluecadet::touch::Touch & touch) const {
 	return (mMultiTouchEnabled || mObjectTouchIDs.empty()) && (getAlphaConst().value() > mMinAlphaForTouches);
 }
 

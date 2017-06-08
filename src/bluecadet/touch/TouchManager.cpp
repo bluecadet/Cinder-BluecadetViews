@@ -92,8 +92,9 @@ void TouchManager::mainThreadTouchesBegan(const Touch & touch, views::BaseViewRe
 		return;
 	}
 
+	TouchView * view = getTopViewForTouch(touch, rootView);
+
 	TouchEvent touchEvent(touch);
-	TouchView* view = getTopViewAtPosition(touch.appPosition, rootView);
 
 	if (view) {
 		auto viewRef = view->getSharedTouchViewPtr();
@@ -247,7 +248,7 @@ TouchViewRef TouchManager::getViewForTouchId(const int touchId) {
 	return touchViewIt->second.lock();
 }
 
-TouchView * TouchManager::getTopViewAtPosition(const ci::vec2 &relPosition, BaseViewRef rootView) {
+TouchView * TouchManager::getTopViewForTouch(const Touch & touch, BaseViewRef rootView) {
 	if (!rootView) {
 		return nullptr;
 	}
@@ -259,7 +260,7 @@ TouchView * TouchManager::getTopViewAtPosition(const ci::vec2 &relPosition, Base
 
 	TouchView* obj = dynamic_cast<TouchView*>(rootView.get());
 
-	if (obj && (!obj->isTouchEnabled() || !obj->canAcceptTouch())) {
+	if (obj && (!obj->isTouchEnabled() || !obj->canAcceptTouch(touch))) {
 		// Don't check for touches in this view or in children if untouchable
 		return nullptr;
 	}
@@ -267,7 +268,7 @@ TouchView * TouchManager::getTopViewAtPosition(const ci::vec2 &relPosition, Base
 	// Go through children first
 	const auto & children = rootView->getChildren();
 	for (auto it = children.rbegin(); it != children.rend(); ++it) {
-		const auto touchedChild = getTopViewAtPosition(relPosition, *it);
+		const auto touchedChild = getTopViewForTouch(touch, *it);
 		if (touchedChild) {
 			return touchedChild;
 		}
@@ -275,7 +276,7 @@ TouchView * TouchManager::getTopViewAtPosition(const ci::vec2 &relPosition, Base
 
 	if (obj) {
 		// Check if the object itself is touched if none of the children were
-		const vec2 localPosition = obj->convertGlobalToLocal(relPosition);
+		const vec2 localPosition = obj->convertGlobalToLocal(touch.appPosition);
 
 		if (obj->containsPoint(localPosition)) {
 			return obj;
