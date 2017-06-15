@@ -40,7 +40,7 @@ void TouchManager::update(BaseViewRef rootView, const vec2 & appSize, const mat4
 
 	// pre update plugins
 	for (auto plugin : mPlugins) {
-		plugin->preUpdate(this);
+		plugin->preUpdate(this, mTouchQueue);
 	}
 
 	// process touches
@@ -56,7 +56,7 @@ void TouchManager::update(BaseViewRef rootView, const vec2 & appSize, const mat4
 
 	// post update plugins
 	for (auto plugin : mPlugins) {
-		plugin->postUpdate(this);
+		plugin->postUpdate(this, mTouchQueue);
 	}
 }
 

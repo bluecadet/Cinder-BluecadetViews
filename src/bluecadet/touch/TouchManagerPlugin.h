@@ -22,9 +22,9 @@ public:
 	virtual void wasAddedTo(TouchManager * manager) {};
 	virtual void willBeRemovedFrom(TouchManager * manager) {};
 
-	virtual void preUpdate(TouchManager * manager) {};
+	virtual void preUpdate(TouchManager * manager, std::deque<Touch> & touches) {};
 	virtual void processEvent(TouchManager * manager, const TouchEvent & event) {};
-	virtual void postUpdate(TouchManager * manager) {};
+	virtual void postUpdate(TouchManager * manager, std::deque<Touch> & touches) {};
 
 };
 
