@@ -17,11 +17,6 @@ Comments:
 #include "BaseView.h"
 #include "../touch/Touch.h"
 
-// forward declaration for GWC -- temporary solution
-namespace gwc {
-	class GestureEvent;
-}
-
 namespace bluecadet {
 namespace views {
 
@@ -37,7 +32,6 @@ public:
 	ci::signals::Signal<void(const touch::TouchEvent& touchEvent)>	mDidMoveTouch;		//! Triggered for moving touches after touch began
 	ci::signals::Signal<void(const touch::TouchEvent& touchEvent)>	mDidEndTouch;		//! Triggered when touch ends and when touch is canceled
 	ci::signals::Signal<void(const touch::TouchEvent& touchEvent)>	mDidTap;			//! Triggered after mDidEndTouch if the touch fits the parameters for tapping
-	ci::signals::Signal<void(const gwc::GestureEvent& gestureEvent)>mDidReceiveGesture;
 
 
 	//==================================================
@@ -82,7 +76,6 @@ public:
 	virtual void	processTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) final;
 	virtual void	processTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) final;
 	virtual void	processTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) final;
-	virtual void	processGesture(const gwc::GestureEvent & gestureEvent) final;
 
 	//! Getters/Setters
 
@@ -150,7 +143,6 @@ protected:
 	virtual void	handleTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) {};
 	virtual void	handleTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) {};
 	virtual void	handleTouchTapped(const bluecadet::touch::TouchEvent& touchEvent) {};
-	virtual void	handleGesture(const gwc::GestureEvent & gestureEvent) {};
 
 	//! Resets all touch-state related variables to a non-touched state
 	virtual void	resetTouchState();

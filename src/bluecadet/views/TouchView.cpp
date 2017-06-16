@@ -6,11 +6,6 @@ using namespace std;
 using namespace ci;
 using namespace ci::app;
 
-// forward declaration for GWC -- temporary solution
-namespace gwc {
-class GestureEvent;
-}
-
 namespace bluecadet {
 namespace views {
 
@@ -174,11 +169,6 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 	if (mObjectTouchIDs.empty()) {
 		resetTouchState();
 	}
-}
-
-void TouchView::processGesture(const gwc::GestureEvent & gestureEvent) {
-	handleGesture(gestureEvent);
-	mDidReceiveGesture.emit(gestureEvent);
 }
 
 void TouchView::cancelTouches() {
