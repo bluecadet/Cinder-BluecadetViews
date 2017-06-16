@@ -10,8 +10,7 @@ namespace views {
 // forward declarations
 typedef std::shared_ptr<class BaseView> BaseViewRef;
 
-class ViewEvent {
-public:
+struct ViewEvent {
 	// Types
 	struct Type {
 		static const std::string CONTENT_INVALIDATED;

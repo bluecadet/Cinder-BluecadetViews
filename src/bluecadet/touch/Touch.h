@@ -39,8 +39,7 @@ struct Touch {
 
 
 //! TouchEvents are dispatched by the TouchManager via touched views.
-class TouchEvent : public views::ViewEvent {
-public:
+struct TouchEvent : public views::ViewEvent {
 	struct Type : public views::ViewEvent::Type {
 		static const std::string TOUCH;
 	};
