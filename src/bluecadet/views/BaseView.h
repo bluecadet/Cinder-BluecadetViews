@@ -44,10 +44,10 @@ public:
 		ci::vec2, ci::vec3, ci::vec4,
 		ci::mat2, ci::mat3, ci::mat4, ci::quat,
 		std::string
-	>																UserInfoTypes;
-	typedef std::map<std::string, UserInfoTypes>					UserInfo;
+	>															UserInfoTypes;
+	typedef std::map<std::string, UserInfoTypes>				UserInfo;
 
-	typedef ci::signals::Signal<void(const ViewEvent & event)>	EventSignal;
+	typedef ci::signals::Signal<void(ViewEvent & event)>			EventSignal;
 	typedef ci::signals::Connection								EventConnection;
 	typedef EventSignal::CallbackFn								EventCallback;
 
@@ -134,7 +134,7 @@ public:
 	//void					removeAllEventCallbacks() { for (auto & signal : mEventSignalsByType) signal.second.disconnect_all_slots(); }; // TODO: implement
 
 	//! Dispatch events to this view's children. Will also trigger the event signal.
-	void					dispatchEvent(ViewEvent event);
+	void					dispatchEvent(ViewEvent & event);
 
 	//! Dispatch a ViewEvent of `type` to this view's children. Will also trigger the event signal.
     void					dispatchEvent(const std::string & type) { dispatchEvent(ViewEvent(type, getSharedViewPtr())); };

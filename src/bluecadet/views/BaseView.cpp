@@ -376,7 +376,7 @@ CueRef BaseView::dispatchAfter(std::function<void()> fn, float delay) {
 // Events
 // 
 
-void BaseView::dispatchEvent(ViewEvent event) {
+void BaseView::dispatchEvent(ViewEvent & event) {
 	if (!event.target) {
 		event.target = getSharedViewPtr();
 	} else {

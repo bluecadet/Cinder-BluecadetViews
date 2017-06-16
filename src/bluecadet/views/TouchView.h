@@ -1,13 +1,3 @@
-/**+---------------------------------------------------------------------------
-Bluecadet Interactive 2016
-Developers: Paul Rudolph, Stacey Martens & Ben Bojko
-Contents:
-Comments:
-1. In setup, create each Path based on a (0,0) coordinate.
-2. Move the Path to the desired starting location on screen by setting mPosition.
-3. If you are translating the space, you have to update mTranslationPos by calling setTranslationPos in the draw function.
-----------------------------------------------------------------------------*/
-
 #pragma once
 #include "cinder/app/App.h"
 #include "cinder/Timeline.h"
