@@ -225,7 +225,7 @@ void TouchManager::cancelTouch(TouchViewRef touchView) {
 	}// scoped lock end
 
 	for (const auto & touch : touchesToEnd) {
-		mainThreadTouchesEnded(touch, touchView);
+		mainThreadTouchesEnded(touch, touchView, true);
 	}
 }
 
