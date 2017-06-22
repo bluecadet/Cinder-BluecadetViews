@@ -25,32 +25,6 @@ BaseApp::BaseApp() :
 BaseApp::~BaseApp() {
 }
 
-void BaseApp::prepareSettings(ci::app::App::Settings *settings) {
-	fs::path appSettingsPath = ci::app::getAssetPath("appSettings.json");
-	SettingsManager::getInstance()->setup(appSettingsPath, settings);
-
-	// Apply pre-launch settings
-#ifdef CINDER_MSW
-	settings->setConsoleWindowEnabled(SettingsManager::getInstance()->mConsoleWindowEnabled);
-#endif
-	settings->setFrameRate((float)SettingsManager::getInstance()->mFps);
-	settings->setWindowSize(SettingsManager::getInstance()->mWindowSize);
-	settings->setBorderless(SettingsManager::getInstance()->mBorderless);
-	settings->setFullScreen(SettingsManager::getInstance()->mFullscreen);
-	
-	if (SettingsManager::getInstance()->mNativeTouchEnabled) {
-		settings->setMultiTouchEnabled(true);
-	}
-
-	// Keep window top-left within display bounds
-	if (settings->getWindowPos().x == 0 && settings->getWindowPos().y == 0) {
-		ivec2 windowPos = (Display::getMainDisplay()->getSize() - settings->getWindowSize()) / 2;
-		windowPos = glm::max(windowPos, ivec2(0));
-		settings->setWindowPos(windowPos);
-	}
-}
-
-
 void BaseApp::setup() {
 	auto settings = SettingsManager::getInstance();
 
@@ -162,26 +136,26 @@ void BaseApp::keyDown(KeyEvent event) {
 	}
 
 	switch (event.getCode()) {
-		case KeyEvent::KEY_q:
-			quit();
-			break;
-		case KeyEvent::KEY_f:
-			SettingsManager::getInstance()->mFullscreen = !isFullScreen();
-			setFullScreen(SettingsManager::getInstance()->mFullscreen);
-			ScreenCamera::getInstance()->zoomToFitWindow();
-			break;
-		case KeyEvent::KEY_F1:
-			if (!SettingsManager::getInstance()->getParams()->isVisible()) {
-				SettingsManager::getInstance()->getParams()->show();
-				SettingsManager::getInstance()->getParams()->maximize();
+	case KeyEvent::KEY_q:
+		quit();
+		break;
+	case KeyEvent::KEY_f:
+		SettingsManager::getInstance()->mFullscreen = !isFullScreen();
+		setFullScreen(SettingsManager::getInstance()->mFullscreen);
+		ScreenCamera::getInstance()->zoomToFitWindow();
+		break;
+	case KeyEvent::KEY_F1:
+		if (!SettingsManager::getInstance()->getParams()->isVisible()) {
+			SettingsManager::getInstance()->getParams()->show();
+			SettingsManager::getInstance()->getParams()->maximize();
 
-			} else if (SettingsManager::getInstance()->getParams()->isMaximized()) {
-				SettingsManager::getInstance()->getParams()->minimize();
+		} else if (SettingsManager::getInstance()->getParams()->isMaximized()) {
+			SettingsManager::getInstance()->getParams()->minimize();
 
-			} else {
-				SettingsManager::getInstance()->getParams()->maximize();
-			}
-			break;
+		} else {
+			SettingsManager::getInstance()->getParams()->maximize();
+		}
+		break;
 	}
 }
 
@@ -221,7 +195,7 @@ void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
 	}).group(groupName);
 
 	static int stressTestMode = 0;
-	static vector<string> stressTestModes = { "Tap & Drag", "Slow Drag", "Tap" };
+	static vector<string> stressTestModes = {"Tap & Drag", "Slow Drag", "Tap"};
 
 	SettingsManager::getInstance()->getParams()->addParam("Mode", stressTestModes, &stressTestMode).updateFn([&] {
 		if (stressTestMode == 0) {

@@ -41,34 +41,35 @@ public:
 	virtual void handleAppSizeChange(const ci::ivec2 & appSize);
 	virtual void handleViewportChange(const ci::Area & viewport);
 
-	//! Call this method when initializing your app with the CINDER_APP macro
-	static void prepareSettings(ci::app::App::Settings *settings);
-
 	//! Adds a set of params to control the touch simulator
 	void		addTouchSimulatorParams(float touchesPerSecond = 50.f);
 
 	//! Use this view to add any children. The root view may be scaled and translated when using ScreenLayout to zoom/pan around the app.
-	views::BaseViewRef	getRootView() const	{ return mRootView; };
+	views::BaseViewRef	getRootView() const { return mRootView; };
 
 	//! The last time that update was called in seconds since app launch.
-	double		getLastUpdateTime() const	{ return mLastUpdateTime; }
+	double		getLastUpdateTime() const { return mLastUpdateTime; }
 
 	//! Debug view to render stats like fps in a graph.
 	views::GraphViewRef	getStats() const { return mStats; };
 
 	//! The main touch driver running on TUIO. Automatically connected at app launch.
-	touch::drivers::TuioDriver &            getTouchDriver()		{ return mTuioDriver; }
+	touch::drivers::TuioDriver &            getTouchDriver() { return mTuioDriver; }
 
 	//! The main mouse driver. Automatically connected at app launch.
-	touch::drivers::MouseDriver &           getMouseDriver()        { return mMouseDriver; }
+	touch::drivers::MouseDriver &           getMouseDriver() { return mMouseDriver; }
 
 	//! The main native driver. Disconnected by default at app launch.
-	touch::drivers::NativeTouchDriver &     getNativeTouchDriver()	{ return mNativeTouchDriver; }
-	
+	touch::drivers::NativeTouchDriver &     getNativeTouchDriver() { return mNativeTouchDriver; }
+
 	//! The main mouse driver. Configured with the current window size at app launch, but needs to be started explicitly.
-	touch::drivers::SimulatedTouchDriver &	getTouchSimDriver()     { return mSimulatedTouchDriver; }
+	touch::drivers::SimulatedTouchDriver &	getTouchSimDriver() { return mSimulatedTouchDriver; }
+
+	//! The settings manager instance used during initialization
+	SettingsManagerRef						getSettingsManager() const { return mSettingsManager; }
 
 private:
+	SettingsManagerRef						mSettingsManager;
 	views::BaseViewRef						mRootView;
 	views::MiniMapViewRef					mMiniMap;
 	views::GraphViewRef						mStats;
