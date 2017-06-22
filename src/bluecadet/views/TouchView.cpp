@@ -107,7 +107,7 @@ void TouchView::processTouchBegan(const touch::TouchEvent& touchEvent) {
 	mHasMovingTouches = isFirstTouch ? false : mHasMovingTouches;
 
 	handleTouchBegan(touchEvent);
-	mSignalTouchStarted.emit(touchEvent);
+	mSignalTouchBegan.emit(touchEvent);
 }
 
 void TouchView::processTouchMoved(const touch::TouchEvent& touchEvent) {
@@ -134,12 +134,12 @@ void TouchView::processTouchMoved(const touch::TouchEvent& touchEvent) {
 	}
 
 	handleTouchMoved(touchEvent);
-	mSignalTouchUpdated.emit(touchEvent);
+	mSignalTouchMoved.emit(touchEvent);
 }
 
 void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 	handleTouchEnded(touchEvent);
-	mSignalTouchStopped.emit(touchEvent);
+	mSignalTouchEnded.emit(touchEvent);
 
 	bool didTap = (mAllowsTapReleaseOutside || containsPoint(touchEvent.localPosition)) && !touchEvent.isCanceled;
 

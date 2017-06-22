@@ -54,10 +54,10 @@ public:
 	//==================================================
 	// Signals
 	// 
-	touch::TouchSignal	& getSignalTouchStarted()	{ return mSignalTouchStarted; }	//! Triggered for first touch when touch begins and for subsequent touches if multi-touch is enabled
-	touch::TouchSignal	& getSignalTouchUpdated()	{ return mSignalTouchUpdated; }	//! Triggered for moving touches after touch began
-	touch::TouchSignal & getSignalTouchStopped()	{ return mSignalTouchStopped; }	//! Triggered when touch ends and when touch is canceled
-	touch::TouchSignal	& getSignalTapped()			{ return mSignalTapped; }		//! Triggered after mDidEndTouch if the touch fits the parameters for tapping
+	touch::TouchSignal & getSignalTouchBegan()	{ return mSignalTouchBegan; }	//! Triggered for first touch when touch begins and for subsequent touches if multi-touch is enabled
+	touch::TouchSignal & getSignalTouchMoved()	{ return mSignalTouchMoved; }	//! Triggered for moving touches after touch began
+	touch::TouchSignal & getSignalTouchEnded()	{ return mSignalTouchEnded; }	//! Triggered when touch ends and when touch is canceled
+	touch::TouchSignal & getSignalTapped()		{ return mSignalTapped; }		//! Triggered after mDidEndTouch if the touch fits the parameters for tapping
 
 
 	//==================================================
@@ -158,9 +158,9 @@ protected:
 
 private:
 
-	touch::TouchSignal		mSignalTouchStarted;
-	touch::TouchSignal		mSignalTouchUpdated;
-	touch::TouchSignal		mSignalTouchStopped;
+	touch::TouchSignal		mSignalTouchBegan;
+	touch::TouchSignal		mSignalTouchMoved;
+	touch::TouchSignal		mSignalTouchEnded;
 	touch::TouchSignal		mSignalTapped;
 
 	bool			mTouchEnabled;

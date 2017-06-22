@@ -30,9 +30,9 @@ public:
 	//==================================================
 	// Broadcast signals
 	//
-	TouchSignal	& getSignalTouchStarted()	{ return mSignalTouchStarted; };	//! Global touch event. Fired before any touch objects receive this event
-	TouchSignal	& getSignalTouchUpdated()	{ return mSignalTouchUpdated; };	//! Global touch event. Fired before any touch objects receive this event
-	TouchSignal & getSignalTouchStopped()	{ return mSignalTouchStopped; };	//! Global touch event. Fired before any touch objects receive this event
+	TouchSignal	& getSignalTouchBegan()	{ return mSignalTouchBegan; };	//! Global touch event. Fired before any touch objects receive this event
+	TouchSignal	& getSignalTouchMoved()	{ return mSignalTouchMoved; };	//! Global touch event. Fired before any touch objects receive this event
+	TouchSignal & getSignalTouchEnded()	{ return mSignalTouchEnded; };	//! Global touch event. Fired before any touch objects receive this event
 
 	//==================================================
 	// Lifecycle
@@ -114,9 +114,9 @@ protected:
 
 	//==================================================
 
-	TouchSignal									mSignalTouchStarted;	//! Fired before any touch objects receive this event
-	TouchSignal									mSignalTouchUpdated;	//! Fired before any touch objects receive this event
-	TouchSignal									mSignalTouchStopped;	//! Fired before any touch objects receive this event
+	TouchSignal									mSignalTouchBegan;	//! Fired before any touch objects receive this event
+	TouchSignal									mSignalTouchMoved;	//! Fired before any touch objects receive this event
+	TouchSignal									mSignalTouchEnded;	//! Fired before any touch objects receive this event
 
 	std::recursive_mutex						mTouchIdMutex;
 	std::map<int, views::TouchViewWeakRef>		mViewsByTouchId;	// Stores views that are currently being touched
