@@ -103,7 +103,7 @@ void TouchManager::mainThreadTouchesBegan(const Touch & touch, views::BaseViewRe
 		touchEvent.localPosition = view->convertGlobalToLocal(touchEvent.globalPosition);
 	}
 
-	mDidBeginTouch.emit(touchEvent);
+	mSignalTouchStarted.emit(touchEvent);
 
 	if (view) {
 		// save and process touch
@@ -140,7 +140,7 @@ void TouchManager::mainThreadTouchesMoved(const Touch & touch, views::BaseViewRe
 		touchEvent.localPosition = view->convertGlobalToLocal(touchEvent.globalPosition);
 	}
 
-	mDidMoveTouch.emit(touchEvent);
+	mSignalTouchUpdated.emit(touchEvent);
 
 	if (view) {
 		// save and process touch
@@ -196,7 +196,7 @@ void TouchManager::mainThreadTouchesEnded(const Touch & touch, views::BaseViewRe
 		return;
 	}
 
-	mDidEndTouch.emit(touchEvent);
+	mSignalTouchStopped.emit(touchEvent);
 
 	if (view) {
 		view->processTouchEnded(touchEvent);

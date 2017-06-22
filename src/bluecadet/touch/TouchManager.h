@@ -30,10 +30,9 @@ public:
 	//==================================================
 	// Broadcast signals
 	//
-	ci::signals::Signal<void(const TouchEvent& touchEvent)>	mDidBeginTouch;	//! Fired before any touch objects receive this event
-	ci::signals::Signal<void(const TouchEvent& touchEvent)>	mDidMoveTouch;	//! Fired before any touch objects receive this event
-	ci::signals::Signal<void(const TouchEvent& touchEvent)>	mDidEndTouch;	//! Fired before any touch objects receive this event
-
+	TouchSignal	& getSignalTouchStarted()	{ return mSignalTouchStarted; };	//! Global touch event. Fired before any touch objects receive this event
+	TouchSignal	& getSignalTouchUpdated()	{ return mSignalTouchUpdated; };	//! Global touch event. Fired before any touch objects receive this event
+	TouchSignal & getSignalTouchStopped()	{ return mSignalTouchStopped; };	//! Global touch event. Fired before any touch objects receive this event
 
 	//==================================================
 	// Lifecycle
@@ -114,6 +113,10 @@ protected:
 	bool					isMultiTouchEnabled(){ return mMultiTouchEnabled; };
 
 	//==================================================
+
+	TouchSignal									mSignalTouchStarted;	//! Fired before any touch objects receive this event
+	TouchSignal									mSignalTouchUpdated;	//! Fired before any touch objects receive this event
+	TouchSignal									mSignalTouchStopped;	//! Fired before any touch objects receive this event
 
 	std::recursive_mutex						mTouchIdMutex;
 	std::map<int, views::TouchViewWeakRef>		mViewsByTouchId;	// Stores views that are currently being touched

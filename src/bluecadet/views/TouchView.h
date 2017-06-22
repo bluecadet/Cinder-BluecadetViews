@@ -18,20 +18,17 @@ class TouchView : public BaseView {
 
 public:
 
-	ci::signals::Signal<void(const touch::TouchEvent& touchEvent)>	mDidBeginTouch;		//! Triggered for first touch when touch begins and for subsequent touches if multi-touch is enabled
-	ci::signals::Signal<void(const touch::TouchEvent& touchEvent)>	mDidMoveTouch;		//! Triggered for moving touches after touch began
-	ci::signals::Signal<void(const touch::TouchEvent& touchEvent)>	mDidEndTouch;		//! Triggered when touch ends and when touch is canceled
-	ci::signals::Signal<void(const touch::TouchEvent& touchEvent)>	mDidTap;			//! Triggered after mDidEndTouch if the touch fits the parameters for tapping
-
 
 	//==================================================
-	// Global defaults
+	// Global defaults/types
 	//
 
 	//! The minimum alpha required for touches to be accepted (alpha has to be greater than the min). Defaults to 0, so that when alpha = 0 touches are not accepted.
 	static float			sDefaultMinAlphaForTouches;
 
-
+	//==================================================
+	// Life cycle
+	// 
 	//! Setup/Destruction
 	TouchView();
 	virtual ~TouchView();
@@ -52,6 +49,15 @@ public:
 
 	//! Returns a shared pointer to this instance. Use this instead of shared_from_this() if you want the shared pointer to be of type TouchViewRef.
 	TouchViewRef	getSharedTouchViewPtr() { return std::dynamic_pointer_cast<TouchView>(shared_from_this()); }
+
+
+	//==================================================
+	// Signals
+	// 
+	touch::TouchSignal	& getSignalTouchStarted()	{ return mSignalTouchStarted; }	//! Triggered for first touch when touch begins and for subsequent touches if multi-touch is enabled
+	touch::TouchSignal	& getSignalTouchUpdated()	{ return mSignalTouchUpdated; }	//! Triggered for moving touches after touch began
+	touch::TouchSignal & getSignalTouchStopped()	{ return mSignalTouchStopped; }	//! Triggered when touch ends and when touch is canceled
+	touch::TouchSignal	& getSignalTapped()			{ return mSignalTapped; }		//! Triggered after mDidEndTouch if the touch fits the parameters for tapping
 
 
 	//==================================================
@@ -151,6 +157,12 @@ protected:
 	ci::Path2d		mTouchPath;			//! Custom path that determines touchable area
 
 private:
+
+	touch::TouchSignal		mSignalTouchStarted;
+	touch::TouchSignal		mSignalTouchUpdated;
+	touch::TouchSignal		mSignalTouchStopped;
+	touch::TouchSignal		mSignalTapped;
+
 	bool			mTouchEnabled;
 	bool			mMultiTouchEnabled;
 
