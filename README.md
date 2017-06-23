@@ -96,7 +96,7 @@ CINDER_APP(BaseAppSampleApp, RendererGl(RendererGl::Options().msaa(4)), BaseAppS
 
 ## Notes
 
-Version 1.3.1
+Version 1.4.0
 
 Based on [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/v0.9.1)
 
