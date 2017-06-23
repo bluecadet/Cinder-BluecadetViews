@@ -36,22 +36,12 @@ public:
 	// Setup
 	// 
 
-	//! Set up the settings manager with the path to the main json and the applications settings.
-	//! Call this method in prepareSettings() before your main app's setup() method.
+	//! Set up the settings manager with the path to the main json and the applications settings. Should be called in prepareSettings().
 	//! 
 	//! jsonPath will default to getAssetPath("appSettings.json") if left empty.
+	//! overrideCallback can be used to override arguments from the json file.
 	//! 
-	//! Some command line arguments that are automatically parsed are:
-	//!		debug=[true/false]
-	//!		size=w,h
-	//!		fullscreen=[true/false]
-	//!		borderless=[true/false]
-	//!		vsync=[true/false]
-	//!		console=[true/false]
-	//!		cursor=[true/false]
-	//!		mouse=[true/false]
-	//!		native=[true/false]
-	virtual void setup(ci::app::App::Settings * appSettings, ci::fs::path jsonPath = "");
+	virtual void setup(ci::app::App::Settings * appSettings, ci::fs::path jsonPath = "", std::function<void(SettingsManager * manager)> overrideCallback = nullptr);
 
 
 	//! Adds a callback to parse a command line argument by key.

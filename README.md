@@ -44,13 +44,12 @@ void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 	// Optional: Override the shared settings manager instance with your subclass
 	SettingsManager::setInstance(myApp::MyAppSettingsManager::getInstance());
 	
-	// Optional: Set defaults at runtime (will be overriden by json)
-	SettingsManager::getInstance()->mFullscreen = false;
-	SettingsManager::getInstance()->mBorderless = false;
-	SettingsManager::getInstance()->mWindowSize = ivec2(1280, 720);
-	
 	// Initialize the settings manager with the cinder app settings and the settings json
-	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("appSettings.json"));
+	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("appSettings.json"), [](SettingsManager * manager) {
+		// Optional: Override json defaults at runtime
+		manager->mFullscreen = false;
+		manager->mWindowSize = ivec2(1280, 720);
+	});
 }
 
 void BaseAppSampleApp::setup() {

@@ -2,6 +2,8 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
+#include "cinder/Rand.h"
+
 #include "bluecadet/core/BaseApp.h"
 #include "bluecadet/views/TouchView.h"
 
@@ -22,19 +24,19 @@ public:
 };
 
 void BaseAppCrossPlatformApp::prepareSettings(ci::app::App::Settings* settings) {
-
-	// Optional: Set defaults at runtime (will be overriden by json)
-	SettingsManager::getInstance()->mFullscreen = false;
-	SettingsManager::getInstance()->mBorderless = false;
-	SettingsManager::getInstance()->mConsoleWindowEnabled = false;
-	SettingsManager::getInstance()->mWindowSize = ivec2(1280, 720);
-
 	// Initialize the settings manager with the cinder app settings and the settings json
-	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("appSettings.json"));
+	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("appSettings.json"), [](SettingsManager * manager) {
+		// Optional: Override json defaults at runtime
+		manager->mFullscreen = false;
+		manager->mWindowSize = ivec2(720, 405);
+		manager->mConsoleWindowEnabled = false;
+		manager->mDrawMinimap = true;
+		manager->mDrawStats = true;
+		manager->mDrawTouches = true;
+	});
 }
 
 void BaseAppCrossPlatformApp::setup() {
-
 	BaseApp::setup();
 	BaseApp::addTouchSimulatorParams();
 
@@ -46,7 +48,11 @@ void BaseAppCrossPlatformApp::setup() {
 	button->setPosition(vec2(400, 300));
 	button->setSize(vec2(200, 100));
 	button->setBackgroundColor(Color(1, 0, 0));
-	button->getSignalTapped().connect([=](bluecadet::touch::TouchEvent e) { CI_LOG_I("Button tapped"); });
+	button->getSignalTapped().connect([=](bluecadet::touch::TouchEvent e) {
+		ColorAf color = hsvToRgb(vec3(randFloat(), 1.0f, 1.0f));
+		button->getTimeline()->apply(&button->getBackgroundColor(), color, 0.33f, easeInOutQuad);
+	});
+	
 	getRootView()->addChild(button);
 }
 

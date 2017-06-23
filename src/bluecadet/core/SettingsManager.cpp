@@ -46,7 +46,7 @@ SettingsManager::SettingsManager() {
 SettingsManager::~SettingsManager() {}
 
 // Pull in the shared/standard app settings JSON
-void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path jsonPath) {
+void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path jsonPath, std::function<void(SettingsManager * manager)> overrideCallback) {
 	// Set default path
 	if (jsonPath.empty()) {
 		jsonPath = ci::app::getAssetPath("appSettings.json");
@@ -66,6 +66,10 @@ void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path j
 		}
 	} else if (!jsonPath.empty()) {
 		CI_LOG_E("Settings file does not exist at '" << jsonPath << "'");
+	}
+
+	if (overrideCallback) {
+		overrideCallback(this);
 	}
 
 	// Parse arguments from command line
@@ -105,14 +109,14 @@ void SettingsManager::applyToAppSettings(ci::app::App::Settings * settings) {
 
 	// Apply pre-launch settings
 #ifdef CINDER_MSW
-	settings->setConsoleWindowEnabled(SettingsManager::getInstance()->mConsoleWindowEnabled);
+	settings->setConsoleWindowEnabled(mConsoleWindowEnabled);
 #endif
-	settings->setFrameRate((float)SettingsManager::getInstance()->mFps);
-	settings->setWindowSize(SettingsManager::getInstance()->mWindowSize);
-	settings->setBorderless(SettingsManager::getInstance()->mBorderless);
-	settings->setFullScreen(SettingsManager::getInstance()->mFullscreen);
+	settings->setFrameRate((float)mFps);
+	settings->setWindowSize(mWindowSize);
+	settings->setBorderless(mBorderless);
+	settings->setFullScreen(mFullscreen);
 
-	if (SettingsManager::getInstance()->mNativeTouchEnabled) {
+	if (mNativeTouchEnabled) {
 		settings->setMultiTouchEnabled(true);
 	}
 
@@ -180,6 +184,7 @@ void SettingsManager::parseCommandLineArgs(const std::vector<std::string>& args)
 			if (callbackListIt == mCommandLineArgsHandlers.end()) continue;
 
 			for (auto callback : callbackListIt->second) {
+				console() << key << endl;
 				callback(value);
 			}
 		}
