@@ -1,13 +1,3 @@
-/**+---------------------------------------------------------------------------
-Bluecadet Interactive 2016
-Developers: Paul Rudolph, Stacey Martens & Ben Bojko
-Contents:
-Comments:
-1. In setup, create each Path based on a (0,0) coordinate.
-2. Move the Path to the desired starting location on screen by setting mPosition.
-3. If you are translating the space, you have to update mTranslationPos by calling setTranslationPos in the draw function.
-----------------------------------------------------------------------------*/
-
 #pragma once
 #include "cinder/app/App.h"
 #include "cinder/Timeline.h"
@@ -16,11 +6,6 @@ Comments:
 
 #include "BaseView.h"
 #include "../touch/Touch.h"
-
-// forward declaration for GWC -- temporary solution
-namespace gwc {
-	class GestureEvent;
-}
 
 namespace bluecadet {
 namespace views {
@@ -33,21 +18,17 @@ class TouchView : public BaseView {
 
 public:
 
-	ci::signals::Signal<void(const touch::TouchEvent& touchEvent)>	mDidBeginTouch;		//! Triggered for first touch when touch begins and for subsequent touches if multi-touch is enabled
-	ci::signals::Signal<void(const touch::TouchEvent& touchEvent)>	mDidMoveTouch;		//! Triggered for moving touches after touch began
-	ci::signals::Signal<void(const touch::TouchEvent& touchEvent)>	mDidEndTouch;		//! Triggered when touch ends and when touch is canceled
-	ci::signals::Signal<void(const touch::TouchEvent& touchEvent)>	mDidTap;			//! Triggered after mDidEndTouch if the touch fits the parameters for tapping
-	ci::signals::Signal<void(const gwc::GestureEvent& gestureEvent)>mDidReceiveGesture;
-
 
 	//==================================================
-	// Global defaults
+	// Global defaults/types
 	//
 
 	//! The minimum alpha required for touches to be accepted (alpha has to be greater than the min). Defaults to 0, so that when alpha = 0 touches are not accepted.
 	static float			sDefaultMinAlphaForTouches;
 
-
+	//==================================================
+	// Life cycle
+	// 
 	//! Setup/Destruction
 	TouchView();
 	virtual ~TouchView();
@@ -71,18 +52,26 @@ public:
 
 
 	//==================================================
+	// Signals
+	// 
+	touch::TouchSignal & getSignalTouchBegan()	{ return mSignalTouchBegan; }	//! Triggered for first touch when touch begins and for subsequent touches if multi-touch is enabled
+	touch::TouchSignal & getSignalTouchMoved()	{ return mSignalTouchMoved; }	//! Triggered for moving touches after touch began
+	touch::TouchSignal & getSignalTouchEnded()	{ return mSignalTouchEnded; }	//! Triggered when touch ends and when touch is canceled
+	touch::TouchSignal & getSignalTapped()		{ return mSignalTapped; }		//! Triggered after mDidEndTouch if the touch fits the parameters for tapping
+
+
+	//==================================================
 	// Touch Management
 	//
 
 	virtual void	cancelTouches();						//! Remove whatever touches are currently within the object and causes touchesEndedHandler() to be called
 	virtual bool	containsPoint(const ci::vec2& point);	//! Used for touch detection. Passes in a local point. Override this method to define more complex hit areas.
-	virtual bool	canAcceptTouch() const;					//! Will return whether this touch object can accept a new touch based on its current state.
+	virtual bool	canAcceptTouch(const bluecadet::touch::Touch & touch) const;					//! Will return whether this touch object can accept a new touch based on its current state.
 
 	// Used by the touch manager and should not be overriden
 	virtual void	processTouchBegan(const bluecadet::touch::TouchEvent& touchEvent) final;
 	virtual void	processTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) final;
 	virtual void	processTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) final;
-	virtual void	processGesture(const gwc::GestureEvent & gestureEvent) final;
 
 	//! Getters/Setters
 
@@ -150,7 +139,6 @@ protected:
 	virtual void	handleTouchMoved(const bluecadet::touch::TouchEvent& touchEvent) {};
 	virtual void	handleTouchEnded(const bluecadet::touch::TouchEvent& touchEvent) {};
 	virtual void	handleTouchTapped(const bluecadet::touch::TouchEvent& touchEvent) {};
-	virtual void	handleGesture(const gwc::GestureEvent & gestureEvent) {};
 
 	//! Resets all touch-state related variables to a non-touched state
 	virtual void	resetTouchState();
@@ -169,6 +157,12 @@ protected:
 	ci::Path2d		mTouchPath;			//! Custom path that determines touchable area
 
 private:
+
+	touch::TouchSignal		mSignalTouchBegan;
+	touch::TouchSignal		mSignalTouchMoved;
+	touch::TouchSignal		mSignalTouchEnded;
+	touch::TouchSignal		mSignalTapped;
+
 	bool			mTouchEnabled;
 	bool			mMultiTouchEnabled;
 

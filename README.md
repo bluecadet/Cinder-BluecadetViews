@@ -41,17 +41,15 @@ public:
 };
 
 void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings) {
-	// Use this method to set up your window
-	SettingsManager::getInstance()->mFullscreen = false;
-	SettingsManager::getInstance()->mWindowSize = ivec2(1280, 720);
-	SettingsManager::getInstance()->mBorderless = false;
-
-	BaseApp::prepareSettings(settings);
-
-	// Optional: configure a multi-screen layout
-	ScreenLayout::getInstance()->setDisplaySize(ivec2(1080, 1920));
-	ScreenLayout::getInstance()->setNumRows(1);
-	ScreenLayout::getInstance()->setNumColumns(3);
+	// Optional: Override the shared settings manager instance with your subclass
+	SettingsManager::setInstance(myApp::MyAppSettingsManager::getInstance());
+	
+	// Initialize the settings manager with the cinder app settings and the settings json
+	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("appSettings.json"), [](SettingsManager * manager) {
+		// Optional: Override json defaults at runtime
+		manager->mFullscreen = false;
+		manager->mWindowSize = ivec2(1280, 720);
+	});
 }
 
 void BaseAppSampleApp::setup() {
@@ -64,10 +62,10 @@ void BaseAppSampleApp::setup() {
 
 	// Sample content
 	auto button = TouchViewRef(new TouchView());
-	button->setPosition(vec2(100, 100));
+	button->setPosition(vec2(400, 300));
 	button->setSize(vec2(200, 100));
 	button->setBackgroundColor(Color(1, 0, 0));
-	button->mDidTap.connect([=](bluecadet::touch::TouchEvent e) { CI_LOG_I("Button tapped"); });
+	button->getSignalTapped().connect([=](bluecadet::touch::TouchEvent e) { CI_LOG_I("Button tapped"); });
 	getRootView()->addChild(button);
 }
 

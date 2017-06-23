@@ -14,6 +14,8 @@
 	<requires>org.libcinder.tuio</requires>
 	<requires>com.bluecadet.cinder.text</requires>
 
+	<asset>assets/appSettings.json</asset>
+
 	<headerPattern>src/*.h</headerPattern>
 	<sourcePattern>src/*.cpp</sourcePattern>
 	

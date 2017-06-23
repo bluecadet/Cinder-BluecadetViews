@@ -22,15 +22,10 @@ public:
 };
 
 void TextViewSampleApp::prepareSettings(ci::app::App::Settings* settings) {
-	// Use this method to set up your window
-	SettingsManager::getInstance()->mFullscreen = false;
-	SettingsManager::getInstance()->mWindowSize = ivec2(640, 480);
-	SettingsManager::getInstance()->mBorderless = false;
-
-	BaseApp::prepareSettings(settings);
-
-	// Optional: configure a multi-screen layout
-	ScreenLayout::getInstance()->setDisplaySize(SettingsManager::getInstance()->mWindowSize);
+	SettingsManager::getInstance()->setup(settings, "", [](SettingsManager * manager) {
+		manager->mFullscreen = false;
+		manager->mWindowSize = ivec2(1280, 720);
+	});
 }
 
 void TextViewSampleApp::setup() {

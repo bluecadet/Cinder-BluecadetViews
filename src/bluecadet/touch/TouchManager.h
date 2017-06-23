@@ -14,6 +14,7 @@
 #include <mutex>
 
 #include "Touch.h"
+#include "TouchManagerPlugin.h"
 #include "../views/TouchView.h"
 
 namespace bluecadet {
@@ -21,7 +22,6 @@ namespace touch {
 
 // Forward type definitions
 typedef std::shared_ptr<class TouchManager> TouchManagerRef;
-typedef std::shared_ptr<class TouchManagerPlugin> TouchManagerPluginRef;
 
 class TouchManager {
 
@@ -30,10 +30,9 @@ public:
 	//==================================================
 	// Broadcast signals
 	//
-	ci::signals::Signal<void(const TouchEvent& touchEvent)>	mDidBeginTouch;	//! Fired before any touch objects receive this event
-	ci::signals::Signal<void(const TouchEvent& touchEvent)>	mDidMoveTouch;	//! Fired before any touch objects receive this event
-	ci::signals::Signal<void(const TouchEvent& touchEvent)>	mDidEndTouch;	//! Fired before any touch objects receive this event
-
+	TouchSignal	& getSignalTouchBegan()	{ return mSignalTouchBegan; };	//! Global touch event. Fired before any touch objects receive this event
+	TouchSignal	& getSignalTouchMoved()	{ return mSignalTouchMoved; };	//! Global touch event. Fired before any touch objects receive this event
+	TouchSignal & getSignalTouchEnded()	{ return mSignalTouchEnded; };	//! Global touch event. Fired before any touch objects receive this event
 
 	//==================================================
 	// Lifecycle
@@ -107,13 +106,17 @@ protected:
 	views::TouchViewRef		getViewForTouchId(const int touchId);
 
 	//! Find the object that the current touch is hitting by navigating up the view hierarchy
-	views::TouchView*		getTopViewAtPosition(const ci::vec2 &relPosition, views::BaseViewRef rootView);
+	views::TouchView*		getTopViewForTouch(const Touch & touch, views::BaseViewRef rootView);
 	
 	//! This enables/disables MultiTouch on a global app level where setMultiTouchEnabled in BaseView is on a view by view basis.
 	void					setMultiTouchEnabled(bool enabled) { mMultiTouchEnabled = enabled; };
 	bool					isMultiTouchEnabled(){ return mMultiTouchEnabled; };
 
 	//==================================================
+
+	TouchSignal									mSignalTouchBegan;	//! Fired before any touch objects receive this event
+	TouchSignal									mSignalTouchMoved;	//! Fired before any touch objects receive this event
+	TouchSignal									mSignalTouchEnded;	//! Fired before any touch objects receive this event
 
 	std::recursive_mutex						mTouchIdMutex;
 	std::map<int, views::TouchViewWeakRef>		mViewsByTouchId;	// Stores views that are currently being touched
@@ -130,26 +133,6 @@ protected:
 	ci::vec2									mAppSize;
 
 	std::vector<TouchManagerPluginRef>			mPlugins;
-};
-
-
-//==================================================
-// TouchManagerPlugin Base Class
-// 
-
-class TouchManagerPlugin {
-
-public:
-	TouchManagerPlugin() {};
-	virtual ~TouchManagerPlugin() {};
-
-	virtual void wasAddedTo(TouchManager * manager) {};
-	virtual void willBeRemovedFrom(TouchManager * manager) {};
-
-	virtual void preUpdate(TouchManager * manager) {};
-	virtual void processEvent(TouchManager * manager, const TouchEvent & event) {};
-	virtual void postUpdate(TouchManager * manager) {};
-
 };
 
 }
