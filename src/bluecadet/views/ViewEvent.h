@@ -26,6 +26,7 @@ struct ViewEvent {
 	void				stopPropagation();
 
 	ViewEvent(const std::string & type, BaseViewRef target = nullptr);
+	virtual ~ViewEvent() {};
 };
 
 }

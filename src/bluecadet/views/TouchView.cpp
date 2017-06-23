@@ -6,11 +6,6 @@ using namespace std;
 using namespace ci;
 using namespace ci::app;
 
-// forward declaration for GWC -- temporary solution
-namespace gwc {
-class GestureEvent;
-}
-
 namespace bluecadet {
 namespace views {
 
@@ -112,7 +107,7 @@ void TouchView::processTouchBegan(const touch::TouchEvent& touchEvent) {
 	mHasMovingTouches = isFirstTouch ? false : mHasMovingTouches;
 
 	handleTouchBegan(touchEvent);
-	mDidBeginTouch.emit(touchEvent);
+	mSignalTouchBegan.emit(touchEvent);
 }
 
 void TouchView::processTouchMoved(const touch::TouchEvent& touchEvent) {
@@ -139,12 +134,12 @@ void TouchView::processTouchMoved(const touch::TouchEvent& touchEvent) {
 	}
 
 	handleTouchMoved(touchEvent);
-	mDidMoveTouch.emit(touchEvent);
+	mSignalTouchMoved.emit(touchEvent);
 }
 
 void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 	handleTouchEnded(touchEvent);
-	mDidEndTouch.emit(touchEvent);
+	mSignalTouchEnded.emit(touchEvent);
 
 	bool didTap = (mAllowsTapReleaseOutside || containsPoint(touchEvent.localPosition)) && !touchEvent.isCanceled;
 
@@ -161,7 +156,7 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 
 	// Trigger tap if we had one
 	if (didTap) {
-		mDidTap.emit(touchEvent);
+		mSignalTapped.emit(touchEvent);
 		handleTouchTapped(touchEvent);
 	}
 
@@ -174,11 +169,6 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 	if (mObjectTouchIDs.empty()) {
 		resetTouchState();
 	}
-}
-
-void TouchView::processGesture(const gwc::GestureEvent & gestureEvent) {
-	handleGesture(gestureEvent);
-	mDidReceiveGesture.emit(gestureEvent);
 }
 
 void TouchView::cancelTouches() {
@@ -217,7 +207,7 @@ bool TouchView::containsPoint(const vec2 &point) {
 	return mTouchPath.contains(point);
 }
 
-bool TouchView::canAcceptTouch() const {
+bool TouchView::canAcceptTouch(const bluecadet::touch::Touch & touch) const {
 	return (mMultiTouchEnabled || mObjectTouchIDs.empty()) && (getAlphaConst().value() > mMinAlphaForTouches);
 }
 

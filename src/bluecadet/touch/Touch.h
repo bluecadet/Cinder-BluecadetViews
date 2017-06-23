@@ -19,6 +19,7 @@ enum class TouchType { Touch, Mouse, Simulator, Fiducial, Other };
 
 enum class TouchPhase { Began, Moved, Ended };
 
+typedef ci::signals::Signal<void(const struct TouchEvent & touchEvent)> TouchSignal;
 
 //! Touches are used to store the state of active touches within the TouchManager.
 struct Touch {
@@ -40,7 +41,6 @@ struct Touch {
 
 //! TouchEvents are dispatched by the TouchManager via touched views.
 struct TouchEvent : public views::ViewEvent {
-
 	struct Type : public views::ViewEvent::Type {
 		static const std::string TOUCH;
 	};

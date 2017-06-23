@@ -13,6 +13,8 @@ using namespace std;
 namespace bluecadet {
 namespace core {
 
+SettingsManagerRef SettingsManager::sInstance = nullptr;
+
 // Initialization
 SettingsManager::SettingsManager() {
 
@@ -44,49 +46,30 @@ SettingsManager::SettingsManager() {
 SettingsManager::~SettingsManager() {}
 
 // Pull in the shared/standard app settings JSON
-void SettingsManager::setup(const ci::fs::path& jsonPath, ci::app::App::Settings* appSettings) {
+void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path jsonPath, std::function<void(SettingsManager * manager)> overrideCallback) {
+	// Set default path
+	if (jsonPath.empty()) {
+		jsonPath = ci::app::getAssetPath("appSettings.json");
+	}
+
 	// If the path exists, load it
 	if (fs::exists(jsonPath)) {
-		console() << "SettingsManager: Loading settings from '" << jsonPath << "'" << endl;
+		CI_LOG_D("Loading settings from '" << jsonPath << "'");
 
 		try {
-			DataSourceRef tree = loadFile(jsonPath);
-			mAppSettingsDoc = (JsonTree)tree;
+			mSettingsJson = JsonTree(loadFile(jsonPath));
 
-			// General
-			setFieldFromJsonIfExists(&mConsoleWindowEnabled, "settings.general.consoleWindowEnabled");
-			setFieldFromJsonIfExists(&mFps, "settings.general.FPS");
-			setFieldFromJsonIfExists(&mAppVersion, "settings.general.appVersion");
-
-			// Graphics
-			setFieldFromJsonIfExists(&mVerticalSync, "settings.graphics.verticalSync");
-
-			// Debug
-			setFieldFromJsonIfExists(&mDebugMode, "settings.debug.debugMode");
-			setFieldFromJsonIfExists(&mFullscreen, "settings.debug.fullscreen");
-			setFieldFromJsonIfExists(&mBorderless, "settings.debug.borderless");
-			setFieldFromJsonIfExists(&mShowMouse, "settings.debug.showMouse");
-			setFieldFromJsonIfExists(&mDrawStats, "settings.debug.drawStats");
-			setFieldFromJsonIfExists(&mDrawMinimap, "settings.debug.drawMinimap");
-			setFieldFromJsonIfExists(&mDrawTouches, "settings.debug.drawTouches");
-			setFieldFromJsonIfExists(&mDrawScreenLayout, "settings.debug.drawScreenLayout");
-			setFieldFromJsonIfExists(&mMinimizeParams, "settings.debug.minimizeParams");
-
-			// Touch
-			setFieldFromJsonIfExists(&mMouseEnabled, "settings.touch.mouse");
-			setFieldFromJsonIfExists(&mTuioTouchEnabled, "settings.touch.tuio");
-			setFieldFromJsonIfExists(&mNativeTouchEnabled, "settings.touch.native");
-
-			// Analytics
-			setFieldFromJsonIfExists(&mAnalyticsAppName, "settings.analytics.appName");
-			setFieldFromJsonIfExists(&mAnalyticsTrackingId, "settings.analytics.trackingID");
-			setFieldFromJsonIfExists(&mAnalyticsClientId, "settings.analytics.clientID");
+			parseJson(mSettingsJson);
 
 		} catch (Exception e) {
-			console() << "SettingsManager: ERROR: Could not load settings json: " << e.what() << endl;
+			CI_LOG_EXCEPTION("Could not parse json", e);
 		}
 	} else if (!jsonPath.empty()) {
-		console() << "SettingsManager: ERROR: Settings file does not exist at '" << jsonPath << "'" << std::endl;
+		CI_LOG_E("Settings file does not exist at '" << jsonPath << "'");
+	}
+
+	if (overrideCallback) {
+		overrideCallback(this);
 	}
 
 	// Parse arguments from command line
@@ -113,17 +96,39 @@ void SettingsManager::setup(const ci::fs::path& jsonPath, ci::app::App::Settings
 			mWindowSize = ivec2(stoi(wStr), stoi(hStr));
 		}
 	});
-	
-	parseCommandLineArgs(appSettings->getCommandLineArgs());
 
+	parseCommandLineArgs(appSettings->getCommandLineArgs());
+	applyToAppSettings(appSettings);
+}
+
+void SettingsManager::applyToAppSettings(ci::app::App::Settings * settings) {
 	// Default window size to main display size if no custom size has been determined
 	if (mWindowSize == ivec2(0)) {
 		mWindowSize = Display::getMainDisplay()->getSize();
 	}
+
+	// Apply pre-launch settings
+#ifdef CINDER_MSW
+	settings->setConsoleWindowEnabled(mConsoleWindowEnabled);
+#endif
+	settings->setFrameRate((float)mFps);
+	settings->setWindowSize(mWindowSize);
+	settings->setBorderless(mBorderless);
+	settings->setFullScreen(mFullscreen);
+
+	if (mNativeTouchEnabled) {
+		settings->setMultiTouchEnabled(true);
+	}
+
+	// Keep window top-left within display bounds
+	if (settings->getWindowPos().x == 0 && settings->getWindowPos().y == 0) {
+		ivec2 windowPos = (Display::getMainDisplay()->getSize() - settings->getWindowSize()) / 2;
+		windowPos = glm::max(windowPos, ivec2(0));
+		settings->setWindowPos(windowPos);
+	}
 }
 
-void SettingsManager::addCommandLineParser(const std::string& key, CommandLineArgParserFn callback)
-{
+void SettingsManager::addCommandLineParser(const std::string& key, CommandLineArgParserFn callback) {
 	string lowercaseKey = key;
 	std::transform(lowercaseKey.begin(), lowercaseKey.end(), lowercaseKey.begin(), ::tolower);
 
@@ -137,6 +142,37 @@ void SettingsManager::addCommandLineParser(const std::string& key, CommandLineAr
 	callbackListIt->second.push_back(callback);
 }
 
+void SettingsManager::parseJson(ci::JsonTree & json) {
+	// General
+	setFieldFromJsonIfExists(&mConsoleWindowEnabled, "settings.general.consoleWindowEnabled");
+	setFieldFromJsonIfExists(&mFps, "settings.general.FPS");
+	setFieldFromJsonIfExists(&mAppVersion, "settings.general.appVersion");
+
+	// Graphics
+	setFieldFromJsonIfExists(&mVerticalSync, "settings.graphics.verticalSync");
+	setFieldFromJsonIfExists(&mFullscreen, "settings.graphics.fullscreen");
+	setFieldFromJsonIfExists(&mBorderless, "settings.graphics.borderless");
+
+	// Debug
+	setFieldFromJsonIfExists(&mDebugMode, "settings.debug.debugMode");
+	setFieldFromJsonIfExists(&mShowMouse, "settings.debug.showMouse");
+	setFieldFromJsonIfExists(&mDrawStats, "settings.debug.drawStats");
+	setFieldFromJsonIfExists(&mDrawMinimap, "settings.debug.drawMinimap");
+	setFieldFromJsonIfExists(&mDrawTouches, "settings.debug.drawTouches");
+	setFieldFromJsonIfExists(&mDrawScreenLayout, "settings.debug.drawScreenLayout");
+	setFieldFromJsonIfExists(&mMinimizeParams, "settings.debug.minimizeParams");
+
+	// Touch
+	setFieldFromJsonIfExists(&mMouseEnabled, "settings.touch.mouse");
+	setFieldFromJsonIfExists(&mTuioTouchEnabled, "settings.touch.tuio");
+	setFieldFromJsonIfExists(&mNativeTouchEnabled, "settings.touch.native");
+
+	// Analytics
+	setFieldFromJsonIfExists(&mAnalyticsAppName, "settings.analytics.appName");
+	setFieldFromJsonIfExists(&mAnalyticsTrackingId, "settings.analytics.trackingID");
+	setFieldFromJsonIfExists(&mAnalyticsClientId, "settings.analytics.clientID");
+}
+
 void SettingsManager::parseCommandLineArgs(const std::vector<std::string>& args) {
 	for (auto arg : args) {
 		int splitIndex = (int)arg.find_first_of("=");
@@ -148,6 +184,7 @@ void SettingsManager::parseCommandLineArgs(const std::vector<std::string>& args)
 			if (callbackListIt == mCommandLineArgsHandlers.end()) continue;
 
 			for (auto callback : callbackListIt->second) {
+				console() << key << endl;
 				callback(value);
 			}
 		}

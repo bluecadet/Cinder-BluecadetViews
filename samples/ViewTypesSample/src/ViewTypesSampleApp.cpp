@@ -25,15 +25,20 @@ public:
 	void setup() override;
 	void update() override;
 	void draw() override;
-	void handleKeyDown(ci::app::KeyEvent event);
+	void keyDown(ci::app::KeyEvent event) override;
 	static void prepareSettings(ci::app::App::Settings* settings);
-	
+
 };
 
 void ViewTypesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
-	SettingsManager::getInstance()->mWindowSize = ivec2(1280, 720);
-	SettingsManager::getInstance()->mFullscreen = false;
-	BaseApp::prepareSettings(settings);
+	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("appSettings.json"), [](SettingsManager * manager) {
+		manager->mFullscreen = false;
+		manager->mWindowSize = ivec2(1280, 720);
+		manager->mConsoleWindowEnabled = false;
+		manager->mDrawMinimap = true;
+		manager->mDrawStats = true;
+		manager->mDrawTouches = true;
+	});
 }
 
 void ViewTypesSampleApp::setup() {
@@ -63,7 +68,7 @@ void ViewTypesSampleApp::setup() {
 	parentTouch->setSize(vec2(200, 100));
 	parentTouch->setPosition(vec2(ellipseView->getPosition().value().x + ellipseView->getSize().x + 10.0f, 10));
 	parentTouch->setBackgroundColor(Color::white());
-	parentTouch->mDidEndTouch.connect([=](const bluecadet::touch::TouchEvent& e) {
+	parentTouch->getSignalTapped().connect([=](const bluecadet::touch::TouchEvent& e) {
 		auto s = (parentTouch->getAlpha() == 1.0f) ? 0.0f : 1.0f;
 		parentTouch->resetAnimations();
 		parentTouch->getTimeline()->apply(&parentTouch->getAlpha(), s, 0.3f);
@@ -83,8 +88,8 @@ void ViewTypesSampleApp::setup() {
 	touchView->setPosition(view->getPosition().value() + vec2(0, view->getWidth() + 10));
 	touchView->setTransformOrigin(0.5f * touchView->getSize());
 	touchView->setBackgroundColor(ColorA(0, 1.0f, 0, 1.0f));
-	touchView->mDidBeginTouch.connect([=](const bluecadet::touch::TouchEvent& e) { touchView->resetAnimations(); touchView->setScale(1.5f); });
-	touchView->mDidEndTouch.connect([=](const bluecadet::touch::TouchEvent& e) { touchView->getTimeline()->apply(&touchView->getScale(), vec2(1.0f), 0.3f); });
+	touchView->getSignalTouchBegan().connect([=](const bluecadet::touch::TouchEvent& e) { touchView->resetAnimations(); touchView->setScale(1.5f); });
+	touchView->getSignalTouchEnded().connect([=](const bluecadet::touch::TouchEvent& e) { touchView->getTimeline()->apply(&touchView->getScale(), vec2(1.0f), 0.3f); });
 	getRootView()->addChild(touchView);
 
 	auto diamondTouchView = TouchViewRef(new TouchView());
@@ -92,7 +97,7 @@ void ViewTypesSampleApp::setup() {
 	diamondTouchView->setSize(vec2(200, 100));
 	diamondTouchView->setPosition(touchView->getPosition().value() + vec2(touchView->getWidth() + 10, 0));
 	diamondTouchView->setTransformOrigin(0.5f * diamondTouchView->getSize());
-	diamondTouchView->setup([]{
+	diamondTouchView->setup([] {
 		ci::Path2d p;
 		p.moveTo(50, 0);
 		p.lineTo(100, 50);
@@ -102,8 +107,8 @@ void ViewTypesSampleApp::setup() {
 		return p;
 	}());
 	diamondTouchView->setBackgroundColor(ColorA(0, 0, 1.0f, 1.0f));
-	diamondTouchView->mDidBeginTouch.connect([=](const bluecadet::touch::TouchEvent& e) { diamondTouchView->resetAnimations(); diamondTouchView->setScale(1.5f); });
-	diamondTouchView->mDidEndTouch.connect([=](const bluecadet::touch::TouchEvent& e) { diamondTouchView->getTimeline()->apply(&diamondTouchView->getScale(), vec2(1.0f), 0.3f); });
+	diamondTouchView->getSignalTouchBegan().connect([=](const bluecadet::touch::TouchEvent& e) { diamondTouchView->resetAnimations(); diamondTouchView->setScale(1.5f); });
+	diamondTouchView->getSignalTouchEnded().connect([=](const bluecadet::touch::TouchEvent& e) { diamondTouchView->getTimeline()->apply(&diamondTouchView->getScale(), vec2(1.0f), 0.3f); });
 	getRootView()->addChild(diamondTouchView);
 
 	const float circleTouchRadius = 50.0f;
@@ -114,29 +119,29 @@ void ViewTypesSampleApp::setup() {
 	circleTouchView->setTransformOrigin(0.5f * circleTouchView->getSize());
 	circleTouchView->setup(circleTouchRadius, vec2(circleTouchRadius));
 	circleTouchView->setBackgroundColor(ColorA(0, 1.0f, 1.0f, 1.0f));
-	circleTouchView->mDidBeginTouch.connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->resetAnimations(); circleTouchView->setScale(1.5f); });
-	circleTouchView->mDidEndTouch.connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->getTimeline()->apply(&circleTouchView->getScale(), vec2(1.0f), 0.3f); });
+	circleTouchView->getSignalTouchBegan().connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->resetAnimations(); circleTouchView->setScale(1.5f); });
+	circleTouchView->getSignalTouchEnded().connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->getTimeline()->apply(&circleTouchView->getScale(), vec2(1.0f), 0.3f); });
 	getRootView()->addChild(circleTouchView);
 
 	auto circleTouchPath = TouchViewRef(new TouchView());
 	circleTouchPath->setup(circleTouchRadius);
 	circleTouchPath->setDebugDrawTouchPath(true);
 	circleTouchPath->setBackgroundColor(Color(1.0f, 1.0f, 1.0f));
-	circleTouchPath->mDidEndTouch.connect([=](const bluecadet::touch::TouchEvent& e) { 
+	circleTouchPath->getSignalTouchEnded().connect([=](const bluecadet::touch::TouchEvent& e) {
 		auto s = (circleTouchPath->getScale().value() == vec2(1.0f)) ? 1.5f : 1.0f;
 		circleTouchPath->resetAnimations();
-		circleTouchPath->getTimeline()->apply(&circleTouchPath->getScale(), vec2(s), 0.3f).updateFn([=](){
+		circleTouchPath->getTimeline()->apply(&circleTouchPath->getScale(), vec2(s), 0.3f).updateFn([=]() {
 			circleTouchPath->setTouchPath(circleTouchRadius * circleTouchPath->getScale().value().x);
 		});
 	});
-	circleTouchPath->setPosition(circleTouchView->getPosition().value() + vec2(circleTouchView->getWidth() + circleTouchPath->getWidth()/2, 0));
+	circleTouchPath->setPosition(circleTouchView->getPosition().value() + vec2(circleTouchView->getWidth() + circleTouchPath->getWidth() / 2, 0));
 	getRootView()->addChild(circleTouchPath);
 
 
 	auto fboView = FboViewRef(new FboView());
 	fboView->setup(vec2(200));
 	fboView->setBackgroundColor(ColorA(0.0f, 0.0f, 1.0f, 0.5f));
-	fboView->setPosition( circleTouchPath->getPosition().value() + vec2(100.0f));
+	fboView->setPosition(circleTouchPath->getPosition().value() + vec2(100.0f));
 	auto circleInsideFbo = EllipseViewRef(new EllipseView());
 	circleInsideFbo->setup(100.0f, ColorA(0.8f, 0.2f, 0.2f, 1.0f));
 	fboView->addChild(circleInsideFbo);
@@ -149,10 +154,10 @@ void ViewTypesSampleApp::setup() {
 	cancelView->setPosition(vec2(100, 250));
 	cancelView->setBackgroundColor(ColorA(1.0f, 0.5f, 0.5f, 0.75f));
 
-	cancelView->mDidBeginTouch.connect([=](const bluecadet::touch::TouchEvent& e) {
+	cancelView->getSignalTouchBegan().connect([=](const bluecadet::touch::TouchEvent& e) {
 		cancelView->getTimeline()->apply(&cancelView->getScale(), vec2(2.0f), 0.3f);
 	});
-	cancelView->mDidEndTouch.connect([=](const bluecadet::touch::TouchEvent& e) {
+	cancelView->getSignalTouchEnded().connect([=](const bluecadet::touch::TouchEvent& e) {
 		cancelView->getTimeline()->apply(&cancelView->getScale(), vec2(1.0f), 0.3f);
 	});
 
@@ -163,22 +168,19 @@ void ViewTypesSampleApp::setup() {
 	statsView->addStat("FPS", [&] { return to_string(getAverageFps()); });
 	statsView->setPosition(vec2(0, ScreenLayout::getInstance()->getAppHeight() - statsView->getHeight()));
 	getRootView()->addChild(statsView);
-
-	getWindow()->getSignalKeyDown().connect(std::bind(&ViewTypesSampleApp::handleKeyDown, this, std::placeholders::_1));
 }
 
-void ViewTypesSampleApp::handleKeyDown(ci::app::KeyEvent event) {
+void ViewTypesSampleApp::keyDown(ci::app::KeyEvent event) {
 	switch (event.getCode()) {
-		case KeyEvent::KEY_c:
-			console() << "ViewTypesSampleApp::handleKeyDown KEY_c" << endl;
-
-			for (auto child : getRootView()->getChildren()) {
-				if(	dynamic_pointer_cast<TouchView>(child)) 
-					dynamic_pointer_cast<TouchView>(child)->cancelTouches();
-				else console() << "This view isn't a TouchView, stop trying to cancel it's touch." << endl;
+	case KeyEvent::KEY_ESCAPE:
+		for (auto child : getRootView()->getChildren()) {
+			if (auto touchView = dynamic_pointer_cast<TouchView>(child)) {
+				touchView->cancelTouches();
 			}
-
-			break;
+		}
+		break;
+	default:
+		break;
 	}
 }
 

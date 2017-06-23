@@ -2,6 +2,8 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
+#include "cinder/Rand.h"
+
 #include "bluecadet/core/BaseApp.h"
 #include "bluecadet/views/TouchView.h"
 
@@ -15,53 +17,53 @@ using namespace bluecadet::touch;
 
 class BaseAppCrossPlatformApp : public BaseApp {
 public:
-    static void prepareSettings(ci::app::App::Settings* settings);
-    void setup() override;
-    void update() override;
-    void draw() override;
+	static void prepareSettings(ci::app::App::Settings* settings);
+	void setup() override;
+	void update() override;
+	void draw() override;
 };
 
 void BaseAppCrossPlatformApp::prepareSettings(ci::app::App::Settings* settings) {
-    // Use this method to set up your window
-    SettingsManager::getInstance()->mFullscreen = false;
-    SettingsManager::getInstance()->mWindowSize = ivec2(1280, 720);
-    SettingsManager::getInstance()->mBorderless = false;
-    
-    BaseApp::prepareSettings(settings);
-    
-    // Optional: configure a multi-screen layout (defaults to 1x1 1080p landscape)
-    ScreenLayout::getInstance()->setDisplaySize(ivec2(1080, 1920));
-    ScreenLayout::getInstance()->setNumRows(1);
-    ScreenLayout::getInstance()->setNumColumns(3);
+	// Initialize the settings manager with the cinder app settings and the settings json
+	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("appSettings.json"), [](SettingsManager * manager) {
+		// Optional: Override json defaults at runtime
+		manager->mFullscreen = false;
+		manager->mWindowSize = ivec2(720, 405);
+		manager->mConsoleWindowEnabled = false;
+		manager->mDrawMinimap = true;
+		manager->mDrawStats = true;
+		manager->mDrawTouches = true;
+	});
 }
 
 void BaseAppCrossPlatformApp::setup() {
-    
-    BaseApp::setup();
-    BaseApp::addTouchSimulatorParams();
-    
-    // Optional: configure your root view
-    getRootView()->setBackgroundColor(Color::gray(0.5f));
-    
-    // Sample content
-    auto button = TouchViewRef(new TouchView());
-    button->setSize(getRootView()->getSize() * 0.75f);
-    button->setPosition((getRootView()->getSize() - button->getSize()) * 0.5f);
-    button->setBackgroundColor(ColorA(1, 0, 0));
-    button->setMultiTouchEnabled(true);
-	button->mDidBeginTouch.connect([](bluecadet::touch::TouchEvent e) { e.touchTarget->setAlpha(0.75f); });
-	button->mDidEndTouch.connect([](bluecadet::touch::TouchEvent e) { e.touchTarget->setAlpha(1.0f); });
-    getRootView()->addChild(button);
+	BaseApp::setup();
+	BaseApp::addTouchSimulatorParams();
+
+	// Optional: configure your root view
+	getRootView()->setBackgroundColor(Color::gray(0.5f));
+
+	// Sample content
+	auto button = TouchViewRef(new TouchView());
+	button->setPosition(vec2(400, 300));
+	button->setSize(vec2(200, 100));
+	button->setBackgroundColor(Color(1, 0, 0));
+	button->getSignalTapped().connect([=](bluecadet::touch::TouchEvent e) {
+		ColorAf color = hsvToRgb(vec3(randFloat(), 1.0f, 1.0f));
+		button->getTimeline()->apply(&button->getBackgroundColor(), color, 0.33f, easeInOutQuad);
+	});
+	
+	getRootView()->addChild(button);
 }
 
 void BaseAppCrossPlatformApp::update() {
-    // Optional override. BaseApp::update() will update all views.
-    BaseApp::update();
+	// Optional override. BaseApp::update() will update all views.
+	BaseApp::update();
 }
 
 void BaseAppCrossPlatformApp::draw() {
-    // Optional override. BaseApp::draw() will draw all views.
-    BaseApp::draw();
+	// Optional override. BaseApp::draw() will draw all views.
+	BaseApp::draw();
 }
 
 // Make sure to pass a reference to prepareSettings to configure the app correctly. MSAA and other render options are optional.
