@@ -20,6 +20,7 @@ Built for and tested with [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/
 * Conversion from/to local/global coordinate spaces
 * Simple event system to bubble messages up the graph
 * Index management (e.g. move child to front/back)
+* Inherited transformations, alpha and tint
 
 ### Touch Management
 
@@ -132,6 +133,56 @@ void BaseAppSampleApp::draw() {
 CINDER_APP(BaseAppSampleApp, RendererGl(RendererGl::Options().msaa(4)), BaseAppSampleApp::prepareSettings);
 
 ```
+
+## Custom Subviews
+
+Out of the box, Cinder-BluecadetViews supplies the most basic types of views needed to stub out an interactive application. Eventually, you'll want to write your own `BaseView` subclasses that override `update()` or `draw()`.
+
+Below is a simple example:
+
+### PathView.h
+
+```c++
+#include "bluecadet/views/BaseView.h"
+
+class PathView : public bluecadet::views::BaseView {
+public:
+	PathView(ci::Path2d path) : mPath(path) {};
+	~PathView() {}
+	
+protected:
+	void update(const double deltaTime) override;
+	void draw() override;
+	
+	ci::Path2d mPath;
+}
+```
+
+### PathView.cpp
+
+```c++
+#include "PathView.h"
+
+void PathView::update(const double deltaTime) {
+	// update your view on each frame if you'd like
+	// no need to call base view implementation
+}
+void PathView::draw() {
+	// no need to call base view implementation
+	// unless you want to draw a rect of size
+	// in the current background color
+	// BaseView::draw();
+	
+	// you could set the color to the current background color
+	// gl::color(getBackgroundColor());
+	
+	// this will draw the path in the current draw color
+	// which is a combiniation of `getTint()` and `getAlpha()`
+	ci::draw(mPath);
+}
+
+```
+
 
 ## Dependencies
 
