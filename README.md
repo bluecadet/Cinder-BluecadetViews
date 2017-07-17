@@ -49,6 +49,16 @@ A basic, rectangular view with an optional size and background color that can co
 * Touch *began*, *updated* and *ended* events, overrideable protected methods and explicit signals 
 * Distinction between dragging and tapping with distance and time thresholds
 
+### TextView
+
+* Multi-line text layout with basic inline styling support
+* HTML tags: `<b>`, `<i>`, `<br>`, `<p>`
+* Styles: `fontFamily`, `fontStyle`, `fontWeight`, `fontSize`, `leadingOffset`, `textColor`, `textAlign`, `textTransform`
+* Automatic word-wrapping and other layout modes (single line, strip line-breaks, multi-line clip, multi-line auto-wrap)
+* `string` and `wstring` support
+* Layout-caching minimizes re-calculation of layout while maintaining ability to call methods like `getSize()` at any time
+* *Windows only, requires [Cinder-BluecadetText](/bluecadet/Cinder-BluecadetText)*
+
 ## Getting Started
 
 Clone the block and check the dependencies below to make sure you're all set to start your first project.
