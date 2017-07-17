@@ -55,6 +55,10 @@ public:
 	void			setSmoothScalingEnabled(const bool value) { mSmoothScalingEnabled = value; }
 	bool			getSmoothScalingEnabled() const { return mSmoothScalingEnabled; }
 
+	//! Use premultiplied alpha or not. Defaults to false.
+	bool			getPremultiplied() const { return mPremultiplied; }
+	void			setPremultiplied(const bool value) { mPremultiplied = value; }
+
 	//! Sets a fixed size for the text view. Any values below 0 will allow the text view to automatically expand in that direction.
 	virtual inline void				setSize(const ci::vec2& size) override;
 	virtual inline void				setWidth(const float width) override;
@@ -84,6 +88,7 @@ protected:
 	bool				mHasInvalidRenderedContent;
 	bool				mSmoothScalingEnabled;
 	bool				mAutoRenderEnabled;
+	bool				mPremultiplied;
 
 	ci::Surface			mSurface;
 	ci::gl::TextureRef	mTexture;
