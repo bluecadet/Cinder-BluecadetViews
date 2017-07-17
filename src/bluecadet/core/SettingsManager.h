@@ -73,23 +73,30 @@ public:
 	std::string		mAppVersion;
 
 	// Graphics
+	bool			mFullscreen = true;
+	bool			mBorderless = true;
 	bool			mVerticalSync;
-	ci::ColorA		mClearColor; //! The color used when clearing the screen before draw(). Defaults to opaque black.
 
-								 // Debugging
-	bool			mDebugMode = false;
-	bool			mDrawTouches = false;
+	// Touches
 	bool			mNativeTouchEnabled = false;
 	bool			mTuioTouchEnabled = true;
 	bool			mMouseEnabled = true;
+
+	 // Debugging
+	bool			mDebugMode = false;
+	bool			mDrawTouches = false;
 	bool			mDrawScreenLayout = false;
-	bool			mFullscreen = true;
-	bool			mBorderless = true;
-	ci::ivec2		mWindowSize;
 	bool			mShowMouse = false;
 	bool			mDrawMinimap = false;
 	bool			mDrawStats = false;
 	bool			mMinimizeParams = false;
+	bool			mZoomToggleHotkeyEnabled = true;
+	bool			mDisplayIdHotkeysEnabled = false;
+
+	// CLI/runtime only args
+	ci::ivec2		mWindowSize; //! The window size on launch
+	ci::vec2		mCameraOffset; //! The offset of the camera on launch
+	ci::ColorA		mClearColor; //! The color used when clearing the screen before draw(). Defaults to opaque black.
 
 	// Analytics
 	std::string		mAnalyticsAppName;

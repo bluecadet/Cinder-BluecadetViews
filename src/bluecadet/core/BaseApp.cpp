@@ -39,7 +39,16 @@ void BaseApp::setup() {
 
 	ScreenCamera::getInstance()->setup(ScreenLayout::getInstance());
 	ScreenCamera::getInstance()->getViewportChangedSignal().connect(bind(&BaseApp::handleViewportChange, this, placeholders::_1));
+	ScreenCamera::getInstance()->setZoomToggleHotkeyEnabled(settings->mZoomToggleHotkeyEnabled);
+	ScreenCamera::getInstance()->setDisplayIdHotkeysEnabled(settings->mDisplayIdHotkeysEnabled);
 	ScreenCamera::getInstance()->zoomToFitWindow();
+
+	if (settings->mCameraOffset != vec2(0)) {
+		vec2 globalOffset = settings->mCameraOffset;
+		vec2 localOffset = globalOffset * ScreenCamera::getInstance()->getScale();
+		vec2 currentOffset = ScreenCamera::getInstance()->getTranslation();
+		ScreenCamera::getInstance()->setTranslation(currentOffset + localOffset);
+	}
 
 	// Apply run-time settings
 	if (settings->mShowMouse) {
