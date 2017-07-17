@@ -10,6 +10,45 @@ To combine all pieces conveniently, this block comes with a `BaseApp` class that
 
 Built for and tested with [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/v0.9.1). See [notes below](#Notes) for setup instructions.
 
+![](docs/media/class-hierarchy.png)
+
+## Key Features
+
+### Scene Graph
+
+* Add/remove children to/from `BaseView`s and all its subclasses
+* Conversion from/to local/global coordinate spaces
+* Simple event system to bubble messages up the graph
+* Index management (e.g. move child to front/back)
+
+### Touch Management
+
+* Support for TUIO, native touch and mouse events
+* Touch simulator for stress-testing tapping and dragging
+* Multi-touch simulator for mouse input (e.g. to scale/rotate)
+* Extendable plugin architecture (e.g. for TangibleEngine pucks or third-party gesture libraries like GestureWorks)
+* Shape-based hit detection with ability to override on a per-class basis
+
+### Core App Classes
+
+* Define screen layout for multi-screen matrices
+* Pan and zoom around your app using keyboard shortcuts with a minimap with touchable views
+* Central, extendable settings manager to load common and custom JSON and CLI settings like FPS, V-Sync, Screen Layout, etc.
+
+### BaseView
+
+A basic, rectangular view with an optional size and background color that can contain children and be added as a child to other `BaseView`s.
+
+* Animatable properties: `position`, `scale`, `rotation`, `tint`, `alpha`, `backgroundColor`
+* Transform origin for rotating and scaling around a local point
+* `update()` and `draw()` loops
+
+### TouchView
+
+* Extends `BaseView` with added touch capabilities
+* Touch *began*, *updated* and *ended* events, overrideable protected methods and explicit signals 
+* Distinction between dragging and tapping with distance and time thresholds
+
 ## Getting Started
 
 Clone the block and check the dependencies below to make sure you're all set to start your first project.
