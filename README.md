@@ -147,7 +147,7 @@ Below is a simple example:
 
 class PathView : public bluecadet::views::BaseView {
 public:
-	PathView(ci::Path2d path) : mPath(path) {};
+	PathView(ci::Path2d path) : mPath(path) {}
 	~PathView() {}
 	
 protected:
@@ -178,7 +178,7 @@ void PathView::draw() {
 	
 	// this will draw the path in the current draw color
 	// which is a combiniation of `getTint()` and `getAlpha()`
-	ci::draw(mPath);
+	gl::draw(mPath);
 }
 
 ```
@@ -186,7 +186,6 @@ void PathView::draw() {
 
 ## Dependencies
 
-* Cinder-BluecadetUtils (https://github.com/bluecadet/Cinder-BluecadetUtils)
 * Cinder-BluecadetText (https://github.com/bluecadet/Cinder-BluecadetText)
 * Cinder OSC block
 * Cinder TUIO block
@@ -199,9 +198,16 @@ Based on [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/v0.9.1)
 
 Cinder setup instructions:
 
-
 ```bash
 git clone --recursive git@github.com:cinder/Cinder.git
 git checkout tags/v0.9.1
 git submodule update --init
+```
+
+Cloning with all dependencies:
+
+```bash
+cd Cinder/blocks
+git clone git@github.com:bluecadet/Cinder-BluecadetText.git
+git clone git@github.com:bluecadet/Cinder-BluecadetView.git
 ```
