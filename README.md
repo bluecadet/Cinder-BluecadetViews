@@ -191,9 +191,6 @@ void PathView::draw() {
 * Cinder OSC block
 * Cinder TUIO block
 
-1. Clone each of the above dependency blocks into your `Cinder\blocks` folder (Cinder OSC & TUIO will come automatically when you download Cinder). 
-2. Create a new project with TinderBox and make sure to select *relative* when including all Bluecadet blocks
-
 ## Notes
 
 Version 1.4.0
