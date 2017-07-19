@@ -8,7 +8,7 @@ In addition to nested transformations and drawing, this block connects to the te
 
 To combine all pieces conveniently, this block comes with a `BaseApp` class that provides a basic implementation with a root view, touch manager and various utilities.
 
-Built for and tested with [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/v0.9.1). See [notes below](#Notes) for setup instructions.
+Built for and tested with [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/v0.9.1). See [notes below](#notes) for setup instructions.
 
 ![](docs/media/class-hierarchy.png)
 
