@@ -143,19 +143,24 @@ Below is a simple example:
 ### PathView.h
 
 ```c++
+#pragma once
+
 #include "bluecadet/views/BaseView.h"
 
+typedef std::shared_ptr<class PathView> PathViewRef;
+
 class PathView : public bluecadet::views::BaseView {
+
 public:
 	PathView(ci::Path2d path) : mPath(path) {}
 	~PathView() {}
-	
+
 protected:
 	void update(const double deltaTime) override;
 	void draw() override;
-	
+
 	ci::Path2d mPath;
-}
+};
 ```
 
 ### PathView.cpp
@@ -163,24 +168,28 @@ protected:
 ```c++
 #include "PathView.h"
 
+using namespace ci;
+using namespace ci::app;
+using namespace std;
+
 void PathView::update(const double deltaTime) {
 	// update your view on each frame if you'd like
 	// no need to call base view implementation
 }
 void PathView::draw() {
 	// no need to call base view implementation
-	// unless you want to draw a rect of size
-	// in the current background color
-	// BaseView::draw();
+	// unless you want to draw a solid rect of
+	// getSize() and getBackgroundColor()
+	// bluecadet::views::BaseView::draw();
 	
 	// you could set the color to the current background color
+	// but by default getTint() and getAlpha() are used
 	// gl::color(getBackgroundColor());
 	
-	// this will draw the path in the current draw color
-	// which is a combiniation of `getTint()` and `getAlpha()`
+	// this will draw the path using the current color, which
+	// defaults to getDrawColor() (combination of tint and alpha)
 	gl::draw(mPath);
 }
-
 ```
 
 
@@ -199,9 +208,7 @@ Based on [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/v0.9.1)
 Cinder setup instructions:
 
 ```bash
-git clone --recursive git@github.com:cinder/Cinder.git
-git checkout tags/v0.9.1
-git submodule update --init
+git clone -b v0.9.1 --depth 1 --recursive https://github.com/cinder/Cinder.git
 ```
 
 Cloning with all dependencies:
