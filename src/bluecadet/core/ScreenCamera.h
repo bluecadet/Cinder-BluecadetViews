@@ -40,7 +40,7 @@ public:
 
 	//! Zooms to fit the display at displayId into the current application window.
 	void				zoomToDisplay(const int displayId);
-	
+
 	//! Zooms to fit the display at col/row into the current application window.
 	void				zoomToDisplay(const int row, const int col);
 
@@ -55,13 +55,13 @@ public:
 
 	//! The current camera transform.
 	const ci::mat4 &	getTransform() const { return mPlaceholderView->getTransform(); };
-	
+
 	//! The current camera translation.
 	const ci::vec2 &	getTranslation() const { return mPlaceholderView->getPosition().value(); };
 
 	//! Sets the current camera translation.
 	void				setTranslation(const ci::vec2 & translation) { mPlaceholderView->setPosition(translation); updateViewport(); };
-	
+
 	//! The current camera scale.
 	const ci::vec2 &	getScale() const { return mPlaceholderView->getScale().value(); };
 
