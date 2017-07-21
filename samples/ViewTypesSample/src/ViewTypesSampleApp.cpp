@@ -9,7 +9,7 @@
 #include "bluecadet/views/FboView.h"
 #include "bluecadet/views/LineView.h"
 #include "bluecadet/views/TouchView.h"
-#include "bluecadet/views/StatsView.h"
+#include "bluecadet/views/TextView.h"
 
 
 using namespace ci;
@@ -31,7 +31,7 @@ public:
 };
 
 void ViewTypesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
-	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("appSettings.json"), [](SettingsManager * manager) {
+	SettingsManager::getInstance()->setup(settings, "", [](SettingsManager * manager) {
 		manager->mFullscreen = false;
 		manager->mWindowSize = ivec2(1280, 720);
 		manager->mConsoleWindowEnabled = false;
@@ -164,10 +164,60 @@ void ViewTypesSampleApp::setup() {
 	getRootView()->addChild(cancelView);
 
 
-	auto statsView = StatsViewRef(new StatsView());
-	statsView->addStat("FPS", [&] { return to_string(getAverageFps()); });
-	statsView->setPosition(vec2(0, ScreenLayout::getInstance()->getAppHeight() - statsView->getHeight()));
-	getRootView()->addChild(statsView);
+	//==================================================
+	// Drag Views
+	// 
+	{
+		// x and y
+		auto dragView = TouchViewRef(new TouchView());
+		dragView->setSize(vec2(100, 100));
+		dragView->setPosition(vec2(0, 400));
+		dragView->setBackgroundColor(ColorA(1.0f, 0.5f, 0.5f, 0.75f));
+		dragView->setDragEnabled(true);
+
+		auto dragLabel = TextViewRef(new TextView());
+		dragLabel->setSize(dragView->getSize());
+		dragLabel->setTextAlign(bluecadet::text::TextAlign::Center);
+		dragLabel->setText("Drag Me");
+		dragView->addChild(dragLabel);
+
+		getRootView()->addChild(dragView);
+	}
+
+
+	{
+		// x only
+		auto dragView = TouchViewRef(new TouchView());
+		dragView->setSize(vec2(100, 100));
+		dragView->setPosition(vec2(150, 400));
+		dragView->setBackgroundColor(ColorA(0.5f, 1.0f, 0.5f, 0.75f));
+		dragView->setDragEnabledX(true);
+
+		auto dragLabel = TextViewRef(new TextView());
+		dragLabel->setSize(dragView->getSize());
+		dragLabel->setTextAlign(bluecadet::text::TextAlign::Center);
+		dragLabel->setText("Drag Me");
+		dragView->addChild(dragLabel);
+
+		getRootView()->addChild(dragView);
+	}
+
+	{
+		// y only
+		auto dragView = TouchViewRef(new TouchView());
+		dragView->setSize(vec2(100, 100));
+		dragView->setPosition(vec2(300, 400));
+		dragView->setBackgroundColor(ColorA(0.5f, 0.5f, 1.0f, 0.75f));
+		dragView->setDragEnabledY(true);
+
+		auto dragLabel = TextViewRef(new TextView());
+		dragLabel->setSize(dragView->getSize());
+		dragLabel->setTextAlign(bluecadet::text::TextAlign::Center);
+		dragLabel->setText("Drag Me");
+		dragView->addChild(dragLabel);
+
+		getRootView()->addChild(dragView);
+	}
 }
 
 void ViewTypesSampleApp::keyDown(ci::app::KeyEvent event) {

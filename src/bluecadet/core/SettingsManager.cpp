@@ -58,7 +58,6 @@ void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path j
 
 		try {
 			mSettingsJson = JsonTree(loadFile(jsonPath));
-
 			parseJson(mSettingsJson);
 
 		} catch (Exception e) {
