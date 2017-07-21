@@ -25,10 +25,9 @@ public:
 	static void prepareSettings(ci::app::App::Settings* settings);
 	
 	void setup() override;
-	void update() override;
-	void draw() override;
 	void keyDown(ci::app::KeyEvent event) override;
 	void addViewSample(BaseViewRef view, std::string label);
+	ColorA getNextColor(float alpha = 1.0f);
 };
 
 void ViewTypesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
@@ -52,7 +51,7 @@ void ViewTypesSampleApp::setup() {
 
 	auto view = BaseViewRef(new BaseView());
 	view->setSize(vec2(100, 100));
-	view->setBackgroundColor(ColorA(1.0f, 0.25f, 0.25f, 0.75f));
+	view->setBackgroundColor(getNextColor());
 	addViewSample(view, "BaseView");
 
 
@@ -63,13 +62,10 @@ void ViewTypesSampleApp::setup() {
 	auto ellipseView = EllipseViewRef(new EllipseView());
 	ellipseView->setSize(vec2(150, 100)); // if width/height are equal you can also use setRadius()
 	ellipseView->setPosition(ellipseView->getSize() * 0.5f); // ellipse is drawn around 0,0; so offset by 50% width/height
-	ellipseView->setBackgroundColor(Color(0.25f, 1.0f, 0.25f));
+	ellipseView->setBackgroundColor(getNextColor());
 	ellipseView->setSmoothness(1.0f); // the default is 1
+	ellipseView->getTimeline()->apply(&ellipseView->getSmoothness(), 50.0f, 3.0f, easeInOutQuad).loop(true).pingPong(true);
 	addViewSample(ellipseView, "EllipseView");
-
-	// test smoothness update
-	getSignalUpdate().connect([=] { ellipseView->setSmoothness(50.0f * getMousePos().x / (float)getWindowWidth()); });
-
 
 	//==================================================
 	// LineView
@@ -77,7 +73,7 @@ void ViewTypesSampleApp::setup() {
 
 	auto lineView = LineViewRef(new LineView());
 	lineView->setEndPoint(vec2(100, 100));
-	lineView->setLineColor(ColorA(1.0f, 0.25f, 1.0f, 1.0f));
+	lineView->setLineColor(getNextColor());
 	lineView->setLineWidth(2.0f);
 	addViewSample(lineView, "LineView");
 
@@ -87,13 +83,23 @@ void ViewTypesSampleApp::setup() {
 	// 
 
 	auto touchView = TouchViewRef(new TouchView());
-	touchView->setDebugDrawTouchPath(true);
 	touchView->setSize(vec2(200, 100));
 	touchView->setTransformOrigin(0.5f * touchView->getSize());
-	touchView->setBackgroundColor(ColorA(0, 1.0f, 0.25f, 1.0f));
+	touchView->setBackgroundColor(getNextColor());
 	touchView->getSignalTouchBegan().connect([=](const bluecadet::touch::TouchEvent& e) { touchView->resetAnimations(); touchView->setScale(1.5f); });
 	touchView->getSignalTouchEnded().connect([=](const bluecadet::touch::TouchEvent& e) { touchView->getTimeline()->apply(&touchView->getScale(), vec2(1.0f), 0.3f); });
-	addViewSample(touchView, "TouchView with TouchBegan/Ended");
+	addViewSample(touchView, "TouchView with began/ended");
+
+	auto tapView = TouchViewRef(new TouchView());
+	tapView->setSize(vec2(200, 100));
+	tapView->setTransformOrigin(0.5f * tapView->getSize());
+	tapView->setBackgroundColor(getNextColor());
+	tapView->getSignalTapped().connect([=](const bluecadet::touch::TouchEvent& e) {
+		static float rotation = 0;
+		rotation += (float)M_PI * 0.33f;
+		tapView->getTimeline()->apply(&tapView->getRotation(), (glm::angleAxis(rotation, vec3(0, 0, 1))), 0.33f, easeOutQuad);
+	});
+	addViewSample(tapView, "TouchView with tap<br>(long press and drag-and-release don't count as tap)");
 
 	auto diamondTouchView = TouchViewRef(new TouchView());
 	diamondTouchView->setDebugDrawTouchPath(true);
@@ -108,10 +114,10 @@ void ViewTypesSampleApp::setup() {
 		p.close();
 		return p;
 	}());
-	diamondTouchView->setBackgroundColor(ColorA(0, 0.25f, 0.5f, 1.0f));
+	diamondTouchView->setBackgroundColor(getNextColor());
 	diamondTouchView->getSignalTouchBegan().connect([=](const bluecadet::touch::TouchEvent& e) { diamondTouchView->resetAnimations(); diamondTouchView->setScale(1.5f); });
 	diamondTouchView->getSignalTouchEnded().connect([=](const bluecadet::touch::TouchEvent& e) { diamondTouchView->getTimeline()->apply(&diamondTouchView->getScale(), vec2(1.0f), 0.3f); });
-	addViewSample(diamondTouchView, "TouchView with diamond Touch Path");
+	addViewSample(diamondTouchView, "TouchView with diamond touch path");
 
 	const float circleTouchRadius = 50.0f;
 	auto circleTouchView = TouchViewRef(new TouchView());
@@ -119,10 +125,10 @@ void ViewTypesSampleApp::setup() {
 	circleTouchView->setSize(vec2(200, 100));
 	circleTouchView->setTransformOrigin(0.5f * circleTouchView->getSize());
 	circleTouchView->setup(circleTouchRadius, vec2(circleTouchRadius));
-	circleTouchView->setBackgroundColor(ColorA(0.25f, 0, 0.5f, 1.0f));
+	circleTouchView->setBackgroundColor(getNextColor());
 	circleTouchView->getSignalTouchBegan().connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->resetAnimations(); circleTouchView->setScale(1.5f); });
 	circleTouchView->getSignalTouchEnded().connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->getTimeline()->apply(&circleTouchView->getScale(), vec2(1.0f), 0.3f); });
-	addViewSample(circleTouchView, "TouchView with circle Touch Path");
+	addViewSample(circleTouchView, "TouchView with circle touch path");
 
 	//==================================================
 	// FBO
@@ -130,10 +136,10 @@ void ViewTypesSampleApp::setup() {
 
 	auto fboView = FboViewRef(new FboView());
 	fboView->setup(vec2(150));
-	fboView->setBackgroundColor(ColorA(0.25f, 0.0f, 1.0f));
+	fboView->setBackgroundColor(getNextColor());
 
 	auto circleInsideFbo = EllipseViewRef(new EllipseView());
-	circleInsideFbo->setup(length(fboView->getSize()), ColorA(0.8f, 0.2f, 0.2f, 1.0f));
+	circleInsideFbo->setup(length(fboView->getSize()), getNextColor());
 	circleInsideFbo->getTimeline()->apply(&circleInsideFbo->getScale(), vec2(0), 2.0f, easeInOutQuad).pingPong(true).loop(true);
 	fboView->addChild(circleInsideFbo);
 
@@ -147,7 +153,7 @@ void ViewTypesSampleApp::setup() {
 		// x and y
 		auto dragView = TouchViewRef(new TouchView());
 		dragView->setSize(vec2(100));
-		dragView->setBackgroundColor(ColorA(1.0f, 0.25f, 0, 0.75f));
+		dragView->setBackgroundColor(getNextColor());
 		dragView->setDragEnabled(true);
 		addViewSample(dragView, "TouchView with x/y drag");
 	}
@@ -157,7 +163,7 @@ void ViewTypesSampleApp::setup() {
 		// x only
 		auto dragView = TouchViewRef(new TouchView());
 		dragView->setSize(vec2(30, 60));
-		dragView->setBackgroundColor(ColorA(0, 1.0f, 0.25f, 0.75f));
+		dragView->setBackgroundColor(getNextColor());
 		dragView->setDragEnabledX(true);
 		addViewSample(dragView, "TouchView with x drag");
 	}
@@ -166,7 +172,7 @@ void ViewTypesSampleApp::setup() {
 		// y only
 		auto dragView = TouchViewRef(new TouchView());
 		dragView->setSize(vec2(60, 30));
-		dragView->setBackgroundColor(ColorA(0.25f, 0, 1.0f, 0.75f));
+		dragView->setBackgroundColor(Color(0.25f, 0, 1.0f));
 		dragView->setDragEnabledY(true);
 		addViewSample(dragView, "TouchView with y drag");
 	}
@@ -208,6 +214,8 @@ void ViewTypesSampleApp::addViewSample(BaseViewRef view, std::string label) {
 	container->addChild(view);
 
 	auto labelView = make_shared<TextView>();
+	labelView->setBackgroundColor(ColorA(0, 0, 0, 0.25f));
+	labelView->setPadding(cellPadding.x, cellPadding.y);
 	labelView->setWidth(container->getWidth());
 	labelView->setFontSize(20.0f);
 	labelView->setTextColor(Color::white());
@@ -223,12 +231,12 @@ void ViewTypesSampleApp::addViewSample(BaseViewRef view, std::string label) {
 	}
 }
 
-void ViewTypesSampleApp::update() {
-	BaseApp::update();
-}
-
-void ViewTypesSampleApp::draw() {
-	BaseApp::draw();
+ColorA ViewTypesSampleApp::getNextColor(float alpha) {
+	static float hue = 0;
+	static float numHues = 16;
+	ColorA color = ColorA(hsvToRgb(vec3(hue, 0.75f, 1.0f)), alpha);
+	hue = glm::mod(hue + 0.25f + 1.0f / numHues, 1.0f);
+	return color;
 }
 
 CINDER_APP(ViewTypesSampleApp, RendererGl(RendererGl::Options().msaa(4)), ViewTypesSampleApp::prepareSettings)
