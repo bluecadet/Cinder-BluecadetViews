@@ -28,15 +28,15 @@ public:
 	void setRadius(const float radius);
 
 	//! The smoothness of the ellipse's edge
-	inline float	getSmoothness() const { return mSmoothness; }
-	inline void		setSmoothness(const float value) { mSmoothness = value; invalidate(false, true); }
+	float	getSmoothness() const { return mSmoothness; }
+	void		setSmoothness(const float value) { mSmoothness = value; invalidate(false, true); }
 
-	inline float	getBorderThickness() const { return mBorderThickness; }
-	inline void		setBorderThickness(const float value) { mBorderThickness = value; invalidate(false, true); }
+	float	getBorderThickness() const { return mBorderThickness; }
+	void		setBorderThickness(const float value) { mBorderThickness = value; invalidate(false, true); }
 
 protected:
-	virtual void draw() override;
-	virtual void debugDrawOutline() override;
+	void draw() override;
+	void debugDrawOutline() override;
 
 	static ci::gl::BatchRef		getSharedEllipseBatch();
 	static ci::gl::GlslProgRef	getSharedEllipseProg();

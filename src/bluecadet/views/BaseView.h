@@ -97,7 +97,7 @@ public:
 	ci::TimelineRef			getTimeline();
 
 	//! Returns a shared pointer to this instance
-	inline BaseViewRef		getSharedViewPtr() { return shared_from_this(); }
+	BaseViewRef				getSharedViewPtr() { return shared_from_this(); }
 
 	//! Resets all animatable properties to their defaults and resets all animations. Does not remove children.
 	virtual void			reset();
@@ -185,16 +185,16 @@ public:
 	void								setTransformOrigin(const ci::vec2& value, const bool compensateForOffset);
 
 	//! Size of this view. Defaults to 0, 0 and is not affected by children. Does not affect transforms (position, rotation, scale).
-	virtual const ci::vec2				getSize() { return mSize; }
-	virtual void						setSize(const ci::vec2& size) { mSize = size; invalidate(false, true); }
+	virtual ci::vec2					getSize() { return mSize; }
+	virtual void						setSize(const ci::vec2 & size) { mSize = size; invalidate(false, true); }
 
 	//! Width of this view. Defaults to 0 and is not affected by children.
 	virtual float						getWidth() { return getSize().x; }
-	virtual void						setWidth(const float width) { ci::vec2 s = getSize(); setSize(ci::vec2(width, s.y)); }
+	virtual void						setWidth(const float width) { setSize(ci::vec2(width, getHeight())); }
 
 	//! Height of this view. Defaults to 0 and is not affected by children.
 	virtual float						getHeight() { return getSize().y; }
-	virtual void						setHeight(const float height) { ci::vec2 s = getSize(); setSize(ci::vec2(s.x, height)); }
+	virtual void						setHeight(const float height) { setSize(ci::vec2(getWidth(), height)); }
 
 	//! The fill color used when drawing the bounding rect when a size greater than 0, 0 is given.
 	virtual ci::Anim<ci::ColorA>&		getBackgroundColor() { return mBackgroundColor; }
@@ -222,15 +222,15 @@ public:
 	virtual void						setHidden(const bool isHidden) { mIsHidden = isHidden; }
 
 	//! Forces redrawing even when hidden or alpha <= 0; Defaults to false
-	virtual bool						shouldForceInvisibleDraw() const { return mShouldForceInvisibleDraw; }
-	virtual void						setShouldForceInvisibleDraw(const bool value) { mShouldForceInvisibleDraw = value; }
+	virtual bool						getShouldDrawWhenInvisible() const { return mShouldDrawWhenInvisible; }
+	virtual void						setShouldDrawWhenInvisible(const bool value) { mShouldDrawWhenInvisible = value; }
 
 	//! Setting this to false will prevent events from propagating from this view to its parent. Defaults to true.
-	bool								shouldPropagateEvents() const { return mShouldPropagateEvents; }
+	bool								setShouldPropagateEvents() const { return mShouldPropagateEvents; }
 	void								setShouldPropagateEvents(const bool value) { mShouldPropagateEvents = value; }
 
 	//! Setting this to false will prevent content invalidation events from being dispatched from this view. Defaults to true.
-	bool								shouldDispatchContentInvalidation() const { return mShouldDispatchContentInvalidation; }
+	bool								setShouldDispatchContentInvalidation() const { return mShouldDispatchContentInvalidation; }
 	void								setShouldDispatchContentInvalidation(const bool value) { mShouldDispatchContentInvalidation = value; }
 
 	//! Unique ID per view.
@@ -297,38 +297,51 @@ public:
 
 protected:
 
-	virtual void update(const double deltaTime);				//! Gets called before draw() and after any parent's update. Override this method to plug into the update loop.
+	//! Override this method to plug into the update loop.
+	//! Gets called before draw() and after any parent's update.
+	//! Always gets called, even if view is hidden or alpha is <= 0
+	virtual void update(const double deltaTime);
 
-	inline virtual void	willDraw() {}							//! Called by drawScene before draw()
-	virtual void		draw();									//! Called by drawScene and allows for drawing content for this node. By default draws a rectangle with the current size and background color (only if x/y /bg-alpha > 0)
-	virtual void		debugDrawOutline();						//! Called in DEBUG if sDebugDrawBounds is set to true.
-	inline virtual void	drawChildren(const ci::ColorA& parentTint); //! Called by drawScene() after draw() and before didDraw(). Implemented at bottom of class.
-	inline virtual void	didDraw() {}							//! Called by drawScene after draw()
+	//! Override this method to plug into the draw loop.
+	//! Called by drawScene and allows for drawing content for this node.
+	//! By default draws a rectangle with the current size and background color.
+	//! Only gets called if visible (not hidden or alpha > 0), unless getShouldDrawWhenInvisible() is true.
+	virtual void draw();
 
-	inline virtual void didMoveToView(BaseView* parent) {}		//! Called when moved to a parent
-	inline virtual void willMoveFromView(BaseView* parent) {}	//! Called when removed from a parent
+	virtual void willDraw() {}									//! Called by drawScene before draw()
+	virtual void drawChildren(const ci::ColorA& parentTint);	//! Called by drawScene() after draw() and before didDraw(). Implemented at bottom of class.
+	virtual void didDraw() {}									//! Called by drawScene after draw()
 
-	const ci::ColorA& getDrawColor() const { return mDrawColor; }	//! The color used for drawing, which is a composite of the alpha and tint colors.
+	virtual void didMoveToView(BaseView* parent) {}				//! Called when moved to a parent
+	virtual void willMoveFromView(BaseView* parent) {}			//! Called when removed from a parent
+
+	virtual void handleSizeUpdated(const ci::vec2 & size) {};	//! Called when size is updated via an animation or setSize()
+
+	//! The color used for drawing, which is a composite of the alpha and tint colors.
+	const ci::ColorA& getDrawColor() const { return mDrawColor; }
 
 	//! This will recalculate the transformation matrix based on the current position, scale and rotation. Gets called automatically before getTransforms(), getGlobalTransforms() or getGlobalPosition() is called.
-	inline void	validateTransforms(const bool force = false);
+	virtual void validateTransforms(const bool force = false);
 
 	//! Marks the transformation matrix (and all of its children's matrices) as invalid. This will cause the matrices to be re-calculated when necessary.
 	//! When content is true, marks the content as invalid and will dispatch a content updated event
-	inline void invalidate(const bool transforms = true, const bool content = true);
+	virtual void invalidate(const bool transforms = true, const bool content = true);
 
 	//! True if any properties that visually modifies this view has been changed since the last call of validateContent().
 	virtual bool hasInvalidContent() const	{ return mHasInvalidContent; }
 	virtual void validateContent()			{ mHasInvalidContent = false; }
 
+	//! Called in DEBUG if sDebugDrawBounds is set to true.
+	virtual void debugDrawOutline();
+
 private:
 
 	// Helpers
-	inline BaseViewList::iterator getChildIt(BaseViewRef child);
-	inline BaseViewList::iterator getChildIt(BaseView* childPtr);
+	BaseViewList::iterator getChildIt(BaseViewRef child);
+	BaseViewList::iterator getChildIt(BaseView* childPtr);
 
-	inline static ci::gl::BatchRef		getDefaultDrawBatch();	//! Default shader batch that draws the background in the default implementation of draw().
-	inline static ci::gl::GlslProgRef	getDefaultDrawProg();	//! Default glsl program used by the default batch that draws a rectangular background using background color and size.
+	static ci::gl::BatchRef		getDefaultDrawBatch();	//! Default shader batch that draws the background in the default implementation of draw().
+	static ci::gl::GlslProgRef	getDefaultDrawProg();	//! Default glsl program used by the default batch that draws a rectangular background using background color and size.
 
 	static size_t sNumInstances;
 
@@ -343,7 +356,7 @@ private:
 	ci::vec2 mSize;
 
 	bool mIsHidden;
-	bool mShouldForceInvisibleDraw;
+	bool mShouldDrawWhenInvisible;
 	BlendMode mBlendMode;
 
 	ci::ColorA mDrawColor;	//! Combines mAlpha and mTint for faster draw
@@ -374,60 +387,6 @@ private:
 
 }; // class BaseView
 
-
-
-//==================================================
-// Inline implementations to improve speed on frequently used methods
-// 
-
-void BaseView::drawChildren(const ci::ColorA& parentTint) {
-	for (auto child : mChildren) {
-		child->drawScene(parentTint);
-	}
-}
-
-void BaseView::validateTransforms(const bool force) {
-	if (!mHasInvalidTransforms && !force) return;
-
-	const ci::vec3 origin = ci::vec3(mTransformOrigin.value(), 0.0f);
-
-	mRotationScaleTransform = glm::translate(origin)	// offset by origin
-		* glm::scale(ci::vec3(mScale.value(), 1.0f))
-		* glm::toMat4(mRotation.value())
-		* glm::translate(-origin);						// reset to original position
-
-	mTransform = glm::translate(ci::vec3(mPosition.value(), 0.0f))
-		* mRotationScaleTransform;
-
-	mGlobalTransform = mParent ? mParent->getGlobalTransform() * mTransform : mTransform;
-
-	mHasInvalidTransforms = false;
-}
-
-inline void BaseView::invalidate(const bool transforms, const bool content) {
-	if (transforms) {
-		mHasInvalidTransforms = true;
-		for (auto child : mChildren) {
-			child->invalidate(true, false);
-		}
-	}
-
-	if (content) {
-		mHasInvalidContent = true;
-	}
-}
-
-BaseViewList::iterator BaseView::getChildIt(BaseViewRef child) {
-	if (!child || child->mParent != this) return mChildren.end();
-	return std::find(mChildren.begin(), mChildren.end(), child);
-}
-
-BaseViewList::iterator BaseView::getChildIt(BaseView* childPtr) {
-	if (!childPtr || childPtr->mParent != this) return mChildren.end();
-	return std::find_if(mChildren.begin(), mChildren.end(), [&](BaseViewRef child) {
-		return child.get() == childPtr;
-	});
-}
 
 
 }

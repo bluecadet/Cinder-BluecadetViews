@@ -64,7 +64,7 @@ protected:
 	void			validateFbo();
 
 	//! Redraw the fbo children
-	inline void		validateContent() override;
+	void			validateContent() override;
 
 	//! Draw content within this view
 	void			draw() override;

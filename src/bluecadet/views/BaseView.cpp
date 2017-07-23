@@ -42,7 +42,7 @@ BaseView::BaseView() :
 
 	mAlpha(1.0),
 	mIsHidden(false),
-	mShouldForceInvisibleDraw(false),
+	mShouldDrawWhenInvisible(false),
 	mBlendMode(BlendMode::INHERIT),
 
 	mShouldPropagateEvents(sEventPropagationEnabled),
@@ -68,7 +68,7 @@ void BaseView::reset() {
 	mGlobalTransform = mat4();
 	mHasInvalidTransforms = true;
 	mHasInvalidContent = true;
-	mShouldForceInvisibleDraw = false;
+	mShouldDrawWhenInvisible = false;
 	mShouldPropagateEvents = true;
 	mTint = Color(1.0f, 1.0f, 1.0f);
 	mDrawColor = ColorA(1.0f, 1.0f, 1.0f, 1.0f);
@@ -157,6 +157,18 @@ void BaseView::removeAllChildren() {
 	for (BaseViewList::iterator it = mChildren.begin(); it != mChildren.end();) {
 		it = removeChild(it);
 	}
+}
+
+BaseViewList::iterator BaseView::getChildIt(BaseViewRef child) {
+	if (!child || child->mParent != this) return mChildren.end();
+	return std::find(mChildren.begin(), mChildren.end(), child);
+}
+
+BaseViewList::iterator BaseView::getChildIt(BaseView* childPtr) {
+	if (!childPtr || childPtr->mParent != this) return mChildren.end();
+	return std::find_if(mChildren.begin(), mChildren.end(), [&](BaseViewRef child) {
+		return child.get() == childPtr;
+	});
 }
 
 //==================================================
@@ -274,7 +286,7 @@ void BaseView::update(const double deltaTime) {
 }
 
 void BaseView::drawScene(const ColorA& parentTint) {
-	const bool shouldDraw = mShouldForceInvisibleDraw || (!mIsHidden && mAlpha > 0.0f);
+	const bool shouldDraw = mShouldDrawWhenInvisible || (!mIsHidden && mAlpha > 0.0f);
 
 	if (shouldDraw || (sDebugDrawBounds && sDebugDrawInvisibleBounds)) {
 		validateTransforms();
@@ -336,11 +348,45 @@ void BaseView::draw() {
 	batch->draw();
 }
 
-inline void BaseView::debugDrawOutline() {
-	const float hue = (float)mViewId / (float)sNumInstances;
-	const auto color = ColorAf(ci::hsvToRgb(vec3(hue, 1.0f, 1.0f)), 0.66f);
-	gl::color(color);
-	gl::drawStrokedRect(Rectf(vec2(0), getSize()));
+void BaseView::drawChildren(const ci::ColorA& parentTint) {
+	for (auto child : mChildren) {
+		child->drawScene(parentTint);
+	}
+}
+
+//==================================================
+// Validation
+// 
+
+void BaseView::validateTransforms(const bool force) {
+	if (!mHasInvalidTransforms && !force) return;
+
+	const ci::vec3 origin = ci::vec3(mTransformOrigin.value(), 0.0f);
+
+	mRotationScaleTransform = glm::translate(origin)	// offset by origin
+		* glm::scale(ci::vec3(mScale.value(), 1.0f))
+		* glm::toMat4(mRotation.value())
+		* glm::translate(-origin);						// reset to original position
+
+	mTransform = glm::translate(ci::vec3(mPosition.value(), 0.0f))
+		* mRotationScaleTransform;
+
+	mGlobalTransform = mParent ? mParent->getGlobalTransform() * mTransform : mTransform;
+
+	mHasInvalidTransforms = false;
+}
+
+void BaseView::invalidate(const bool transforms, const bool content) {
+	if (transforms) {
+		mHasInvalidTransforms = true;
+		for (auto child : mChildren) {
+			child->invalidate(true, false);
+		}
+	}
+
+	if (content) {
+		mHasInvalidContent = true;
+	}
 }
 
 //==================================================
@@ -441,6 +487,13 @@ gl::BatchRef BaseView::getDefaultDrawBatch() {
 		defaultBatch = gl::Batch::create(rect, getDefaultDrawProg());
 	}
 	return defaultBatch;
+}
+
+void BaseView::debugDrawOutline() {
+	const float hue = (float)mViewId / (float)sNumInstances;
+	const auto color = ColorAf(ci::hsvToRgb(vec3(hue, 1.0f, 1.0f)), 0.66f);
+	gl::color(color);
+	gl::drawStrokedRect(Rectf(vec2(0), getSize()));
 }
 
 }

@@ -52,7 +52,7 @@ void FboView::validateFbo(){
 	}
 }
 
-inline void FboView::validateContent(){
+void FboView::validateContent(){
 	if (!mFbo) {
 		validateFbo();
 	}

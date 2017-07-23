@@ -34,7 +34,7 @@ public:
 	virtual ~TouchView();
 
 	//! Calls BaseView::reset() and cancels/ends all existing touches on this view.
-	virtual void	reset() override;
+	void			reset() override;
 
 	//! Sets the size of this touch view and clears any existing touch path. You also just call setSize().
 	virtual void	setup(const ci::vec2 size);

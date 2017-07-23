@@ -115,18 +115,8 @@ void TextView::setSize(const ci::vec2& size) {
 	setMaxSize(size);
 }
 
-inline void TextView::setWidth(const float width){
-	invalidate();
-	setMaxWidth(width);
-}
-
-inline void TextView::setHeight(const float height){
-	invalidate();
-	setMaxHeight(height);
-}
-
-const ci::vec2 TextView::getSize() {
-	const vec2 maxSize = StyledTextLayout::getTextSize();
+ci::vec2 TextView::getSize() {
+	const vec2 maxSize = StyledTextLayout::getMaxSize();
 	const vec2 textSize = StyledTextLayout::getTextSize();
 	return vec2(
 		max(maxSize.x, textSize.x),

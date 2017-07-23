@@ -32,8 +32,8 @@ public:
 	void				setSmoothness(const float value) { mSmoothness = value; invalidate(false, true); }
 
 protected:
-	virtual void draw() override;
-	virtual void debugDrawOutline() override;
+	void draw() override;
+	void debugDrawOutline() override;
 
 	static ci::gl::BatchRef		getSharedEllipseBatch();
 	static ci::gl::GlslProgRef	getSharedEllipseProg();
