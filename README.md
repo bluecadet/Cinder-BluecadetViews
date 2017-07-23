@@ -104,10 +104,12 @@ void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 
 void BaseAppSampleApp::setup() {
 
-	BaseApp::setup();					// Required
-	BaseApp::addTouchSimulatorParams();	// Optional
+	BaseApp::setup();
+	
+	// Optional: Add touch simulator support
+	BaseApp::addTouchSimulatorParams();
 
-	// Optional: configure your root view
+	// Optional: Configure your root view
 	getRootView()->setBackgroundColor(Color::gray(0.5f));
 
 	// Sample content
