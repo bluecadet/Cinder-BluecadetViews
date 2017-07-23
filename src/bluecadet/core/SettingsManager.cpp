@@ -206,12 +206,18 @@ ci::params::InterfaceGlRef SettingsManager::getParams() {
 	if (!params) {
 		params = ci::params::InterfaceGl::create("Settings", ci::ivec2(250, 250));
 		params->addParam("Show Layout", &mDrawScreenLayout).group("App").key("l");
-		params->addParam("Show Touches", &mDrawTouches).group("App").key("t");
 		params->addParam("Show Minimap", &mDrawMinimap).group("App").key("m");
 		params->addParam("Show Stats", &mDrawStats).group("App").key("s");
+
+		params->addParam("Show Touches", &mDrawTouches).group("App").key("t");
 		params->addParam("Show Cursor", &mShowMouse).updateFn([&] { mShowMouse ? ci::app::AppBase::get()->showCursor() : ci::app::AppBase::get()->hideCursor(); }).key("c").group("App");
-		params->addParam("Show Bounds", &bluecadet::views::BaseView::sDebugDrawBounds).group("App").key("b");
-		params->addParam("Show Invisible Bounds", &bluecadet::views::BaseView::sDebugDrawInvisibleBounds).group("App");
+		
+		static int boundIndex = 0;
+		params->addParam("View Bounds", {"None", "Visible", "All"}, [&](int i) {
+			boundIndex = i;
+			bluecadet::views::BaseView::sDebugDrawBounds = boundIndex >= 1;
+			bluecadet::views::BaseView::sDebugDrawInvisibleBounds = boundIndex >= 2;
+		}, [&] { return boundIndex; }).key("b").group("App");
 
 		if (mMinimizeParams) {
 			params->minimize();

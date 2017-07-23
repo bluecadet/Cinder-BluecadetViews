@@ -1,6 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/Rand.h"
 
 #include "bluecadet/core/BaseApp.h"
 #include "bluecadet/views/TouchView.h"
@@ -33,12 +34,11 @@ void AnimationsSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 void AnimationsSampleApp::setup() {
 	BaseApp::setup();
 
-	auto button = TouchViewRef(new TouchView());
-	button->setPosition(vec2(400, 300));
-	button->setSize(vec2(200, 100));
-	button->setBackgroundColor(Color(1, 0, 0));
-	button->getSignalTapped().connect([=](bluecadet::touch::TouchEvent e) { CI_LOG_I("Button tapped"); });
-	getRootView()->addChild(button);
+	mAnimatedSizeView = make_shared<BaseView>();
+	mAnimatedSizeView->setSize(vec2(300, 200));
+	mAnimatedSizeView->setBackgroundColor(hsvToRgb(vec3(randFloat(), 0.8f, 1.0f)));
+	mAnimatedSizeView->setPosition((getRootView()->getSize() - mAnimatedSizeView->getSize()) * 0.5f);
+	getRootView()->addChild(mAnimatedSizeView);
 }
 
 void AnimationsSampleApp::update() {
