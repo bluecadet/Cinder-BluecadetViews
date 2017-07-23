@@ -86,6 +86,8 @@ void SettingsManager::setup(ci::app::App::Settings * appSettings, std::function<
 	addCommandLineParser("draw_stats", [&](const string &value) { mDrawStats = value == "true"; });
 	addCommandLineParser("minimizeParams", [&](const string &value) { mMinimizeParams = value == "true"; });
 	addCommandLineParser("minimize_params", [&](const string &value) { mMinimizeParams = value == "true"; });
+	addCommandLineParser("collapseParams", [&](const string &value) { mCollapseParams = value == "true"; });
+	addCommandLineParser("collapse_params", [&](const string &value) { mCollapseParams = value == "true"; });
 	addCommandLineParser("zoom_toggle_hotkey", [&](const string &value) { mZoomToggleHotkeyEnabled = value == "true"; });
 	addCommandLineParser("display_id_hotkey", [&](const string &value) { mDisplayIdHotkeysEnabled = value == "true"; });
 	addCommandLineParser("size", [&](const string &value) {
@@ -169,6 +171,7 @@ void SettingsManager::parseJson(ci::JsonTree & json) {
 	setFieldFromJsonIfExists(&mDrawTouches, "settings.debug.drawTouches");
 	setFieldFromJsonIfExists(&mDrawScreenLayout, "settings.debug.drawScreenLayout");
 	setFieldFromJsonIfExists(&mMinimizeParams, "settings.debug.minimizeParams");
+	setFieldFromJsonIfExists(&mCollapseParams, "settings.debug.collapseParams");
 	setFieldFromJsonIfExists(&mZoomToggleHotkeyEnabled, "settings.debug.zoomToggleHotkey");
 	setFieldFromJsonIfExists(&mDisplayIdHotkeysEnabled, "settings.debug.displayIdHotkeys");
 
@@ -221,6 +224,10 @@ ci::params::InterfaceGlRef SettingsManager::getParams() {
 
 		if (mMinimizeParams) {
 			params->minimize();
+		}
+
+		if (mCollapseParams) {
+			params->setOptions("App", "opened=false");
 		}
 	}
 	return params;

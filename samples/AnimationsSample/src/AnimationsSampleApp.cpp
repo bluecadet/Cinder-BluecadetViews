@@ -28,11 +28,14 @@ void AnimationsSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 		manager->mFullscreen = false;
 		manager->mWindowSize = ivec2(960, 540);
 		manager->mConsoleWindowEnabled = false;
+		manager->mCollapseParams = true;
 	});
 }
 
 void AnimationsSampleApp::setup() {
 	BaseApp::setup();
+
+	addTouchSimulatorParams();
 
 	mAnimatedSizeView = make_shared<BaseView>();
 	mAnimatedSizeView->setSize(vec2(300, 200));

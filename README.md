@@ -95,7 +95,7 @@ void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 	SettingsManager::setInstance(myApp::MyAppSettingsManager::getInstance());
 	
 	// Initialize the settings manager with the cinder app settings and the settings json
-	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("appSettings.json"), [](SettingsManager * manager) {
+	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("settings.json"), [](SettingsManager * manager) {
 		// Optional: Override json defaults at runtime
 		manager->mFullscreen = false;
 		manager->mWindowSize = ivec2(1280, 720);
@@ -104,8 +104,8 @@ void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 
 void BaseAppSampleApp::setup() {
 
-	BaseApp::setup();
-	BaseApp::addTouchSimulatorParams();
+	BaseApp::setup();					// Required
+	BaseApp::addTouchSimulatorParams();	// Optional
 
 	// Optional: configure your root view
 	getRootView()->setBackgroundColor(Color::gray(0.5f));
