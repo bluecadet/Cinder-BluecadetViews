@@ -5,7 +5,7 @@
 
 
 //==================================================
-// Anim & Value
+// Anim<T> + T
 // 
 
 template<typename T>
@@ -34,7 +34,7 @@ T operator - (const ci::Anim<T> & tween) {
 }
 
 //==================================================
-// Value & Anim
+// T + Anim<T>
 // 
 
 template<typename T>
@@ -59,7 +59,7 @@ T operator / (const T & value, const ci::Anim<T> & tween) {
 
 
 //==================================================
-// Value Conversion & Anim
+// U + Anim<T>
 // 
 
 template<typename T, typename U>
@@ -84,7 +84,7 @@ T operator / (const U & value, const ci::Anim<T> & tween) {
 
 
 //==================================================
-// Anim & Value Conversion
+// Anim<T> + U
 // 
 
 template<typename T, typename U>
@@ -107,8 +107,9 @@ T operator / (const ci::Anim<T> & tween, const U & value) {
 	return value / tween.value();
 }
 
+
 //==================================================
-// Anim & Anim
+// Anim + Anim
 // 
 
 template<typename T>
