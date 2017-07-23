@@ -65,7 +65,7 @@ void TextView::willDraw() {
 	}
 }
 
-void TextView::update(const double deltaTime) {
+void TextView::validateContent() {
 	if (BaseView::getSize() != StyledTextLayout::getMaxSize()) {
 		StyledTextLayout::setMaxSize(BaseView::getSize());
 	}

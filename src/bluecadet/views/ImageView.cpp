@@ -10,7 +10,7 @@ namespace views {
 
 ImageView::ImageView() : BaseView(),
 mTexture(nullptr),
-mScaleMode(ScaleMode::NONE)
+mScaleMode(ScaleMode::STRETCH)
 {
 }
 
@@ -26,7 +26,6 @@ void ImageView::clearTexture() {
     mTexture = nullptr;
     mDrawingDestRect = Rectf();
     mDrawingArea = Area();
-	mScaleMode = ScaleMode::NONE;
 }
 
 void ImageView::setup(const gl::TextureRef texture, const ci::vec2 &size, const ScaleMode scaleMode) {
@@ -57,10 +56,8 @@ void ImageView::setTexture(ci::gl::TextureRef texture, const bool resizeToTextur
 	invalidate(ValidationFlags::CONTENT);
 }
 
-void ImageView::setSize(const ci::vec2& size) {
-	BaseView::setSize(size);
-
-	mDrawingDestRect = Rectf(vec2(0), size);
+void ImageView::validateContent() {
+	mDrawingDestRect = Rectf(vec2(0), getSize().value());
 
 	if (mTexture) {
 		// Aspect fill drawing area

@@ -7,6 +7,7 @@
 
 #include "bluecadet/views/TextView.h"
 #include "bluecadet/views/TouchView.h"
+#include "bluecadet/views/ImageView.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -38,25 +39,40 @@ void AnimationsSampleApp::setup() {
 
 	addTouchSimulatorParams();
 
-	//auto view = make_shared<BaseView>();
-	auto view = make_shared<TextView>();
+	BaseViewRef child = nullptr;
 
-	view->setText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. \
-Donec ornare mi ut nulla iaculis accumsan. Sed placerat vitae nisl at lobortis. \
-Proin facilisis augue nec sodales sagittis. Lorem ipsum dolor sit amet, consectetur \
-adipiscing elit. Donec ornare mi ut nulla iaculis accumsan. Sed placerat vitae nisl \
-at lobortis. Proin facilisis augue nec sodales sagittis.Lorem ipsum dolor sit amet, \
-consectetur adipiscing elit. Donec ornare mi ut nulla iaculis accumsan. Sed placerat \
-vitae nisl at lobortis. Proin facilisis augue nec sodales sagittis.");
-	view->setTextColor(Color::white());
+	if (false) {
+		// BaseView
+		auto view = make_shared<BaseView>();
+		child = view;
+	}
+	if (true) {
+		auto view = make_shared<TextView>();
+		view->setText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. \
+		Donec ornare mi ut nulla iaculis accumsan. Sed placerat vitae nisl at lobortis. \
+		Proin facilisis augue nec sodales sagittis. Lorem ipsum dolor sit amet, consectetur \
+		adipiscing elit. Donec ornare mi ut nulla iaculis accumsan. Sed placerat vitae nisl \
+		at lobortis. Proin facilisis augue nec sodales sagittis.Lorem ipsum dolor sit amet, \
+		consectetur adipiscing elit. Donec ornare mi ut nulla iaculis accumsan. Sed placerat \
+		vitae nisl at lobortis. Proin facilisis augue nec sodales sagittis.");
+		view->setTextColor(Color::white());
+		child = view;
+	}
+	if (false) {
+		// ImageView
+		auto view = make_shared<ImageView>();
+		auto image = loadImage(getAssetPath("cinderblock.png"));
+		auto texture = gl::Texture::create(image);
+		view->setTexture(texture);
+		child = view;
+	}
 
-	view->setSize(vec2(300, 200));
-	view->setBackgroundColor(hsvToRgb(vec3(randFloat(), 0.8f, 1.0f)));
-	view->setPosition((getRootView()->getSize() - view->getSize()) * 0.5f);
+	child->setSize(vec2(300, 200));
+	child->setBackgroundColor(hsvToRgb(vec3(randFloat(), 0.8f, 1.0f)));
+	child->setPosition((getRootView()->getSize() - child->getSize()) * 0.5f);
+	child->getTimeline()->apply(&child->getSize(), vec2(200, 300), 2.0f, easeInOutQuad).loop(true).pingPong(true);
 
-	view->getTimeline()->apply(&view->getSize(), vec2(200, 300), 2.0f, easeInOutQuad).loop(true).pingPong(true);
-	
-	getRootView()->addChild(view);
+	getRootView()->addChild(child);
 }
 
 void AnimationsSampleApp::update() {
