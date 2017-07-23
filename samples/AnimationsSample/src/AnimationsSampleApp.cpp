@@ -8,6 +8,7 @@
 #include "bluecadet/views/TextView.h"
 #include "bluecadet/views/TouchView.h"
 #include "bluecadet/views/ImageView.h"
+#include "bluecadet/views/FboView.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -30,6 +31,7 @@ void AnimationsSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 		manager->mFullscreen = false;
 		manager->mWindowSize = ivec2(960, 540);
 		manager->mConsoleWindowEnabled = false;
+		manager->mMinimizeParams = true;
 		manager->mCollapseParams = true;
 	});
 }
@@ -39,40 +41,60 @@ void AnimationsSampleApp::setup() {
 
 	addTouchSimulatorParams();
 
-	BaseViewRef child = nullptr;
+	vector<BaseViewRef> views;
 
-	if (false) {
-		// BaseView
-		auto view = make_shared<BaseView>();
-		child = view;
-	}
-	if (true) {
-		auto view = make_shared<TextView>();
-		view->setText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. \
+	{
+		auto textView = make_shared<TextView>();
+		textView->setText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. \
 		Donec ornare mi ut nulla iaculis accumsan. Sed placerat vitae nisl at lobortis. \
 		Proin facilisis augue nec sodales sagittis. Lorem ipsum dolor sit amet, consectetur \
 		adipiscing elit. Donec ornare mi ut nulla iaculis accumsan. Sed placerat vitae nisl \
 		at lobortis. Proin facilisis augue nec sodales sagittis.Lorem ipsum dolor sit amet, \
 		consectetur adipiscing elit. Donec ornare mi ut nulla iaculis accumsan. Sed placerat \
 		vitae nisl at lobortis. Proin facilisis augue nec sodales sagittis.");
-		view->setTextColor(Color::white());
-		child = view;
+		textView->setTextColor(Color::white());
+		views.push_back(textView);
 	}
-	if (false) {
-		// ImageView
-		auto view = make_shared<ImageView>();
+
+	{
+		auto imageView = make_shared<ImageView>();
 		auto image = loadImage(getAssetPath("cinderblock.png"));
 		auto texture = gl::Texture::create(image);
-		view->setTexture(texture);
-		child = view;
+		imageView->setTexture(texture);
+		views.push_back(imageView);
 	}
 
-	child->setSize(vec2(300, 200));
-	child->setBackgroundColor(hsvToRgb(vec3(randFloat(), 0.8f, 1.0f)));
-	child->setPosition((getRootView()->getSize() - child->getSize()) * 0.5f);
-	child->getTimeline()->apply(&child->getSize(), vec2(200, 300), 2.0f, easeInOutQuad).loop(true).pingPong(true);
+	{
+		auto imageView = make_shared<ImageView>();
+		auto image = loadImage(getAssetPath("cinderblock.png"));
+		auto texture = gl::Texture::create(image);
+		imageView->setTexture(texture);
 
-	getRootView()->addChild(child);
+		auto fboView = make_shared<FboView>();
+		fboView->addChild(imageView);
+		views.push_back(fboView);
+	}
+
+	float numCols = 3;
+	float numRows = 3;
+	float widthPerView = getWindowWidth() / numCols;
+	float heightPerView = getWindowHeight() / numRows;
+	float delayPerView = 0.1f;
+	for (float i = 0; i < views.size(); ++i) {
+		auto view = views[(int)i];
+		float col = glm::floor(glm::mod(i, numCols));
+		float row = glm::floor(i / numRows);
+
+
+		view->setBackgroundColor(hsvToRgb(vec3(randFloat(), 0.8f, 1.0f)));
+		view->setPosition(vec2(col * widthPerView, row * heightPerView));
+		view->setSize(vec2(widthPerView, heightPerView));
+
+		view->getTimeline()->apply(&view->getSize(), view->getSize() * 0.5f, 2.0f, easeInOutQuad)
+			.loop(true).pingPong(true).delay(i / (float)views.size());
+		
+		getRootView()->addChild(view);
+	}
 }
 
 void AnimationsSampleApp::update() {

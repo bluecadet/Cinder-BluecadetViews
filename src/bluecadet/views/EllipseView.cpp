@@ -43,7 +43,7 @@ void EllipseView::draw() {
 
 	auto batch = getSharedEllipseBatch();
 	auto prog = batch->getGlslProg();
-	prog->uniform("uSize", getSize());
+	prog->uniform("uSize", size);
 	prog->uniform("uBackgroundColor", vec4(bgColor.r, bgColor.g, bgColor.b, bgColor.a));
 	prog->uniform("uSmoothness", mSmoothness);
 	batch->draw();

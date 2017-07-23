@@ -54,7 +54,7 @@ void FboView::validateFbo(){
 }
 
 void FboView::validateContent(){
-	if (!mFbo) {
+	if (!mFbo || mFbo->getSize() != ivec2(getSize().value())) {
 		validateFbo();
 	}
 
