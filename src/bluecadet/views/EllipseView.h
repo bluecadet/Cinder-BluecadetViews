@@ -29,7 +29,7 @@ public:
 
 	//! The smoothness of the ellipse's edge
 	ci::Anim<float> &	getSmoothness() { return mSmoothness; }
-	void				setSmoothness(const float value) { mSmoothness = value; invalidate(false, true); }
+	void				setSmoothness(const float value) { mSmoothness = value; invalidate(ValidationFlags::CONTENT); }
 
 protected:
 	void draw() override;

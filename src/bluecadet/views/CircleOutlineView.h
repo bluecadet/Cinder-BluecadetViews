@@ -29,10 +29,10 @@ public:
 
 	//! The smoothness of the ellipse's edge
 	float	getSmoothness() const { return mSmoothness; }
-	void		setSmoothness(const float value) { mSmoothness = value; invalidate(false, true); }
+	void	setSmoothness(const float value) { mSmoothness = value; invalidate(ValidationFlags::CONTENT); }
 
 	float	getBorderThickness() const { return mBorderThickness; }
-	void		setBorderThickness(const float value) { mBorderThickness = value; invalidate(false, true); }
+	void	setBorderThickness(const float value) { mBorderThickness = value; invalidate(ValidationFlags::CONTENT); }
 
 protected:
 	void draw() override;

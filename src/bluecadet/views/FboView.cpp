@@ -49,7 +49,7 @@ void FboView::validateFbo(){
 	if (size.x > 0 && size.y > 0) {
 		mFbo = createFbo(size, getFboFormat());
 		// Invalidate content to confirm it will redraw to fbo
-		invalidate(false, true);
+		invalidate(ValidationFlags::CONTENT);
 	}
 }
 
@@ -91,7 +91,7 @@ void FboView::validateContent(){
 
 void FboView::handleEvent(ViewEvent& event) {
 	if (event.type == ViewEvent::Type::CONTENT_INVALIDATED) {
-		invalidate(false, true);
+		invalidate(ValidationFlags::CONTENT);
 	}
 }
 

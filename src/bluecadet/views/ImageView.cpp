@@ -54,7 +54,7 @@ void ImageView::setTexture(ci::gl::TextureRef texture, const bool resizeToTextur
 		}
 	}
 
-	invalidate(false, true);
+	invalidate(ValidationFlags::CONTENT);
 }
 
 void ImageView::setSize(const ci::vec2& size) {

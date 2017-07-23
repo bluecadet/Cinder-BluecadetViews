@@ -67,15 +67,20 @@ protected:
 
 	//! Will update the text texture if necessary.
 	void				willDraw() override;
+	void				update(const double deltaTime) override;
 	void				draw() override;
 
 	ci::gl::Texture::Format createTextureFormat(bool smoothScaling) const;
 	void				invalidate(const bool layout = true, const bool size = true) override;
+	void				invalidate(const int flags) override;
 
 	// Change visibility of these methods from public to protected since setSize()/getSize() should be used.
 	void				setMaxSize(const ci::vec2& size) override { return StyledTextLayout::setMaxSize(size); };
 	void				setMaxWidth(const float value) override { return StyledTextLayout::setMaxWidth(value); };
 	void				setMaxHeight(const float value) override { return StyledTextLayout::setMaxHeight(value); };
+	ci::vec2			getMaxSize() const override { return StyledTextLayout::getMaxSize(); };
+	float				getMaxWidth() const override { return StyledTextLayout::getMaxWidth(); };
+	float				getMaxHeight() const override { return StyledTextLayout::getMaxHeight(); };
 
 	bool				mHasInvalidRenderedContent;
 	bool				mSmoothScalingEnabled;

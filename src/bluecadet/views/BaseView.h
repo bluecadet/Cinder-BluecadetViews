@@ -48,9 +48,14 @@ public:
 	>															UserInfoTypes;
 	typedef std::map<std::string, UserInfoTypes>				UserInfo;
 
-	typedef ci::signals::Signal<void(ViewEvent & event)>			EventSignal;
+	typedef ci::signals::Signal<void(ViewEvent & event)>		EventSignal;
 	typedef ci::signals::Connection								EventConnection;
 	typedef EventSignal::CallbackFn								EventCallback;
+
+	enum ValidationFlags {
+		TRANSFORMS = (1 << 0),
+		CONTENT = (1 << 1)
+	};
 
 
 	//==================================================
@@ -187,7 +192,7 @@ public:
 
 	//! Size of this view. Defaults to 0, 0 and is not affected by children. Does not affect transforms (position, rotation, scale).
 	virtual ci::Anim<ci::vec2> &		getSize() { return mSize; }
-	virtual void						setSize(const ci::vec2 & size) { mSize = size; invalidate(false, true); }
+	virtual void						setSize(const ci::vec2 & size) { mSize = size; invalidate(ValidationFlags::CONTENT); }
 
 	//! Width of this view. Defaults to 0 and is not affected by children.
 	virtual float						getWidth() { return getSize().value().x; }
@@ -199,13 +204,13 @@ public:
 
 	//! The fill color used when drawing the bounding rect when a size greater than 0, 0 is given.
 	virtual ci::Anim<ci::ColorA>&		getBackgroundColor() { return mBackgroundColor; }
-	virtual void						setBackgroundColor(const ci::Color color) { mBackgroundColor = ci::ColorA(color, 1.0f); invalidate(false, true); } //! Sets background color with 100% alpha
-	virtual void						setBackgroundColor(const ci::ColorA color) { mBackgroundColor = color; invalidate(false, true); }
+	virtual void						setBackgroundColor(const ci::Color color) { mBackgroundColor = ci::ColorA(color, 1.0f); invalidate(ValidationFlags::CONTENT); } //! Sets background color with 100% alpha
+	virtual void						setBackgroundColor(const ci::ColorA color) { mBackgroundColor = color; invalidate(ValidationFlags::CONTENT); }
 
 	//! Applied before each draw together with mAlpha; Defaults to white
 	virtual ci::Anim<ci::Color>&		getTint() { return mTint; }
-	virtual void						setTint(const ci::Color tint) { mTint = tint; invalidate(false, true); } //! Sets tint while preserving current alpha
-	virtual void						setTint(const ci::ColorA tint) { mTint = tint; mAlpha = tint.a; invalidate(false, true); } //! Sets mTint and mAlpha properties
+	virtual void						setTint(const ci::Color tint) { mTint = tint; invalidate(ValidationFlags::CONTENT); } //! Sets tint while preserving current alpha
+	virtual void						setTint(const ci::ColorA tint) { mTint = tint; mAlpha = tint.a; invalidate(ValidationFlags::CONTENT); } //! Sets mTint and mAlpha properties
 
 	//! Applied before each draw together with mTint; Gets multiplied with parent alpha; Defaults to 1.0f
 	virtual ci::Anim<float>&			getAlpha() { return mAlpha; }
@@ -326,7 +331,7 @@ protected:
 
 	//! Marks the transformation matrix (and all of its children's matrices) as invalid. This will cause the matrices to be re-calculated when necessary.
 	//! When content is true, marks the content as invalid and will dispatch a content updated event
-	virtual void invalidate(const bool transforms = true, const bool content = true);
+	virtual void invalidate(const int flags = (ValidationFlags::TRANSFORMS | ValidationFlags::CONTENT));
 
 	//! True if any properties that visually modifies this view has been changed since the last call of validateContent().
 	virtual bool hasInvalidContent() const	{ return mHasInvalidContent; }

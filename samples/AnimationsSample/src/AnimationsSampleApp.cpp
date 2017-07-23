@@ -4,6 +4,8 @@
 #include "cinder/Rand.h"
 
 #include "bluecadet/core/BaseApp.h"
+
+#include "bluecadet/views/TextView.h"
 #include "bluecadet/views/TouchView.h"
 
 using namespace ci;
@@ -20,7 +22,6 @@ public:
 	void setup() override;
 	void update() override;
 	void draw() override;
-	BaseViewRef mAnimatedSizeView;
 };
 
 void AnimationsSampleApp::prepareSettings(ci::app::App::Settings* settings) {
@@ -37,11 +38,25 @@ void AnimationsSampleApp::setup() {
 
 	addTouchSimulatorParams();
 
-	mAnimatedSizeView = make_shared<BaseView>();
-	mAnimatedSizeView->setSize(vec2(300, 200));
-	mAnimatedSizeView->setBackgroundColor(hsvToRgb(vec3(randFloat(), 0.8f, 1.0f)));
-	mAnimatedSizeView->setPosition((getRootView()->getSize() - mAnimatedSizeView->getSize()) * 0.5f);
-	getRootView()->addChild(mAnimatedSizeView);
+	//auto view = make_shared<BaseView>();
+	auto view = make_shared<TextView>();
+
+	view->setText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. \
+Donec ornare mi ut nulla iaculis accumsan. Sed placerat vitae nisl at lobortis. \
+Proin facilisis augue nec sodales sagittis. Lorem ipsum dolor sit amet, consectetur \
+adipiscing elit. Donec ornare mi ut nulla iaculis accumsan. Sed placerat vitae nisl \
+at lobortis. Proin facilisis augue nec sodales sagittis.Lorem ipsum dolor sit amet, \
+consectetur adipiscing elit. Donec ornare mi ut nulla iaculis accumsan. Sed placerat \
+vitae nisl at lobortis. Proin facilisis augue nec sodales sagittis.");
+	view->setTextColor(Color::white());
+
+	view->setSize(vec2(300, 200));
+	view->setBackgroundColor(hsvToRgb(vec3(randFloat(), 0.8f, 1.0f)));
+	view->setPosition((getRootView()->getSize() - view->getSize()) * 0.5f);
+
+	view->getTimeline()->apply(&view->getSize(), vec2(200, 300), 2.0f, easeInOutQuad).loop(true).pingPong(true);
+	
+	getRootView()->addChild(view);
 }
 
 void AnimationsSampleApp::update() {

@@ -266,9 +266,13 @@ void BaseView::setTransformOrigin(const vec2 & value, const bool compensateForOf
 // 
 
 void BaseView::updateScene(const double deltaTime) {
+
 	if (mTimeline && !mTimeline->empty()) {
-		mTimeline->stepTo(timeline().getCurrentTime());
 		invalidate();
+	}
+	
+	if (mTimeline) {
+		mTimeline->stepTo(timeline().getCurrentTime());
 	}
 
 	if (mHasInvalidContent && mShouldDispatchContentInvalidation) {
@@ -376,15 +380,15 @@ void BaseView::validateTransforms(const bool force) {
 	mHasInvalidTransforms = false;
 }
 
-void BaseView::invalidate(const bool transforms, const bool content) {
-	if (transforms) {
+void BaseView::invalidate(const int flags) {
+	if (flags & ValidationFlags::TRANSFORMS) {
 		mHasInvalidTransforms = true;
 		for (auto child : mChildren) {
-			child->invalidate(true, false);
+			child->invalidate(ValidationFlags::TRANSFORMS);
 		}
 	}
 
-	if (content) {
+	if (flags & ValidationFlags::CONTENT) {
 		mHasInvalidContent = true;
 	}
 }

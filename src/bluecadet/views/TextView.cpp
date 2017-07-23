@@ -1,6 +1,7 @@
 #include "TextView.h"
 
 #include "bluecadet/text/StyleManager.h"
+#include "cinder/Log.h"
 
 #if defined(CINDER_MSW)
 
@@ -64,6 +65,12 @@ void TextView::willDraw() {
 	}
 }
 
+void TextView::update(const double deltaTime) {
+	if (BaseView::getSize() != StyledTextLayout::getMaxSize()) {
+		StyledTextLayout::setMaxSize(BaseView::getSize());
+	}
+}
+
 void TextView::draw() {
 	BaseView::draw();
 	if (mTexture) {
@@ -91,7 +98,12 @@ void TextView::renderContent(bool surfaceOnly, bool alpha, bool premultiplied, b
 		mTexture = nullptr; // reset texture to save memory
 
 	} else {
-		mTexture = gl::Texture2d::create(mSurface, createTextureFormat(mSmoothScalingEnabled));
+		if (mTexture && mTexture->getSize() == mSurface.getSize()) {
+			mTexture->update(mSurface);
+		} else {
+			mTexture = gl::Texture2d::create(mSurface, createTextureFormat(mSmoothScalingEnabled));
+		}
+
 		mSurface = ci::Surface(); // reset surface to save memory
 	}
 
@@ -99,10 +111,18 @@ void TextView::renderContent(bool surfaceOnly, bool alpha, bool premultiplied, b
 }
 
 void TextView::invalidate(const bool layout, const bool size) {
+	BaseView::invalidate(ValidationFlags::CONTENT);
 	StyledTextLayout::invalidate(layout, size);
 	mHasInvalidRenderedContent = true;
+}
 
-	BaseView::invalidate(false, true);
+void TextView::invalidate(const int flags) {
+	BaseView::invalidate(flags);
+
+	const bool contentChanged = flags & ValidationFlags::CONTENT;
+	StyledTextLayout::invalidate(contentChanged, contentChanged);
+	
+	mHasInvalidRenderedContent = contentChanged;
 }
 
 void TextView::resetRenderedContent() {
@@ -111,7 +131,7 @@ void TextView::resetRenderedContent() {
 }
 
 void TextView::setSize(const ci::vec2& size) {
-	invalidate();
+	BaseView::setSize(size);
 	setMaxSize(size);
 }
 

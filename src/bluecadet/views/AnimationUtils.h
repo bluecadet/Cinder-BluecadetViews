@@ -131,3 +131,28 @@ template<typename T>
 T operator / (const ci::Anim<T> & lhs, const ci::Anim<T> & rhs) {
 	return lhs.value() / rhs.value();
 }
+
+
+//==================================================
+// ==
+// 
+
+template<typename T>
+bool operator == (const ci::Anim<T> & tween, const T & value) {
+	return tween.value() == value;
+}
+
+template<typename T>
+bool operator == (const T & value, const ci::Anim<T> & tween) {
+	return value == tween.value();
+}
+
+template<typename T>
+bool operator != (const ci::Anim<T> & tween, const T & value) {
+	return tween.value() != value;
+}
+
+template<typename T>
+bool operator != (const T & value, const ci::Anim<T> & tween) {
+	return value != tween.value();
+}
