@@ -45,12 +45,7 @@ SettingsManager::SettingsManager() {
 }
 SettingsManager::~SettingsManager() {}
 
-// Pull in the shared/standard app settings JSON
 void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path jsonPath, std::function<void(SettingsManager * manager)> overrideCallback) {
-	// Set default path
-	if (jsonPath.empty()) {
-		jsonPath = ci::app::getAssetPath("appSettings.json");
-	}
 
 	// If the path exists, load it
 	if (fs::exists(jsonPath)) {
@@ -67,6 +62,10 @@ void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path j
 		CI_LOG_E("Settings file does not exist at '" << jsonPath << "'");
 	}
 
+	setup(appSettings, overrideCallback);
+}
+
+void SettingsManager::setup(ci::app::App::Settings * appSettings, std::function<void(SettingsManager*manager)> overrideCallback) {
 	if (overrideCallback) {
 		overrideCallback(this);
 	}

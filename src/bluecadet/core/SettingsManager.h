@@ -41,7 +41,18 @@ public:
 	//! jsonPath will default to getAssetPath("appSettings.json") if left empty.
 	//! overrideCallback can be used to override arguments from the json file.
 	//! 
-	virtual void setup(ci::app::App::Settings * appSettings, ci::fs::path jsonPath = "", std::function<void(SettingsManager * manager)> overrideCallback = nullptr);
+	virtual void setup(
+		ci::app::App::Settings * appSettings,
+		ci::fs::path jsonPath = ci::app::getAssetPath("appSettings.json"),
+		std::function<void(SettingsManager * manager)> overrideCallback = nullptr
+	);
+
+
+	//! Set up the settings manager without a json file
+	virtual void setup(
+		ci::app::App::Settings * appSettings,
+		std::function<void(SettingsManager * manager)> overrideCallback = nullptr
+	);
 
 
 	//! Adds a callback to parse a command line argument by key.
