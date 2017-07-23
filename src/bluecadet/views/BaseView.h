@@ -17,6 +17,7 @@
 #include "boost/variant.hpp"
 
 #include "ViewEvent.h"
+#include "AnimationUtils.h"
 
 namespace bluecadet {
 namespace views {
@@ -185,15 +186,15 @@ public:
 	void								setTransformOrigin(const ci::vec2& value, const bool compensateForOffset);
 
 	//! Size of this view. Defaults to 0, 0 and is not affected by children. Does not affect transforms (position, rotation, scale).
-	virtual ci::vec2					getSize() { return mSize; }
+	virtual ci::Anim<ci::vec2> &		getSize() { return mSize; }
 	virtual void						setSize(const ci::vec2 & size) { mSize = size; invalidate(false, true); }
 
 	//! Width of this view. Defaults to 0 and is not affected by children.
-	virtual float						getWidth() { return getSize().x; }
+	virtual float						getWidth() { return getSize().value().x; }
 	virtual void						setWidth(const float width) { setSize(ci::vec2(width, getHeight())); }
 
 	//! Height of this view. Defaults to 0 and is not affected by children.
-	virtual float						getHeight() { return getSize().y; }
+	virtual float						getHeight() { return getSize().value().y; }
 	virtual void						setHeight(const float height) { setSize(ci::vec2(getWidth(), height)); }
 
 	//! The fill color used when drawing the bounding rect when a size greater than 0, 0 is given.
@@ -353,7 +354,7 @@ private:
 	ci::Anim<float> mAlpha;
 	ci::Anim<ci::Color> mTint;
 	ci::Anim<ci::ColorA> mBackgroundColor;
-	ci::vec2 mSize;
+	ci::Anim<ci::vec2> mSize;
 
 	bool mIsHidden;
 	bool mShouldDrawWhenInvisible;

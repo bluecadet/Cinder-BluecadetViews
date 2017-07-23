@@ -33,14 +33,14 @@ BaseView::BaseView() :
 	mScale(vec2(1.0f)),
 	mRotation(quat()),
 	mHasInvalidTransforms(true),
-	mSize(0),
+	mSize(vec2(0)),
 	mHasInvalidContent(true),
 
 	mTint(Color::white()),
 	mBackgroundColor(ColorA::zero()),
 	mDrawColor(1.0f, 1.0f, 1.0f, 1.0f),
 
-	mAlpha(1.0),
+	mAlpha(1.0f),
 	mIsHidden(false),
 	mShouldDrawWhenInvisible(false),
 	mBlendMode(BlendMode::INHERIT),
@@ -333,7 +333,7 @@ void BaseView::drawScene(const ColorA& parentTint) {
 
 void BaseView::draw() {
 	// override this method for custom drawing
-	const auto size = getSize();
+	const auto & size = getSize().value();
 	const auto & color = getBackgroundColor().value();
 
 	if (size.x <= 0 && size.y <= 0 && color.a <= 0) {

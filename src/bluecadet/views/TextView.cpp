@@ -115,15 +115,6 @@ void TextView::setSize(const ci::vec2& size) {
 	setMaxSize(size);
 }
 
-ci::vec2 TextView::getSize() {
-	const vec2 maxSize = StyledTextLayout::getMaxSize();
-	const vec2 textSize = StyledTextLayout::getTextSize();
-	return vec2(
-		max(maxSize.x, textSize.x),
-		max(maxSize.y, textSize.y)
-	);
-}
-
 ci::gl::Texture::Format TextView::createTextureFormat(bool smoothScaling) const {
 	gl::Texture::Format format;
 	format.immutableStorage(true);

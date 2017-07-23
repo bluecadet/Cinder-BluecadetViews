@@ -34,8 +34,8 @@ void EllipseView::setRadius(const float radius)
 }
 
 void EllipseView::draw() {
-	const auto& bgColor = getBackgroundColor().value();
-	const auto& size = getSize();
+	const auto & bgColor = getBackgroundColor().value();
+	const auto & size = getSize().value();
 
 	if (size.x <= 0 && size.y <= 0 && bgColor.a <= 0) {
 		return;

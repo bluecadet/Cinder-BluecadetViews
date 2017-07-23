@@ -1,4 +1,5 @@
 #include "FboView.h"
+#include "cinder/Log.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -83,7 +84,7 @@ void FboView::validateContent(){
 		BaseView::validateContent();
 	}
 	else {
-		console() << "FboView Warning: No fbo to validate content in (size: " << getSize() << ")" << endl;
+		CI_LOG_W("No fbo to validate content in (size: " << getSize().value() << ")");
 	}
 
 }
@@ -97,7 +98,7 @@ void FboView::handleEvent(ViewEvent& event) {
 void FboView::draw() {
 	
 	if (!mFbo) {
-		console() << "FboView Warning: No fbo to draw to (size: " << getSize() << ")" << endl;
+		CI_LOG_W("No fbo to validate content in (size: " << getSize().value() << ")");
 		return;
 	}
 

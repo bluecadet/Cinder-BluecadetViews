@@ -62,23 +62,20 @@ public:
 	//! Sets a fixed, max size for the text view. Any values below 0 will allow the text view to automatically expand in that direction.
 	void			setSize(const ci::vec2& size) override;
 
-	//! Returns the maximum size as configured via setSize(). Use getTextSize() to get the actual text size including padding.
-	//! In advanced use-cases this can differ from what was set in setSize(), e.g. if a special clip mode is set or size-trimming is enabled.
-	ci::vec2		getSize() override;
 
 protected:
 
 	//! Will update the text texture if necessary.
-	void			willDraw() override;
-	void			draw() override;
+	void				willDraw() override;
+	void				draw() override;
 
 	ci::gl::Texture::Format createTextureFormat(bool smoothScaling) const;
 	void				invalidate(const bool layout = true, const bool size = true) override;
 
 	// Change visibility of these methods from public to protected since setSize()/getSize() should be used.
-	void			setMaxSize(const ci::vec2& size) override { return StyledTextLayout::setMaxSize(size); };
-	void			setMaxWidth(const float value) override { return StyledTextLayout::setMaxWidth(value); };
-	void			setMaxHeight(const float value) override { return StyledTextLayout::setMaxHeight(value); };
+	void				setMaxSize(const ci::vec2& size) override { return StyledTextLayout::setMaxSize(size); };
+	void				setMaxWidth(const float value) override { return StyledTextLayout::setMaxWidth(value); };
+	void				setMaxHeight(const float value) override { return StyledTextLayout::setMaxHeight(value); };
 
 	bool				mHasInvalidRenderedContent;
 	bool				mSmoothScalingEnabled;
