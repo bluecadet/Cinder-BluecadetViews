@@ -79,12 +79,12 @@ void AnimationsSampleApp::setup() {
 	{
 		auto ellipseView = make_shared<EllipseView>();
 		ellipseView->setSmoothness(50.0f);
-		ellipseView->setTransformOrigin(vec2(150, 100));
+		ellipseView->setTransformOrigin(vec2(220, 110));
 		views.push_back(ellipseView);
 	}
 
-	float numCols = 3;
-	float numRows = 3;
+	float numCols = 2;
+	float numRows = 2;
 	float widthPerView = getWindowWidth() / numCols;
 	float heightPerView = getWindowHeight() / numRows;
 	float delayPerView = 0.1f;
@@ -97,7 +97,7 @@ void AnimationsSampleApp::setup() {
 		view->setPosition(vec2(col * widthPerView, row * heightPerView) + view->getTransformOrigin());
 		view->setSize(vec2(widthPerView, heightPerView));
 
-		view->getTimeline()->apply(&view->getSize(), vec2(view->getHeight(), view->getWidth()) * 0.25f, 2.0f, easeInOutQuad)
+		view->getTimeline()->apply(&view->getSize(), view->getSize() * vec2(0.33f, 0.66f), 2.0f, easeInOutQuad)
 			.loop(true).pingPong(true).delay(i / (float)views.size());
 		
 		getRootView()->addChild(view);
