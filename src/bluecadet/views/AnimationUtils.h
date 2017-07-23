@@ -1,8 +1,6 @@
 #pragma once
 
 #include "cinder/Tween.h"
-#include "cinder/Timeline.h"
-
 
 //==================================================
 // Anim<T> + T

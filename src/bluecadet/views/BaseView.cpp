@@ -381,14 +381,14 @@ void BaseView::validateTransforms(const bool force) {
 }
 
 void BaseView::invalidate(const int flags) {
-	if (flags & ValidationFlags::TRANSFORMS) {
+	if ((flags & ValidationFlags::TRANSFORMS) == ValidationFlags::TRANSFORMS){
 		mHasInvalidTransforms = true;
 		for (auto child : mChildren) {
 			child->invalidate(ValidationFlags::TRANSFORMS);
 		}
 	}
 
-	if (flags & ValidationFlags::CONTENT) {
+	if ((flags & ValidationFlags::CONTENT) == ValidationFlags::CONTENT) {
 		mHasInvalidContent = true;
 	}
 }

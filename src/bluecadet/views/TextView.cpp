@@ -119,7 +119,7 @@ void TextView::invalidate(const bool layout, const bool size) {
 void TextView::invalidate(const int flags) {
 	BaseView::invalidate(flags);
 
-	const bool contentChanged = flags & ValidationFlags::CONTENT;
+	const bool contentChanged = (flags & ValidationFlags::CONTENT) == ValidationFlags::CONTENT;
 	StyledTextLayout::invalidate(contentChanged, contentChanged);
 	
 	mHasInvalidRenderedContent = contentChanged;
