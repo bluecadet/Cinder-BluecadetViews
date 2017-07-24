@@ -175,8 +175,10 @@ public:
 	virtual void						setScale(const ci::vec2& scale) { mScale = scale;  invalidate(); }
 	virtual void						setScale(const ci::vec3& scale) { mScale = ci::vec2(scale.x, scale.y);  invalidate(); }
 
-	//! Local rotation relative to parent view. Changing this value invalidates transforms.
+	//! Local rotation as quaternion. Changing this value invalidates transforms.
 	virtual ci::Anim<ci::quat>&			getRotation() { return mRotation; }
+	//! Local rotation around Z axis in radians.
+	virtual float						getRotationZ() const { return glm::two_pi<float>() - glm::angle(mRotation.value()); }
 	virtual void						setRotation(const float radians) { mRotation = glm::angleAxis(radians, ci::vec3(0, 0, 1)); invalidate(); }
 	virtual void						setRotation(const ci::quat& rotation) { mRotation = rotation; invalidate(); }
 
