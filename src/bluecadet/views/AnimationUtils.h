@@ -107,7 +107,7 @@ T operator / (const ci::Anim<T> & tween, const U & value) {
 
 
 //==================================================
-// Anim + Anim
+// Anim<T> + Anim<T>
 // 
 
 template<typename T>
@@ -202,4 +202,3 @@ template<typename T>
 bool operator <= (const T & value, const ci::Anim<T> & tween) {
 	return value <= tween.value();
 }
-
