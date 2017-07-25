@@ -7,27 +7,27 @@
 // 
 
 template<typename T>
-T operator + (const ci::Anim<T> & tween, const T & value) {
+inline T operator + (const ci::Anim<T> & tween, const T & value) {
 	return tween.value() + value;
 }
 
 template<typename T>
-T operator - (const ci::Anim<T> & tween, const T & value) {
+inline T operator - (const ci::Anim<T> & tween, const T & value) {
 	return tween.value() - value;
 }
 
 template<typename T>
-T operator * (const ci::Anim<T> & tween, const T & value) {
+inline T operator * (const ci::Anim<T> & tween, const T & value) {
 	return tween.value() * value;
 }
 
 template<typename T>
-T operator / (const ci::Anim<T> & tween, const T & value) {
+inline T operator / (const ci::Anim<T> & tween, const T & value) {
 	return tween.value() / value;
 }
 
 template<typename T>
-T operator - (const ci::Anim<T> & tween) {
+inline T operator - (const ci::Anim<T> & tween) {
 	return -tween.value();
 }
 
@@ -36,22 +36,22 @@ T operator - (const ci::Anim<T> & tween) {
 // 
 
 template<typename T>
-T operator + (const T & value, const ci::Anim<T> & tween) {
+inline T operator + (const T & value, const ci::Anim<T> & tween) {
 	return tween.value() + value;
 }
 
 template<typename T>
-T operator - (const T & value, const ci::Anim<T> & tween) {
+inline T operator - (const T & value, const ci::Anim<T> & tween) {
 	return tween.value() - value;
 }
 
 template<typename T>
-T operator * (const T & value, const ci::Anim<T> & tween) {
+inline T operator * (const T & value, const ci::Anim<T> & tween) {
 	return tween.value() * value;
 }
 
 template<typename T>
-T operator / (const T & value, const ci::Anim<T> & tween) {
+inline T operator / (const T & value, const ci::Anim<T> & tween) {
 	return tween.value() / value;
 }
 
@@ -61,22 +61,22 @@ T operator / (const T & value, const ci::Anim<T> & tween) {
 // 
 
 template<typename T, typename U>
-T operator + (const U & value, const ci::Anim<T> & tween) {
+inline T operator + (const U & value, const ci::Anim<T> & tween) {
 	return value + tween.value();
 }
 
 template<typename T, typename U>
-T operator - (const U & value, const ci::Anim<T> & tween) {
+inline T operator - (const U & value, const ci::Anim<T> & tween) {
 	return value - tween.value();
 }
 
 template<typename T, typename U>
-T operator * (const U & value, const ci::Anim<T> & tween) {
+inline T operator * (const U & value, const ci::Anim<T> & tween) {
 	return value * tween.value();
 }
 
 template<typename T, typename U>
-T operator / (const U & value, const ci::Anim<T> & tween) {
+inline T operator / (const U & value, const ci::Anim<T> & tween) {
 	return value / tween.value();
 }
 
@@ -86,22 +86,22 @@ T operator / (const U & value, const ci::Anim<T> & tween) {
 // 
 
 template<typename T, typename U>
-T operator + (const ci::Anim<T> & tween, const U & value) {
+inline T operator + (const ci::Anim<T> & tween, const U & value) {
 	return value + tween.value();
 }
 
 template<typename T, typename U>
-T operator - (const ci::Anim<T> & tween, const U & value) {
+inline T operator - (const ci::Anim<T> & tween, const U & value) {
 	return value - tween.value();
 }
 
 template<typename T, typename U>
-T operator * (const ci::Anim<T> & tween, const U & value) {
+inline T operator * (const ci::Anim<T> & tween, const U & value) {
 	return value * tween.value();
 }
 
 template<typename T, typename U>
-T operator / (const ci::Anim<T> & tween, const U & value) {
+inline T operator / (const ci::Anim<T> & tween, const U & value) {
 	return value / tween.value();
 }
 
@@ -111,22 +111,22 @@ T operator / (const ci::Anim<T> & tween, const U & value) {
 // 
 
 template<typename T>
-T operator + (const ci::Anim<T> & lhs, const ci::Anim<T> & rhs) {
+inline T operator + (const ci::Anim<T> & lhs, const ci::Anim<T> & rhs) {
 	return lhs.value() + rhs.value();
 }
 
 template<typename T>
-T operator - (const ci::Anim<T> & lhs, const ci::Anim<T> & rhs) {
+inline T operator - (const ci::Anim<T> & lhs, const ci::Anim<T> & rhs) {
 	return lhs.value() - rhs.value();
 }
 
 template<typename T>
-T operator * (const ci::Anim<T> & lhs, const ci::Anim<T> & rhs) {
+inline T operator * (const ci::Anim<T> & lhs, const ci::Anim<T> & rhs) {
 	return lhs.value() * rhs.value();
 }
 
 template<typename T>
-T operator / (const ci::Anim<T> & lhs, const ci::Anim<T> & rhs) {
+inline T operator / (const ci::Anim<T> & lhs, const ci::Anim<T> & rhs) {
 	return lhs.value() / rhs.value();
 }
 
@@ -136,22 +136,22 @@ T operator / (const ci::Anim<T> & lhs, const ci::Anim<T> & rhs) {
 // 
 
 template<typename T>
-bool operator == (const ci::Anim<T> & tween, const T & value) {
+inline bool operator == (const ci::Anim<T> & tween, const T & value) {
 	return tween.value() == value;
 }
 
 template<typename T>
-bool operator == (const T & value, const ci::Anim<T> & tween) {
+inline bool operator == (const T & value, const ci::Anim<T> & tween) {
 	return value == tween.value();
 }
 
 template<typename T>
-bool operator != (const ci::Anim<T> & tween, const T & value) {
+inline bool operator != (const ci::Anim<T> & tween, const T & value) {
 	return tween.value() != value;
 }
 
 template<typename T>
-bool operator != (const T & value, const ci::Anim<T> & tween) {
+inline bool operator != (const T & value, const ci::Anim<T> & tween) {
 	return value != tween.value();
 }
 
@@ -161,44 +161,44 @@ bool operator != (const T & value, const ci::Anim<T> & tween) {
 // 
 
 template<typename T>
-bool operator > (const ci::Anim<T> & tween, const T & value) {
+inline bool operator > (const ci::Anim<T> & tween, const T & value) {
 	return tween.value() > value;
 }
 
 template<typename T>
-bool operator > (const T & value, const ci::Anim<T> & tween) {
+inline bool operator > (const T & value, const ci::Anim<T> & tween) {
 	return value > tween.value();
 }
 
 
 template<typename T>
-bool operator < (const ci::Anim<T> & tween, const T & value) {
+inline bool operator < (const ci::Anim<T> & tween, const T & value) {
 	return tween.value() < value;
 }
 
 template<typename T>
-bool operator < (const T & value, const ci::Anim<T> & tween) {
+inline bool operator < (const T & value, const ci::Anim<T> & tween) {
 	return value < tween.value();
 }
 
 
 template<typename T>
-bool operator >= (const ci::Anim<T> & tween, const T & value) {
+inline bool operator >= (const ci::Anim<T> & tween, const T & value) {
 	return tween.value() >= value;
 }
 
 template<typename T>
-bool operator >= (const T & value, const ci::Anim<T> & tween) {
+inline bool operator >= (const T & value, const ci::Anim<T> & tween) {
 	return value >= tween.value();
 }
 
 
 template<typename T>
-bool operator <= (const ci::Anim<T> & tween, const T & value) {
+inline bool operator <= (const ci::Anim<T> & tween, const T & value) {
 	return tween.value() <= value;
 }
 
 template<typename T>
-bool operator <= (const T & value, const ci::Anim<T> & tween) {
+inline bool operator <= (const T & value, const ci::Anim<T> & tween) {
 	return value <= tween.value();
 }

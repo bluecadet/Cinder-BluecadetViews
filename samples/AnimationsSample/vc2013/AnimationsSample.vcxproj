@@ -230,7 +230,7 @@
     <ClCompile Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\bluecadet\views\AnimationUtils.h" />
+    <ClInclude Include="..\..\..\src\bluecadet\views\AnimOperators.h" />
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\bluecadet\text\FontManager.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\bluecadet\text\StyledTextLayout.h" />

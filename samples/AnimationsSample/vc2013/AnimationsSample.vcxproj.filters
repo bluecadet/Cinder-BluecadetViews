@@ -268,7 +268,7 @@
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\bluecadet\views\AnimationUtils.h">
+    <ClInclude Include="..\..\..\src\bluecadet\views\AnimOperators.h">
       <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
     </ClInclude>
   </ItemGroup>
