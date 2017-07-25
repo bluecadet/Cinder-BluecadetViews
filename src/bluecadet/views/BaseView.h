@@ -17,7 +17,7 @@
 #include "boost/variant.hpp"
 
 #include "ViewEvent.h"
-#include "AnimationUtils.h"
+#include "AnimOperators.h"
 
 namespace bluecadet {
 namespace views {
