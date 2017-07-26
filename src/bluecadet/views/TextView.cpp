@@ -65,11 +65,31 @@ void TextView::willDraw() {
 	}
 }
 
+void TextView::setSize(const ci::vec2& size) {
+	BaseView::setSize(size);
+	StyledTextLayout::setMaxSize(size);
+}
+
+ci::Anim<ci::vec2>& TextView::getSize() {
+	validateContent();
+	return BaseView::getSize();
+}
+
 void TextView::validateContent() {
 	const vec2 & viewSize = BaseView::getSize().value();
-	if (viewSize != StyledTextLayout::getMaxSize() && viewSize.x > 0 && viewSize.y > 0) {
+	const vec2 & maxSize = StyledTextLayout::getMaxSize();
+	const vec2 & textSize = StyledTextLayout::getTextSize();
+
+	bool hasMaxSize = maxSize.x >= 0 || maxSize.y >= 0;
+	bool hasViewSize = viewSize.x > 0 || viewSize.y > 0;
+
+	if (hasMaxSize && hasViewSize) {
 		StyledTextLayout::setMaxSize(viewSize);
+	} else {
+		BaseView::setSize(textSize);
 	}
+
+	StyledTextLayout::validateSize();
 }
 
 void TextView::draw() {
@@ -129,11 +149,6 @@ void TextView::invalidate(const int flags) {
 void TextView::resetRenderedContent() {
 	mTexture = nullptr;
 	mSurface = ci::Surface();
-}
-
-void TextView::setSize(const ci::vec2& size) {
-	BaseView::setSize(size);
-	setMaxSize(size);
 }
 
 ci::gl::Texture::Format TextView::createTextureFormat(bool smoothScaling) const {
