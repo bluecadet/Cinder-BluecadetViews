@@ -66,8 +66,9 @@ void TextView::willDraw() {
 }
 
 void TextView::validateContent() {
-	if (BaseView::getSize() != StyledTextLayout::getMaxSize()) {
-		StyledTextLayout::setMaxSize(BaseView::getSize());
+	const vec2 & viewSize = BaseView::getSize().value();
+	if (viewSize != StyledTextLayout::getMaxSize() && viewSize.x > 0 && viewSize.y > 0) {
+		StyledTextLayout::setMaxSize(viewSize);
 	}
 }
 
@@ -122,7 +123,7 @@ void TextView::invalidate(const int flags) {
 	const bool contentChanged = (flags & ValidationFlags::CONTENT) == ValidationFlags::CONTENT;
 	StyledTextLayout::invalidate(contentChanged, contentChanged);
 	
-	mHasInvalidRenderedContent = contentChanged;
+	mHasInvalidRenderedContent = mHasInvalidRenderedContent || contentChanged;
 }
 
 void TextView::resetRenderedContent() {
