@@ -194,7 +194,7 @@ public:
 
 	//! Size of this view. Defaults to 0, 0 and is not affected by children. Does not affect transforms (position, rotation, scale).
 	virtual ci::Anim<ci::vec2> &		getSize() { return mSize; }
-	virtual void						setSize(const ci::vec2 & size) { mSize = size; invalidate(ValidationFlags::CONTENT); }
+	virtual void						setSize(const ci::vec2 & size) { if (mSize != size) { mSize = size; invalidate(ValidationFlags::CONTENT); } }
 
 	//! Width of this view. Defaults to 0 and is not affected by children.
 	virtual float						getWidth() { return getSize().value().x; }

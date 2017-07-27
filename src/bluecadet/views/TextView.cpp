@@ -70,6 +70,16 @@ void TextView::setSize(const ci::vec2& size) {
 	StyledTextLayout::setMaxSize(size);
 }
 
+void TextView::setWidth(float value) {
+	BaseView::setSize(vec2(value, getHeight()));
+	StyledTextLayout::setMaxSize(vec2(value, getMaxHeight()));
+}
+
+void TextView::setHeight(float value) {
+	BaseView::setSize(vec2(getWidth(), value));
+	StyledTextLayout::setMaxSize(vec2(getMaxWidth(), value));
+}
+
 ci::Anim<ci::vec2>& TextView::getSize() {
 	validateContent();
 	return BaseView::getSize();
@@ -80,20 +90,27 @@ void TextView::validateContent() {
 		return;
 	}
 
-	const vec2 & viewSize = BaseView::getSize().value();
-	const vec2 & maxSize = StyledTextLayout::getMaxSize();
-	const vec2 & textSize = StyledTextLayout::getTextSize();
+	// Check if max size should be changed to view size
+	vec2 viewSize = BaseView::getSize().value();
+	vec2 maxSize = StyledTextLayout::getMaxSize();
 
-	bool hasMaxSize = maxSize.x >= 0 || maxSize.y >= 0;
-	bool hasViewSize = viewSize.x > 0 || viewSize.y > 0;
-
-	if (hasMaxSize && hasViewSize) {
-		StyledTextLayout::setMaxSize(viewSize);
-	} else {
-		BaseView::setSize(textSize);
+	if (viewSize.x > 0 && maxSize.x > 0) {
+		maxSize.x = viewSize.x;
+	}
+	if (viewSize.y > 0 && maxSize.y > 0) {
+		maxSize.x = viewSize.x;
 	}
 
+	StyledTextLayout::setMaxSize(maxSize);
 	StyledTextLayout::validateSize();
+
+	// Check if view size should be changed to text size
+	const vec2 & textSize = StyledTextLayout::getTextSize();
+
+	viewSize.x = glm::max(maxSize.x, textSize.x);
+	viewSize.y = glm::max(maxSize.y, textSize.y);
+
+	BaseView::setSize(viewSize);
 	BaseView::validateContent();
 }
 

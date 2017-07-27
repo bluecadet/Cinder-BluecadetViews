@@ -60,7 +60,10 @@ public:
 	void			setPremultiplied(const bool value) { mPremultiplied = value; }
 
 	//! Sets a fixed, max size for the text view. Any values below 0 will allow the text view to automatically expand in that direction.
-	void					setSize(const ci::vec2& size) override;
+	void			setSize(const ci::vec2& size) override;
+	void			setWidth(const float value) override;
+	void			setHeight(const float value) override;
+
 	ci::Anim<ci::vec2> &	getSize() override;
 
 
@@ -79,9 +82,6 @@ protected:
 	void				setMaxSize(const ci::vec2& size) override { return StyledTextLayout::setMaxSize(size); };
 	void				setMaxWidth(const float value) override { return StyledTextLayout::setMaxWidth(value); };
 	void				setMaxHeight(const float value) override { return StyledTextLayout::setMaxHeight(value); };
-	const ci::vec2 &	getMaxSize() const override { return StyledTextLayout::getMaxSize(); };
-	float				getMaxWidth() const override { return StyledTextLayout::getMaxWidth(); };
-	float				getMaxHeight() const override { return StyledTextLayout::getMaxHeight(); };
 
 	bool				mHasInvalidRenderedContent;
 	bool				mSmoothScalingEnabled;
