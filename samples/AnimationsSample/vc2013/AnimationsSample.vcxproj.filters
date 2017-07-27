@@ -1,0 +1,280 @@
+﻿<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Blocks">
+      <UniqueIdentifier>{7698A5C6-E483-4EBE-9FCC-DA19E51FF0EA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\BluecadetText">
+      <UniqueIdentifier>{60A5C2A6-575F-46CF-A864-20E40C24FC7E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\BluecadetText\src">
+      <UniqueIdentifier>{0F11054A-54BF-4777-94AC-6845CC2B7E75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\BluecadetText\src\bluecadet">
+      <UniqueIdentifier>{EAE90F96-EBB8-4D08-A93A-D99B83B095B2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\BluecadetText\src\bluecadet\text">
+      <UniqueIdentifier>{B2B8C53C-E7E9-4460-BA3D-99B53367F847}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\BluecadetViews">
+      <UniqueIdentifier>{2201C8BE-7A57-413E-9E4F-1ACDECDD1E43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\BluecadetViews\src">
+      <UniqueIdentifier>{036CF81F-83CE-411E-9FDC-360705F33051}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\BluecadetViews\src\bluecadet">
+      <UniqueIdentifier>{02E01F77-24C0-441E-B278-F70F233AA512}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\BluecadetViews\src\bluecadet\core">
+      <UniqueIdentifier>{4DB4F2A1-E1DB-4544-BD3F-A93E7468097C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\BluecadetViews\src\bluecadet\views">
+      <UniqueIdentifier>{E0E608B6-A98A-49A6-86C8-BD2480930F5C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\BluecadetViews\src\bluecadet\touch">
+      <UniqueIdentifier>{C314367C-DEEA-441D-BC4C-D0E580C5EEB1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\BluecadetViews\src\bluecadet\touch\drivers">
+      <UniqueIdentifier>{2FF21598-3CC7-41B2-B3CB-F43270CAA7DB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\OSC">
+      <UniqueIdentifier>{88327888-C955-4574-87E9-58EF225FCBC4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\OSC\src">
+      <UniqueIdentifier>{4A28F522-D047-4207-91E5-5A4639959131}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\OSC\src\cinder">
+      <UniqueIdentifier>{DB10A8CF-0CE2-4D8F-9495-571A000312ED}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\OSC\src\cinder\osc">
+      <UniqueIdentifier>{979FD2B9-C2E3-4264-8220-5CC5A512B6A4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\TUIO">
+      <UniqueIdentifier>{74ABC205-9439-4C12-81A8-09E1B3A9AEAE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\TUIO\src">
+      <UniqueIdentifier>{5ED835CF-D497-4BED-8FFB-1682DC0A9EEA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\TUIO\src\cinder">
+      <UniqueIdentifier>{EA375F23-C459-4B3C-8329-1C2D5299259F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\TUIO\src\cinder\tuio">
+      <UniqueIdentifier>{780B6CDD-3CBF-4A86-9D8E-A0A8FF2FEF07}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\AnimationsSampleApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AnimationsSampleApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\bluecadet\text\FontManager.cpp">
+      <Filter>Blocks\BluecadetText\src\bluecadet\text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\bluecadet\text\StyledTextLayout.cpp">
+      <Filter>Blocks\BluecadetText\src\bluecadet\text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\bluecadet\text\StyledTextParser.cpp">
+      <Filter>Blocks\BluecadetText\src\bluecadet\text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\bluecadet\text\StyleManager.cpp">
+      <Filter>Blocks\BluecadetText\src\bluecadet\text</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\bluecadet\text\FontManager.h">
+      <Filter>Blocks\BluecadetText\src\bluecadet\text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\bluecadet\text\StyledTextLayout.h">
+      <Filter>Blocks\BluecadetText\src\bluecadet\text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\bluecadet\text\StyledTextParser.h">
+      <Filter>Blocks\BluecadetText\src\bluecadet\text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\bluecadet\text\StyleManager.h">
+      <Filter>Blocks\BluecadetText\src\bluecadet\text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\bluecadet\text\Text.h">
+      <Filter>Blocks\BluecadetText\src\bluecadet\text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\core\BaseApp.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\core\ScreenCamera.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\core\ScreenLayout.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\core\SettingsManager.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\core</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\src\bluecadet\core\BaseApp.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\core\ScreenCamera.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\core\ScreenLayout.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\core\SettingsManager.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\core</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\src\bluecadet\views\AnimatedView.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\BaseView.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\CircleOutlineView.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\EllipseView.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\FboView.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\GraphView.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\ImageView.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\LineView.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\MiniMapView.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\StatsView.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\TextView.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\TouchView.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\ViewEvent.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\src\bluecadet\views\AnimatedView.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\views\BaseView.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\views\CircleOutlineView.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\views\EllipseView.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\views\FboView.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\views\GraphView.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\views\ImageView.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\views\LineView.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\views\MiniMapView.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\views\StatsView.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\views\TextView.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\views\TouchView.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\views\ViewEvent.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\src\bluecadet\touch\Touch.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\touch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\touch\TouchManager.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\touch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\touch\TouchManagerPlugin.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\touch</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\src\bluecadet\touch\Touch.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\touch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\touch\TouchManager.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\touch</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\src\bluecadet\touch\drivers\MouseDriver.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\touch\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\touch\drivers\NativeTouchDriver.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\touch\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\touch\drivers\SimulatedTouchDriver.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\touch\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\touch\drivers\TuioDriver.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\touch\drivers</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\src\bluecadet\touch\drivers\MouseDriver.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\touch\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\touch\drivers\NativeTouchDriver.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\touch\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\touch\drivers\SimulatedTouchDriver.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\touch\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\touch\drivers\TuioDriver.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\touch\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\OSC\src\cinder\osc\Osc.cpp">
+      <Filter>Blocks\OSC\src\cinder\osc</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\..\OSC\src\cinder\osc\Osc.h">
+      <Filter>Blocks\OSC\src\cinder\osc</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.cpp">
+      <Filter>Blocks\TUIO\src\cinder\tuio</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.h">
+      <Filter>Blocks\TUIO\src\cinder\tuio</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\AnimOperators.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

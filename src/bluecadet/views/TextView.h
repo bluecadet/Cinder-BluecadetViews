@@ -59,31 +59,29 @@ public:
 	bool			getPremultiplied() const { return mPremultiplied; }
 	void			setPremultiplied(const bool value) { mPremultiplied = value; }
 
-	//! Sets a fixed size for the text view. Any values below 0 will allow the text view to automatically expand in that direction.
-	virtual inline void				setSize(const ci::vec2& size) override;
-	virtual inline void				setWidth(const float width) override;
-	virtual inline void				setHeight(const float height) override;
+	//! Sets a fixed, max size for the text view. Any values below 0 will allow the text view to automatically expand in that direction.
+	void			setSize(const ci::vec2& size) override;
+	void			setWidth(const float value) override;
+	void			setHeight(const float value) override;
 
-	//! Returns the actual size of the text including padding.
-	//! In advanced use-cases this can differ from what was set in setSize(), e.g. if a special clip mode is set or size-trimming is enabled.
-	virtual inline const ci::vec2	getSize() override;
+	ci::Anim<ci::vec2> &	getSize() override;
+
 
 protected:
 
 	//! Will update the text texture if necessary.
-	virtual void			willDraw() override;
-	virtual void			draw() override;
+	void				willDraw() override;
+	void				draw() override;
 
 	ci::gl::Texture::Format createTextureFormat(bool smoothScaling) const;
-	inline void		invalidate(const bool layout = true, const bool size = true) override;
+	void				validateContent() override;
+	void				invalidate(const bool layout, const bool) override;
+	void				invalidate(const int flags) override;
 
 	// Change visibility of these methods from public to protected since setSize()/getSize() should be used.
-	virtual ci::vec2		getMaxSize() const override { return StyledTextLayout::getMaxSize(); };
-	virtual void			setMaxSize(const ci::vec2& size) override { return StyledTextLayout::setMaxSize(size); };
-	virtual float			getMaxWidth() const override { return StyledTextLayout::getMaxWidth(); };
-	virtual void			setMaxWidth(const float value) override { return StyledTextLayout::setMaxWidth(value); };
-	virtual float			getMaxHeight() const override { return StyledTextLayout::getMaxHeight(); };
-	virtual void			setMaxHeight(const float value) override { return StyledTextLayout::setMaxHeight(value); };
+	void				setMaxSize(const ci::vec2& size) override { return StyledTextLayout::setMaxSize(size); };
+	void				setMaxWidth(const float value) override { return StyledTextLayout::setMaxWidth(value); };
+	void				setMaxHeight(const float value) override { return StyledTextLayout::setMaxHeight(value); };
 
 	bool				mHasInvalidRenderedContent;
 	bool				mSmoothScalingEnabled;

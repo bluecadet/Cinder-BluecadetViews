@@ -36,8 +36,6 @@ public:
 
 	virtual void setup(const ci::gl::TextureRef texture, const ci::vec2& size = ci::vec2(0), const ScaleMode scaleMode = ScaleMode::COVER);
 
-	virtual void setSize(const ci::vec2& size) override;
-
 	inline ci::gl::TextureRef getTexture() const { return mTexture; }
 	inline void			setTexture(const ci::gl::TextureRef value, const bool resizeToTexture = true);
 
@@ -45,8 +43,8 @@ public:
 	inline void			setScaleMode(const ScaleMode scaleMode) { mScaleMode = scaleMode; }
 
 private:
-
-	virtual void draw() override;
+	void validateContent() override;
+	void draw() override;
 
 	ci::gl::TextureRef	mTexture;
 	ci::Rectf			mDrawingDestRect;

@@ -29,11 +29,11 @@ public:
 
 	//! The smoothness of the ellipse's edge
 	ci::Anim<float> &	getSmoothness() { return mSmoothness; }
-	void				setSmoothness(const float value) { mSmoothness = value; invalidate(false, true); }
+	void				setSmoothness(const float value) { mSmoothness = value; invalidate(ValidationFlags::CONTENT); }
 
 protected:
-	virtual void draw() override;
-	virtual void debugDrawOutline() override;
+	void draw() override;
+	void debugDrawOutline() override;
 
 	static ci::gl::BatchRef		getSharedEllipseBatch();
 	static ci::gl::GlslProgRef	getSharedEllipseProg();

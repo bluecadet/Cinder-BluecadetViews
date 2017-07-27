@@ -24,7 +24,7 @@ public:
 	void			setSize(const ci::vec2 & size) override;
 
 	//! Will re-create the current fbo on the next draw call and marks the content to be re-drawn.
-	virtual void	invalidateFbo() { mFbo = nullptr; invalidate(false, true); }
+	virtual void	invalidateFbo() { mFbo = nullptr; invalidate(ValidationFlags::CONTENT); }
 
 	//! Will create a new fbo with this format.
 	virtual void	setFboFormat(const ci::gl::Fbo::Format & format) { mFboFormat = format; invalidateFbo(); }
@@ -64,7 +64,7 @@ protected:
 	void			validateFbo();
 
 	//! Redraw the fbo children
-	inline void		validateContent() override;
+	void			validateContent() override;
 
 	//! Draw content within this view
 	void			draw() override;

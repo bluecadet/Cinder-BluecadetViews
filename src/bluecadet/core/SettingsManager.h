@@ -38,10 +38,20 @@ public:
 
 	//! Set up the settings manager with the path to the main json and the applications settings. Should be called in prepareSettings().
 	//! 
-	//! jsonPath will default to getAssetPath("appSettings.json") if left empty.
 	//! overrideCallback can be used to override arguments from the json file.
 	//! 
-	virtual void setup(ci::app::App::Settings * appSettings, ci::fs::path jsonPath = "", std::function<void(SettingsManager * manager)> overrideCallback = nullptr);
+	virtual void setup(
+		ci::app::App::Settings * appSettings,
+		ci::fs::path jsonPath = ci::app::getAssetPath("settings.json"),
+		std::function<void(SettingsManager * manager)> overrideCallback = nullptr
+	);
+
+
+	//! Set up the settings manager without a json file
+	virtual void setup(
+		ci::app::App::Settings * appSettings,
+		std::function<void(SettingsManager * manager)> overrideCallback = nullptr
+	);
 
 
 	//! Adds a callback to parse a command line argument by key.
@@ -89,9 +99,10 @@ public:
 	bool			mShowMouse = false;
 	bool			mDrawMinimap = false;
 	bool			mDrawStats = false;
-	bool			mMinimizeParams = false;
-	bool			mZoomToggleHotkeyEnabled = true;
-	bool			mDisplayIdHotkeysEnabled = false;
+	bool			mMinimizeParams = false;			//! Minimizes the params window
+	bool			mCollapseParams = false;			//! Collapses all the default parameter groups like "App"
+	bool			mZoomToggleHotkeyEnabled = true;	//! When true, will bind 0 to toggle zoom to 100%/fit
+	bool			mDisplayIdHotkeysEnabled = false;	//! When true, will bind 1-9 to zoom directly to displays 1-9
 
 	// CLI/runtime only args
 	ci::ivec2		mWindowSize; //! The window size on launch

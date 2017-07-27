@@ -1,6 +1,7 @@
 #include "TextView.h"
 
 #include "bluecadet/text/StyleManager.h"
+#include "cinder/Log.h"
 
 #if defined(CINDER_MSW)
 
@@ -64,6 +65,55 @@ void TextView::willDraw() {
 	}
 }
 
+void TextView::setSize(const ci::vec2& size) {
+	BaseView::setSize(size);
+	StyledTextLayout::setMaxSize(size);
+}
+
+void TextView::setWidth(float value) {
+	BaseView::setSize(vec2(value, getHeight()));
+	StyledTextLayout::setMaxSize(vec2(value, getMaxHeight()));
+}
+
+void TextView::setHeight(float value) {
+	BaseView::setSize(vec2(getWidth(), value));
+	StyledTextLayout::setMaxSize(vec2(getMaxWidth(), value));
+}
+
+ci::Anim<ci::vec2>& TextView::getSize() {
+	validateContent();
+	return BaseView::getSize();
+}
+
+void TextView::validateContent() {
+	if (!hasInvalidContent()) {
+		return;
+	}
+
+	// Check if max size should be changed to view size
+	vec2 viewSize = BaseView::getSize().value();
+	vec2 maxSize = StyledTextLayout::getMaxSize();
+
+	if (viewSize.x > 0 && maxSize.x > 0) {
+		maxSize.x = viewSize.x;
+	}
+	if (viewSize.y > 0 && maxSize.y > 0) {
+		maxSize.x = viewSize.x;
+	}
+
+	StyledTextLayout::setMaxSize(maxSize);
+	StyledTextLayout::validateSize();
+
+	// Check if view size should be changed to text size
+	const vec2 & textSize = StyledTextLayout::getTextSize();
+
+	viewSize.x = glm::max(maxSize.x, textSize.x);
+	viewSize.y = glm::max(maxSize.y, textSize.y);
+
+	BaseView::setSize(viewSize);
+	BaseView::validateContent();
+}
+
 void TextView::draw() {
 	BaseView::draw();
 	if (mTexture) {
@@ -91,7 +141,12 @@ void TextView::renderContent(bool surfaceOnly, bool alpha, bool premultiplied, b
 		mTexture = nullptr; // reset texture to save memory
 
 	} else {
-		mTexture = gl::Texture2d::create(mSurface, createTextureFormat(mSmoothScalingEnabled));
+		if (mTexture && mTexture->getSize() == mSurface.getSize()) {
+			mTexture->update(mSurface);
+		} else {
+			mTexture = gl::Texture2d::create(mSurface, createTextureFormat(mSmoothScalingEnabled));
+		}
+
 		mSurface = ci::Surface(); // reset surface to save memory
 	}
 
@@ -99,39 +154,23 @@ void TextView::renderContent(bool surfaceOnly, bool alpha, bool premultiplied, b
 }
 
 void TextView::invalidate(const bool layout, const bool size) {
+	BaseView::invalidate(ValidationFlags::CONTENT);
 	StyledTextLayout::invalidate(layout, size);
 	mHasInvalidRenderedContent = true;
+}
 
-	BaseView::invalidate(false, true);
+void TextView::invalidate(const int flags) {
+	BaseView::invalidate(flags);
+
+	const bool contentChanged = (flags & ValidationFlags::CONTENT) == ValidationFlags::CONTENT;
+	StyledTextLayout::invalidate(contentChanged, contentChanged);
+	
+	mHasInvalidRenderedContent = mHasInvalidRenderedContent || contentChanged;
 }
 
 void TextView::resetRenderedContent() {
 	mTexture = nullptr;
 	mSurface = ci::Surface();
-}
-
-void TextView::setSize(const ci::vec2& size) {
-	invalidate();
-	setMaxSize(size);
-}
-
-inline void TextView::setWidth(const float width){
-	invalidate();
-	setMaxWidth(width);
-}
-
-inline void TextView::setHeight(const float height){
-	invalidate();
-	setMaxHeight(height);
-}
-
-const ci::vec2 TextView::getSize() {
-	const vec2 maxSize = StyledTextLayout::getTextSize();
-	const vec2 textSize = StyledTextLayout::getTextSize();
-	return vec2(
-		max(maxSize.x, textSize.x),
-		max(maxSize.y, textSize.y)
-	);
 }
 
 ci::gl::Texture::Format TextView::createTextureFormat(bool smoothScaling) const {

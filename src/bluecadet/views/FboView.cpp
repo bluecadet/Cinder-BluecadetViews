@@ -1,4 +1,5 @@
 #include "FboView.h"
+#include "cinder/Log.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -48,12 +49,12 @@ void FboView::validateFbo(){
 	if (size.x > 0 && size.y > 0) {
 		mFbo = createFbo(size, getFboFormat());
 		// Invalidate content to confirm it will redraw to fbo
-		invalidate(false, true);
+		invalidate(ValidationFlags::CONTENT);
 	}
 }
 
-inline void FboView::validateContent(){
-	if (!mFbo) {
+void FboView::validateContent(){
+	if (!mFbo || mFbo->getSize() != ivec2(getSize().value())) {
 		validateFbo();
 	}
 
@@ -83,21 +84,21 @@ inline void FboView::validateContent(){
 		BaseView::validateContent();
 	}
 	else {
-		console() << "FboView Warning: No fbo to validate content in (size: " << getSize() << ")" << endl;
+		CI_LOG_W("No fbo to validate content in (size: " << getSize().value() << ")");
 	}
 
 }
 
 void FboView::handleEvent(ViewEvent& event) {
 	if (event.type == ViewEvent::Type::CONTENT_INVALIDATED) {
-		invalidate(false, true);
+		invalidate(ValidationFlags::CONTENT);
 	}
 }
 
 void FboView::draw() {
 	
 	if (!mFbo) {
-		console() << "FboView Warning: No fbo to draw to (size: " << getSize() << ")" << endl;
+		CI_LOG_W("No fbo to validate content in (size: " << getSize().value() << ")");
 		return;
 	}
 

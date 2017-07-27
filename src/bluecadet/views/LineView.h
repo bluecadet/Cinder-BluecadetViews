@@ -25,11 +25,11 @@ public:
 
 	//! The thickness of the line. Defaults to 1.0f.
 	inline ci::Anim<float> getLineWidth() const			{ return mLineWidth; }
-	inline void setLineWidth(const float value) { mLineWidth = value; invalidate(false, true); }
+	inline void setLineWidth(const float value) { mLineWidth = value; invalidate(ValidationFlags::CONTENT); }
 
 	//! The color of the line. Defaults to fully opaque white.
 	inline const ci::Anim<ci::ColorA>& getLineColor() const	{ return mLineColor; }
-	inline void setLineColor(const ci::ColorA& value) { mLineColor = value; invalidate(false, true); }
+	inline void setLineColor(const ci::ColorA& value) { mLineColor = value; invalidate(ValidationFlags::CONTENT); }
 
 protected:
 	virtual void draw() override;

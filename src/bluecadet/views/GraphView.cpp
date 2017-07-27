@@ -112,7 +112,7 @@ inline void GraphView::render() {
 	gl::clear(ColorA(0, 0, 0, 0.25));
 
 	static const Font labelFont("Arial", 16);
-	vec2 labelPos(0, getSize().y);
+	vec2 labelPos(0, getSize().value().y);
 
 	for (const auto & graphPair : mGraphs) {
 		const auto & graph = graphPair.second;

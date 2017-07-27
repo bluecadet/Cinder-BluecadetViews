@@ -21,6 +21,7 @@
             "drawMinimap": true,
             "drawTouches": false,
             "minimizeParams": true,
+            "collapseParams": false,
             "drawScreenLayout": false
         },
         "touch": {

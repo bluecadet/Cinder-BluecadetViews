@@ -41,9 +41,6 @@ public:
 	virtual void handleAppSizeChange(const ci::ivec2 & appSize);
 	virtual void handleViewportChange(const ci::Area & viewport);
 
-	//! Adds a set of params to control the touch simulator
-	void		addTouchSimulatorParams(float touchesPerSecond = 50.f);
-
 	//! Use this view to add any children. The root view may be scaled and translated when using ScreenLayout to zoom/pan around the app.
 	views::BaseViewRef	getRootView() const { return mRootView; };
 
@@ -65,11 +62,10 @@ public:
 	//! The main mouse driver. Configured with the current window size at app launch, but needs to be started explicitly.
 	touch::drivers::SimulatedTouchDriver &	getTouchSimDriver() { return mSimulatedTouchDriver; }
 
-	//! The settings manager instance used during initialization
-	SettingsManagerRef						getSettingsManager() const { return mSettingsManager; }
+	//! Adds a set of params to control the touch simulator
+	void		addTouchSimulatorParams(float touchesPerSecond = 50.f);
 
 private:
-	SettingsManagerRef						mSettingsManager;
 	views::BaseViewRef						mRootView;
 	views::MiniMapViewRef					mMiniMap;
 	views::GraphViewRef						mStats;
