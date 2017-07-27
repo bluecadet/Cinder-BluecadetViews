@@ -87,22 +87,22 @@ inline T operator / (const U & value, const ci::Anim<T> & tween) {
 
 template<typename T, typename U>
 inline T operator + (const ci::Anim<T> & tween, const U & value) {
-	return value + tween.value();
+	return tween.value() + value;
 }
 
 template<typename T, typename U>
 inline T operator - (const ci::Anim<T> & tween, const U & value) {
-	return value - tween.value();
+	return tween.value() - value;
 }
 
 template<typename T, typename U>
 inline T operator * (const ci::Anim<T> & tween, const U & value) {
-	return value * tween.value();
+	return tween.value() * value;
 }
 
 template<typename T, typename U>
 inline T operator / (const ci::Anim<T> & tween, const U & value) {
-	return value / tween.value();
+	return tween.value() / value;
 }
 
 
