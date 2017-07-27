@@ -57,6 +57,10 @@ void ImageView::setTexture(ci::gl::TextureRef texture, const bool resizeToTextur
 }
 
 void ImageView::validateContent() {
+	if (!hasInvalidContent()) {
+		return;
+	}
+
 	mDrawingDestRect = Rectf(vec2(0), getSize().value());
 
 	if (mTexture) {
@@ -65,6 +69,8 @@ void ImageView::validateContent() {
 	} else {
 		mDrawingArea = Area();
 	}
+
+	BaseView::validateContent();
 }
 
 void ImageView::draw() {

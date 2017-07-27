@@ -76,6 +76,10 @@ ci::Anim<ci::vec2>& TextView::getSize() {
 }
 
 void TextView::validateContent() {
+	if (!hasInvalidContent()) {
+		return;
+	}
+
 	const vec2 & viewSize = BaseView::getSize().value();
 	const vec2 & maxSize = StyledTextLayout::getMaxSize();
 	const vec2 & textSize = StyledTextLayout::getTextSize();
@@ -90,6 +94,7 @@ void TextView::validateContent() {
 	}
 
 	StyledTextLayout::validateSize();
+	BaseView::validateContent();
 }
 
 void TextView::draw() {
