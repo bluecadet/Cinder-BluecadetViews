@@ -169,6 +169,9 @@ public:
 	//! Shorthand for getting the center based on the current position and size
 	virtual ci::vec2					getCenter() { return getPosition().value() + 0.5f * mSize; }
 
+	//! Shorthand for getting the bounds based on the current position and size
+	virtual ci::Rectf					getBounds() { return ci::Rectf(getPosition(), getPosition().value() + mSize); }
+
 	//! Local scale relative to parent view
 	virtual ci::Anim<ci::vec2>&			getScale() { return mScale; }
 	virtual void						setScale(const float& scale) { mScale = ci::vec2(scale, scale);  invalidate(); }
