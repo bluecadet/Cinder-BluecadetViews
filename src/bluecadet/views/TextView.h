@@ -78,12 +78,12 @@ protected:
 	inline void		invalidate(const bool layout = true, const bool size = true) override;
 
 	// Change visibility of these methods from public to protected since setSize()/getSize() should be used.
-	virtual ci::vec2		getMaxSize() const override { return StyledTextLayout::getMaxSize(); };
-	virtual void			setMaxSize(const ci::vec2& size) override { return StyledTextLayout::setMaxSize(size); };
-	virtual float			getMaxWidth() const override { return StyledTextLayout::getMaxWidth(); };
-	virtual void			setMaxWidth(const float value) override { return StyledTextLayout::setMaxWidth(value); };
-	virtual float			getMaxHeight() const override { return StyledTextLayout::getMaxHeight(); };
-	virtual void			setMaxHeight(const float value) override { return StyledTextLayout::setMaxHeight(value); };
+	const ci::vec2 &	getMaxSize() const override { return StyledTextLayout::getMaxSize(); };
+	void				setMaxSize(const ci::vec2& size) override { return StyledTextLayout::setMaxSize(size); };
+	float				getMaxWidth() const override { return StyledTextLayout::getMaxWidth(); };
+	void				setMaxWidth(const float value) override { return StyledTextLayout::setMaxWidth(value); };
+	float				getMaxHeight() const override { return StyledTextLayout::getMaxHeight(); };
+	void				setMaxHeight(const float value) override { return StyledTextLayout::setMaxHeight(value); };
 
 	bool				mHasInvalidRenderedContent;
 	bool				mSmoothScalingEnabled;
