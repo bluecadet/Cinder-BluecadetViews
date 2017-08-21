@@ -125,7 +125,7 @@ protected:
 	std::recursive_mutex						mQueueMutex;
 	std::deque<Touch>							mTouchQueue;		 // Collects all touch events until they're processed on the main thread
 
-	bool										mDiscardMissedTouches = true;
+	bool										mDiscardMissedTouches;
 	bool										mMultiTouchEnabled;
 	float                                       mLatestTouchTime;
 
