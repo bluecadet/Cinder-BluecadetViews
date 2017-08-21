@@ -17,7 +17,8 @@ using namespace bluecadet::views;
 
 TouchManager::TouchManager() :
 	mDiscardMissedTouches(true),
-	mMultiTouchEnabled(true) {
+	mMultiTouchEnabled(true),
+	mLatestTouchTime(0) {
 }
 
 TouchManager::~TouchManager() {
