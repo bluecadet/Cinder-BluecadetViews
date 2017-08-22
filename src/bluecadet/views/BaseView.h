@@ -164,13 +164,13 @@ public:
 	virtual void						setPosition(const ci::vec3& position) { mPosition = ci::vec2(position.x, position.y); invalidate(); }
 
 	//! Shorthand for combining position and size to center the view at `center`
-	virtual void						setCenter(const ci::vec2 center) { setPosition(center - 0.5f * mSize); }
+	virtual void						setCenter(const ci::vec2 center) { setPosition(center - 0.5f * getSize()); }
 
 	//! Shorthand for getting the center based on the current position and size
-	virtual ci::vec2					getCenter() { return getPosition().value() + 0.5f * mSize; }
+	virtual ci::vec2					getCenter() { return getPosition().value() + 0.5f * getSize(); }
 
 	//! Shorthand for getting the bounds based on the current position and size
-	virtual ci::Rectf					getBounds() { return ci::Rectf(getPosition(), getPosition().value() + mSize); }
+	virtual ci::Rectf					getBounds() { return ci::Rectf(getPosition(), getPosition().value() + getSize()); }
 
 	//! Local scale relative to parent view
 	virtual ci::Anim<ci::vec2>&			getScale() { return mScale; }
