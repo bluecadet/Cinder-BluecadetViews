@@ -78,7 +78,7 @@ protected:
 	inline void		invalidate(const bool layout = true, const bool size = true) override;
 
 	// Change visibility of these methods from public to protected since setSize()/getSize() should be used.
-	virtual ci::vec2		getMaxSize() const override { return StyledTextLayout::getMaxSize(); };
+	virtual const ci::vec2 &	getMaxSize() const override { return StyledTextLayout::getMaxSize(); };
 	virtual void			setMaxSize(const ci::vec2& size) override { return StyledTextLayout::setMaxSize(size); };
 	virtual float			getMaxWidth() const override { return StyledTextLayout::getMaxWidth(); };
 	virtual void			setMaxWidth(const float value) override { return StyledTextLayout::setMaxWidth(value); };
