@@ -58,7 +58,6 @@ void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path j
 
 		try {
 			mSettingsJson = JsonTree(loadFile(jsonPath));
-
 			parseJson(mSettingsJson);
 
 		} catch (Exception e) {
@@ -88,12 +87,22 @@ void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path j
 	addCommandLineParser("draw_stats", [&](const string &value) { mDrawStats = value == "true"; });
 	addCommandLineParser("minimizeParams", [&](const string &value) { mMinimizeParams = value == "true"; });
 	addCommandLineParser("minimize_params", [&](const string &value) { mMinimizeParams = value == "true"; });
+	addCommandLineParser("zoom_toggle_hotkey", [&](const string &value) { mZoomToggleHotkeyEnabled = value == "true"; });
+	addCommandLineParser("display_id_hotkey", [&](const string &value) { mDisplayIdHotkeysEnabled = value == "true"; });
 	addCommandLineParser("size", [&](const string &value) {
 		int commaIndex = (int)value.find(",");
 		if (commaIndex != string::npos) {
 			string wStr = value.substr(0, commaIndex);
 			string hStr = value.substr(commaIndex + 1, value.size() - commaIndex - 1);
 			mWindowSize = ivec2(stoi(wStr), stoi(hStr));
+		}
+	});
+	addCommandLineParser("offset", [&](const string &value) {
+		int commaIndex = (int)value.find(",");
+		if (commaIndex != string::npos) {
+			string xStr = value.substr(0, commaIndex);
+			string yStr = value.substr(commaIndex + 1, value.size() - commaIndex - 1);
+			mCameraOffset = ivec2(stoi(xStr), stoi(yStr));
 		}
 	});
 
@@ -161,6 +170,8 @@ void SettingsManager::parseJson(ci::JsonTree & json) {
 	setFieldFromJsonIfExists(&mDrawTouches, "settings.debug.drawTouches");
 	setFieldFromJsonIfExists(&mDrawScreenLayout, "settings.debug.drawScreenLayout");
 	setFieldFromJsonIfExists(&mMinimizeParams, "settings.debug.minimizeParams");
+	setFieldFromJsonIfExists(&mZoomToggleHotkeyEnabled, "settings.debug.zoomToggleHotkey");
+	setFieldFromJsonIfExists(&mDisplayIdHotkeysEnabled, "settings.debug.displayIdHotkeys");
 
 	// Touch
 	setFieldFromJsonIfExists(&mMouseEnabled, "settings.touch.mouse");
@@ -184,7 +195,7 @@ void SettingsManager::parseCommandLineArgs(const std::vector<std::string>& args)
 			if (callbackListIt == mCommandLineArgsHandlers.end()) continue;
 
 			for (auto callback : callbackListIt->second) {
-				console() << key << endl;
+				CI_LOG_D("Command line arg: " + key + "=" + value);
 				callback(value);
 			}
 		}

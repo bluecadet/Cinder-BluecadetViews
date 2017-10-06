@@ -148,20 +148,24 @@ void ScreenCamera::handleKeyDown(KeyEvent event) {
 		case KeyEvent::KEY_0:
 		case KeyEvent::KEY_KP0:
 		{
-			// toggle zoom to fit window
-			if (mPlaceholderView->getScale().value().x != 1.0f) {
-				zoomAtWindowCenter(1.0f);
-			} else {
-				zoomToFitWindow();
+			if (mZoomToggleHotkeyEnabled) {
+				// toggle zoom to fit window
+				if (mPlaceholderView->getScale().value().x != 1.0f) {
+					zoomAtWindowCenter(1.0f);
+				} else {
+					zoomToFitWindow();
+				}
 			}
 			break;
 		}
 		case KeyEvent::KEY_KP1: case KeyEvent::KEY_KP2: case KeyEvent::KEY_KP3: case KeyEvent::KEY_KP4: case KeyEvent::KEY_KP5: case KeyEvent::KEY_KP6: case KeyEvent::KEY_KP7: case KeyEvent::KEY_KP8: case KeyEvent::KEY_KP9:
 		case KeyEvent::KEY_1: case KeyEvent::KEY_2: case KeyEvent::KEY_3: case KeyEvent::KEY_4: case KeyEvent::KEY_5: case KeyEvent::KEY_6: case KeyEvent::KEY_7: case KeyEvent::KEY_8: case KeyEvent::KEY_9:
 		{
-			// zoom into display on top-most row
-			int displayId = (event.getChar() - (int)'0') - 1; // parse int from char, make 0-based
-			zoomToDisplay(displayId);
+			if (mDisplayIdHotkeysEnabled) {
+				// zoom into display on top-most row
+				int displayId = (event.getChar() - (int)'0') - 1; // parse int from char, make 0-based
+				zoomToDisplay(displayId);
+			}
 			break;
 		}
 	}

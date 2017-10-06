@@ -8,7 +8,57 @@ In addition to nested transformations and drawing, this block connects to the te
 
 To combine all pieces conveniently, this block comes with a `BaseApp` class that provides a basic implementation with a root view, touch manager and various utilities.
 
-Built for and tested with [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/v0.9.1). See [notes below](#Notes) for setup instructions.
+Built for and tested with [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/v0.9.1). See [notes below](#notes) for setup instructions.
+
+![](docs/media/class-hierarchy.png)
+
+## Key Features
+
+### Scene Graph
+
+* Add/remove children to/from `BaseView`s and all its subclasses
+* Conversion from/to local/global coordinate spaces
+* Simple event system to bubble messages up the graph
+* Index management (e.g. move child to front/back)
+* Inherited transformations, alpha and tint
+
+### Touch Management
+
+* Support for TUIO, native touch and mouse events
+* Touch simulator for stress-testing tapping and dragging
+* Multi-touch simulator for mouse input (e.g. to scale/rotate)
+* Extendable plugin architecture (e.g. for TangibleEngine pucks or third-party gesture libraries like GestureWorks)
+* Shape-based hit detection with ability to override on a per-class basis
+
+### Core App Classes
+
+* Define screen layout for multi-screen matrices
+* Pan and zoom around your app using keyboard shortcuts with a minimap with touchable views
+* Central, extendable settings manager to load common and custom JSON and CLI settings like FPS, V-Sync, Screen Layout, etc.
+
+### BaseView
+
+A basic, rectangular view with an optional size and background color that can contain children and be added as a child to other `BaseView`s.
+
+* Animatable properties: `position`, `scale`, `rotation`, `tint`, `alpha`, `backgroundColor`
+* Transform origin for rotating and scaling around a local point
+* `update()` and `draw()` loops
+
+### TouchView
+
+* Extends `BaseView` with added touch capabilities
+* Touch *began*, *updated* and *ended* events, overrideable protected methods and explicit signals 
+* Distinction between dragging and tapping with distance and time thresholds
+
+### TextView
+
+* Multi-line text layout with basic inline styling support
+* HTML tags: `<b>`, `<i>`, `<br>`, `<p>`
+* Styles: `fontFamily`, `fontStyle`, `fontWeight`, `fontSize`, `leadingOffset`, `textColor`, `textAlign`, `textTransform`
+* Automatic word-wrapping and other layout modes (single line, strip line-breaks, multi-line clip, multi-line auto-wrap)
+* `string` and `wstring` support
+* Layout-caching minimizes re-calculation of layout while maintaining ability to call methods like `getSize()` at any time
+* *Windows only, requires [Cinder-BluecadetText](/bluecadet/Cinder-BluecadetText)*
 
 ## Getting Started
 
@@ -84,15 +134,70 @@ CINDER_APP(BaseAppSampleApp, RendererGl(RendererGl::Options().msaa(4)), BaseAppS
 
 ```
 
+## Custom Subviews
+
+Out of the box, Cinder-BluecadetViews supplies the most basic types of views needed to stub out an interactive application. Eventually, you'll want to write your own `BaseView` subclasses that override `update()` or `draw()`.
+
+Below is a simple example:
+
+### PathView.h
+
+```c++
+#pragma once
+
+#include "bluecadet/views/BaseView.h"
+
+typedef std::shared_ptr<class PathView> PathViewRef;
+
+class PathView : public bluecadet::views::BaseView {
+
+public:
+	PathView(ci::Path2d path) : mPath(path) {}
+	~PathView() {}
+
+protected:
+	void update(const double deltaTime) override;
+	void draw() override;
+
+	ci::Path2d mPath;
+};
+```
+
+### PathView.cpp
+
+```c++
+#include "PathView.h"
+
+using namespace ci;
+using namespace ci::app;
+using namespace std;
+
+void PathView::update(const double deltaTime) {
+	// update your view on each frame if you'd like
+	// no need to call base view implementation
+}
+void PathView::draw() {
+	// no need to call base view implementation
+	// unless you want to draw a solid rect of
+	// getSize() and getBackgroundColor()
+	// bluecadet::views::BaseView::draw();
+	
+	// you could set the color to the current background color
+	// but by default getTint() and getAlpha() are used
+	// gl::color(getBackgroundColor());
+	
+	// this will draw the path using the current color, which
+	// defaults to getDrawColor() (combination of tint and alpha)
+	gl::draw(mPath);
+}
+```
+
+
 ## Dependencies
 
-* Cinder-BluecadetUtils (https://github.com/bluecadet/Cinder-BluecadetUtils)
 * Cinder-BluecadetText (https://github.com/bluecadet/Cinder-BluecadetText)
 * Cinder OSC block
 * Cinder TUIO block
-
-1. Clone each of the above dependency blocks into your `Cinder\blocks` folder (Cinder OSC & TUIO will come automatically when you download Cinder). 
-2. Create a new project with TinderBox and make sure to select *relative* when including all Bluecadet blocks
 
 ## Notes
 
@@ -102,9 +207,14 @@ Based on [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/v0.9.1)
 
 Cinder setup instructions:
 
+```bash
+git clone -b v0.9.1 --depth 1 --recursive https://github.com/cinder/Cinder.git
+```
+
+Cloning with all dependencies:
 
 ```bash
-git clone --recursive git@github.com:cinder/Cinder.git
-git checkout tags/v0.9.1
-git submodule update --init
+cd Cinder/blocks
+git clone git@github.com:bluecadet/Cinder-BluecadetText.git
+git clone git@github.com:bluecadet/Cinder-BluecadetView.git
 ```

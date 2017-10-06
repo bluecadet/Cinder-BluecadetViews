@@ -28,7 +28,9 @@ TouchView::TouchView() :
 	mHasMovingTouches(false),
 	mAllowsTapReleaseOutside(false),
 	mDebugDrawTouchPath(false),
-	mIsDragging(false),
+	mHasReachedDragThreshold(false),
+	mDragEnabledX(false),
+	mDragEnabledY(false),
 	mMinAlphaForTouches(sDefaultMinAlphaForTouches),
 	mDragThreshold(20.0f),
 	mMaxTapDuration(2.0),
@@ -87,9 +89,9 @@ void TouchView::draw() {
 //
 
 void TouchView::processTouchBegan(const touch::TouchEvent& touchEvent) {
-	mObjectTouchIDs.push_back(touchEvent.touchId);
+	mTouchIds.push_back(touchEvent.touchId);
 
-	const bool isFirstTouch = mObjectTouchIDs.size() == 1;
+	const bool isFirstTouch = mTouchIds.size() == 1;
 
 	if (isFirstTouch) {
 		mPrevLocalTouchPos = touchEvent.localPosition;
@@ -103,7 +105,7 @@ void TouchView::processTouchBegan(const touch::TouchEvent& touchEvent) {
 		mInitialTouchTime = getElapsedSeconds();
 	}
 
-	mIsDragging = isFirstTouch ? false : mIsDragging;
+	mHasReachedDragThreshold = isFirstTouch ? false : mHasReachedDragThreshold;
 	mHasMovingTouches = isFirstTouch ? false : mHasMovingTouches;
 
 	handleTouchBegan(touchEvent);
@@ -111,7 +113,7 @@ void TouchView::processTouchBegan(const touch::TouchEvent& touchEvent) {
 }
 
 void TouchView::processTouchMoved(const touch::TouchEvent& touchEvent) {
-	if (mObjectTouchIDs.empty()) {
+	if (mTouchIds.empty()) {
 		return;
 	}
 
@@ -121,16 +123,26 @@ void TouchView::processTouchMoved(const touch::TouchEvent& touchEvent) {
 		return;
 	}
 
-	if (touchEvent.touchId == mObjectTouchIDs.front()) {
+	if (touchEvent.touchId == mTouchIds.front()) {
 		mPrevLocalTouchPos = mLocalTouchPos;
 		mPrevGlobalTouchPos = mGlobalTouchPos;
 		mLocalTouchPos = touchEvent.localPosition;
 		mGlobalTouchPos = touchEvent.globalPosition;
 
-		if (!mIsDragging) {
+		if (!mHasReachedDragThreshold) {
 			const float dragDistance2 = glm::distance2(mInitialGlobalTouchPos, mGlobalTouchPos);
-			mIsDragging = dragDistance2 > mDragThreshold * mDragThreshold;
+			mHasReachedDragThreshold = dragDistance2 > mDragThreshold * mDragThreshold;
 		}
+	}
+
+	if (mHasReachedDragThreshold && (mDragEnabledX || mDragEnabledY)) {
+		auto globalPos = touchEvent.globalPosition - mInitialGlobalTouchPos + mInitialGlobalPosWhenTouched;
+		auto localPos = getParent() ? getParent()->convertGlobalToLocal(globalPos) : globalPos;
+
+		if (!mDragEnabledX) localPos.x = getPosition().value().x;
+		if (!mDragEnabledY) localPos.y = getPosition().value().y;
+
+		setPosition(localPos);
 	}
 
 	handleTouchMoved(touchEvent);
@@ -150,7 +162,7 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 	}
 
 	// Only allow taps within a certain drag distance
-	if (didTap && mIsDragging) {
+	if (didTap && mHasReachedDragThreshold) {
 		didTap = false;
 	}
 
@@ -161,12 +173,12 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 	}
 
 	// Remove id from list
-	auto idIt = std::find(mObjectTouchIDs.cbegin(), mObjectTouchIDs.cend(), touchEvent.touchId);
-	if (idIt != mObjectTouchIDs.end()) {
-		mObjectTouchIDs.erase(idIt);
+	auto idIt = std::find(mTouchIds.cbegin(), mTouchIds.cend(), touchEvent.touchId);
+	if (idIt != mTouchIds.end()) {
+		mTouchIds.erase(idIt);
 	}
 
-	if (mObjectTouchIDs.empty()) {
+	if (mTouchIds.empty()) {
 		resetTouchState();
 	}
 }
@@ -178,7 +190,7 @@ void TouchView::cancelTouches() {
 }
 
 void TouchView::resetTouchState() {
-	mIsDragging = false;
+	mHasReachedDragThreshold = false;
 	mHasMovingTouches = false;
 
 	mPrevLocalTouchPos = vec2(0);
@@ -191,7 +203,7 @@ void TouchView::resetTouchState() {
 	mInitialGlobalPosWhenTouched = vec2(0);
 	mInitialTouchTime = 0;
 
-	mObjectTouchIDs.clear();
+	mTouchIds.clear();
 }
 
 bool TouchView::containsPoint(const vec2 &point) {
@@ -208,12 +220,12 @@ bool TouchView::containsPoint(const vec2 &point) {
 }
 
 bool TouchView::canAcceptTouch(const bluecadet::touch::Touch & touch) const {
-	return (mMultiTouchEnabled || mObjectTouchIDs.empty()) && (getAlphaConst().value() > mMinAlphaForTouches);
+	return (mMultiTouchEnabled || mTouchIds.empty()) && (getAlphaConst().value() > mMinAlphaForTouches);
 }
 
 bool TouchView::isHandlingTouch(const int touchId) const {
-	auto idIt = std::find(mObjectTouchIDs.cbegin(), mObjectTouchIDs.cend(), touchId);
-	return (idIt != mObjectTouchIDs.end());
+	auto idIt = std::find(mTouchIds.cbegin(), mTouchIds.cend(), touchId);
+	return (idIt != mTouchIds.end());
 }
 
 void TouchView::setTouchPath(const float radius, const ci::vec2& offset, const int numSegments) {

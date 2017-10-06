@@ -29,8 +29,8 @@ void BaseApp::setup() {
 	auto settings = SettingsManager::getInstance();
 
 	// Set up screen layout
-	int displayWidth = settings->hasField("settings.display.width") ? settings->getField<int>("settings.display.width") : ScreenLayout::getInstance()->getDisplayWidth();
-	int displayHeight = settings->hasField("settings.display.height") ? settings->getField<int>("settings.display.height") : ScreenLayout::getInstance()->getDisplayHeight();
+	int displayWidth = settings->hasField("settings.display.width") ? settings->getField<int>("settings.display.width") : getWindowWidth();
+	int displayHeight = settings->hasField("settings.display.height") ? settings->getField<int>("settings.display.height") : getWindowHeight();
 	int rows = settings->hasField("settings.display.rows") ? settings->getField<int>("settings.display.rows") : ScreenLayout::getInstance()->getNumRows();
 	int cols = settings->hasField("settings.display.columns") ? settings->getField<int>("settings.display.columns") : ScreenLayout::getInstance()->getNumColumns();
 
@@ -39,7 +39,16 @@ void BaseApp::setup() {
 
 	ScreenCamera::getInstance()->setup(ScreenLayout::getInstance());
 	ScreenCamera::getInstance()->getViewportChangedSignal().connect(bind(&BaseApp::handleViewportChange, this, placeholders::_1));
+	ScreenCamera::getInstance()->setZoomToggleHotkeyEnabled(settings->mZoomToggleHotkeyEnabled);
+	ScreenCamera::getInstance()->setDisplayIdHotkeysEnabled(settings->mDisplayIdHotkeysEnabled);
 	ScreenCamera::getInstance()->zoomToFitWindow();
+
+	if (settings->mCameraOffset != vec2(0)) {
+		vec2 globalOffset = settings->mCameraOffset;
+		vec2 localOffset = globalOffset * ScreenCamera::getInstance()->getScale();
+		vec2 currentOffset = ScreenCamera::getInstance()->getTranslation();
+		ScreenCamera::getInstance()->setTranslation(currentOffset + localOffset);
+	}
 
 	// Apply run-time settings
 	if (settings->mShowMouse) {

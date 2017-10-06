@@ -36,54 +36,59 @@ public:
 	static TextViewRef create(const std::wstring& text = L"", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = -1.0f);
 
 	//! Configures a TextView instance. Convenience method that groups a few calls together.
-	void setup(const std::wstring& text = L"", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = -1.0f);
-	void setup(const std::string& text = "", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = -1.0f);
+	void		setup(const std::wstring& text = L"", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = -1.0f);
+	void		setup(const std::string& text = "", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = -1.0f);
 
-	virtual void	reset() override;
+	void		reset() override;
 
 	//! Use these methods for more granular rendering control. Textures will otherwise automatically be rendered if necessary when draw() is called.
-	bool			getAutoRenderEnabled() const { return mAutoRenderEnabled; }
-	void			setAutoRenderEnabled(const bool value) { mAutoRenderEnabled = value; }
+	bool		getAutoRenderEnabled() const { return mAutoRenderEnabled; }
+	void		setAutoRenderEnabled(const bool value) { mAutoRenderEnabled = value; }
 
-	bool			needsToBeRendered(bool surfaceOnly = false) const;
+	bool		needsToBeRendered(bool surfaceOnly = false) const;
 
 	//! Renders content. If surfaceOnly is false this will render into a texture and has to be called on the main thread. Surfaces can be rendered on a worker thread.
-	void			renderContent(bool surfaceOnly = false, bool alpha = true, bool premultiplied = false, bool force = false);
-	void			resetRenderedContent();
+	void		renderContent(bool surfaceOnly = false, bool alpha = true, bool premultiplied = false, bool force = false);
+	void		resetRenderedContent();
 
 	//! Enabling smooth scaling uses mipmapping. Does not affect existing texture. Default is true.
-	void			setSmoothScalingEnabled(const bool value) { mSmoothScalingEnabled = value; }
-	bool			getSmoothScalingEnabled() const { return mSmoothScalingEnabled; }
+	void		setSmoothScalingEnabled(const bool value) { mSmoothScalingEnabled = value; }
+	bool		getSmoothScalingEnabled() const { return mSmoothScalingEnabled; }
+
+	//! Use premultiplied alpha or not. Defaults to false.
+	bool		getPremultiplied() const { return mPremultiplied; }
+	void		setPremultiplied(const bool value) { mPremultiplied = value; }
 
 	//! Sets a fixed size for the text view. Any values below 0 will allow the text view to automatically expand in that direction.
-	virtual inline void				setSize(const ci::vec2& size) override;
-	virtual inline void				setWidth(const float width) override;
-	virtual inline void				setHeight(const float height) override;
+	inline void	setSize(const ci::vec2& size) override;
+	inline void	setWidth(const float width) override;
+	inline void	setHeight(const float height) override;
 
 	//! Returns the actual size of the text including padding.
 	//! In advanced use-cases this can differ from what was set in setSize(), e.g. if a special clip mode is set or size-trimming is enabled.
-	virtual inline const ci::vec2	getSize() override;
+	inline const ci::vec2	getSize() override;
 
 protected:
 
 	//! Will update the text texture if necessary.
-	virtual void			willDraw() override;
-	virtual void			draw() override;
+	void		willDraw() override;
+	void		draw() override;
 
 	ci::gl::Texture::Format createTextureFormat(bool smoothScaling) const;
-	inline void		invalidate(const bool layout = true, const bool size = true) override;
+	inline void	invalidate(const bool layout = true, const bool size = true) override;
 
 	// Change visibility of these methods from public to protected since setSize()/getSize() should be used.
-	virtual ci::vec2		getMaxSize() const override { return StyledTextLayout::getMaxSize(); };
-	virtual void			setMaxSize(const ci::vec2& size) override { return StyledTextLayout::setMaxSize(size); };
-	virtual float			getMaxWidth() const override { return StyledTextLayout::getMaxWidth(); };
-	virtual void			setMaxWidth(const float value) override { return StyledTextLayout::setMaxWidth(value); };
-	virtual float			getMaxHeight() const override { return StyledTextLayout::getMaxHeight(); };
-	virtual void			setMaxHeight(const float value) override { return StyledTextLayout::setMaxHeight(value); };
+	const ci::vec2 &	getMaxSize() const override { return StyledTextLayout::getMaxSize(); };
+	void				setMaxSize(const ci::vec2& size) override { return StyledTextLayout::setMaxSize(size); };
+	float				getMaxWidth() const override { return StyledTextLayout::getMaxWidth(); };
+	void				setMaxWidth(const float value) override { return StyledTextLayout::setMaxWidth(value); };
+	float				getMaxHeight() const override { return StyledTextLayout::getMaxHeight(); };
+	void				setMaxHeight(const float value) override { return StyledTextLayout::setMaxHeight(value); };
 
 	bool				mHasInvalidRenderedContent;
 	bool				mSmoothScalingEnabled;
 	bool				mAutoRenderEnabled;
+	bool				mPremultiplied;
 
 	ci::Surface			mSurface;
 	ci::gl::TextureRef	mTexture;

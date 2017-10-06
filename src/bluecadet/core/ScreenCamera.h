@@ -40,7 +40,7 @@ public:
 
 	//! Zooms to fit the display at displayId into the current application window.
 	void				zoomToDisplay(const int displayId);
-	
+
 	//! Zooms to fit the display at col/row into the current application window.
 	void				zoomToDisplay(const int row, const int col);
 
@@ -55,15 +55,26 @@ public:
 
 	//! The current camera transform.
 	const ci::mat4 &	getTransform() const { return mPlaceholderView->getTransform(); };
-	
+
 	//! The current camera translation.
 	const ci::vec2 &	getTranslation() const { return mPlaceholderView->getPosition().value(); };
-	
+
+	//! Sets the current camera translation.
+	void				setTranslation(const ci::vec2 & translation) { mPlaceholderView->setPosition(translation); updateViewport(); };
+
 	//! The current camera scale.
 	const ci::vec2 &	getScale() const { return mPlaceholderView->getScale().value(); };
 
 	//! The current viewport in app coordinates.
 	const ci::Area &	getViewport() const { return mViewport; }
+
+	//! When true, will map keys 1-9 to zoom to displays 1-9
+	bool				getDisplayIdHotkeysEnabled() const { return mDisplayIdHotkeysEnabled; }
+	void				setDisplayIdHotkeysEnabled(const bool value) { mDisplayIdHotkeysEnabled = value; }
+
+	//! When true, will map the 0 key to toggling between scale to fit and 100%
+	bool				getZoomToggleHotkeyEnabled() const { return mZoomToggleHotkeyEnabled; }
+	void				setZoomToggleHotkeyEnabled(const bool value) { mZoomToggleHotkeyEnabled = value; }
 
 protected:
 	float				getScaleToFitBounds(const ci::Rectf &bounds, const ci::vec2 &maxSize, const float padding = 0.0f) const;
@@ -75,6 +86,9 @@ protected:
 	ci::Area			mViewport;
 	views::BaseViewRef	mPlaceholderView;
 	ScreenLayoutRef		mLayout;
+
+	bool				mDisplayIdHotkeysEnabled = true;
+	bool				mZoomToggleHotkeyEnabled = true;
 
 	ci::signals::Signal<void(const ci::Area & viewport)> mViewportChangedSignal;
 };

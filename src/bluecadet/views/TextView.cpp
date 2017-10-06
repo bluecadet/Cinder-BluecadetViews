@@ -14,7 +14,8 @@ namespace views {
 TextView::TextView() : BaseView(), text::StyledTextLayout(),
 mTexture(nullptr),
 mAutoRenderEnabled(true),
-mSmoothScalingEnabled(true)
+mSmoothScalingEnabled(true),
+mPremultiplied(false)
 {
 }
 
@@ -59,7 +60,7 @@ void TextView::reset() {
 
 void TextView::willDraw() {
 	if (needsToBeRendered(false) && mAutoRenderEnabled) {
-		renderContent(false);
+		renderContent(false, true, mPremultiplied);
 	}
 }
 
