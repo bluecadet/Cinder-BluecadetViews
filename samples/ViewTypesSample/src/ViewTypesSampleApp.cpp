@@ -285,4 +285,4 @@ ColorA ViewTypesSampleApp::getNextColor(float alpha) {
 	return color;
 }
 
-CINDER_APP(ViewTypesSampleApp, RendererGl(RendererGl::Options().msaa(4)), ViewTypesSampleApp::prepareSettings)
+CINDER_APP(ViewTypesSampleApp, RendererGl(RendererGl::Options().msaa(4).stencil(true)), ViewTypesSampleApp::prepareSettings)
