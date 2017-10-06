@@ -249,17 +249,17 @@ TouchViewRef TouchManager::getViewForTouchId(const int touchId) {
 	return touchViewIt->second.lock();
 }
 
-TouchView * TouchManager::getTopViewForTouch(const Touch & touch, BaseViewRef rootView) {
-	if (!rootView) {
+TouchView * TouchManager::getTopViewForTouch(const Touch & touch, BaseViewRef view) {
+	if (!view) {
 		return nullptr;
 	}
 
-	if (rootView->isHidden()) {
+	if (view->isHidden() || view->getAlpha().value() <= TouchView::sDefaultMinAlphaForTouches) {
 		// Don't check for touches in this view or in children if hidden
 		return nullptr;
 	}
 
-	TouchView* obj = dynamic_cast<TouchView*>(rootView.get());
+	TouchView* obj = dynamic_cast<TouchView*>(view.get());
 
 	if (obj && (!obj->isTouchEnabled() || !obj->canAcceptTouch(touch))) {
 		// Don't check for touches in this view or in children if untouchable
@@ -267,7 +267,7 @@ TouchView * TouchManager::getTopViewForTouch(const Touch & touch, BaseViewRef ro
 	}
 
 	// Go through children first
-	const auto & children = rootView->getChildren();
+	const auto & children = view->getChildren();
 	for (auto it = children.rbegin(); it != children.rend(); ++it) {
 		const auto touchedChild = getTopViewForTouch(touch, *it);
 		if (touchedChild) {

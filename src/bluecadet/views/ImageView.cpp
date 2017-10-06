@@ -73,6 +73,8 @@ void ImageView::setSize(const ci::vec2& size) {
 void ImageView::draw() {
 	if (!mTexture) return;
 	
+	BaseView::draw();
+	
 	switch (mScaleMode) {
 		case ScaleMode::NONE:
 			gl::draw(mTexture);

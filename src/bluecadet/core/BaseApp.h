@@ -31,18 +31,16 @@ public:
 	virtual ~BaseApp();
 
 	// Cinder app events
-	void setup() override;
-	void update() override;
-	void draw() override { draw(true); };
-	virtual void draw(const bool clear);
+	void setup() override;					//! Use this method to do any initial setup before the first update() and draw().
+	virtual void lateSetup() {};			//! Use this method to finish any setup. Called after the first update() and draw().
+	void update() override;					//! Called on each frame before draw().
+	void draw() override { draw(true); };	//! Called on each frame after update().
+	virtual void draw(const bool clear);	//! Use this method to instead of just draw() to enable/disable clearing.
 
 	void keyDown(ci::app::KeyEvent event) override;
 
 	virtual void handleAppSizeChange(const ci::ivec2 & appSize);
 	virtual void handleViewportChange(const ci::Area & viewport);
-
-	//! Adds a set of params to control the touch simulator
-	void		addTouchSimulatorParams(float touchesPerSecond = 50.f);
 
 	//! Use this view to add any children. The root view may be scaled and translated when using ScreenLayout to zoom/pan around the app.
 	views::BaseViewRef	getRootView() const { return mRootView; };
@@ -65,16 +63,16 @@ public:
 	//! The main mouse driver. Configured with the current window size at app launch, but needs to be started explicitly.
 	touch::drivers::SimulatedTouchDriver &	getTouchSimDriver() { return mSimulatedTouchDriver; }
 
-	//! The settings manager instance used during initialization
-	SettingsManagerRef						getSettingsManager() const { return mSettingsManager; }
+	//! Adds a set of params to control the touch simulator
+	void		addTouchSimulatorParams(float touchesPerSecond = 50.f);
 
 private:
-	SettingsManagerRef						mSettingsManager;
 	views::BaseViewRef						mRootView;
 	views::MiniMapViewRef					mMiniMap;
 	views::GraphViewRef						mStats;
 	double									mLastUpdateTime;
 	float									mDebugUiPadding;
+	bool									mIsLateSetupCompleted;
 
 	touch::drivers::TuioDriver				mTuioDriver;
 	touch::drivers::MouseDriver				mMouseDriver;

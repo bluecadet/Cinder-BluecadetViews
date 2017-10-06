@@ -35,6 +35,9 @@ public:
 	static TextViewRef create(const std::string& text = "", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = -1.0f);
 	static TextViewRef create(const std::wstring& text = L"", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = -1.0f);
 
+	static const ci::gl::Texture::Format & getDefaultTextureFormat();	//! Default format used for rendering. Optimized for 100% scale. No mip-mapping.
+	static const ci::gl::Texture::Format & getMipMapTextureFormat();	//! MipMapped format optimized for scaling, but with slightly lower quality at 100%.
+
 	//! Configures a TextView instance. Convenience method that groups a few calls together.
 	void		setup(const std::wstring& text = L"", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = -1.0f);
 	void		setup(const std::string& text = "", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = -1.0f);
@@ -51,13 +54,13 @@ public:
 	void		renderContent(bool surfaceOnly = false, bool alpha = true, bool premultiplied = false, bool force = false);
 	void		resetRenderedContent();
 
-	//! Enabling smooth scaling uses mipmapping. Does not affect existing texture. Default is true.
-	void		setSmoothScalingEnabled(const bool value) { mSmoothScalingEnabled = value; }
-	bool		getSmoothScalingEnabled() const { return mSmoothScalingEnabled; }
+	//! The format used for the texture. Setting this will force a re-render of the texture. Defaults to TextView::getDefaultTextureFormat().
+	void		setTextureFormat(const ci::gl::Texture::Format value) { mTextureFormat = value; mHasInvalidRenderedContent = true; }
+	ci::gl::Texture::Format  getTextureFormat() const { return mTextureFormat; }
 
 	//! Use premultiplied alpha or not. Defaults to false.
 	bool		getPremultiplied() const { return mPremultiplied; }
-	void		setPremultiplied(const bool value) { mPremultiplied = value; }
+	void		setPremultiplied(const bool value) { mPremultiplied = value; mHasInvalidRenderedContent = true; }
 
 	//! Sets a fixed size for the text view. Any values below 0 will allow the text view to automatically expand in that direction.
 	inline void	setSize(const ci::vec2& size) override;
@@ -74,7 +77,6 @@ protected:
 	void		willDraw() override;
 	void		draw() override;
 
-	ci::gl::Texture::Format createTextureFormat(bool smoothScaling) const;
 	inline void	invalidate(const bool layout = true, const bool size = true) override;
 
 	// Change visibility of these methods from public to protected since setSize()/getSize() should be used.
@@ -86,12 +88,12 @@ protected:
 	void				setMaxHeight(const float value) override { return StyledTextLayout::setMaxHeight(value); };
 
 	bool				mHasInvalidRenderedContent;
-	bool				mSmoothScalingEnabled;
 	bool				mAutoRenderEnabled;
 	bool				mPremultiplied;
 
 	ci::Surface			mSurface;
 	ci::gl::TextureRef	mTexture;
+	ci::gl::Texture::Format	mTextureFormat;
 
 };
 
