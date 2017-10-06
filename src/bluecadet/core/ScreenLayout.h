@@ -32,7 +32,7 @@ public:
 
 
 	//! Must be called before calling draw. Adds a key-up event listener.
-	void			setup(const ci::ivec2& dislaySize = ci::ivec2(1920, 1080), const int numRows = 1, const int numColumns = 1);
+	void			setup(const ci::ivec2& dislaySize = ci::app::getWindowSize(), const int numRows = 1, const int numColumns = 1);
 
 	//! Draws the current screen layout, transformed appropriately to match the position and scale of rootView
 	void			draw();

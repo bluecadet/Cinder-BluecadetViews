@@ -123,9 +123,6 @@
     <ClCompile Include="..\..\..\src\bluecadet\views\BaseView.cpp">
       <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\bluecadet\views\CircleOutlineView.cpp">
-      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\bluecadet\views\EllipseView.cpp">
       <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
     </ClCompile>
@@ -154,6 +151,18 @@
       <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\bluecadet\views\ViewEvent.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\views\ArcView.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\views\MaskView.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\views\StrokedCircleView.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\views\StrokedRectView.cpp">
       <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
     </ClCompile>
   </ItemGroup>
@@ -215,9 +224,6 @@
     <ClInclude Include="..\..\..\src\bluecadet\views\BaseView.h">
       <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\bluecadet\views\CircleOutlineView.h">
-      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\bluecadet\views\EllipseView.h">
       <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
     </ClInclude>
@@ -246,6 +252,21 @@
       <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\bluecadet\views\ViewEvent.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\AnimOperators.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\ArcView.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\MaskView.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\StrokedCircleView.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\StrokedRectView.h">
       <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
     </ClInclude>
   </ItemGroup>

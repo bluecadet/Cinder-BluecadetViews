@@ -308,6 +308,16 @@ void BaseView::drawScene(const ColorA& parentTint) {
 				draw();
 				drawChildren(mDrawColor);
 				break;
+			} case BlendMode::ADD: {
+				gl::ScopedBlend scopedBlend(GL_SRC_ALPHA, GL_ONE);
+				draw();
+				drawChildren(mDrawColor);
+				break;
+			} case BlendMode::MULTIPLY: {
+				gl::ScopedBlend scopedBlend(GL_DST_COLOR, GL_ZERO);
+				draw();
+				drawChildren(mDrawColor);
+				break;
 			}
 		}
 
@@ -347,7 +357,7 @@ inline void BaseView::debugDrawOutline() {
 // Animation
 // 
 
-void BaseView::resetAnimations() {
+void BaseView::cancelAnimations() {
 	if (mTimeline) {
 		mTimeline->clear();
 	}

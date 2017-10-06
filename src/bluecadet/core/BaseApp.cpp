@@ -19,7 +19,9 @@ BaseApp::BaseApp() :
 	mDebugUiPadding(16.0f),
 	mRootView(new BaseView()),
 	mMiniMap(new MiniMapView(0.025f)),
-	mStats(new GraphView(ivec2(128, 48))) {
+	mStats(new GraphView(ivec2(128, 48))),
+	mIsLateSetupCompleted(false)
+{
 }
 
 BaseApp::~BaseApp() {
@@ -68,26 +70,31 @@ void BaseApp::setup() {
 	gl::enableAlphaBlending();
 
 	// Set up touches
-	if (SettingsManager::getInstance()->mMouseEnabled) {
+	if (settings->mMouseEnabled) {
 		mMouseDriver.connect();
 		mMouseDriver.setVirtualMultiTouchEnabled(true);
 	}
-	if (SettingsManager::getInstance()->mTuioTouchEnabled) {
+	if (settings->mTuioTouchEnabled) {
 		mTuioDriver.connect();
 	}
-	if (SettingsManager::getInstance()->mNativeTouchEnabled) {
+	if (settings->mNativeTouchEnabled) {
 		mNativeTouchDriver.connect();
 	}
 
 	mSimulatedTouchDriver.setup(Rectf(vec2(0), getWindowSize()), 60);
 
 	// Debugging
-	const float targetFps = (float)SettingsManager::getInstance()->mFps;
+	const float targetFps = (float)settings->mFps;
 	mStats->setBackgroundColor(ColorA(0, 0, 0, 0.1f));
 	mStats->addGraph("FPS", 0, targetFps, ColorA(1.0f, 0.0f, 0.0f, 0.75f), ColorA(0.0f, 1.0f, 0.25f, 0.75f));
 }
 
 void BaseApp::update() {
+	if (!mIsLateSetupCompleted && getElapsedFrames() > 1) {
+		lateSetup();
+		mIsLateSetupCompleted = true;
+	}
+
 	const double currentTime = getElapsedSeconds();
 	const double deltaTime = mLastUpdateTime == 0 ? 0 : currentTime - mLastUpdateTime;
 	mLastUpdateTime = currentTime;
@@ -188,9 +195,10 @@ void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
 
 	mSimulatedTouchDriver.setTouchesPerSecond(touchesPerSecond);
 
-	const string groupName = "Touch-Sim";
+	const string groupName = "Touch Sim";
+	auto params = SettingsManager::getInstance()->getParams();
 
-	SettingsManager::getInstance()->getParams()->addParam<bool>("Enabled", [&](bool v) {
+	params->addParam<bool>("Enabled", [&](bool v) {
 		if (!mSimulatedTouchDriver.isRunning()) {
 			SettingsManager::getInstance()->mDrawTouches = true;
 			mSimulatedTouchDriver.setBounds(Rectf(vec2(0), getWindowSize()));
@@ -206,7 +214,7 @@ void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
 	static int stressTestMode = 0;
 	static vector<string> stressTestModes = {"Tap & Drag", "Slow Drag", "Tap"};
 
-	SettingsManager::getInstance()->getParams()->addParam("Mode", stressTestModes, &stressTestMode).updateFn([&] {
+	params->addParam("Mode", stressTestModes, &stressTestMode).updateFn([&] {
 		if (stressTestMode == 0) {
 			mSimulatedTouchDriver.setMinTouchDuration(0);
 			mSimulatedTouchDriver.setMaxTouchDuration(1.f);
@@ -222,18 +230,21 @@ void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
 		}
 	}).group(groupName);
 
-	SettingsManager::getInstance()->getParams()->addParam<float>("Touches/s", [&](float v) {
+	params->addParam<float>("Touches/s", [&](float v) {
 		mSimulatedTouchDriver.setTouchesPerSecond(v);
 	}, [&]() {
 		return mSimulatedTouchDriver.getTouchesPerSecond();
 	}).group(groupName);
 
-	SettingsManager::getInstance()->getParams()->addParam<bool>("Show Missed Touches", [&](bool v) {
+	params->addParam<bool>("Show Missed Touches", [&](bool v) {
 		TouchManager::getInstance()->setDiscardMissedTouches(!v);
 	}, [&]() {
 		return !TouchManager::getInstance()->getDiscardMissedTouches();
 	}).group(groupName);
 
+	if (SettingsManager::getInstance()->mCollapseParams) {
+		params->setOptions(groupName, "opened=false");
+	}
 }
 
 }

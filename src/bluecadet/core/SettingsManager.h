@@ -89,9 +89,10 @@ public:
 	bool			mShowMouse = false;
 	bool			mDrawMinimap = false;
 	bool			mDrawStats = false;
-	bool			mMinimizeParams = false;
-	bool			mZoomToggleHotkeyEnabled = true;
-	bool			mDisplayIdHotkeysEnabled = false;
+	bool			mMinimizeParams = false;			//! Minimizes the params window
+	bool			mCollapseParams = false;			//! Collapses all the default parameter groups like "App"
+	bool			mZoomToggleHotkeyEnabled = true;	//! When true, will bind 0 to toggle zoom to 100%/fit
+	bool			mDisplayIdHotkeysEnabled = false;	//! When true, will bind 1-9 to zoom directly to displays 1-9
 
 	// CLI/runtime only args
 	ci::ivec2		mWindowSize; //! The window size on launch
