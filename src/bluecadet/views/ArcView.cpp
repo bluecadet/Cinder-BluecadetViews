@@ -13,6 +13,14 @@ ArcView::ArcView() : BaseView() {
 ArcView::~ArcView() {
 }
 
+void ArcView::setup(float innerRadius, float outerRadius, float startAngle, float endAngle, ci::ColorA backgroundColor) {
+	setInnerRadius(innerRadius);
+	setOuterRadius(outerRadius);
+	setStartAngle(startAngle);
+	setEndAngle(endAngle);
+	setBackgroundColor(backgroundColor);
+}
+
 void ArcView::cancelAnimations() {
 	BaseView::cancelAnimations();
 	mSmoothness.stop();
@@ -91,7 +99,8 @@ ci::gl::GlslProgRef ArcView::getSharedProg() {
 					vPosition = vec4(ciPosition.xy * uSize, 0.0, 1.0);
 					vColor = ciColor * uBackgroundColor;
 				}
-			)).fragment(CI_GLSL(150,
+			))
+			.fragment(CI_GLSL(150,
 				in vec4 vPosition;
 				in vec4 vColor;
 				uniform vec2 uSize;
@@ -129,10 +138,9 @@ ci::gl::GlslProgRef ArcView::getSharedProg() {
 					oFragColor = vec4(vColor.rgb, alpha);
 				}
 
-			)).defineDirectives({
-				"M_PI " + to_string(glm::pi<float>()),
-				"M_TWO_PI " + to_string(glm::two_pi<float>())
-			})
+			))
+			.define("M_PI", to_string(glm::pi<float>()))
+			.define("M_TWO_PI", to_string(glm::two_pi<float>()))
 		);
 	}
 	return prog;

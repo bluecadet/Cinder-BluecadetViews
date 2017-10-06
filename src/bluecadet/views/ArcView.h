@@ -18,6 +18,9 @@ public:
 	ArcView();
 	virtual ~ArcView();
 
+	//! Shortcut to configuring all required parameters
+	void setup(float innerRadius, float outerRadius, float startAngle = 0, float endAngle = glm::two_pi<float>(), ci::ColorA backgroundColor = ci::ColorA());
+
 	//! The outer radius of the arc (in px). Calls setSize() internally to change the size.
 	inline void setOuterRadius(float radius)	{ mOuterRadius = radius; setSize(ci::vec2(2.0f * radius)); }
 	inline ci::Anim<float> & getOuterRadius()	{ return mOuterRadius; invalidate(false, true); };
