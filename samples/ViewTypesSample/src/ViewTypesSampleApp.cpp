@@ -11,6 +11,8 @@
 #include "bluecadet/views/FboView.h"
 #include "bluecadet/views/MaskView.h"
 #include "bluecadet/views/LineView.h"
+#include "bluecadet/views/StrokedCircleView.h"
+#include "bluecadet/views/StrokedRectView.h"
 #include "bluecadet/views/TouchView.h"
 #include "bluecadet/views/TextView.h"
 
@@ -57,6 +59,17 @@ void ViewTypesSampleApp::setup() {
 	view->setBackgroundColor(getNextColor());
 	addViewSample(view, "BaseView");
 
+	//==================================================
+	// Stroked rect view
+	// 
+
+	auto strokedRectView = make_shared<StrokedRectView>();
+	strokedRectView->setSize(vec2(100, 100));
+	strokedRectView->setBackgroundColor(getNextColor());
+	strokedRectView->setStrokeColor(ColorA(getNextColor(), 0.75f));
+	strokedRectView->setStrokeWidth(5.0f);
+	strokedRectView->getTimeline()->apply(&strokedRectView->getStrokeWidth(), 20.0f, 1.5f, easeInOutQuad).loop(true).pingPong(true);
+	addViewSample(strokedRectView, "StrokedRectView");
 
 	//==================================================
 	// EllipseView with variably smooth edges
@@ -69,6 +82,32 @@ void ViewTypesSampleApp::setup() {
 	ellipseView->setSmoothness(1.0f); // the default is 1
 	ellipseView->getTimeline()->apply(&ellipseView->getSmoothness(), 50.0f, 3.0f, easeInOutQuad).loop(true).pingPong(true);
 	addViewSample(ellipseView, "EllipseView");
+
+	//==================================================
+	// Stroked Circle
+	// 
+
+	auto strokedCircle = make_shared<StrokedCircleView>();
+	strokedCircle->setBackgroundColor(getNextColor());
+	strokedCircle->setStrokeWidth(5.0f);
+	strokedCircle->setSmoothness(1.0f);
+	strokedCircle->setRadius(75.0f);
+	strokedCircle->setPosition(strokedCircle->getSize() * 0.5f);
+	strokedCircle->getTimeline()->apply(&strokedCircle->getSmoothness(), 50.0f, 2.0f, easeInOutQuad).loop(true).pingPong(true);
+	addViewSample(strokedCircle, "StrokedCircleView");
+
+	//==================================================
+	// Arc
+	// 
+
+	auto arcView = make_shared<ArcView>();
+	arcView->setup(5, 50, 0, glm::two_pi<float>(), getNextColor());
+	arcView->setPosition(arcView->getSize() * 0.5f); // arc is drawn around 0,0; so offset by 50% width/height
+	arcView->getTimeline()->apply(&arcView->getSmoothness(), 10.0f, 1.5f, easeInOutQuad).loop(true).pingPong(true);
+	arcView->getTimeline()->apply(&arcView->getInnerRadius(), 45.0f, 2.4f, easeInOutQuad).loop(true).pingPong(true);
+	arcView->getTimeline()->apply(&arcView->getStartAngle(), glm::pi<float>(), 2.0f, easeInOutQuad).loop(true).pingPong(true);
+	arcView->getTimeline()->apply(&arcView->getEndAngle(), glm::pi<float>(), 2.8f, easeInOutQuad).loop(true).pingPong(true);
+	addViewSample(arcView, "ArcView");
 
 	//==================================================
 	// LineView
@@ -143,7 +182,7 @@ void ViewTypesSampleApp::setup() {
 
 	auto circleInsideFbo = make_shared<EllipseView>();
 	circleInsideFbo->setup(length(fboView->getSize()), getNextColor());
-	circleInsideFbo->getTimeline()->apply(&circleInsideFbo->getScale(), vec2(0), 2.0f, easeInOutQuad).pingPong(true).loop(true);
+	circleInsideFbo->getTimeline()->apply(&circleInsideFbo->getScale(), vec2(0), 3.0f, easeInOutQuad).pingPong(true).loop(true);
 	fboView->addChild(circleInsideFbo);
 
 	addViewSample(fboView, "FBOView with circle inside");
@@ -162,7 +201,7 @@ void ViewTypesSampleApp::setup() {
 
 		auto mask = make_shared<EllipseView>();
 		mask->setup(length(fboView->getSize()), getNextColor());
-		mask->getTimeline()->apply(&mask->getScale(), vec2(0), 2.0f, easeInOutQuad).pingPong(true).loop(true);
+		mask->getTimeline()->apply(&mask->getScale(), vec2(0), 3.0f, easeInOutQuad).pingPong(true).loop(true);
 		maskView->setMask(mask);
 	}
 
@@ -176,21 +215,9 @@ void ViewTypesSampleApp::setup() {
 
 		auto mask = make_shared<EllipseView>();
 		mask->setup(length(fboView->getSize()), getNextColor());
-		mask->getTimeline()->apply(&mask->getScale(), vec2(0), 2.0f, easeInOutQuad).pingPong(true).loop(true);
+		mask->getTimeline()->apply(&mask->getScale(), vec2(0), 3.0f, easeInOutQuad).pingPong(true).loop(true);
 		maskView->setMask(mask);
 	}
-
-	//==================================================
-	// Arc
-	// 
-
-	auto arcView = make_shared<ArcView>();
-	arcView->setup(5, 50, 0, glm::two_pi<float>(), getNextColor());
-	arcView->setPosition(arcView->getSize() * 0.5f); // arc is drawn around 0,0; so offset by 50% width/height
-	arcView->getTimeline()->apply(&arcView->getInnerRadius(), 45.0f, 2.4f, easeInOutQuad).loop(true).pingPong(true);
-	arcView->getTimeline()->apply(&arcView->getStartAngle(), glm::pi<float>(), 2.0f, easeInOutQuad).loop(true).pingPong(true);
-	arcView->getTimeline()->apply(&arcView->getEndAngle(), glm::pi<float>(), 2.8f, easeInOutQuad).loop(true).pingPong(true);
-	addViewSample(arcView, "ArcView");
 
 	//==================================================
 	// Drag Views

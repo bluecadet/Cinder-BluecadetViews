@@ -124,7 +124,7 @@
     <ClCompile Include="..\..\..\src\bluecadet\touch\TouchManager.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\ArcView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\BaseView.cpp" />
-    <ClCompile Include="..\..\..\src\bluecadet\views\CircleOutlineView.cpp" />
+    <ClCompile Include="..\..\..\src\bluecadet\views\StrokedCircleView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\EllipseView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\FboView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\GraphView.cpp" />
@@ -133,6 +133,7 @@
     <ClCompile Include="..\..\..\src\bluecadet\views\MaskView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\MiniMapView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\StatsView.cpp" />
+    <ClCompile Include="..\..\..\src\bluecadet\views\StrokedRectView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\TextView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\TouchView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\ViewEvent.cpp" />
@@ -159,7 +160,7 @@
     <ClInclude Include="..\..\..\src\bluecadet\views\AnimOperators.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\ArcView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\BaseView.h" />
-    <ClInclude Include="..\..\..\src\bluecadet\views\CircleOutlineView.h" />
+    <ClInclude Include="..\..\..\src\bluecadet\views\StrokedCircleView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\EllipseView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\FboView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\GraphView.h" />
@@ -168,6 +169,7 @@
     <ClInclude Include="..\..\..\src\bluecadet\views\MaskView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\MiniMapView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\StatsView.h" />
+    <ClInclude Include="..\..\..\src\bluecadet\views\StrokedRectView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\TextView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\TouchView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\ViewEvent.h" />
