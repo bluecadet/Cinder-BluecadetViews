@@ -25,22 +25,31 @@ typedef std::shared_ptr<class AnimatedView> AnimatedViewRef;
 class AnimatedView : public BaseView {
 
 public:
+
+	//==================================================
+	// Typedefs
+	// 
 	typedef ci::signals::Signal<void()> VoidSignal;
 	typedef ci::signals::Signal<void(bool completed)> CallbackSignal;
 	typedef std::function<void(bool completed)> CallbackFn;
+
+	//! AnimatedView options
 	struct Options {
 
-		Options clone() const { return Options(*this); }
+		Options clone() const			{ return Options(*this); }
 
-		Options & duration(float v) { mDuration = v; return *this; }
-		Options & delay(float v) { mDelay = v; return *this; }
-		Options & easing(ci::EaseFn v) { mEasing = v; return *this; }
+		Options & duration(float v)		{ mDuration = v; return *this; }
+		Options & delay(float v)		{ mDelay = v; return *this; }
+		Options & easing(ci::EaseFn v)	{ mEasing = v; return *this; }
+		
+		Options & addDuration(float v)	{ mDuration += v; return *this; }
+		Options & addDelay(float v)		{ mDelay += v; return *this; }
 
-		float getDuration() const { return mDuration; }
-		float getDelay() const { return mDelay; }
-		ci::EaseFn getEasing() const { return mEasing; }
+		float getDuration() const		{ return mDuration; }
+		float getDelay() const			{ return mDelay; }
+		ci::EaseFn getEasing() const	{ return mEasing; }
 
-		float getEndTime() const { return mDuration + mDelay; }
+		float getEndTime() const		{ return mDuration + mDelay; }
 
 	private:
 		float mDuration = 0.33f;
@@ -49,6 +58,31 @@ public:
 	};
 
 
+	//! Cue that is guaranteed to trigger a callback with a completed bool
+	class CallbackCue : public ci::Cue {
+	public:
+		CallbackCue(CallbackFn callback, float time);
+		~CallbackCue();
+
+		//! Adds a single callback to the list
+		inline void addCallback(CallbackFn callback) { mConnections += mSignalCallback.connect(callback); }
+
+		//! Removes callbacks without triggering them
+		inline void removeAllCallbacks() { mConnections.clear(); }
+
+		//! Allows you to manually add callbacks, but connecting here will not allow you to use removeAllCallbacks()
+		inline CallbackSignal & getSignalCallback() { return mSignalCallback; }
+
+	protected:
+		CallbackSignal mSignalCallback;
+		ci::signals::ConnectionList mConnections;
+	};
+	typedef std::shared_ptr<CallbackCue> CallbackCueRef;
+
+
+	//==================================================
+	// Methods
+	// 
 	AnimatedView(bool showInitially = true);
 	virtual ~AnimatedView();
 
@@ -83,6 +117,11 @@ public:
 	//! that shouldShow() and isShowing() are not the same.
 	bool isAnimating() const { return mIsShowing != mShouldShow; }
 
+	//! Cancels the current on animation
+	void cancelAnimationOn();
+
+	//! Cancels the current off animation
+	void cancelAnimationOff();
 
 	//! Signals triggered at beginning off animations
 	VoidSignal & getSignalWillAnimateOn() { return mSignalWillAnimateOn; }
@@ -93,6 +132,8 @@ public:
 	VoidSignal & getSignalDidAnimateOn() { return mSignalDidAnimateOn; }
 	VoidSignal & getSignalDidAnimateOff() { return mSignalDidAnimateOff; }
 
+	//! returns default options
+	const Options & getDefaultOptions() { return mDefaultOptions; }
 
 protected:
 	//! Override this method to add your own animations to the timeline. Keep all animations based on the overall duration.
@@ -117,32 +158,9 @@ protected:
 
 
 private:
-	class CompletionCue : public ci::Cue {
-	public:
-		CompletionCue(CallbackFn callback, float time) :
-			ci::Cue([=] {
-				mSignalCallback.emit(true); // success
-			}, time)
-		{
-			mSignalCallback.connect(callback);
-		}
-		~CompletionCue() {
-			if (!isComplete()) {
-				mSignalCallback.emit(false); // failure
-			}
-		}
 
-		CallbackSignal mSignalCallback;
-	};
-	typedef std::shared_ptr<CompletionCue> CompletionCueRef;
-
-
-	void cancelAnimationOn();
-	void cancelAnimationOff();
-
-
-	CompletionCueRef mCueOn;
-	CompletionCueRef mCueOff;
+	CallbackCueRef mCueOn;
+	CallbackCueRef mCueOff;
 
 	bool mShouldShow = true;
 	bool mIsShowing = true;
