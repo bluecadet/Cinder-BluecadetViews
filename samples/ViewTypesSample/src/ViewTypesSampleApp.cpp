@@ -86,7 +86,7 @@ void ViewTypesSampleApp::setup() {
 	touchView->setSize(vec2(200, 100));
 	touchView->setTransformOrigin(0.5f * touchView->getSize());
 	touchView->setBackgroundColor(getNextColor());
-	touchView->getSignalTouchBegan().connect([=](const bluecadet::touch::TouchEvent& e) { touchView->resetAnimations(); touchView->setScale(1.5f); });
+	touchView->getSignalTouchBegan().connect([=](const bluecadet::touch::TouchEvent& e) { touchView->cancelAnimations(); touchView->setScale(1.5f); });
 	touchView->getSignalTouchEnded().connect([=](const bluecadet::touch::TouchEvent& e) { touchView->getTimeline()->apply(&touchView->getScale(), vec2(1.0f), 0.3f); });
 	addViewSample(touchView, "TouchView with began/ended");
 
@@ -115,7 +115,7 @@ void ViewTypesSampleApp::setup() {
 		return p;
 	}());
 	diamondTouchView->setBackgroundColor(getNextColor());
-	diamondTouchView->getSignalTouchBegan().connect([=](const bluecadet::touch::TouchEvent& e) { diamondTouchView->resetAnimations(); diamondTouchView->setScale(1.5f); });
+	diamondTouchView->getSignalTouchBegan().connect([=](const bluecadet::touch::TouchEvent& e) { diamondTouchView->cancelAnimations(); diamondTouchView->setScale(1.5f); });
 	diamondTouchView->getSignalTouchEnded().connect([=](const bluecadet::touch::TouchEvent& e) { diamondTouchView->getTimeline()->apply(&diamondTouchView->getScale(), vec2(1.0f), 0.3f); });
 	addViewSample(diamondTouchView, "TouchView with diamond touch path");
 
@@ -126,7 +126,7 @@ void ViewTypesSampleApp::setup() {
 	circleTouchView->setTransformOrigin(0.5f * circleTouchView->getSize());
 	circleTouchView->setup(circleTouchRadius, vec2(circleTouchRadius));
 	circleTouchView->setBackgroundColor(getNextColor());
-	circleTouchView->getSignalTouchBegan().connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->resetAnimations(); circleTouchView->setScale(1.5f); });
+	circleTouchView->getSignalTouchBegan().connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->cancelAnimations(); circleTouchView->setScale(1.5f); });
 	circleTouchView->getSignalTouchEnded().connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->getTimeline()->apply(&circleTouchView->getScale(), vec2(1.0f), 0.3f); });
 	addViewSample(circleTouchView, "TouchView with circle touch path");
 

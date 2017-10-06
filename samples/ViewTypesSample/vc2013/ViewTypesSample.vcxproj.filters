@@ -248,6 +248,9 @@
     <ClInclude Include="..\..\..\src\bluecadet\views\ViewEvent.h">
       <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\AnimOperators.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources.rc">
