@@ -201,7 +201,7 @@ void PathView::draw() {
 
 ## Notes
 
-Version 1.4.0
+Version 1.5.0
 
 Based on [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/v0.9.1)
 

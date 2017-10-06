@@ -9,6 +9,27 @@ using namespace std;
 namespace bluecadet {
 namespace views {
 
+//==================================================
+// Supporting Types
+// 
+
+AnimatedView::CallbackCue::CallbackCue(CallbackFn callback, float time) :
+	ci::Cue([=] {
+	mSignalCallback.emit(true); // success
+}, time) {
+	addCallback(callback);
+}
+
+AnimatedView::CallbackCue::~CallbackCue() {
+	if (!isComplete()) {
+		mSignalCallback.emit(false); // failure
+	}
+}
+
+//==================================================
+// Main Class
+// 
+
 AnimatedView::AnimatedView(bool showInitially) :
 	BaseView(),
 	mShowInitially(showInitially),
@@ -42,7 +63,7 @@ void AnimatedView::animateOn(const Options & options, CallbackFn callback) {
 
 		addAnimationOn(getTimeline(), options);
 
-		mCueOn = CompletionCueRef(new CompletionCue([=](bool completed) {
+		mCueOn = CallbackCueRef(new CallbackCue([=](bool completed) {
 			if (completed) {
 				mIsShowing = true;
 				didAnimateOn();
@@ -58,9 +79,14 @@ void AnimatedView::animateOn(const Options & options, CallbackFn callback) {
 		mSignalWillAnimateOn.emit();
 	}
 
-	// add callback (multiple callbacks are possible)
 	if (callback) {
-		mCueOn->mSignalCallback.connect(callback);
+		if (mCueOn) {
+			// add callback (multiple callbacks are possible)
+			mCueOn->getSignalCallback().connect(callback);
+		} else {
+			// this can happen if willAnimateOn cancels the animation
+			callback(false);
+		}
 	}
 }
 
@@ -86,7 +112,7 @@ void AnimatedView::animateOff(const Options & options, CallbackFn callback) {
 
 		addAnimationOff(getTimeline(), options);
 
-		mCueOff = CompletionCueRef(new CompletionCue([=](bool completed) {
+		mCueOff = CallbackCueRef(new CallbackCue([=](bool completed) {
 			if (completed) {
 				mIsShowing = false;
 				didAnimateOff();
@@ -101,9 +127,15 @@ void AnimatedView::animateOff(const Options & options, CallbackFn callback) {
 		mSignalWillAnimateOff.emit();
 	}
 
-	// add callback (multiple callbacks are possible)
 	if (callback) {
-		mCueOff->mSignalCallback.connect(callback);
+		if (mCueOff) {
+			// add callback (multiple callbacks are possible)
+			mCueOff->getSignalCallback().connect(callback);
+
+		} else {
+			// this can happen if willAnimateOff cancels the animation
+			callback(false);
+		}
 	}
 }
 

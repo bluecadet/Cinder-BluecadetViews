@@ -11,10 +11,10 @@ using namespace std;
 namespace bluecadet {
 namespace views {
 
-TextView::TextView() : BaseView(), text::StyledTextLayout(),
+TextView::TextView() : BaseView(), bluecadet::text::StyledTextLayout(),
+mTextureFormat(getDefaultTextureFormat()),
 mTexture(nullptr),
 mAutoRenderEnabled(true),
-mSmoothScalingEnabled(true),
 mPremultiplied(false)
 {
 }
@@ -23,15 +23,48 @@ TextView::~TextView() {
 }
 
 TextViewRef TextView::create(const std::string& text, const std::string& styleKey, const bool parseText, const float maxWidth) {
-	TextViewRef textView(new TextView());
+	auto textView = make_shared<TextView>();
 	textView->setup(text, styleKey, parseText, maxWidth);
 	return textView;
 }
 
 TextViewRef TextView::create(const std::wstring& text, const std::string& styleKey, const bool parseText, const float maxWidth) {
-	TextViewRef textView(new TextView());
+	auto textView = make_shared<TextView>();
 	textView->setup(text, styleKey, parseText, maxWidth);
 	return textView;
+}
+
+const ci::gl::Texture::Format & TextView::getDefaultTextureFormat() {
+	static gl::Texture::Format format;
+	static bool initialized = false;
+
+	if (!initialized) {
+		format.immutableStorage(true);
+		format.setMaxAnisotropy(4.0f);
+		format.enableMipmapping(false);
+		format.setMaxMipmapLevel(0);
+		format.setMinFilter(GL_LINEAR);
+		format.setMagFilter(GL_LINEAR);
+		initialized = true;
+	}
+
+	return format;
+}
+
+const ci::gl::Texture::Format & TextView::getMipMapTextureFormat() {
+	static gl::Texture::Format format;
+	static bool initialized = false;
+
+	if (!initialized) {
+		format.immutableStorage(true);
+		format.setMaxAnisotropy(4.0f);
+		format.enableMipmapping(true);
+		format.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
+		format.setMagFilter(GL_LINEAR);
+		initialized = true;
+	}
+
+	return format;
 }
 
 void TextView::setup(const std::wstring& text, const std::string& styleKey, const bool parseText, const float maxWidth) {
@@ -91,7 +124,7 @@ void TextView::renderContent(bool surfaceOnly, bool alpha, bool premultiplied, b
 		mTexture = nullptr; // reset texture to save memory
 
 	} else {
-		mTexture = gl::Texture2d::create(mSurface, createTextureFormat(mSmoothScalingEnabled));
+		mTexture = gl::Texture2d::create(mSurface, mTextureFormat);
 		mSurface = ci::Surface(); // reset surface to save memory
 	}
 
@@ -126,32 +159,12 @@ inline void TextView::setHeight(const float height){
 }
 
 const ci::vec2 TextView::getSize() {
-	const vec2 maxSize = StyledTextLayout::getTextSize();
+	const vec2 maxSize = StyledTextLayout::getMaxSize();
 	const vec2 textSize = StyledTextLayout::getTextSize();
 	return vec2(
 		max(maxSize.x, textSize.x),
 		max(maxSize.y, textSize.y)
 	);
-}
-
-ci::gl::Texture::Format TextView::createTextureFormat(bool smoothScaling) const {
-	gl::Texture::Format format;
-	format.immutableStorage(true);
-
-	if (smoothScaling) {
-		format.enableMipmapping(true);
-		format.setMaxMipmapLevel(2);
-		format.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
-		format.setMagFilter(GL_LINEAR);
-	} else {
-		format.setMaxAnisotropy(4.0f);
-		format.enableMipmapping(false);
-		format.setMaxMipmapLevel(0);
-		format.setMinFilter(GL_LINEAR);
-		format.setMagFilter(GL_LINEAR);
-	}
-
-	return format;
 }
 
 }

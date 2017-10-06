@@ -19,14 +19,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -122,15 +122,18 @@
     <ClCompile Include="..\..\..\src\bluecadet\touch\drivers\TuioDriver.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\touch\Touch.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\touch\TouchManager.cpp" />
+    <ClCompile Include="..\..\..\src\bluecadet\views\ArcView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\BaseView.cpp" />
-    <ClCompile Include="..\..\..\src\bluecadet\views\CircleOutlineView.cpp" />
+    <ClCompile Include="..\..\..\src\bluecadet\views\StrokedCircleView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\EllipseView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\FboView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\GraphView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\ImageView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\LineView.cpp" />
+    <ClCompile Include="..\..\..\src\bluecadet\views\MaskView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\MiniMapView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\StatsView.cpp" />
+    <ClCompile Include="..\..\..\src\bluecadet\views\StrokedRectView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\TextView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\TouchView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\ViewEvent.cpp" />
@@ -154,15 +157,19 @@
     <ClInclude Include="..\..\..\src\bluecadet\touch\drivers\TuioDriver.h" />
     <ClInclude Include="..\..\..\src\bluecadet\touch\Touch.h" />
     <ClInclude Include="..\..\..\src\bluecadet\touch\TouchManager.h" />
+    <ClInclude Include="..\..\..\src\bluecadet\views\AnimOperators.h" />
+    <ClInclude Include="..\..\..\src\bluecadet\views\ArcView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\BaseView.h" />
-    <ClInclude Include="..\..\..\src\bluecadet\views\CircleOutlineView.h" />
+    <ClInclude Include="..\..\..\src\bluecadet\views\StrokedCircleView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\EllipseView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\FboView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\GraphView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\ImageView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\LineView.h" />
+    <ClInclude Include="..\..\..\src\bluecadet\views\MaskView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\MiniMapView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\StatsView.h" />
+    <ClInclude Include="..\..\..\src\bluecadet\views\StrokedRectView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\TextView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\TouchView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\ViewEvent.h" />
