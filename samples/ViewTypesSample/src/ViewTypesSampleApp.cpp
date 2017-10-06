@@ -124,19 +124,13 @@ void ViewTypesSampleApp::setup() {
 	// TouchViews with various hit areas
 	// 
 
-	auto touchView = make_shared<TouchView>();
-	touchView->setSize(vec2(200, 100));
-	touchView->setTransformOrigin(0.5f * touchView->getSize());
-	touchView->setBackgroundColor(getNextColor());
-	touchView->getSignalTouchBegan().connect([=](const bluecadet::touch::TouchEvent& e) { touchView->cancelAnimations(); touchView->setScale(1.5f); });
-	touchView->getSignalTouchEnded().connect([=](const bluecadet::touch::TouchEvent& e) { touchView->getTimeline()->apply(&touchView->getScale(), vec2(1.0f), 0.3f); });
-	addViewSample(touchView, "TouchView with began/ended");
-
 	auto tapView = make_shared<TouchView>();
 	tapView->setSize(vec2(200, 100));
 	tapView->setTransformOrigin(0.5f * tapView->getSize());
 	tapView->setBackgroundColor(getNextColor());
-	tapView->getSignalTapped().connect([=](const bluecadet::touch::TouchEvent& e) {
+	tapView->getSignalTouchBegan().connect([=](...) { tapView->setTint(Color::gray(0.75f)); });
+	tapView->getSignalTouchEnded().connect([=](...) { tapView->setTint(Color::white()); });
+	tapView->getSignalTapped().connect([=](...) {
 		static float rotation = 0;
 		rotation += (float)M_PI * 0.33f;
 		tapView->getTimeline()->apply(&tapView->getRotation(), (glm::angleAxis(rotation, vec3(0, 0, 1))), 0.33f, easeOutQuad);
@@ -254,6 +248,8 @@ void ViewTypesSampleApp::setup() {
 }
 
 void ViewTypesSampleApp::keyDown(ci::app::KeyEvent event) {
+	BaseApp::keyDown(event);
+
 	switch (event.getCode()) {
 	case KeyEvent::KEY_ESCAPE:
 		for (auto child : getRootView()->getChildren()) {
