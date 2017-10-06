@@ -17,6 +17,7 @@
 #include "boost/variant.hpp"
 
 #include "ViewEvent.h"
+#include "AnimOperators.h"
 
 namespace bluecadet {
 namespace views {
@@ -78,9 +79,11 @@ public:
 	static bool				sDebugDrawInvisibleBounds;
 
 	enum class BlendMode {
+		INHERIT,
 		ALPHA,
 		PREMULT,
-		INHERIT
+		ADD,
+		MULTIPLY
 	};
 
 	//==================================================
@@ -103,7 +106,7 @@ public:
 	virtual void			reset();
 
 	//! Cancels all running animations on this timeline and this view's animation properties
-	virtual void			resetAnimations();
+	virtual void			cancelAnimations();
 
 	virtual void			addChild(BaseViewRef child);
 	virtual void			addChild(BaseViewRef child, size_t index);
@@ -169,9 +172,6 @@ public:
 	//! Shorthand for getting the center based on the current position and size
 	virtual ci::vec2					getCenter() { return getPosition().value() + 0.5f * getSize(); }
 
-	//! Shorthand for getting the bounds based on the current position and size
-	virtual ci::Rectf					getBounds() { return ci::Rectf(getPosition(), getPosition().value() + getSize()); }
-
 	//! Local scale relative to parent view
 	virtual ci::Anim<ci::vec2>&			getScale() { return mScale; }
 	virtual void						setScale(const float& scale) { mScale = ci::vec2(scale, scale);  invalidate(); }
@@ -180,6 +180,7 @@ public:
 
 	//! Local rotation relative to parent view. Changing this value invalidates transforms.
 	virtual ci::Anim<ci::quat>&			getRotation() { return mRotation; }
+	virtual float						getRotationZ() const { return glm::roll(mRotation.value()); }
 	virtual void						setRotation(const float radians) { mRotation = glm::angleAxis(radians, ci::vec3(0, 0, 1)); invalidate(); }
 	virtual void						setRotation(const ci::quat& rotation) { mRotation = rotation; invalidate(); }
 
