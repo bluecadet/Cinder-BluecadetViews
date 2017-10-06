@@ -96,29 +96,6 @@ void ViewTypesSampleApp::setup() {
 	strokedCircle->getTimeline()->apply(&strokedCircle->getSmoothness(), 50.0f, 2.0f, easeInOutQuad).loop(true).pingPong(true);
 	addViewSample(strokedCircle, "StrokedCircleView");
 
-	//==================================================
-	// Arc
-	// 
-
-	auto arcView = make_shared<ArcView>();
-	arcView->setup(5, 50, 0, glm::two_pi<float>(), getNextColor());
-	arcView->setPosition(arcView->getSize() * 0.5f); // arc is drawn around 0,0; so offset by 50% width/height
-	arcView->getTimeline()->apply(&arcView->getSmoothness(), 10.0f, 1.5f, easeInOutQuad).loop(true).pingPong(true);
-	arcView->getTimeline()->apply(&arcView->getInnerRadius(), 45.0f, 2.4f, easeInOutQuad).loop(true).pingPong(true);
-	arcView->getTimeline()->apply(&arcView->getStartAngle(), glm::pi<float>(), 2.0f, easeInOutQuad).loop(true).pingPong(true);
-	arcView->getTimeline()->apply(&arcView->getEndAngle(), glm::pi<float>(), 2.8f, easeInOutQuad).loop(true).pingPong(true);
-	addViewSample(arcView, "ArcView");
-
-	//==================================================
-	// LineView
-	// 
-
-	auto lineView = make_shared<LineView>();
-	lineView->setEndPoint(vec2(100, 100));
-	lineView->setLineColor(getNextColor());
-	lineView->setLineWidth(2.0f);
-	addViewSample(lineView, "LineView");
-
 
 	//==================================================
 	// TouchViews with various hit areas
@@ -165,6 +142,39 @@ void ViewTypesSampleApp::setup() {
 	circleTouchView->getSignalTouchBegan().connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->cancelAnimations(); circleTouchView->setScale(1.5f); });
 	circleTouchView->getSignalTouchEnded().connect([=](const bluecadet::touch::TouchEvent& e) { circleTouchView->getTimeline()->apply(&circleTouchView->getScale(), vec2(1.0f), 0.3f); });
 	addViewSample(circleTouchView, "TouchView with circle touch path");
+
+	//==================================================
+	// Drag Views
+	// 
+	{
+		// x and y
+		auto dragView = make_shared<TouchView>();
+		dragView->setSize(vec2(100));
+		dragView->setBackgroundColor(getNextColor());
+		dragView->setDragEnabled(true);
+		addViewSample(dragView, "TouchView with x/y drag");
+	}
+
+
+	{
+		// x only
+		auto dragView = make_shared<TouchView>();
+		dragView->setSize(vec2(30, 60));
+		dragView->setBackgroundColor(getNextColor());
+		dragView->setDragEnabledX(true);
+		addViewSample(dragView, "TouchView with x drag");
+	}
+
+	{
+		// y only
+		auto dragView = make_shared<TouchView>();
+		dragView->setSize(vec2(60, 30));
+		dragView->setBackgroundColor(Color(0.25f, 0, 1.0f));
+		dragView->setDragEnabledY(true);
+		addViewSample(dragView, "TouchView with y drag");
+	}
+
+	getRootView()->setBackgroundColor(Color::gray(0.5f));
 
 	//==================================================
 	// FBO
@@ -214,37 +224,27 @@ void ViewTypesSampleApp::setup() {
 	}
 
 	//==================================================
-	// Drag Views
+	// LineView
 	// 
-	{
-		// x and y
-		auto dragView = make_shared<TouchView>();
-		dragView->setSize(vec2(100));
-		dragView->setBackgroundColor(getNextColor());
-		dragView->setDragEnabled(true);
-		addViewSample(dragView, "TouchView with x/y drag");
-	}
 
+	auto lineView = make_shared<LineView>();
+	lineView->setEndPoint(vec2(100, 100));
+	lineView->setLineColor(getNextColor());
+	lineView->setLineWidth(2.0f);
+	addViewSample(lineView, "LineView");
 
-	{
-		// x only
-		auto dragView = make_shared<TouchView>();
-		dragView->setSize(vec2(30, 60));
-		dragView->setBackgroundColor(getNextColor());
-		dragView->setDragEnabledX(true);
-		addViewSample(dragView, "TouchView with x drag");
-	}
+	//==================================================
+	// Arc
+	// 
 
-	{
-		// y only
-		auto dragView = make_shared<TouchView>();
-		dragView->setSize(vec2(60, 30));
-		dragView->setBackgroundColor(Color(0.25f, 0, 1.0f));
-		dragView->setDragEnabledY(true);
-		addViewSample(dragView, "TouchView with y drag");
-	}
-
-	getRootView()->setBackgroundColor(Color::gray(0.5f));
+	auto arcView = make_shared<ArcView>();
+	arcView->setup(5, 50, 0, glm::two_pi<float>(), getNextColor());
+	arcView->setPosition(arcView->getSize() * 0.5f); // arc is drawn around 0,0; so offset by 50% width/height
+	arcView->getTimeline()->apply(&arcView->getSmoothness(), 10.0f, 1.5f, easeInOutQuad).loop(true).pingPong(true);
+	arcView->getTimeline()->apply(&arcView->getInnerRadius(), 45.0f, 2.4f, easeInOutQuad).loop(true).pingPong(true);
+	arcView->getTimeline()->apply(&arcView->getStartAngle(), glm::pi<float>(), 2.0f, easeInOutQuad).loop(true).pingPong(true);
+	arcView->getTimeline()->apply(&arcView->getEndAngle(), glm::pi<float>(), 2.8f, easeInOutQuad).loop(true).pingPong(true);
+	addViewSample(arcView, "ArcView");
 }
 
 void ViewTypesSampleApp::keyDown(ci::app::KeyEvent event) {
