@@ -130,6 +130,7 @@
     <ClCompile Include="..\..\..\src\bluecadet\views\GraphView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\ImageView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\LineView.cpp" />
+    <ClCompile Include="..\..\..\src\bluecadet\views\MaskView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\MiniMapView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\StatsView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\TextView.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="..\..\..\src\bluecadet\views\GraphView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\ImageView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\LineView.h" />
+    <ClInclude Include="..\..\..\src\bluecadet\views\MaskView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\MiniMapView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\StatsView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\TextView.h" />

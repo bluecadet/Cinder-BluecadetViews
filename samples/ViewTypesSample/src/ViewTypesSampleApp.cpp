@@ -9,6 +9,7 @@
 #include "bluecadet/views/BaseView.h"
 #include "bluecadet/views/EllipseView.h"
 #include "bluecadet/views/FboView.h"
+#include "bluecadet/views/MaskView.h"
 #include "bluecadet/views/LineView.h"
 #include "bluecadet/views/TouchView.h"
 #include "bluecadet/views/TextView.h"
@@ -146,6 +147,40 @@ void ViewTypesSampleApp::setup() {
 	fboView->addChild(circleInsideFbo);
 
 	addViewSample(fboView, "FBOView with circle inside");
+
+	//==================================================
+	// Masks
+	// 
+
+	{
+		// Reveal
+		auto mask = make_shared<EllipseView>();
+		mask->setRadius(25);
+		mask->getTimeline()->apply(&mask->getPosition(), vec2(100), 2.0f, easeInOutQuad).loop(true).pingPong(true);
+		mask->setBackgroundColor(Color(1, 0, 0));
+
+		auto maskView = make_shared<MaskView>();
+		maskView->setSize(vec2(100));
+		maskView->setMaskType(MaskView::MaskType::REVEAL); // this is the default
+		maskView->setMask(mask);
+		maskView->setBackgroundColor(getNextColor());
+		addViewSample(maskView, "MaskView that Reveals");
+	}
+
+	{
+		// Hide
+		auto mask = make_shared<EllipseView>();
+		mask->setRadius(25);
+		mask->getTimeline()->apply(&mask->getPosition(), vec2(100), 2.0f, easeInOutQuad).loop(true).pingPong(true);
+		mask->setBackgroundColor(Color(1, 0, 0));
+
+		auto maskView = make_shared<MaskView>();
+		maskView->setSize(vec2(100));
+		maskView->setMaskType(MaskView::MaskType::HIDE);
+		maskView->setMask(mask);
+		maskView->setBackgroundColor(getNextColor());
+		addViewSample(maskView, "MaskView that Hides");
+	}
 
 	//==================================================
 	// Arc

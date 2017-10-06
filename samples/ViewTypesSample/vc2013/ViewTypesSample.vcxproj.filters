@@ -159,6 +159,9 @@
     <ClCompile Include="..\..\..\src\bluecadet\views\ArcView.cpp">
       <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\views\MaskView.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
@@ -255,6 +258,9 @@
       <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\bluecadet\views\ArcView.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\MaskView.h">
       <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
     </ClInclude>
   </ItemGroup>
