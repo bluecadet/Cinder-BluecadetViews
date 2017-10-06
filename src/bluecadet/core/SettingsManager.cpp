@@ -45,12 +45,7 @@ SettingsManager::SettingsManager() {
 }
 SettingsManager::~SettingsManager() {}
 
-// Pull in the shared/standard app settings JSON
 void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path jsonPath, std::function<void(SettingsManager * manager)> overrideCallback) {
-	// Set default path
-	if (jsonPath.empty()) {
-		jsonPath = ci::app::getAssetPath("appSettings.json");
-	}
 
 	// If the path exists, load it
 	if (fs::exists(jsonPath)) {
@@ -87,6 +82,8 @@ void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path j
 	addCommandLineParser("draw_stats", [&](const string &value) { mDrawStats = value == "true"; });
 	addCommandLineParser("minimizeParams", [&](const string &value) { mMinimizeParams = value == "true"; });
 	addCommandLineParser("minimize_params", [&](const string &value) { mMinimizeParams = value == "true"; });
+	addCommandLineParser("collapseParams", [&](const string &value) { mCollapseParams = value == "true"; });
+	addCommandLineParser("collapse_params", [&](const string &value) { mCollapseParams = value == "true"; });
 	addCommandLineParser("zoom_toggle_hotkey", [&](const string &value) { mZoomToggleHotkeyEnabled = value == "true"; });
 	addCommandLineParser("display_id_hotkey", [&](const string &value) { mDisplayIdHotkeysEnabled = value == "true"; });
 	addCommandLineParser("size", [&](const string &value) {
@@ -170,6 +167,7 @@ void SettingsManager::parseJson(ci::JsonTree & json) {
 	setFieldFromJsonIfExists(&mDrawTouches, "settings.debug.drawTouches");
 	setFieldFromJsonIfExists(&mDrawScreenLayout, "settings.debug.drawScreenLayout");
 	setFieldFromJsonIfExists(&mMinimizeParams, "settings.debug.minimizeParams");
+	setFieldFromJsonIfExists(&mCollapseParams, "settings.debug.collapseParams");
 	setFieldFromJsonIfExists(&mZoomToggleHotkeyEnabled, "settings.debug.zoomToggleHotkey");
 	setFieldFromJsonIfExists(&mDisplayIdHotkeysEnabled, "settings.debug.displayIdHotkeys");
 
@@ -180,14 +178,20 @@ void SettingsManager::parseJson(ci::JsonTree & json) {
 
 	// Analytics
 	setFieldFromJsonIfExists(&mAnalyticsAppName, "settings.analytics.appName");
+	setFieldFromJsonIfExists(&mAnalyticsTrackingId, "settings.analytics.trackingId");
 	setFieldFromJsonIfExists(&mAnalyticsTrackingId, "settings.analytics.trackingID");
+	setFieldFromJsonIfExists(&mAnalyticsClientId, "settings.analytics.clientId");
 	setFieldFromJsonIfExists(&mAnalyticsClientId, "settings.analytics.clientID");
 }
 
 void SettingsManager::parseCommandLineArgs(const std::vector<std::string>& args) {
+	string allArgsStr;
+
 	for (auto arg : args) {
 		int splitIndex = (int)arg.find_first_of("=");
 		if (splitIndex != std::string::npos) {
+			allArgsStr += " " + arg;
+
 			std::transform(arg.begin(), arg.end(), arg.begin(), ::tolower);
 			std::string key = arg.substr(0, splitIndex);
 			std::string value = arg.substr(splitIndex + 1, arg.size() - splitIndex - 1);
@@ -195,11 +199,12 @@ void SettingsManager::parseCommandLineArgs(const std::vector<std::string>& args)
 			if (callbackListIt == mCommandLineArgsHandlers.end()) continue;
 
 			for (auto callback : callbackListIt->second) {
-				CI_LOG_D("Command line arg: " + key + "=" + value);
 				callback(value);
 			}
 		}
 	}
+
+	CI_LOG_I("Launching with CLI args: " + allArgsStr);
 }
 
 ci::params::InterfaceGlRef SettingsManager::getParams() {
@@ -207,15 +212,25 @@ ci::params::InterfaceGlRef SettingsManager::getParams() {
 	if (!params) {
 		params = ci::params::InterfaceGl::create("Settings", ci::ivec2(250, 250));
 		params->addParam("Show Layout", &mDrawScreenLayout).group("App").key("l");
-		params->addParam("Show Touches", &mDrawTouches).group("App").key("t");
 		params->addParam("Show Minimap", &mDrawMinimap).group("App").key("m");
 		params->addParam("Show Stats", &mDrawStats).group("App").key("s");
+
+		params->addParam("Show Touches", &mDrawTouches).group("App").key("t");
 		params->addParam("Show Cursor", &mShowMouse).updateFn([&] { mShowMouse ? ci::app::AppBase::get()->showCursor() : ci::app::AppBase::get()->hideCursor(); }).key("c").group("App");
-		params->addParam("Show Bounds", &bluecadet::views::BaseView::sDebugDrawBounds).group("App").key("b");
-		params->addParam("Show Invisible Bounds", &bluecadet::views::BaseView::sDebugDrawInvisibleBounds).group("App");
+		
+		static int boundIndex = 0;
+		params->addParam("View Bounds", {"None", "Visible", "All"}, [&](int i) {
+			boundIndex = i;
+			bluecadet::views::BaseView::sDebugDrawBounds = boundIndex >= 1;
+			bluecadet::views::BaseView::sDebugDrawInvisibleBounds = boundIndex >= 2;
+		}, [&] { return boundIndex; }).key("b").group("App");
 
 		if (mMinimizeParams) {
 			params->minimize();
+		}
+
+		if (mCollapseParams) {
+			params->setOptions("App", "opened=false");
 		}
 	}
 	return params;
