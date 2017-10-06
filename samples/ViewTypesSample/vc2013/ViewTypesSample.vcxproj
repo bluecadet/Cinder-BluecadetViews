@@ -122,6 +122,7 @@
     <ClCompile Include="..\..\..\src\bluecadet\touch\drivers\TuioDriver.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\touch\Touch.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\touch\TouchManager.cpp" />
+    <ClCompile Include="..\..\..\src\bluecadet\views\ArcView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\BaseView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\CircleOutlineView.cpp" />
     <ClCompile Include="..\..\..\src\bluecadet\views\EllipseView.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="..\..\..\src\bluecadet\touch\Touch.h" />
     <ClInclude Include="..\..\..\src\bluecadet\touch\TouchManager.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\AnimOperators.h" />
+    <ClInclude Include="..\..\..\src\bluecadet\views\ArcView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\BaseView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\CircleOutlineView.h" />
     <ClInclude Include="..\..\..\src\bluecadet\views\EllipseView.h" />

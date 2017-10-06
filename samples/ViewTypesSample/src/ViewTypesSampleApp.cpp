@@ -4,6 +4,8 @@
 #include "cinder/Rand.h"
 
 #include "bluecadet/core/BaseApp.h"
+
+#include "bluecadet/views/ArcView.h"
 #include "bluecadet/views/BaseView.h"
 #include "bluecadet/views/EllipseView.h"
 #include "bluecadet/views/FboView.h"
@@ -49,7 +51,7 @@ void ViewTypesSampleApp::setup() {
 	// Most basic view
 	// 
 
-	auto view = BaseViewRef(new BaseView());
+	auto view = make_shared<BaseView>();
 	view->setSize(vec2(100, 100));
 	view->setBackgroundColor(getNextColor());
 	addViewSample(view, "BaseView");
@@ -59,7 +61,7 @@ void ViewTypesSampleApp::setup() {
 	// EllipseView with variably smooth edges
 	// 
 
-	auto ellipseView = EllipseViewRef(new EllipseView());
+	auto ellipseView = make_shared<EllipseView>();
 	ellipseView->setSize(vec2(150, 100)); // if width/height are equal you can also use setRadius()
 	ellipseView->setPosition(ellipseView->getSize() * 0.5f); // ellipse is drawn around 0,0; so offset by 50% width/height
 	ellipseView->setBackgroundColor(getNextColor());
@@ -71,7 +73,7 @@ void ViewTypesSampleApp::setup() {
 	// LineView
 	// 
 
-	auto lineView = LineViewRef(new LineView());
+	auto lineView = make_shared<LineView>();
 	lineView->setEndPoint(vec2(100, 100));
 	lineView->setLineColor(getNextColor());
 	lineView->setLineWidth(2.0f);
@@ -82,7 +84,7 @@ void ViewTypesSampleApp::setup() {
 	// TouchViews with various hit areas
 	// 
 
-	auto touchView = TouchViewRef(new TouchView());
+	auto touchView = make_shared<TouchView>();
 	touchView->setSize(vec2(200, 100));
 	touchView->setTransformOrigin(0.5f * touchView->getSize());
 	touchView->setBackgroundColor(getNextColor());
@@ -90,7 +92,7 @@ void ViewTypesSampleApp::setup() {
 	touchView->getSignalTouchEnded().connect([=](const bluecadet::touch::TouchEvent& e) { touchView->getTimeline()->apply(&touchView->getScale(), vec2(1.0f), 0.3f); });
 	addViewSample(touchView, "TouchView with began/ended");
 
-	auto tapView = TouchViewRef(new TouchView());
+	auto tapView = make_shared<TouchView>();
 	tapView->setSize(vec2(200, 100));
 	tapView->setTransformOrigin(0.5f * tapView->getSize());
 	tapView->setBackgroundColor(getNextColor());
@@ -101,7 +103,7 @@ void ViewTypesSampleApp::setup() {
 	});
 	addViewSample(tapView, "TouchView with tap<br>(long press and drag-and-release don't count as tap)");
 
-	auto diamondTouchView = TouchViewRef(new TouchView());
+	auto diamondTouchView = make_shared<TouchView>();
 	diamondTouchView->setDebugDrawTouchPath(true);
 	diamondTouchView->setSize(vec2(200, 100));
 	diamondTouchView->setTransformOrigin(0.5f * diamondTouchView->getSize());
@@ -120,7 +122,7 @@ void ViewTypesSampleApp::setup() {
 	addViewSample(diamondTouchView, "TouchView with diamond touch path");
 
 	const float circleTouchRadius = 50.0f;
-	auto circleTouchView = TouchViewRef(new TouchView());
+	auto circleTouchView = make_shared<TouchView>();
 	circleTouchView->setDebugDrawTouchPath(true);
 	circleTouchView->setSize(vec2(200, 100));
 	circleTouchView->setTransformOrigin(0.5f * circleTouchView->getSize());
@@ -134,24 +136,35 @@ void ViewTypesSampleApp::setup() {
 	// FBO
 	// 
 
-	auto fboView = FboViewRef(new FboView());
+	auto fboView = make_shared<FboView>();
 	fboView->setup(vec2(150));
 	fboView->setBackgroundColor(getNextColor());
 
-	auto circleInsideFbo = EllipseViewRef(new EllipseView());
+	auto circleInsideFbo = make_shared<EllipseView>();
 	circleInsideFbo->setup(length(fboView->getSize()), getNextColor());
 	circleInsideFbo->getTimeline()->apply(&circleInsideFbo->getScale(), vec2(0), 2.0f, easeInOutQuad).pingPong(true).loop(true);
 	fboView->addChild(circleInsideFbo);
 
 	addViewSample(fboView, "FBOView with circle inside");
 
+	//==================================================
+	// Arc
+	// 
+
+	auto arcView = make_shared<ArcView>();
+	arcView->setup(5, 50, 0, glm::two_pi<float>(), getNextColor());
+	arcView->setPosition(arcView->getSize() * 0.5f); // arc is drawn around 0,0; so offset by 50% width/height
+	arcView->getTimeline()->apply(&arcView->getInnerRadius(), 45.0f, 2.4f, easeInOutQuad).loop(true).pingPong(true);
+	arcView->getTimeline()->apply(&arcView->getStartAngle(), glm::pi<float>(), 2.0f, easeInOutQuad).loop(true).pingPong(true);
+	arcView->getTimeline()->apply(&arcView->getEndAngle(), glm::pi<float>(), 2.8f, easeInOutQuad).loop(true).pingPong(true);
+	addViewSample(arcView, "ArcView");
 
 	//==================================================
 	// Drag Views
 	// 
 	{
 		// x and y
-		auto dragView = TouchViewRef(new TouchView());
+		auto dragView = make_shared<TouchView>();
 		dragView->setSize(vec2(100));
 		dragView->setBackgroundColor(getNextColor());
 		dragView->setDragEnabled(true);
@@ -161,7 +174,7 @@ void ViewTypesSampleApp::setup() {
 
 	{
 		// x only
-		auto dragView = TouchViewRef(new TouchView());
+		auto dragView = make_shared<TouchView>();
 		dragView->setSize(vec2(30, 60));
 		dragView->setBackgroundColor(getNextColor());
 		dragView->setDragEnabledX(true);
@@ -170,7 +183,7 @@ void ViewTypesSampleApp::setup() {
 
 	{
 		// y only
-		auto dragView = TouchViewRef(new TouchView());
+		auto dragView = make_shared<TouchView>();
 		dragView->setSize(vec2(60, 30));
 		dragView->setBackgroundColor(Color(0.25f, 0, 1.0f));
 		dragView->setDragEnabledY(true);
@@ -197,8 +210,8 @@ void ViewTypesSampleApp::keyDown(ci::app::KeyEvent event) {
 void ViewTypesSampleApp::addViewSample(BaseViewRef view, std::string label) {
 
 	// hacky layout
-	static const int numCols = 4;
-	static const int numRows = 3;
+	static const int numCols = 5;
+	static const int numRows = 4;
 	static const vec2 cellPadding = vec2(10);
 	static const vec2 cellSize = (vec2(getWindowSize()) - vec2(numCols + 1, numRows + 1) * cellPadding) / vec2(numCols, numRows);
 	static vec2 cellPos = cellPadding;
