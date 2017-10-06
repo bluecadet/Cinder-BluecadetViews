@@ -154,32 +154,30 @@ void ViewTypesSampleApp::setup() {
 
 	{
 		// Reveal
-		auto mask = make_shared<EllipseView>();
-		mask->setRadius(25);
-		mask->getTimeline()->apply(&mask->getPosition(), vec2(100), 2.0f, easeInOutQuad).loop(true).pingPong(true);
-		mask->setBackgroundColor(Color(1, 0, 0));
-
 		auto maskView = make_shared<MaskView>();
-		maskView->setSize(vec2(100));
+		maskView->setSize(vec2(150));
 		maskView->setMaskType(MaskView::MaskType::REVEAL); // this is the default
-		maskView->setMask(mask);
 		maskView->setBackgroundColor(getNextColor());
-		addViewSample(maskView, "MaskView that Reveals");
+		addViewSample(maskView, "MaskView that reveals masked content");
+
+		auto mask = make_shared<EllipseView>();
+		mask->setup(length(fboView->getSize()), getNextColor());
+		mask->getTimeline()->apply(&mask->getScale(), vec2(0), 2.0f, easeInOutQuad).pingPong(true).loop(true);
+		maskView->setMask(mask);
 	}
 
 	{
 		// Hide
-		auto mask = make_shared<EllipseView>();
-		mask->setRadius(25);
-		mask->getTimeline()->apply(&mask->getPosition(), vec2(100), 2.0f, easeInOutQuad).loop(true).pingPong(true);
-		mask->setBackgroundColor(Color(1, 0, 0));
-
 		auto maskView = make_shared<MaskView>();
-		maskView->setSize(vec2(100));
+		maskView->setSize(vec2(150));
 		maskView->setMaskType(MaskView::MaskType::HIDE);
-		maskView->setMask(mask);
 		maskView->setBackgroundColor(getNextColor());
-		addViewSample(maskView, "MaskView that Hides");
+		addViewSample(maskView, "MaskView that hides masked content");
+
+		auto mask = make_shared<EllipseView>();
+		mask->setup(length(fboView->getSize()), getNextColor());
+		mask->getTimeline()->apply(&mask->getScale(), vec2(0), 2.0f, easeInOutQuad).pingPong(true).loop(true);
+		maskView->setMask(mask);
 	}
 
 	//==================================================
@@ -246,7 +244,7 @@ void ViewTypesSampleApp::addViewSample(BaseViewRef view, std::string label) {
 
 	// hacky layout
 	static const int numCols = 5;
-	static const int numRows = 4;
+	static const int numRows = 3;
 	static const vec2 cellPadding = vec2(10);
 	static const vec2 cellSize = (vec2(getWindowSize()) - vec2(numCols + 1, numRows + 1) * cellPadding) / vec2(numCols, numRows);
 	static vec2 cellPos = cellPadding;
