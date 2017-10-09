@@ -269,10 +269,6 @@ void BaseView::updateScene(const double deltaTime) {
 	}
 }
 
-void BaseView::update(const double deltaTime) {
-
-}
-
 void BaseView::drawScene(const ColorA& parentTint) {
 	const bool shouldDraw = mShouldForceInvisibleDraw || (!mIsHidden && mAlpha > 0.0f);
 
