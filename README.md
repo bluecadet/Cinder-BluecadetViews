@@ -8,9 +8,11 @@ In addition to nested transformations and drawing, this block connects to the te
 
 To combine all pieces conveniently, this block comes with a `BaseApp` class that provides a basic implementation with a root view, touch manager and various utilities.
 
-Built for and tested with [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/v0.9.1). See [notes below](#notes) for setup instructions.
+Built for and tested with [Cinder v0.9.2 dev](https://github.com/cinder/Cinder/). See [notes below](#notes) for setup instructions.
 
 ![](docs/media/class-hierarchy.png)
+
+<video src="docs/media/view-types-sample.mp4" autoplay style="max-width: 100%">
 
 ## Key Features
 
@@ -203,18 +205,19 @@ void PathView::draw() {
 
 Version 1.5.0
 
-Based on [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/v0.9.1)
+Built for [Cinder v0.9.2 dev](https://github.com/cinder/Cinder/) and [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/v0.9.1). Samples require VS 2015 v140 toolset, but tested with VS 2013 v120 as well.
 
 Cinder setup instructions:
 
 ```bash
-git clone -b v0.9.1 --depth 1 --recursive https://github.com/cinder/Cinder.git
-```
+# Cinder 0.9.2 dev
+git clone --depth 1 --recursive https://github.com/cinder/Cinder.git
 
-Cloning with all dependencies:
+# Cinder 0.9.1 stable
+# git clone -b v0.9.1 --depth 1 --recursive https://github.com/cinder/Cinder.git
 
-```bash
+# Bluecadet blocks + dependencies
 cd Cinder/blocks
 git clone git@github.com:bluecadet/Cinder-BluecadetText.git
-git clone git@github.com:bluecadet/Cinder-BluecadetView.git
+git clone git@github.com:bluecadet/Cinder-BluecadetViews.git
 ```

@@ -45,7 +45,7 @@ SettingsManager::SettingsManager() {
 }
 SettingsManager::~SettingsManager() {}
 
-void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path jsonPath, std::function<void(SettingsManager * manager)> overrideCallback) {
+void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path jsonPath, std::function<void(SettingsManager * manager)> callback) {
 
 	// If the path exists, load it
 	if (fs::exists(jsonPath)) {
@@ -60,10 +60,12 @@ void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path j
 		}
 	} else if (!jsonPath.empty()) {
 		CI_LOG_E("Settings file does not exist at '" << jsonPath << "'");
+	} else {
+		CI_LOG_D("No settings file specified. Using defaults.");
 	}
 
-	if (overrideCallback) {
-		overrideCallback(this);
+	if (callback) {
+		callback(this);
 	}
 
 	// Parse arguments from command line
@@ -203,8 +205,10 @@ void SettingsManager::parseCommandLineArgs(const std::vector<std::string>& args)
 			}
 		}
 	}
-
-	CI_LOG_I("Launching with CLI args: " + allArgsStr);
+	
+	if (!allArgsStr.empty()) {
+		CI_LOG_I("Launching with command line args: '" + allArgsStr + "'");
+	}
 }
 
 ci::params::InterfaceGlRef SettingsManager::getParams() {
