@@ -15,16 +15,9 @@ mStrokeWidth(1.0f) {
 StrokedCircleView::~StrokedCircleView() {
 }
 
-void StrokedCircleView::setup(float radius, ci::ColorA backgroundColor, float strokeWidth, float smoothness) {
+void StrokedCircleView::setup(float radius, ci::ColorA strokeColor, float strokeWidth, float smoothness) {
 	setRadius(radius);
-	setBackgroundColor(backgroundColor);
-	setSmoothness(smoothness);
-	setStrokeWidth(strokeWidth);
-}
-
-void StrokedCircleView::setup(ci::vec2 size, ci::ColorA backgroundColor, float strokeWidth, float smoothness) {
-	setSize(size);
-	setBackgroundColor(backgroundColor);
+	setStrokeColor(strokeColor);
 	setSmoothness(smoothness);
 	setStrokeWidth(strokeWidth);
 }
@@ -35,19 +28,23 @@ void StrokedCircleView::setRadius(const float radius) {
 }
 
 void StrokedCircleView::draw() {
-	const auto& bgColor = getBackgroundColor().value();
-	const auto& size = getSize();
+	const auto & strokeColor = mStrokeColor.value() * getDrawColor();
+	const auto & backgroundColor = getBackgroundColor().value() * getDrawColor();
+	const auto & size = getSize();
 
-	if (size.x <= 0 && size.y <= 0 && bgColor.a <= 0) {
+	if ((size.x <= 0 || size.y <= 0) && strokeColor.a <= 0 && backgroundColor.a <= 0) {
 		return;
 	}
 
 	auto batch = getSharedBatch();
 	auto prog = batch->getGlslProg();
+
 	prog->uniform("uSize", getSize());
-	prog->uniform("uBackgroundColor", vec4(bgColor.r, bgColor.g, bgColor.b, bgColor.a));
+	prog->uniform("uStrokeColor", strokeColor);
+	prog->uniform("uBackgroundColor", backgroundColor);
 	prog->uniform("uSmoothness", mSmoothness);
 	prog->uniform("uStrokeWidth", mStrokeWidth);
+
 	batch->draw();
 }
 
@@ -76,22 +73,18 @@ ci::gl::GlslProgRef StrokedCircleView::getSharedProg() {
 			.vertex(CI_GLSL(150,
 				uniform vec2	uSize;
 				uniform mat4	ciModelViewProjection;
-				uniform vec4	uBackgroundColor;
 
 				in vec4			ciPosition;
-				in vec4			ciColor;
-				out vec4		color;
-				out vec4		normPosition;
-				out vec4		absPosition;
+				//out vec4		vNormPosition;
+				out vec4		vAbsPosition;
 
 				void main(void) {
-					color = ciColor * uBackgroundColor;
-					normPosition = ciPosition;
-					absPosition = vec4(
+					//vNormPosition = ciPosition;
+					vAbsPosition = vec4(
 						ciPosition.x * uSize.x - uSize.x * 0.5f,
 						ciPosition.y * uSize.y - uSize.y * 0.5f,
 						0.0f, 1.0f);
-					gl_Position = ciModelViewProjection * absPosition;
+					gl_Position = ciModelViewProjection * vAbsPosition;
 				}
 			))
 			.fragment(CI_GLSL(150,
@@ -99,49 +92,51 @@ ci::gl::GlslProgRef StrokedCircleView::getSharedProg() {
 				uniform vec2	uSize;
 				uniform float	uSmoothness;
 				uniform float	uStrokeWidth;
+				uniform vec4	uStrokeColor;
+				uniform vec4	uBackgroundColor;
 
-				in vec4			normPosition;
-				in vec4			absPosition;
-				in vec4			color;
+				//in vec4		vNormPosition;
+				in vec4			vAbsPosition;
 				out vec4		oColor;
 
 				void main(void) {
-					/*vec2 normalizedDelta = normPosition.xy * 2.0f - vec2(1.0f);
+					/*vec2 normalizedDelta = vNormPosition.xy * 2.0f - vec2(1.0f);
 					float normalizedRadiusSq = normalizedDelta.x * normalizedDelta.x + normalizedDelta.y * normalizedDelta.y;
 					if (normalizedRadiusSq > 1.0f) discard;
 
 					float normalizedRadius = sqrt(normalizedRadiusSq);*/
 
 					//The following radii are in descending order of size from a to d (from outside in)
-					float radius = length(absPosition);
+					float radius = length(vAbsPosition);
 
 					float radiusA = min(uSize.x, uSize.y) * 0.5f;
 					float radiusD = radiusA - uStrokeWidth - uSmoothness * 2.0f;
 
-					if (radius > radiusA || radius < radiusD) discard;
+					if (radius > radiusA) discard;
 
 					float radiusB = radiusA - uSmoothness;
 					float radiusC = radiusD + uSmoothness;
 
-					oColor = color;
+					oColor = uStrokeColor;
 
-					// interpolate smooth edge
 					if (uSmoothness > 0 && radius > radiusB) {
+						// interpolate smooth edge
 						float quota = (radiusA - radius) / uSmoothness;
-						oColor.w = color.w * smoothstep(0.0f, 1.0f, quota);
+						oColor.a *= smoothstep(0.0f, 1.0f, quota);
+
+					} else if (uSmoothness > 0 && radius < radiusC) {
+						// interpolate smooth edge
+						float quota = (radiusC - radius) / uSmoothness;
+						float smoothQuota = smoothstep(1.0f, 0.0f, quota);
+						oColor = mix(uBackgroundColor, uStrokeColor, smoothQuota);
 					}
 
-					if (uSmoothness > 0 && radius < radiusC) {
-						float quota = (radiusC - radius) / uSmoothness;
-						oColor.w = color.w * smoothstep(1.0f, 0.0f, quota);
+					if (oColor.a <= 0) {
+						discard;
 					}
 				}
 			))
 		);
-		prog->uniform("uSize", vec2(0));
-		prog->uniform("uSmoothness", 1.0f);
-		prog->uniform("uBackgroundColor", vec4(0));
-		prog->uniform("uStrokeWidth", 1.0f);
 	}
 	return prog;
 }
