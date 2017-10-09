@@ -18,11 +18,8 @@ public:
 	StrokedCircleView();
 	virtual ~StrokedCircleView();
 
-	//! Shorthand to get a circle with a background color set up
-	void setup(float radius, ci::ColorA backgroundColor = ci::ColorA(), float strokeWidth = 1.0f, float smoothness = 1.0f);
-
-	//! Shorthand to get an ellipse with a background color set up
-	void setup(ci::vec2 size, ci::ColorA backgroundColor = ci::ColorA(), float strokeWidth = 1.0f, float smoothness = 1.0f);
+	//! Shorthand to get a circle with a stroke color set up
+	void setup(float radius, ci::ColorA strokeColor = ci::ColorA(), float strokeWidth = 1.0f, float smoothness = 1.0f);
 
 	//! Shorthand for calling setSize(vec2(2.0f * radius))
 	void setRadius(const float radius);
@@ -34,6 +31,9 @@ public:
 	inline ci::Anim<float> &	getStrokeWidth() { return mStrokeWidth; }
 	inline void					setStrokeWidth(float value) { mStrokeWidth = value; invalidate(false, true); }
 
+	inline ci::Anim<ci::ColorA> &	getStrokeColor() { return mStrokeColor; }
+	inline void						setStrokeColor(ci::ColorA value) { mStrokeColor = value; invalidate(false, true); }
+
 protected:
 	virtual void draw() override;
 	virtual void debugDrawOutline() override;
@@ -43,6 +43,7 @@ protected:
 
 	ci::Anim<float> mSmoothness;
 	ci::Anim<float> mStrokeWidth;
+	ci::Anim<ci::ColorA> mStrokeColor;
 
 };
 

@@ -48,7 +48,7 @@ public:
 	>															UserInfoTypes;
 	typedef std::map<std::string, UserInfoTypes>				UserInfo;
 
-	typedef ci::signals::Signal<void(ViewEvent & event)>			EventSignal;
+	typedef ci::signals::Signal<void(ViewEvent & event)>		EventSignal;
 	typedef ci::signals::Connection								EventConnection;
 	typedef EventSignal::CallbackFn								EventCallback;
 
@@ -307,7 +307,7 @@ public:
 
 protected:
 
-	virtual void update(const double deltaTime);				//! Gets called before draw() and after any parent's update. Override this method to plug into the update loop.
+	virtual void update(const double deltaTime) {};				//! Gets called before draw() and after any parent's update. Override this method to plug into the update loop.
 
 	inline virtual void	willDraw() {}							//! Called by drawScene before draw()
 	virtual void		draw();									//! Called by drawScene and allows for drawing content for this node. By default draws a rectangle with the current size and background color (only if x/y /bg-alpha > 0)

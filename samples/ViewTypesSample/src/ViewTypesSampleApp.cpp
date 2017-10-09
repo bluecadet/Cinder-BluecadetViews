@@ -89,11 +89,12 @@ void ViewTypesSampleApp::setup() {
 
 	auto strokedCircle = make_shared<StrokedCircleView>();
 	strokedCircle->setBackgroundColor(getNextColor());
+	strokedCircle->setStrokeColor(getNextColor());
 	strokedCircle->setStrokeWidth(5.0f);
 	strokedCircle->setSmoothness(1.0f);
 	strokedCircle->setRadius(75.0f);
 	strokedCircle->setPosition(strokedCircle->getSize() * 0.5f);
-	strokedCircle->getTimeline()->apply(&strokedCircle->getSmoothness(), 50.0f, 2.0f, easeInOutQuad).loop(true).pingPong(true);
+	strokedCircle->getTimeline()->apply(&strokedCircle->getSmoothness(), 10.0f, 2.0f, easeInOutQuad).loop(true).pingPong(true);
 	addViewSample(strokedCircle, "StrokedCircleView");
 
 

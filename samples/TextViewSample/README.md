@@ -1,4 +1,0 @@
-#Text View Sample
-
-
-*incomplete
