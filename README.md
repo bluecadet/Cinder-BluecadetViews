@@ -12,8 +12,6 @@ Built for and tested with [Cinder v0.9.2 dev](https://github.com/cinder/Cinder/)
 
 ![](docs/media/class-hierarchy.png)
 
-![](docs/media/view-types-sample.png)
-
 ## Key Features
 
 ### Scene Graph
@@ -61,6 +59,10 @@ A basic, rectangular view with an optional size and background color that can co
 * `string` and `wstring` support
 * Layout-caching minimizes re-calculation of layout while maintaining ability to call methods like `getSize()` at any time
 * *Windows only, requires [Cinder-BluecadetText](/bluecadet/Cinder-BluecadetText)*
+
+### View Samples
+
+![](docs/media/view-types-sample.gif)
 
 ## Getting Started
 

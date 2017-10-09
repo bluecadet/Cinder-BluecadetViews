@@ -89,6 +89,7 @@ void ViewTypesSampleApp::setup() {
 
 	auto strokedCircle = make_shared<StrokedCircleView>();
 	strokedCircle->setBackgroundColor(getNextColor());
+	strokedCircle->setStrokeColor(getNextColor());
 	strokedCircle->setStrokeWidth(5.0f);
 	strokedCircle->setSmoothness(1.0f);
 	strokedCircle->setRadius(75.0f);
