@@ -12,7 +12,7 @@ Built for and tested with [Cinder v0.9.2 dev](https://github.com/cinder/Cinder/)
 
 ![](docs/media/class-hierarchy.png)
 
-<video src="docs/media/view-types-sample.mp4" autoplay style="max-width: 100%">
+<video src="docs/media/view-types-sample.mp4"></video>
 
 ## Key Features
 
