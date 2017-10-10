@@ -7,7 +7,7 @@
 	author="Bluecadet"
 	summary="Scene graph with nested transforms, events, touch/mouse delegation and app boilerplates."
 	license="MIT"
-	version="1.4.0"
+	version="1.5.0"
 	url="https://github.com/bluecadet/Cinder-BluecadetViews"
 	>
 

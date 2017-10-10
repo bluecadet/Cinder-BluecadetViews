@@ -212,7 +212,7 @@ Built for [Cinder v0.9.2 dev](https://github.com/cinder/Cinder/) and [Cinder v0.
 Cinder setup instructions:
 
 ```bash
-# Cinder 0.9.2 dev
+# Cinder dev
 git clone --depth 1 --recursive https://github.com/cinder/Cinder.git
 
 # Cinder 0.9.1 stable
