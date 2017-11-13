@@ -112,17 +112,16 @@ protected:
 	virtual void parseJson(ci::JsonTree & json);
 
 	//! Parses command line arguments, which can override json settings
-	virtual void parseCommandLineArgs(const std::vector<std::string>& args);
+	virtual void parseCommandLineArgs(const std::vector<std::string> & args);
 	
 	//! Applies parsed settings to ci::app::App::Settings
 	virtual void applyToAppSettings(ci::app::App::Settings * settings);
 
-
 	//! Set fields within the settings manager class if the setting is defined in the json
-	template <typename T> void setFieldFromJsonIfExists(T* target, const std::string& jsonFieldName); // Implemented at end of this file
+	template <typename T> void setFieldFromJsonIfExists(T * target, const std::string & jsonFieldName); // Implemented at end of this file
 
 	//! Helpers to get string from primitive types and strings since we can't call to_string on strings
-	template <typename T> inline std::string toString(T* target) { return std::to_string(*target); }
+	template <typename T> inline std::string toString(T * target) { return std::to_string(*target); }
 
 
 	//! Key-based callbacks that are called when a command line argument with that key is passed in
