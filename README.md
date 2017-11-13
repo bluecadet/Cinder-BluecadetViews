@@ -115,7 +115,7 @@ void BaseAppSampleApp::setup() {
 	getRootView()->setBackgroundColor(Color::gray(0.5f));
 
 	// Sample content
-	auto button = TouchViewRef(new TouchView());
+	auto button = make_shared<TouchView>();
 	button->setPosition(vec2(400, 300));
 	button->setSize(vec2(200, 100));
 	button->setBackgroundColor(Color(1, 0, 0));

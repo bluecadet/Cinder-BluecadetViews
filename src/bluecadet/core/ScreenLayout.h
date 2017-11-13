@@ -51,8 +51,8 @@ public:
 	void			setDisplayHeight(const int height) { mDisplaySize.y = height; updateLayout(); };
 
 	//! The size of a single display in the display matrix
-	ci::ivec2		getDisplaySize() const { return mDisplaySize; }
-	void			setDisplaySize(const ci::ivec2 value) { mDisplaySize = value; }
+	const ci::ivec2	&	getDisplaySize() const { return mDisplaySize; }
+	void				setDisplaySize(const ci::ivec2 value) { mDisplaySize = value; }
 
 	//! The number of rows of displays in the display matrix.
 	int				getNumRows() const { return mNumRows; };
@@ -82,7 +82,7 @@ public:
 
 
 	//! The total app size when scaled at 100%
-	const ci::ivec2&	getAppSize() const { return mAppSize; };
+	const ci::ivec2 &	getAppSize() const { return mAppSize; };
 
 	//! Overall app width when scaled at 100%
 	int				getAppWidth() const { return getAppSize().x; }
