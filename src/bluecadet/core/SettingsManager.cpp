@@ -82,47 +82,6 @@ void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path j
 	applyToAppSettings(appSettings);
 }
 
-void SettingsManager::applyToAppSettings(ci::app::App::Settings * settings) {
-	// Default window size to main display size if no custom size has been determined
-	if (mWindowSize == ivec2(0)) {
-		mWindowSize = Display::getMainDisplay()->getSize();
-	}
-
-	// Apply pre-launch settings
-#ifdef CINDER_MSW
-	settings->setConsoleWindowEnabled(mConsole);
-#endif
-	settings->setFrameRate((float)mFps);
-	settings->setWindowSize(mWindowSize);
-	settings->setBorderless(mBorderless);
-	settings->setFullScreen(mFullscreen);
-
-	if (mNativeTouchEnabled) {
-		settings->setMultiTouchEnabled(true);
-	}
-
-	// Keep window top-left within display bounds
-	if (settings->getWindowPos().x == 0 && settings->getWindowPos().y == 0) {
-		ivec2 windowPos = (Display::getMainDisplay()->getSize() - settings->getWindowSize()) / 2;
-		windowPos = glm::max(windowPos, ivec2(0));
-		settings->setWindowPos(windowPos);
-	}
-}
-
-void SettingsManager::addCommandLineParser(const std::string& key, CommandLineArgParserFn callback) {
-	string lowercaseKey = key;
-	std::transform(lowercaseKey.begin(), lowercaseKey.end(), lowercaseKey.begin(), ::tolower);
-
-	auto callbackListIt = mCommandLineArgsHandlers.find(lowercaseKey);
-
-	if (callbackListIt == mCommandLineArgsHandlers.end()) {
-		mCommandLineArgsHandlers[lowercaseKey] = vector<CommandLineArgParserFn>();
-		callbackListIt = mCommandLineArgsHandlers.find(lowercaseKey);
-	}
-
-	callbackListIt->second.push_back(callback);
-}
-
 void SettingsManager::parseJson(ci::JsonTree & json) {
 	// General
 	setFieldFromJsonIfExists(&mConsole, "settings.general.consoleWindowEnabled");
@@ -169,6 +128,47 @@ void SettingsManager::parseJson(ci::JsonTree & json) {
 	setFieldFromJsonIfExists(&mCollapseParams, "settings.debug.collapseParams");
 	setFieldFromJsonIfExists(&mZoomToggleHotkeyEnabled, "settings.debug.zoomToggleHotkey");
 	setFieldFromJsonIfExists(&mDisplayIdHotkeysEnabled, "settings.debug.displayIdHotkeys");
+}
+
+void SettingsManager::applyToAppSettings(ci::app::App::Settings * settings) {
+	// Default window size to main display size if no custom size has been determined
+	if (mWindowSize == ivec2(0)) {
+		mWindowSize = Display::getMainDisplay()->getSize();
+	}
+
+	// Apply pre-launch settings
+#ifdef CINDER_MSW
+	settings->setConsoleWindowEnabled(mConsole);
+#endif
+	settings->setFrameRate((float)mFps);
+	settings->setWindowSize(mWindowSize);
+	settings->setBorderless(mBorderless);
+	settings->setFullScreen(mFullscreen);
+
+	if (mNativeTouchEnabled) {
+		settings->setMultiTouchEnabled(true);
+	}
+
+	// Keep window top-left within display bounds
+	if (settings->getWindowPos().x == 0 && settings->getWindowPos().y == 0) {
+		ivec2 windowPos = (Display::getMainDisplay()->getSize() - settings->getWindowSize()) / 2;
+		windowPos = glm::max(windowPos, ivec2(0));
+		settings->setWindowPos(windowPos);
+	}
+}
+
+void SettingsManager::addCommandLineParser(const std::string& key, CommandLineArgParserFn callback) {
+	string lowercaseKey = key;
+	std::transform(lowercaseKey.begin(), lowercaseKey.end(), lowercaseKey.begin(), ::tolower);
+
+	auto callbackListIt = mCommandLineArgsHandlers.find(lowercaseKey);
+
+	if (callbackListIt == mCommandLineArgsHandlers.end()) {
+		mCommandLineArgsHandlers[lowercaseKey] = vector<CommandLineArgParserFn>();
+		callbackListIt = mCommandLineArgsHandlers.find(lowercaseKey);
+	}
+
+	callbackListIt->second.push_back(callback);
 }
 
 void SettingsManager::parseCommandLineArgs(const std::vector<std::string>& args) {
