@@ -141,7 +141,9 @@ void BaseApp::draw(const bool clear) {
 		if (settings->mDrawStats) {
 			mStats->drawScene();
 		}
-		settings->getParams()->draw();
+		if (settings->getParams()->isVisible()) {
+			settings->getParams()->draw();
+		}
 	}
 }
 
@@ -155,6 +157,10 @@ void BaseApp::keyDown(KeyEvent event) {
 	case KeyEvent::KEY_q:
 		quit();
 		break;
+	case KeyEvent::KEY_c:
+		SettingsManager::getInstance()->mShowMouse = !SettingsManager::getInstance()->mShowMouse;
+		SettingsManager::getInstance()->mShowMouse ? showCursor() : hideCursor();
+		break;
 	case KeyEvent::KEY_f:
 		SettingsManager::getInstance()->mFullscreen = !isFullScreen();
 		setFullScreen(SettingsManager::getInstance()->mFullscreen);
@@ -166,9 +172,14 @@ void BaseApp::keyDown(KeyEvent event) {
 			SettingsManager::getInstance()->getParams()->maximize();
 
 		} else if (SettingsManager::getInstance()->getParams()->isMaximized()) {
-			SettingsManager::getInstance()->getParams()->minimize();
+			if (event.isShiftDown()) {
+				SettingsManager::getInstance()->getParams()->hide();
+			} else {
+				SettingsManager::getInstance()->getParams()->minimize();
+			}
 
 		} else {
+			SettingsManager::getInstance()->getParams()->show();
 			SettingsManager::getInstance()->getParams()->maximize();
 		}
 		break;
