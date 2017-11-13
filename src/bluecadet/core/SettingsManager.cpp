@@ -1,7 +1,6 @@
 #include "SettingsManager.h"
 
 #include "../views/BaseView.h"
-#include "cinder/Log.h"
 
 #include <algorithm>
 #include <string>	
@@ -15,33 +14,7 @@ namespace core {
 
 SettingsManagerRef SettingsManager::sInstance = nullptr;
 
-// Initialization
 SettingsManager::SettingsManager() {
-
-	// General
-	mConsoleWindowEnabled = true;
-	mFps = 60;
-	mAppVersion = "";
-
-	// Graphics
-	mVerticalSync = true;
-	mClearColor = ci::ColorA(0, 0, 0, 1.0f);
-
-	// Debugging
-	mDebugMode = true;
-	mDrawMinimap = true;
-	mDrawTouches = false;
-	mDrawScreenLayout = false;
-	mFullscreen = true;
-	mBorderless = false;
-	mShowMouse = true;
-	mDrawStats = true;
-	mWindowSize = ivec2(0);
-
-	// Analytics
-	mAnalyticsAppName = "";
-	mAnalyticsTrackingId = "";
-	mAnalyticsClientId = "";
 }
 SettingsManager::~SettingsManager() {}
 
@@ -69,19 +42,19 @@ void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path j
 	}
 
 	// Parse arguments from command line
-	addCommandLineParser("debug", [&](const string &value) { mDebugMode = value == "true"; });
+	addCommandLineParser("debug", [&](const string &value) { mDebugEnabled = value == "true"; });
 	addCommandLineParser("fullscreen", [&](const string &value) { mFullscreen = value == "true"; });
 	addCommandLineParser("borderless", [&](const string &value) { mBorderless = value == "true"; });
 	addCommandLineParser("vsync", [&](const string &value) { mVerticalSync = value == "true"; });
-	addCommandLineParser("console", [&](const string &value) { mConsoleWindowEnabled = value == "true"; });
-	addCommandLineParser("cursor", [&](const string &value) { mShowMouse = value == "true"; });
+	addCommandLineParser("console", [&](const string &value) { mConsole = value == "true"; });
+	addCommandLineParser("cursor", [&](const string &value) { mShowCursor = value == "true"; });
 	addCommandLineParser("mouse", [&](const string &value) { mMouseEnabled = value == "true"; });
 	addCommandLineParser("tuio", [&](const string &value) { mTuioTouchEnabled = value == "true"; });
 	addCommandLineParser("native", [&](const string &value) { mNativeTouchEnabled = value == "true"; });
-	addCommandLineParser("drawTouches", [&](const string &value) { mDrawTouches = value == "true"; });
-	addCommandLineParser("draw_touches", [&](const string &value) { mDrawTouches = value == "true"; });
-	addCommandLineParser("drawStats", [&](const string &value) { mDrawStats = value == "true"; });
-	addCommandLineParser("draw_stats", [&](const string &value) { mDrawStats = value == "true"; });
+	addCommandLineParser("drawTouches", [&](const string &value) { mShowTouches = value == "true"; });
+	addCommandLineParser("draw_touches", [&](const string &value) { mShowTouches = value == "true"; });
+	addCommandLineParser("drawStats", [&](const string &value) { mShowStats = value == "true"; });
+	addCommandLineParser("draw_stats", [&](const string &value) { mShowStats = value == "true"; });
 	addCommandLineParser("minimizeParams", [&](const string &value) { mMinimizeParams = value == "true"; });
 	addCommandLineParser("minimize_params", [&](const string &value) { mMinimizeParams = value == "true"; });
 	addCommandLineParser("collapseParams", [&](const string &value) { mCollapseParams = value == "true"; });
@@ -117,7 +90,7 @@ void SettingsManager::applyToAppSettings(ci::app::App::Settings * settings) {
 
 	// Apply pre-launch settings
 #ifdef CINDER_MSW
-	settings->setConsoleWindowEnabled(mConsoleWindowEnabled);
+	settings->setConsoleWindowEnabled(mConsole);
 #endif
 	settings->setFrameRate((float)mFps);
 	settings->setWindowSize(mWindowSize);
@@ -152,38 +125,50 @@ void SettingsManager::addCommandLineParser(const std::string& key, CommandLineAr
 
 void SettingsManager::parseJson(ci::JsonTree & json) {
 	// General
-	setFieldFromJsonIfExists(&mConsoleWindowEnabled, "settings.general.consoleWindowEnabled");
-	setFieldFromJsonIfExists(&mFps, "settings.general.FPS");
-	setFieldFromJsonIfExists(&mAppVersion, "settings.general.appVersion");
+	setFieldFromJsonIfExists(&mConsole, "settings.general.consoleWindowEnabled");
+	setFieldFromJsonIfExists(&mConsole, "settings.general.console");
+	setFieldFromJsonIfExists(&mAppVersion, "settings.general.version");
 
-	// Graphics
-	setFieldFromJsonIfExists(&mVerticalSync, "settings.graphics.verticalSync");
-	setFieldFromJsonIfExists(&mFullscreen, "settings.graphics.fullscreen");
-	setFieldFromJsonIfExists(&mBorderless, "settings.graphics.borderless");
+	// Display
+	setFieldFromJsonIfExists(&mDisplaySize.x, "settings.display.size.x");
+	setFieldFromJsonIfExists(&mDisplaySize.y, "settings.display.size.y");
+	setFieldFromJsonIfExists(&mDisplayColumns, "settings.display.columns");
+	setFieldFromJsonIfExists(&mDisplayRows, "settings.display.rows");
 
-	// Debug
-	setFieldFromJsonIfExists(&mDebugMode, "settings.debug.debugMode");
-	setFieldFromJsonIfExists(&mShowMouse, "settings.debug.showMouse");
-	setFieldFromJsonIfExists(&mDrawStats, "settings.debug.drawStats");
-	setFieldFromJsonIfExists(&mDrawMinimap, "settings.debug.drawMinimap");
-	setFieldFromJsonIfExists(&mDrawTouches, "settings.debug.drawTouches");
-	setFieldFromJsonIfExists(&mDrawScreenLayout, "settings.debug.drawScreenLayout");
-	setFieldFromJsonIfExists(&mMinimizeParams, "settings.debug.minimizeParams");
-	setFieldFromJsonIfExists(&mCollapseParams, "settings.debug.collapseParams");
-	setFieldFromJsonIfExists(&mZoomToggleHotkeyEnabled, "settings.debug.zoomToggleHotkey");
-	setFieldFromJsonIfExists(&mDisplayIdHotkeysEnabled, "settings.debug.displayIdHotkeys");
+	// Window
+	setFieldFromJsonIfExists(&mFps, "settings.window.fps");
+	setFieldFromJsonIfExists(&mFps, "settings.window.FPS");
+	setFieldFromJsonIfExists(&mVerticalSync, "settings.window.verticalSync");
+	setFieldFromJsonIfExists(&mVerticalSync, "settings.window.vsync");
+	setFieldFromJsonIfExists(&mFullscreen, "settings.window.fullscreen");
+	setFieldFromJsonIfExists(&mBorderless, "settings.window.borderless");
+	setFieldFromJsonIfExists(&mWindowSize.x, "settings.window.size.x");
+	setFieldFromJsonIfExists(&mWindowSize.y, "settings.window.size.x");
+	setFieldFromJsonIfExists(&mCameraOffset.x, "settings.window.cameraOffset.x");
+	setFieldFromJsonIfExists(&mCameraOffset.y, "settings.window.cameraOffset.y");
+	setFieldFromJsonIfExists(&mClearColor.r, "settings.window.clearColor.r");
+	setFieldFromJsonIfExists(&mClearColor.g, "settings.window.clearColor.g");
+	setFieldFromJsonIfExists(&mClearColor.b, "settings.window.clearColor.b");
+	setFieldFromJsonIfExists(&mClearColor.a, "settings.window.clearColor.a");
 
 	// Touch
 	setFieldFromJsonIfExists(&mMouseEnabled, "settings.touch.mouse");
 	setFieldFromJsonIfExists(&mTuioTouchEnabled, "settings.touch.tuio");
 	setFieldFromJsonIfExists(&mNativeTouchEnabled, "settings.touch.native");
 
-	// Analytics
-	setFieldFromJsonIfExists(&mAnalyticsAppName, "settings.analytics.appName");
-	setFieldFromJsonIfExists(&mAnalyticsTrackingId, "settings.analytics.trackingId");
-	setFieldFromJsonIfExists(&mAnalyticsTrackingId, "settings.analytics.trackingID");
-	setFieldFromJsonIfExists(&mAnalyticsClientId, "settings.analytics.clientId");
-	setFieldFromJsonIfExists(&mAnalyticsClientId, "settings.analytics.clientID");
+	// Debug
+	setFieldFromJsonIfExists(&mDebugEnabled, "settings.debug.debugMode");
+	setFieldFromJsonIfExists(&mDebugEnabled, "settings.debug.debugEnabled");
+	setFieldFromJsonIfExists(&mShowStats, "settings.debug.showStats");
+	setFieldFromJsonIfExists(&mShowMinimap, "settings.debug.showMinimap");
+	setFieldFromJsonIfExists(&mShowTouches, "settings.debug.showTouches");
+	setFieldFromJsonIfExists(&mShowScreenLayout, "settings.debug.showScreenLayout");
+	setFieldFromJsonIfExists(&mShowCursor, "settings.debug.showMouse");
+	setFieldFromJsonIfExists(&mShowCursor, "settings.debug.showCursor");
+	setFieldFromJsonIfExists(&mMinimizeParams, "settings.debug.minimizeParams");
+	setFieldFromJsonIfExists(&mCollapseParams, "settings.debug.collapseParams");
+	setFieldFromJsonIfExists(&mZoomToggleHotkeyEnabled, "settings.debug.zoomToggleHotkey");
+	setFieldFromJsonIfExists(&mDisplayIdHotkeysEnabled, "settings.debug.displayIdHotkeys");
 }
 
 void SettingsManager::parseCommandLineArgs(const std::vector<std::string>& args) {
@@ -215,12 +200,12 @@ ci::params::InterfaceGlRef SettingsManager::getParams() {
 	static ci::params::InterfaceGlRef params = nullptr;
 	if (!params) {
 		params = ci::params::InterfaceGl::create("Settings", ci::ivec2(250, 250));
-		params->addParam("Show Layout", &mDrawScreenLayout).group("App").key("l");
-		params->addParam("Show Minimap", &mDrawMinimap).group("App").key("m");
-		params->addParam("Show Stats", &mDrawStats).group("App").key("s");
+		params->addParam("Show Layout", &mShowScreenLayout).group("App").key("l");
+		params->addParam("Show Minimap", &mShowMinimap).group("App").key("m");
+		params->addParam("Show Stats", &mShowStats).group("App").key("s");
 
-		params->addParam("Show Touches", &mDrawTouches).group("App").key("t");
-		params->addParam("Show Cursor", &mShowMouse).updateFn([&] { mShowMouse ? ci::app::AppBase::get()->showCursor() : ci::app::AppBase::get()->hideCursor(); }).key("c").group("App");
+		params->addParam("Show Touches", &mShowTouches).group("App").key("t");
+		params->addParam("Show Cursor", &mShowCursor).updateFn([&] { mShowCursor ? ci::app::AppBase::get()->showCursor() : ci::app::AppBase::get()->hideCursor(); }).key("c").group("App");
 		
 		static int boundIndex = 0;
 		params->addParam("View Bounds", {"None", "Visible", "All"}, [&](int i) {
@@ -232,6 +217,8 @@ ci::params::InterfaceGlRef SettingsManager::getParams() {
 		if (mMinimizeParams) {
 			params->minimize();
 		}
+
+		params->addText("Version " + mAppVersion);
 
 		if (mCollapseParams) {
 			params->setOptions("App", "opened=false");

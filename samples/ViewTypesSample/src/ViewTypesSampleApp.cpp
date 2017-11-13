@@ -36,13 +36,14 @@ public:
 };
 
 void ViewTypesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
-	SettingsManager::getInstance()->setup(settings, "", [](SettingsManager * manager) {
+	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("../assets/settings.json"), [](SettingsManager * manager) {
 		manager->mFullscreen = false;
 		manager->mWindowSize = ivec2(1280, 720);
-		manager->mConsoleWindowEnabled = false;
-		manager->mDrawMinimap = true;
-		manager->mDrawStats = true;
-		manager->mDrawTouches = true;
+		manager->mDisplaySize = ivec2(1280, 720);
+		manager->mConsole = false;
+		manager->mShowMinimap = true;
+		manager->mShowStats = true;
+		manager->mShowTouches = true;
 		manager->mMinimizeParams = true;
 	});
 }
