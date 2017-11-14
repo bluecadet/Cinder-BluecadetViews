@@ -112,7 +112,7 @@ void SettingsManager::parseJson(ci::JsonTree & json) {
 	setFieldFromJsonIfExists(&mFullscreen, "settings.window.fullscreen");
 	setFieldFromJsonIfExists(&mBorderless, "settings.window.borderless");
 	setFieldFromJsonIfExists(&mWindowSize.x, "settings.window.size.x");
-	setFieldFromJsonIfExists(&mWindowSize.y, "settings.window.size.x");
+	setFieldFromJsonIfExists(&mWindowSize.y, "settings.window.size.y");
 	setFieldFromJsonIfExists(&mCameraOffset.x, "settings.window.cameraOffset.x");
 	setFieldFromJsonIfExists(&mCameraOffset.y, "settings.window.cameraOffset.y");
 	setFieldFromJsonIfExists(&mClearColor.r, "settings.window.clearColor.r");
