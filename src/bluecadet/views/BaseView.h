@@ -94,7 +94,7 @@ public:
 	virtual void			updateScene(double deltaTime);
 
 	//! Applies tint color, alpha and matrices and then draws itself and all children. Validates transforms internally.
-	virtual void			drawScene(const ci::ColorA& parentTint = ci::ColorA(1.0f, 1.0f, 1.0, 1.0f)) final;
+	virtual void			drawScene(const ci::ColorA& parentDrawColor = ci::ColorA(1.0f, 1.0f, 1.0, 1.0f)) final;
 
 	//! Used for all internal animations
 	ci::TimelineRef			getTimeline();
@@ -225,7 +225,7 @@ public:
 	
 	//! Defaults to inherit (doesn't change the blend mode).
 	BlendMode							getBlendMode() const { return mBlendMode; }
-	void								setBlendMode(const BlendMode value) { mBlendMode = value; }
+	virtual void						setBlendMode(const BlendMode value) { mBlendMode = value; }
 
 	//! Disables drawing; Update calls are not affected; Defaults to false
 	virtual bool						isHidden() const { return mIsHidden; }
@@ -246,6 +246,10 @@ public:
 	//! Unique ID per view.
 	const size_t						getViewId() const { return mViewId; }
 	const std::string &					getViewIdStr() const { return mViewIdStr; }
+
+	//! Custom name that can be assigned to view and used for debugging; Defaults to view id string.
+	const std::string &					getName() const { return mName; }
+	void								setName(const std::string & name) { mName = name; }
 
 
 	//==================================================
@@ -312,11 +316,11 @@ protected:
 	inline virtual void	willDraw() {}							//! Called by drawScene before draw()
 	virtual void		draw();									//! Called by drawScene and allows for drawing content for this node. By default draws a rectangle with the current size and background color (only if x/y /bg-alpha > 0)
 	virtual void		debugDrawOutline();						//! Called in DEBUG if sDebugDrawBounds is set to true.
-	inline virtual void	drawChildren(const ci::ColorA& parentTint); //! Called by drawScene() after draw() and before didDraw(). Implemented at bottom of class.
+	inline virtual void	drawChildren(const ci::ColorA & parentDrawColor); //! Called by drawScene() after draw() and before didDraw(). Implemented at bottom of class.
 	inline virtual void	didDraw() {}							//! Called by drawScene after draw()
 
-	inline virtual void didMoveToView(BaseView* parent) {}		//! Called when moved to a parent
-	inline virtual void willMoveFromView(BaseView* parent) {}	//! Called when removed from a parent
+	inline virtual void didMoveToView(BaseView * parent) {}		//! Called when moved to a parent
+	inline virtual void willMoveFromView(BaseView * parent) {}	//! Called when removed from a parent
 
 	const ci::ColorA& getDrawColor() const { return mDrawColor; }	//! The color used for drawing, which is a composite of the alpha and tint colors.
 
@@ -379,6 +383,7 @@ private:
 	// Misc
 	const size_t							mViewId;
 	const std::string						mViewIdStr;
+	std::string								mName;
 	std::map<std::string, UserInfoTypes>	mUserInfo;
 
 
@@ -390,9 +395,9 @@ private:
 // Inline implementations to improve speed on frequently used methods
 // 
 
-void BaseView::drawChildren(const ci::ColorA& parentTint) {
+void BaseView::drawChildren(const ci::ColorA& parentDrawColor) {
 	for (auto child : mChildren) {
-		child->drawScene(parentTint);
+		child->drawScene(parentDrawColor);
 	}
 }
 
