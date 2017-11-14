@@ -48,7 +48,7 @@ public:
 	//! Renders content. If surfaceOnly is false this will render into a texture and has to be called on the main thread. Surfaces can be rendered on a worker thread.
 	void	renderContent(bool surfaceOnly = false, bool alpha = true, bool premultiplied = false, bool force = false);
 	void	resetRenderedContent();
-	void	setBlendMode(BlendMode blendMode) override;
+	void	setBlendMode(const BlendMode blendMode) override;
 
 	//! Sets a fixed size for the text view. Any values below 0 will allow the text view to automatically expand in that direction.
 	inline void		setSize(const ci::vec2& size) override;

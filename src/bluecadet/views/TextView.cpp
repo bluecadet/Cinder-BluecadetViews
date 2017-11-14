@@ -14,8 +14,7 @@ namespace views {
 TextView::TextView(const ci::gl::Texture::Format & textureFormat) : BaseView(), text::StyledTextLayout(),
 mTextureFormat(textureFormat),
 mTexture(nullptr),
-mAutoRenderEnabled(true)
-{
+mAutoRenderEnabled(true) {
 }
 
 TextView::~TextView() {
@@ -31,7 +30,7 @@ ci::gl::Texture::Format TextView::getDefaultTextureFormat() {
 	return format;
 }
 
-void TextView::setup(const std::wstring& text, const std::string& styleKey, const bool parseText, const float maxWidth) {
+void TextView::setup(const std::wstring & text, const std::string & styleKey, const bool parseText, const float maxWidth) {
 	setMaxWidth(maxWidth);
 
 	if (text.empty()) {
@@ -45,7 +44,7 @@ void TextView::setup(const std::wstring& text, const std::string& styleKey, cons
 	}
 }
 
-void TextView::setup(const std::string& text, const std::string& styleKey, const bool parseText, const float maxWidth) {
+void TextView::setup(const std::string & text, const std::string & styleKey, const bool parseText, const float maxWidth) {
 	setup(text::wideString(text), styleKey, parseText, maxWidth);
 }
 
@@ -108,22 +107,22 @@ void TextView::resetRenderedContent() {
 	mSurface = ci::Surface();
 }
 
-void TextView::setSize(const ci::vec2& size) {
+void TextView::setSize(const ci::vec2 & size) {
 	invalidate();
 	setMaxSize(size);
 }
 
-inline void TextView::setWidth(const float width){
+inline void TextView::setWidth(const float width) {
 	invalidate();
 	setMaxWidth(width);
 }
 
-inline void TextView::setHeight(const float height){
+inline void TextView::setHeight(const float height) {
 	invalidate();
 	setMaxHeight(height);
 }
 
-void TextView::setBlendMode(BlendMode blendMode) {
+void TextView::setBlendMode(const BlendMode blendMode) {
 	if (blendMode != getBlendMode()) {
 		invalidate(false, true);
 	}
