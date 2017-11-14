@@ -69,6 +69,14 @@ void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path j
 			mWindowSize = ivec2(stoi(wStr), stoi(hStr));
 		}
 	});
+	addCommandLineParser("bezel", [&](const string &value) {
+		int commaIndex = (int)value.find(",");
+		if (commaIndex != string::npos) {
+			string xStr = value.substr(0, commaIndex);
+			string yStr = value.substr(commaIndex + 1, value.size() - commaIndex - 1);
+			mBezelDims = ivec2(stoi(xStr), stoi(yStr));
+		}
+	});
 	addCommandLineParser("offset", [&](const string &value) {
 		int commaIndex = (int)value.find(",");
 		if (commaIndex != string::npos) {
@@ -93,6 +101,8 @@ void SettingsManager::parseJson(ci::JsonTree & json) {
 	setFieldFromJsonIfExists(&mDisplaySize.y, "settings.display.size.y");
 	setFieldFromJsonIfExists(&mDisplayColumns, "settings.display.columns");
 	setFieldFromJsonIfExists(&mDisplayRows, "settings.display.rows");
+	setFieldFromJsonIfExists(&mBezelDims.x, "settings.display.bezel.x");
+	setFieldFromJsonIfExists(&mBezelDims.y, "settings.display.bezel.y");
 
 	// Window
 	setFieldFromJsonIfExists(&mFps, "settings.window.fps");

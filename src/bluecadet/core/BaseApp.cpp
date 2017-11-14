@@ -34,7 +34,7 @@ void BaseApp::setup() {
 	if (settings->mDisplaySize.y <= 0) settings->mDisplaySize.y = getWindowHeight();
 
 	ScreenLayout::getInstance()->getAppSizeChangedSignal().connect(bind(&BaseApp::handleAppSizeChange, this, placeholders::_1));
-	ScreenLayout::getInstance()->setup(settings->mDisplaySize, settings->mDisplayRows, settings->mDisplayColumns);
+	ScreenLayout::getInstance()->setup(settings->mDisplaySize, settings->mDisplayRows, settings->mDisplayColumns, settings->mBezelDims);
 
 	ScreenCamera::getInstance()->setup(ScreenLayout::getInstance());
 	ScreenCamera::getInstance()->getViewportChangedSignal().connect(bind(&BaseApp::handleViewportChange, this, placeholders::_1));
