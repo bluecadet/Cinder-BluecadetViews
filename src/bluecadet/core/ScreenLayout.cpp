@@ -20,10 +20,11 @@ ScreenLayout::ScreenLayout() :
 ScreenLayout::~ScreenLayout() {
 }
 
-void ScreenLayout::setup(const ci::ivec2& dislaySize, const int numRows, const int numColumns) {
+void ScreenLayout::setup(const ci::ivec2& dislaySize, const int numRows, const int numColumns, const ci::ivec2 bezel) {
 	mDisplaySize = dislaySize;
 	mNumRows = numRows;
 	mNumColumns = numColumns;
+	mBezelDims = bezel;
 
 	updateLayout();
 }
@@ -38,7 +39,7 @@ void ScreenLayout::updateLayout() {
 		}
 	}
 
-	mAppSize = mDisplaySize * ivec2(mNumColumns, mNumRows);
+	mAppSize = mDisplaySize * ivec2(mNumColumns, mNumRows) + mBezelDims * ivec2(mNumColumns - 1, mNumRows - 1);
 	mAppSizeChanged.emit(mAppSize);
 }
 
@@ -47,11 +48,15 @@ Rectf ScreenLayout::getDisplayBounds(const int displayId) {
 }
 
 Rectf ScreenLayout::getDisplayBounds(const int row, const int col) {
+
+	ivec2 addBezel = mBezelDims * ivec2(col, row);
+
 	return Rectf(
-		(float)(col * mDisplaySize.x),
-		(float)(row * mDisplaySize.y),
-		(float)((col + 1) * mDisplaySize.x),
-		(float)((row + 1) * mDisplaySize.y));
+		(float)(col * mDisplaySize.x + addBezel.x),
+		(float)(row * mDisplaySize.y + addBezel.y),
+		(float)((col + 1) * mDisplaySize.x + addBezel.x),
+		(float)((row + 1) * mDisplaySize.y + addBezel.y));
+
 }
 
 void ScreenLayout::draw() {

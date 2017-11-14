@@ -7,7 +7,8 @@
 		"display": {
 			"size": {"x": 1920, "y": 1080},
 			"columns": 1,
-			"rows": 1
+			"rows": 1,
+			"bezel": {"x": 0, "y": 0}
 		},
 		"window": {
 			"fps": 60,

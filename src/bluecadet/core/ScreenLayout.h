@@ -32,7 +32,7 @@ public:
 
 
 	//! Must be called before calling draw. Adds a key-up event listener.
-	void			setup(const ci::ivec2& dislaySize = ci::app::getWindowSize(), const int numRows = 1, const int numColumns = 1);
+	void			setup(const ci::ivec2& dislaySize = ci::app::getWindowSize(), const int numRows = 1, const int numColumns = 1, const ci::ivec2 bezel = ci::ivec2(0,0));
 
 	//! Draws the current screen layout, transformed appropriately to match the position and scale of rootView
 	void			draw();
@@ -62,6 +62,9 @@ public:
 	int				getNumColumns() const { return mNumColumns; };
 	void			setNumColumns(const int numColumns) { mNumColumns = numColumns; updateLayout(); };
 
+	//! The amount of bezel correction added between displays
+	const ci::ivec2	&	getBezelDims() const { return mBezelDims; };
+	void				setBezelDims(const ci::ivec2 bezel) { mBezelDims = bezel; updateLayout(); };
 
 
 	//! Helper to retrieve a display id from a row/col. Ids start at 0 and increment in right-to-left, top-to-bottom sequence.
@@ -104,6 +107,7 @@ protected:
 
 	int					mNumRows;
 	int					mNumColumns;
+	ci::ivec2			mBezelDims;
 
 	ci::ivec2			mDisplaySize;
 	ci::ivec2			mAppSize;

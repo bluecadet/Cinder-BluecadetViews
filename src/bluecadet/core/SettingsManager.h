@@ -81,6 +81,7 @@ public:
 	ci::ivec2		mDisplaySize = ci::ivec2(-1, -1);	//! The size of one display. Defaults to getWindowSize()
 	int				mDisplayColumns = 1;				//! The number of display columns in a display matrix. Use by ScreenLayout class.
 	int				mDisplayRows = 1;					//! The number of display rows in a display matrix. Use by ScreenLayout class.
+	ci::ivec2		mBezelDims = ci::ivec2(0, 0);		//! The amount of bezel correction to add in both X and Y
 
 	// Window
 	ci::ivec2		mWindowSize;						//! The window size on launch
