@@ -12,6 +12,7 @@ MiniMapView::MiniMapView(const float mapScale) :
 	mCols(0),
 	mRows(0),
 	mDisplaySize(0),
+	mBezelDims(0),
 	mMapScale(mapScale),
 	mViewportView(new BaseView()),
 	mBorderColor(ColorA(1, 1, 1, 0.75f))
@@ -25,12 +26,13 @@ MiniMapView::MiniMapView(const float mapScale) :
 MiniMapView::~MiniMapView() {
 }
 
-void MiniMapView::setLayout(const int cols, const int rows, const ci::ivec2 & displaySize) {
+void MiniMapView::setLayout(const int cols, const int rows, const ci::ivec2 & displaySize, const ci::ivec2 bezel) {
 	mCols = cols;
 	mRows = rows;
 	mDisplaySize = displaySize;
+	mBezelDims = bezel;
 
-	mAppSize = mDisplaySize * ivec2(mCols, mRows);
+	mAppSize = mDisplaySize * ivec2(mCols, mRows) + mBezelDims * ivec2(mCols - 1, mRows - 1);
 	mScaledSize = ivec2(round(vec2(mAppSize) * mMapScale));
 
 	setSize(vec2(mScaledSize));
@@ -69,6 +71,7 @@ void MiniMapView::updateContent() {
 	mGlsl->uniform("uAppSize", vec2(mAppSize));
 	mGlsl->uniform("uScaledSize", vec2(mScaledSize));
 	mGlsl->uniform("uDisplaySize", vec2(mDisplaySize));
+	mGlsl->uniform("uBezelDims", vec2(mBezelDims));
 	mGlsl->uniform("uBorderColor", mBorderColor);
 
 	mBatch->draw();
@@ -96,6 +99,7 @@ void MiniMapView::setupShaders() {
 			uniform vec2	uAppSize;
 			uniform vec2	uScaledSize;
 			uniform vec2	uDisplaySize;
+			uniform vec2	uBezelDims;
 			uniform vec4	uBackgroundColor;
 			uniform vec4	uBorderColor;
 			in vec2			vAppPosition;
@@ -103,10 +107,15 @@ void MiniMapView::setupShaders() {
 
 			void main(void) {
 				vec2 scale = uScaledSize / uAppSize;
-				vec2 edgeDist = abs(mod(vAppPosition, uDisplaySize)) * scale;
+				vec2 edgeDist = abs(mod(vAppPosition, uDisplaySize + uBezelDims)) * scale;
+				vec2 scaledDisplay = uDisplaySize * scale;
 
-				if (edgeDist.x <= 1.0 || edgeDist.x >= uDisplaySize.x * scale.x - 1.0 ||
-					edgeDist.y <= 1.0 || edgeDist.y >= uDisplaySize.y * scale.y - 1.0) {
+				bool bIsLeftEdge = edgeDist.x <= 1.0 && edgeDist.y <= scaledDisplay.y;
+				bool bIsTopEdge = edgeDist.y <= 1.0 && edgeDist.x <= scaledDisplay.x;
+				bool bIsRightEdge = edgeDist.x >= scaledDisplay.x - 1.0 && edgeDist.x <= scaledDisplay.x && edgeDist.y <= scaledDisplay.y;
+				bool bIsBottomEdge = edgeDist.y >= scaledDisplay.y - 1.0 && edgeDist.y <= scaledDisplay.y && edgeDist.x <= scaledDisplay.x;
+
+				if ( bIsLeftEdge || bIsRightEdge || bIsTopEdge || bIsBottomEdge) {
 					oColor = uBorderColor;
 				} else {
 					discard;
