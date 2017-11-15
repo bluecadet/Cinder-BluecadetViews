@@ -188,7 +188,8 @@ void BaseApp::handleAppSizeChange(const ci::ivec2 & appSize) {
 	mMiniMap->setLayout(
 		ScreenLayout::getInstance()->getNumColumns(),
 		ScreenLayout::getInstance()->getNumRows(),
-		ScreenLayout::getInstance()->getDisplaySize()
+		ScreenLayout::getInstance()->getDisplaySize(),
+		ScreenLayout::getInstance()->getBezelDims()
 	);
 }
 
