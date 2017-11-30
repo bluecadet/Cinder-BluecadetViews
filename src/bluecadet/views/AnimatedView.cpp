@@ -85,7 +85,9 @@ void AnimatedView::animateOn(const Options & options, CallbackFn callback) {
 			mCueOn->getSignalCallback().connect(callback);
 		} else {
 			// this can happen if willAnimateOn cancels the animation
-			callback(false);
+			App::get()->dispatchAsync([=] {
+				callback(false);
+			});
 		}
 	}
 }
@@ -134,7 +136,9 @@ void AnimatedView::animateOff(const Options & options, CallbackFn callback) {
 
 		} else {
 			// this can happen if willAnimateOff cancels the animation
-			callback(false);
+			App::get()->dispatchAsync([=] {
+				callback(false);
+			});
 		}
 	}
 }
