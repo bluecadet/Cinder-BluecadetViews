@@ -65,7 +65,7 @@ public:
 		~CallbackCue();
 
 		//! Adds a single callback to the list
-		inline void addCallback(CallbackFn callback) { mConnections += mSignalCallback.connect(callback); }
+		inline void addCallback(CallbackFn callback);
 
 		//! Removes callbacks without triggering them
 		inline void removeAllCallbacks() { mConnections.clear(); }
@@ -88,16 +88,16 @@ public:
 
 
 	//! Animate this view on.
-	void animateOn(const Options & options, CallbackFn callback = nullptr);
+	void animateOn(const Options & options, CallbackFn callback = nullptr, const bool isCallbackAsync = true);
 	
 	//! Animate this view off.
-	void animateOff(const Options & options, CallbackFn callback = nullptr);
+	void animateOff(const Options & options, CallbackFn callback = nullptr, const bool isCallbackAsync = true);
 
 	//! Shortcut to animateOn() with default options.
-	void animateOn(CallbackFn callback = nullptr) { animateOn(mDefaultOptions, callback); };
+	void animateOn(CallbackFn callback = nullptr, const bool isCallbackAsync = true) { animateOn(mDefaultOptions, callback, isCallbackAsync); };
 
 	//! Shortcut to animateOff() with default options.
-	void animateOff(CallbackFn callback = nullptr) { animateOff(mDefaultOptions, callback); };
+	void animateOff(CallbackFn callback = nullptr, const bool isCallbackAsync = true) { animateOff(mDefaultOptions, callback, isCallbackAsync); };
 
 
 	//! Same as animating on with a duration of 0.
