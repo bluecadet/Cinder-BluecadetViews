@@ -42,10 +42,16 @@ public:
 	//! Cancels ArcView animations in addition to BaseView animations.
 	void cancelAnimations() override;
 
+	//! Arc bounds extend -outerRadius to +outerRadius both for x and y
+	ci::Rectf getBounds(const bool scaled) override {
+		ci::Rectf bounds = BaseView::getBounds(scaled);
+		bounds.offset(-0.5f * bounds.getSize());
+		return bounds;
+	}
+
 protected:
 	void update(const double deltaTime) override;
 	void draw() override;
-	void debugDrawOutline() override;
 
 	static ci::gl::BatchRef		getSharedBatch();
 	static ci::gl::GlslProgRef	getSharedProg();

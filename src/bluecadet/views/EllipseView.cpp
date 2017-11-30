@@ -49,15 +49,6 @@ void EllipseView::draw() {
 	batch->draw();
 }
 
-void EllipseView::debugDrawOutline() {
-	gl::ScopedModelMatrix scopedModelMatrix;
-	gl::ScopedViewMatrix scopedViewMatrix;
-
-	gl::translate(-getSize() * 0.5f);
-
-	BaseView::debugDrawOutline();
-}
-
 ci::gl::BatchRef EllipseView::getSharedEllipseBatch() {
 	static ci::gl::BatchRef batch = nullptr;
 	if (!batch) {
@@ -101,7 +92,10 @@ ci::gl::GlslProgRef EllipseView::getSharedEllipseProg() {
 				void main(void) {
 					vec2 normalizedDelta = normPosition.xy * 2.0f - vec2(1.0f);
 					float normalizedRadiusSq = normalizedDelta.x * normalizedDelta.x + normalizedDelta.y * normalizedDelta.y;
-					if (normalizedRadiusSq > 1.0f) discard;
+
+					if (normalizedRadiusSq > 1.0f) {
+						discard;
+					}
 
 					float normalizedRadius = sqrt(normalizedRadiusSq);
 					float maxRadius = length(uSize) * 0.5f;
@@ -111,16 +105,11 @@ ci::gl::GlslProgRef EllipseView::getSharedEllipseProg() {
 					oColor = color;
 
 					// interpolate smooth edge
-					if (uSmoothness > 0 && radius > minRadius) {
-						float quota = (maxRadius - radius) / uSmoothness;
-						oColor.w = color.w * smoothstep(0.0f, 1.0f, quota);
-					}
+					float quota = uSmoothness == 0 ? 0 : (maxRadius - radius) / uSmoothness;
+					oColor.w = color.w * smoothstep(0.0f, 1.0f, quota);
 				}
 			))
 		);
-		prog->uniform("uSize", vec2(0));
-		prog->uniform("uSmoothness", 1.0f);
-		prog->uniform("uBackgroundColor", vec4(0));
 	}
 	return prog;
 }

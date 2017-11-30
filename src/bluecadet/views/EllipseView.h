@@ -27,13 +27,19 @@ public:
 	//! Shorthand for calling setSize(vec2(2.0f * radius))
 	void setRadius(const float radius);
 
+	//! Ellipse bounds extend -radius to +radius both for x and y
+	ci::Rectf getBounds(const bool scaled) override {
+		ci::Rectf bounds = BaseView::getBounds(scaled);
+		bounds.offset(-0.5f * bounds.getSize());
+		return bounds;
+	}
+
 	//! The smoothness of the ellipse's edge
 	ci::Anim<float> &	getSmoothness() { return mSmoothness; }
 	void				setSmoothness(const float value) { mSmoothness = value; invalidate(false, true); }
 
 protected:
 	virtual void draw() override;
-	virtual void debugDrawOutline() override;
 
 	static ci::gl::BatchRef		getSharedEllipseBatch();
 	static ci::gl::GlslProgRef	getSharedEllipseProg();
