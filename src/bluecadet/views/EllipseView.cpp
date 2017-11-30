@@ -69,12 +69,12 @@ ci::gl::GlslProgRef EllipseView::getSharedEllipseProg() {
 
 				in vec4			ciPosition;
 				in vec4			ciColor;
-				out vec4		color;
-				out vec4		normPosition;
+				out vec4		vColor;
+				out vec4		vNormPosition;
 
 				void main(void) {
-					color = ciColor * uBackgroundColor;
-					normPosition = ciPosition;
+					vColor = ciColor * uBackgroundColor;
+					vNormPosition = ciPosition;
 					gl_Position = ciModelViewProjection * vec4(
 						ciPosition.x * uSize.x - uSize.x * 0.5f,
 						ciPosition.y * uSize.y - uSize.y * 0.5f,
@@ -85,12 +85,12 @@ ci::gl::GlslProgRef EllipseView::getSharedEllipseProg() {
 				uniform vec2	uSize;
 				uniform float	uSmoothness;
 
-				in vec4			normPosition;
-				in vec4			color;
+				in vec4			vNormPosition;
+				in vec4			vColor;
 				out vec4		oColor;
 
 				void main(void) {
-					vec2 normalizedDelta = normPosition.xy * 2.0f - vec2(1.0f);
+					vec2 normalizedDelta = vNormPosition.xy * 2.0f - vec2(1.0f);
 					float normalizedRadiusSq = normalizedDelta.x * normalizedDelta.x + normalizedDelta.y * normalizedDelta.y;
 
 					if (normalizedRadiusSq > 1.0f) {
@@ -102,11 +102,11 @@ ci::gl::GlslProgRef EllipseView::getSharedEllipseProg() {
 					float minRadius = max(0, maxRadius - uSmoothness);
 					float radius = maxRadius * normalizedRadius;
 
-					oColor = color;
+					oColor = vColor;
 
 					// interpolate smooth edge
 					float quota = uSmoothness == 0 ? 0 : (maxRadius - radius) / uSmoothness;
-					oColor.w = color.w * smoothstep(0.0f, 1.0f, quota);
+					oColor.a = vColor.a * smoothstep(0.0f, 1.0f, quota);
 				}
 			))
 		);

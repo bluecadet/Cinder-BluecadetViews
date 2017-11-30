@@ -39,14 +39,11 @@ void StrokedCircleView::draw() {
 	auto batch = getSharedBatch();
 	auto prog = batch->getGlslProg();
 
-	gl::ScopedBlendAlpha scopedBlend;
-
 	prog->uniform("uSize", getSize());
 	prog->uniform("uStrokeColor", strokeColor);
 	prog->uniform("uBackgroundColor", backgroundColor);
 	prog->uniform("uSmoothness", mSmoothness);
 	prog->uniform("uStrokeWidth", mStrokeWidth);
-	prog->uniform("uPremult", getBlendMode() == BlendMode::PREMULT ? 1 : 0);
 
 	batch->draw();
 }
@@ -88,7 +85,6 @@ ci::gl::GlslProgRef StrokedCircleView::getSharedProg() {
 				uniform float	uStrokeWidth;
 				uniform vec4	uStrokeColor;
 				uniform vec4	uBackgroundColor;
-				uniform int		uPremult;
 
 				//in vec4		vNormPosition;
 				in vec4			vAbsPosition;
@@ -117,7 +113,8 @@ ci::gl::GlslProgRef StrokedCircleView::getSharedProg() {
 					if (uSmoothness > 0 && radius > radiusB) {
 						// interpolate smooth edge
 						float quota = (radiusA - radius) / uSmoothness;
-						oColor.a *= smoothstep(0.0f, 1.0f, quota);
+						float smoothQuota = smoothstep(0.0f, 1.0f, quota);
+						oColor = mix(vec4(0), oColor, smoothstep(0.0f, 1.0f, smoothQuota));
 
 					} else if (uSmoothness > 0 && radius < radiusC) {
 						// interpolate smooth edge
@@ -126,7 +123,7 @@ ci::gl::GlslProgRef StrokedCircleView::getSharedProg() {
 						oColor = mix(uBackgroundColor, oColor, smoothQuota);
 					}
 
-					oColor.rgb = mix(oColor.rgb, oColor.rgb / oColor.a, uPremult);
+					oColor.rgb /= oColor.a;
 
 					if (oColor.a <= 0) {
 						discard;

@@ -113,20 +113,16 @@ void ImageView::draw() {
 				}
 
 				oColor = texture(uTex0, texCoord);
-				oColor.rgb = mix(oColor.rgb, oColor.rgb / oColor.a, uPremult);
-				oColor *= vColor;
+				oColor.rgb /= oColor.a;
 			}
 		)));
 
 		batch = gl::Batch::create(geom::Rect().rect(Rectf(0, 0, 1.0f, 1.0f)), shader);
 	}
 
-	gl::ScopedBlendAlpha scopedBlend;
-
 	mTexture->bind(0);
 	shader->uniform("uTexScale", mTextureScale);
 	shader->uniform("uSize", mTextureSize);
-	shader->uniform("uPremult", getBlendMode() == BlendMode::PREMULT ? 1 : 0);
 	batch->draw();
 }
 

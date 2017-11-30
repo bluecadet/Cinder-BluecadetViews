@@ -51,6 +51,8 @@ void ViewTypesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 void ViewTypesSampleApp::setup() {
 	BaseApp::setup();
 
+	getRootView()->setBackgroundColor(Color::gray(0.5f));
+
 	//==================================================
 	// Most basic view
 	// 
@@ -176,8 +178,6 @@ void ViewTypesSampleApp::setup() {
 		addViewSample(dragView, "TouchView with y drag");
 	}
 
-	getRootView()->setBackgroundColor(Color::gray(0.5f));
-
 	//==================================================
 	// FBO
 	// 
@@ -278,6 +278,7 @@ void ViewTypesSampleApp::addViewSample(BaseViewRef view, std::string label) {
 	container->setSize(cellSize);
 	container->setPosition(cellPos);
 	container->setBackgroundColor(Color::black());
+	//container->setBackgroundColor(Color(1, 1, 0));
 	getRootView()->addChild(container);
 
 	vec2 viewOffset = view->getPosition();
