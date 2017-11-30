@@ -32,25 +32,28 @@ public:
 	virtual ~ImageView();
 
 	void reset() override;
-    virtual void clearTexture();
-
-	virtual void setup(const ci::gl::TextureRef texture, const ci::vec2& size = ci::vec2(0), const ScaleMode scaleMode = ScaleMode::COVER);
-
-	virtual void setSize(const ci::vec2& size) override;
 
 	inline ci::gl::TextureRef getTexture() const { return mTexture; }
 	inline void			setTexture(const ci::gl::TextureRef value, const bool resizeToTexture = true);
 
+	//! Defaults to getDefaultScaleMode()
 	inline ScaleMode	getScaleMode() const { return mScaleMode; }
-	inline void			setScaleMode(const ScaleMode scaleMode) { mScaleMode = scaleMode; }
+	inline void			setScaleMode(const ScaleMode scaleMode) { mScaleMode = scaleMode; invalidate(false, true); }
+
+	//! Defaults to STRETCH
+	static ScaleMode	getDefaultScaleMode() { return sDefaultScaleMode; }
+	static void			setDefaultScaleMode(const ScaleMode scaleMode) { sDefaultScaleMode = scaleMode; }
 
 private:
 
-	virtual void draw() override;
+	void draw() override;
+	void validateContent() override;
+	
+	static ScaleMode	sDefaultScaleMode;
 
 	ci::gl::TextureRef	mTexture;
-	ci::Rectf			mDrawingDestRect;
-	ci::Area			mDrawingArea;
+	ci::vec2			mTextureScale;
+	ci::vec2			mTextureSize;
 	ScaleMode			mScaleMode;
 };
 
