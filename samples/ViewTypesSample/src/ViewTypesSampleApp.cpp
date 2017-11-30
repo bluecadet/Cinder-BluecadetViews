@@ -278,7 +278,6 @@ void ViewTypesSampleApp::addViewSample(BaseViewRef view, std::string label) {
 	container->setSize(cellSize);
 	container->setPosition(cellPos);
 	container->setBackgroundColor(Color::black());
-	//container->setBackgroundColor(Color(1, 1, 0));
 	getRootView()->addChild(container);
 
 	vec2 viewOffset = view->getPosition();
