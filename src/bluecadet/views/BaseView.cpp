@@ -346,11 +346,14 @@ void BaseView::draw() {
 inline void BaseView::debugDrawOutline() {
 	static const Font labelFont = Font("Arial", 20);
 	static const vec2 labelPos = vec2(0, 0);
+	static const float crosshairRadius = 5.0f;
 	const float hue = (float)mViewId / (float)sNumInstances;
 	const ColorA color(ci::hsvToRgb(vec3(hue, 1.0f, 1.0f)), 0.9f);
 	gl::ScopedColor scopedColor(color);
 	gl::ScopedLineWidth lineWidth(1.0f);
-	gl::drawStrokedRect(Rectf(vec2(0), getSize()));
+	gl::drawStrokedRect(getBounds(false).getOffset(-getPosition()));
+	gl::drawLine(vec2(-crosshairRadius, -crosshairRadius), vec2(crosshairRadius, crosshairRadius));
+	gl::drawLine(vec2(-crosshairRadius, crosshairRadius), vec2(crosshairRadius, -crosshairRadius));
 	gl::drawString(mName, labelPos, color, labelFont);
 }
 

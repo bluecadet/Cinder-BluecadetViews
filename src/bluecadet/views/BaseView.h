@@ -162,7 +162,8 @@ public:
 	virtual const size_t				getNumChildren() const { return mChildren.size(); }
 
 	//! Local position relative to parent view
-	virtual ci::Anim<ci::vec2>&			getPosition() { return mPosition; }
+	virtual ci::Anim<ci::vec2> &		getPosition() { return mPosition; }
+	virtual const ci::vec2 &			getPositionConst() const { return mPosition.value(); }
 	virtual void						setPosition(const ci::vec2& position) { mPosition = position; invalidate(); }
 	virtual void						setPosition(const ci::vec3& position) { mPosition = ci::vec2(position.x, position.y); invalidate(); }
 
@@ -173,13 +174,15 @@ public:
 	virtual ci::vec2					getCenter() { return getPosition().value() + 0.5f * getSize(); }
 
 	//! Local scale relative to parent view
-	virtual ci::Anim<ci::vec2>&			getScale() { return mScale; }
+	virtual ci::Anim<ci::vec2> &		getScale() { return mScale; }
+	virtual const ci::vec2 &			getScaleConst() const { return mScale.value(); }
 	virtual void						setScale(const float& scale) { mScale = ci::vec2(scale, scale);  invalidate(); }
 	virtual void						setScale(const ci::vec2& scale) { mScale = scale;  invalidate(); }
 	virtual void						setScale(const ci::vec3& scale) { mScale = ci::vec2(scale.x, scale.y);  invalidate(); }
 
 	//! Local rotation relative to parent view. Changing this value invalidates transforms.
-	virtual ci::Anim<ci::quat>&			getRotation() { return mRotation; }
+	virtual ci::Anim<ci::quat> &		getRotation() { return mRotation; }
+	virtual const ci::quat &			getRotationConst() { return mRotation.value(); }
 	virtual float						getRotationZ() const { return glm::roll(mRotation.value()); }
 	virtual void						setRotation(const float radians) { mRotation = glm::angleAxis(radians, ci::vec3(0, 0, 1)); invalidate(); }
 	virtual void						setRotation(const ci::quat& rotation) { mRotation = rotation; invalidate(); }
@@ -206,6 +209,9 @@ public:
 	virtual float						getHeight() { return getSize().y; }
 	virtual void						setHeight(const float height) { ci::vec2 s = getSize(); setSize(ci::vec2(s.x, height)); }
 
+	//! Combined size and position in parent coordinate space. Set scaled to true to multiply size by scale. Does not include rotation.
+	virtual ci::Rectf					getBounds(const bool scaled = false) { return ci::Rectf(getPositionConst(), getPositionConst() + (scaled ? getScaleConst() * getSize() : getSize())); }
+
 	//! The fill color used when drawing the bounding rect when a size greater than 0, 0 is given.
 	virtual ci::Anim<ci::ColorA>&		getBackgroundColor() { return mBackgroundColor; }
 	virtual void						setBackgroundColor(const ci::Color color) { mBackgroundColor = ci::ColorA(color, 1.0f); invalidate(false, true); } //! Sets background color with 100% alpha
@@ -221,7 +227,7 @@ public:
 	virtual void						setAlpha(const float alpha) { mAlpha = alpha; }
 
 	//! Returns a constant reference of getAlpha(). Allows for const access.
-	virtual const ci::Anim<float>&		getAlphaConst() const { return mAlpha; }
+	virtual float						getAlphaConst() const { return mAlpha; }
 	
 	//! Defaults to inherit (doesn't change the blend mode).
 	BlendMode							getBlendMode() const { return mBlendMode; }
