@@ -15,19 +15,19 @@ namespace views {
 
 AnimatedView::CallbackCue::CallbackCue(CallbackFn callback, float time) :
 	ci::Cue([=] {
-	App::get()->dispatchAsync([=] {
-		mSignalCallback.emit(true); // success
-	});
+	mSignalCallback.emit(true); // success
 }, time) {
 	addCallback(callback);
 }
 
 AnimatedView::CallbackCue::~CallbackCue() {
 	if (!isComplete()) {
-		App::get()->dispatchAsync([=] {
-			mSignalCallback.emit(false); // failure
-		});
+		mSignalCallback.emit(false); // canceled
 	}
+}
+
+inline void AnimatedView::CallbackCue::addCallback(CallbackFn callback) {
+	mConnections += mSignalCallback.connect(callback);
 }
 
 //==================================================
@@ -45,16 +45,30 @@ AnimatedView::AnimatedView(bool showInitially) :
 AnimatedView::~AnimatedView() {
 }
 
-void AnimatedView::animateOn(const Options & options, CallbackFn callback) {
+void AnimatedView::animateOn(const Options & options, CallbackFn callback, const bool isCallbackAsync) {
 	mIsInitialized = true; // override initial state
+
+	CallbackFn wrappedCallback = nullptr;
+	
+	if (callback) {
+		if (isCallbackAsync) {
+			wrappedCallback = [=] (bool completed) {
+				App::get()->dispatchAsync([=] {
+					if (callback) {
+						callback(completed);
+					}
+				});
+			};
+		} else {
+			wrappedCallback = callback;
+		}
+	}
 
 	if (mIsShowing && mShouldShow) {
 		// already showing; dispatch on next frame
-		App::get()->dispatchAsync([=] {
-			if (callback) {
-				callback(true);
-			}
-		});
+		if (wrappedCallback) {
+			wrappedCallback(true);
+		}
 		return;
 	}
 
@@ -83,29 +97,41 @@ void AnimatedView::animateOn(const Options & options, CallbackFn callback) {
 		mSignalWillAnimateOn.emit();
 	}
 
-	if (callback) {
+	if (wrappedCallback) {
 		if (mCueOn) {
 			// add callback (multiple callbacks are possible)
-			mCueOn->getSignalCallback().connect(callback);
+			mCueOn->getSignalCallback().connect(wrappedCallback);
 		} else {
 			// this can happen if willAnimateOn cancels the animation
-			App::get()->dispatchAsync([=] {
-				callback(false);
-			});
+			wrappedCallback(false);
 		}
 	}
 }
 
-void AnimatedView::animateOff(const Options & options, CallbackFn callback) {
+void AnimatedView::animateOff(const Options & options, CallbackFn callback, const bool isCallbackAsync) {
 	mIsInitialized = true; // override initial state
+
+	CallbackFn wrappedCallback = nullptr;
+
+	if (callback) {
+		if (isCallbackAsync) {
+			wrappedCallback = [=] (bool completed) {
+				App::get()->dispatchAsync([=] {
+					if (callback) {
+						callback(completed);
+					}
+				});
+			};
+		} else {
+			wrappedCallback = callback;
+		}
+	}
 
 	if (!mIsShowing && !mShouldShow) {
 		// already hidden; dispatch on next frame
-		App::get()->dispatchAsync([=] {
-			if (callback) {
-				callback(true);
-			}
-		});
+		if (wrappedCallback) {
+			wrappedCallback(true);
+		}
 		return;
 	}
 
@@ -133,16 +159,14 @@ void AnimatedView::animateOff(const Options & options, CallbackFn callback) {
 		mSignalWillAnimateOff.emit();
 	}
 
-	if (callback) {
+	if (wrappedCallback) {
 		if (mCueOff) {
 			// add callback (multiple callbacks are possible)
-			mCueOff->getSignalCallback().connect(callback);
+			mCueOff->getSignalCallback().connect(wrappedCallback);
 
 		} else {
 			// this can happen if willAnimateOff cancels the animation
-			App::get()->dispatchAsync([=] {
-				callback(false);
-			});
+			wrappedCallback(false);
 		}
 	}
 }
