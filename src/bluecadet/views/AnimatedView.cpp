@@ -15,14 +15,18 @@ namespace views {
 
 AnimatedView::CallbackCue::CallbackCue(CallbackFn callback, float time) :
 	ci::Cue([=] {
-	mSignalCallback.emit(true); // success
+	App::get()->dispatchAsync([=] {
+		mSignalCallback.emit(true); // success
+	});
 }, time) {
 	addCallback(callback);
 }
 
 AnimatedView::CallbackCue::~CallbackCue() {
 	if (!isComplete()) {
-		mSignalCallback.emit(false); // failure
+		App::get()->dispatchAsync([=] {
+			mSignalCallback.emit(false); // failure
+		});
 	}
 }
 
