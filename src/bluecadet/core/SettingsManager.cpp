@@ -92,7 +92,7 @@ void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path j
 
 void SettingsManager::parseJson(ci::JsonTree & json) {
 	// General
-	setFieldFromJsonIfExists(&mConsole, "settings.general.consoleWindowEnabled");
+	//setFieldFromJsonIfExists(&mConsole, "settings.general.consoleWindowEnabled");
 	setFieldFromJsonIfExists(&mConsole, "settings.general.console");
 	setFieldFromJsonIfExists(&mAppVersion, "settings.general.version");
 
@@ -107,7 +107,7 @@ void SettingsManager::parseJson(ci::JsonTree & json) {
 	// Window
 	setFieldFromJsonIfExists(&mFps, "settings.window.fps");
 	setFieldFromJsonIfExists(&mFps, "settings.window.FPS");
-	setFieldFromJsonIfExists(&mVerticalSync, "settings.window.verticalSync");
+	//setFieldFromJsonIfExists(&mVerticalSync, "settings.window.verticalSync");
 	setFieldFromJsonIfExists(&mVerticalSync, "settings.window.vsync");
 	setFieldFromJsonIfExists(&mFullscreen, "settings.window.fullscreen");
 	setFieldFromJsonIfExists(&mBorderless, "settings.window.borderless");
@@ -126,13 +126,13 @@ void SettingsManager::parseJson(ci::JsonTree & json) {
 	setFieldFromJsonIfExists(&mNativeTouchEnabled, "settings.touch.native");
 
 	// Debug
-	setFieldFromJsonIfExists(&mDebugEnabled, "settings.debug.debugMode");
+	//setFieldFromJsonIfExists(&mDebugEnabled, "settings.debug.debugMode");
 	setFieldFromJsonIfExists(&mDebugEnabled, "settings.debug.debugEnabled");
 	setFieldFromJsonIfExists(&mShowStats, "settings.debug.showStats");
 	setFieldFromJsonIfExists(&mShowMinimap, "settings.debug.showMinimap");
 	setFieldFromJsonIfExists(&mShowTouches, "settings.debug.showTouches");
 	setFieldFromJsonIfExists(&mShowScreenLayout, "settings.debug.showScreenLayout");
-	setFieldFromJsonIfExists(&mShowCursor, "settings.debug.showMouse");
+	//setFieldFromJsonIfExists(&mShowCursor, "settings.debug.showMouse");
 	setFieldFromJsonIfExists(&mShowCursor, "settings.debug.showCursor");
 	setFieldFromJsonIfExists(&mMinimizeParams, "settings.debug.minimizeParams");
 	setFieldFromJsonIfExists(&mCollapseParams, "settings.debug.collapseParams");
