@@ -29,15 +29,12 @@ BaseApp::~BaseApp() {
 
 void BaseApp::setup() {
 	auto settings = SettingsManager::getInstance();
-
-	// Set up screen layout
-	int displayWidth = settings->hasField("settings.display.width") ? settings->getField<int>("settings.display.width") : getWindowWidth();
-	int displayHeight = settings->hasField("settings.display.height") ? settings->getField<int>("settings.display.height") : getWindowHeight();
-	int rows = settings->hasField("settings.display.rows") ? settings->getField<int>("settings.display.rows") : ScreenLayout::getInstance()->getNumRows();
-	int cols = settings->hasField("settings.display.columns") ? settings->getField<int>("settings.display.columns") : ScreenLayout::getInstance()->getNumColumns();
+	
+	if (settings->mDisplaySize.x <= 0) settings->mDisplaySize.x = getWindowWidth();
+	if (settings->mDisplaySize.y <= 0) settings->mDisplaySize.y = getWindowHeight();
 
 	ScreenLayout::getInstance()->getAppSizeChangedSignal().connect(bind(&BaseApp::handleAppSizeChange, this, placeholders::_1));
-	ScreenLayout::getInstance()->setup(ivec2(displayWidth, displayHeight), rows, cols);
+	ScreenLayout::getInstance()->setup(settings->mDisplaySize, settings->mDisplayRows, settings->mDisplayColumns, settings->mBezelDims);
 
 	ScreenCamera::getInstance()->setup(ScreenLayout::getInstance());
 	ScreenCamera::getInstance()->getViewportChangedSignal().connect(bind(&BaseApp::handleViewportChange, this, placeholders::_1));
@@ -53,7 +50,7 @@ void BaseApp::setup() {
 	}
 
 	// Apply run-time settings
-	if (settings->mShowMouse) {
+	if (settings->mShowCursor) {
 		showCursor();
 	} else {
 		hideCursor();
@@ -123,25 +120,27 @@ void BaseApp::draw(const bool clear) {
 		mRootView->drawScene();
 
 		// draw debug touches in app coordinate space
-		if (settings->mDebugMode && settings->mDrawTouches) {
+		if (settings->mDebugEnabled && settings->mShowTouches) {
 			touch::TouchManager::getInstance()->debugDrawTouches();
 		}
 	}
 
-	if (settings->mDebugMode) {
+	if (settings->mDebugEnabled) {
 		// draw params and debug layers in window coordinate space
-		if (settings->mDrawScreenLayout) {
+		if (settings->mShowScreenLayout) {
 			gl::ScopedModelMatrix scopedMatrix;
 			gl::multModelMatrix(ScreenCamera::getInstance()->getTransform());
 			ScreenLayout::getInstance()->draw();
 		}
-		if (settings->mDrawMinimap) {
+		if (settings->mShowMinimap) {
 			mMiniMap->drawScene();
 		}
-		if (settings->mDrawStats) {
+		if (settings->mShowStats) {
 			mStats->drawScene();
 		}
-		settings->getParams()->draw();
+		if (settings->getParams()->isVisible()) {
+			settings->getParams()->draw();
+		}
 	}
 }
 
@@ -155,6 +154,10 @@ void BaseApp::keyDown(KeyEvent event) {
 	case KeyEvent::KEY_q:
 		quit();
 		break;
+	case KeyEvent::KEY_c:
+		SettingsManager::getInstance()->mShowCursor = !SettingsManager::getInstance()->mShowCursor;
+		SettingsManager::getInstance()->mShowCursor ? showCursor() : hideCursor();
+		break;
 	case KeyEvent::KEY_f:
 		SettingsManager::getInstance()->mFullscreen = !isFullScreen();
 		setFullScreen(SettingsManager::getInstance()->mFullscreen);
@@ -166,9 +169,14 @@ void BaseApp::keyDown(KeyEvent event) {
 			SettingsManager::getInstance()->getParams()->maximize();
 
 		} else if (SettingsManager::getInstance()->getParams()->isMaximized()) {
-			SettingsManager::getInstance()->getParams()->minimize();
+			if (event.isShiftDown()) {
+				SettingsManager::getInstance()->getParams()->hide();
+			} else {
+				SettingsManager::getInstance()->getParams()->minimize();
+			}
 
 		} else {
+			SettingsManager::getInstance()->getParams()->show();
 			SettingsManager::getInstance()->getParams()->maximize();
 		}
 		break;
@@ -180,7 +188,8 @@ void BaseApp::handleAppSizeChange(const ci::ivec2 & appSize) {
 	mMiniMap->setLayout(
 		ScreenLayout::getInstance()->getNumColumns(),
 		ScreenLayout::getInstance()->getNumRows(),
-		ScreenLayout::getInstance()->getDisplaySize()
+		ScreenLayout::getInstance()->getDisplaySize(),
+		ScreenLayout::getInstance()->getBezelDims()
 	);
 }
 
@@ -200,15 +209,15 @@ void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
 
 	params->addParam<bool>("Enabled", [&](bool v) {
 		if (!mSimulatedTouchDriver.isRunning()) {
-			SettingsManager::getInstance()->mDrawTouches = true;
+			SettingsManager::getInstance()->mShowTouches = true;
 			mSimulatedTouchDriver.setBounds(Rectf(vec2(0), getWindowSize()));
 			mSimulatedTouchDriver.start();
 		} else {
-			SettingsManager::getInstance()->mDrawTouches = false;
+			SettingsManager::getInstance()->mShowTouches = false;
 			mSimulatedTouchDriver.stop();
 		}
 	}, [&] {
-		return SettingsManager::getInstance()->mDrawTouches && mSimulatedTouchDriver.isRunning();
+		return SettingsManager::getInstance()->mShowTouches && mSimulatedTouchDriver.isRunning();
 	}).group(groupName);
 
 	static int stressTestMode = 0;

@@ -176,3 +176,4 @@ $RECYCLE.BIN/
 ._.DS_Store
 
 *.xcuserstate
+src/bluecadet/core/BaseApp.h
