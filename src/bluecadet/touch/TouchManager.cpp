@@ -335,7 +335,7 @@ void TouchManager::debugDrawTouch(const Touch & touch, const bool isVirtual) {
 		gl::scale(vec2(circleScale));
 
 		fboNormal->bindFramebuffer();
-		gl::clear(ColorA(1 ,1, 1, 0));
+		gl::clear(ColorA(1, 1, 1, 0));
 		
 		{
 			gl::ScopedColor scopedColor(ColorA(0, 0, 0, 0.5f));
@@ -349,7 +349,7 @@ void TouchManager::debugDrawTouch(const Touch & touch, const bool isVirtual) {
 		fboNormal->unbindFramebuffer();
 
 		fboVirtual->bindFramebuffer();
-		gl::clear(ColorA(1 ,1, 1, 0));
+		gl::clear(ColorA(1, 1, 1, 0));
 		
 		{
 			gl::ScopedColor scopedColor(ColorA(0, 0, 0, 0.5f));

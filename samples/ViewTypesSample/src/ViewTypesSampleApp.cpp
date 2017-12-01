@@ -51,6 +51,8 @@ void ViewTypesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 void ViewTypesSampleApp::setup() {
 	BaseApp::setup();
 
+	getRootView()->setBackgroundColor(Color::gray(0.5f));
+
 	//==================================================
 	// Most basic view
 	// 
@@ -175,8 +177,6 @@ void ViewTypesSampleApp::setup() {
 		dragView->setDragEnabledY(true);
 		addViewSample(dragView, "TouchView with y drag");
 	}
-
-	getRootView()->setBackgroundColor(Color::gray(0.5f));
 
 	//==================================================
 	// FBO

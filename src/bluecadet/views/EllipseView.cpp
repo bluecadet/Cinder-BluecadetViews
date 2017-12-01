@@ -49,15 +49,6 @@ void EllipseView::draw() {
 	batch->draw();
 }
 
-void EllipseView::debugDrawOutline() {
-	gl::ScopedModelMatrix scopedModelMatrix;
-	gl::ScopedViewMatrix scopedViewMatrix;
-
-	gl::translate(-getSize() * 0.5f);
-
-	BaseView::debugDrawOutline();
-}
-
 ci::gl::BatchRef EllipseView::getSharedEllipseBatch() {
 	static ci::gl::BatchRef batch = nullptr;
 	if (!batch) {
@@ -78,12 +69,12 @@ ci::gl::GlslProgRef EllipseView::getSharedEllipseProg() {
 
 				in vec4			ciPosition;
 				in vec4			ciColor;
-				out vec4		color;
-				out vec4		normPosition;
+				out vec4		vColor;
+				out vec4		vNormPosition;
 
 				void main(void) {
-					color = ciColor * uBackgroundColor;
-					normPosition = ciPosition;
+					vColor = ciColor * uBackgroundColor;
+					vNormPosition = ciPosition;
 					gl_Position = ciModelViewProjection * vec4(
 						ciPosition.x * uSize.x - uSize.x * 0.5f,
 						ciPosition.y * uSize.y - uSize.y * 0.5f,
@@ -94,33 +85,31 @@ ci::gl::GlslProgRef EllipseView::getSharedEllipseProg() {
 				uniform vec2	uSize;
 				uniform float	uSmoothness;
 
-				in vec4			normPosition;
-				in vec4			color;
+				in vec4			vNormPosition;
+				in vec4			vColor;
 				out vec4		oColor;
 
 				void main(void) {
-					vec2 normalizedDelta = normPosition.xy * 2.0f - vec2(1.0f);
+					vec2 normalizedDelta = vNormPosition.xy * 2.0f - vec2(1.0f);
 					float normalizedRadiusSq = normalizedDelta.x * normalizedDelta.x + normalizedDelta.y * normalizedDelta.y;
-					if (normalizedRadiusSq > 1.0f) discard;
+
+					if (normalizedRadiusSq > 1.0f) {
+						discard;
+					}
 
 					float normalizedRadius = sqrt(normalizedRadiusSq);
 					float maxRadius = length(uSize) * 0.5f;
 					float minRadius = max(0, maxRadius - uSmoothness);
 					float radius = maxRadius * normalizedRadius;
 
-					oColor = color;
+					oColor = vColor;
 
 					// interpolate smooth edge
-					if (uSmoothness > 0 && radius > minRadius) {
-						float quota = (maxRadius - radius) / uSmoothness;
-						oColor.w = color.w * smoothstep(0.0f, 1.0f, quota);
-					}
+					float quota = uSmoothness == 0 ? 0 : (maxRadius - radius) / uSmoothness;
+					oColor.a = vColor.a * smoothstep(0.0f, 1.0f, quota);
 				}
 			))
 		);
-		prog->uniform("uSize", vec2(0));
-		prog->uniform("uSmoothness", 1.0f);
-		prog->uniform("uBackgroundColor", vec4(0));
 	}
 	return prog;
 }

@@ -52,7 +52,8 @@ BaseView::BaseView() :
 	mParent(nullptr),
 	
 	mViewId(sNumInstances++),
-	mViewIdStr(to_string(mViewId))
+	mViewIdStr(to_string(mViewId)),
+	mName(mViewIdStr)
 	{
 }
 
@@ -269,17 +270,17 @@ void BaseView::updateScene(const double deltaTime) {
 	}
 }
 
-void BaseView::drawScene(const ColorA& parentTint) {
+void BaseView::drawScene(const ColorA& parentDrawColor) {
 	const bool shouldDraw = mShouldForceInvisibleDraw || (!mIsHidden && mAlpha > 0.0f);
 
 	if (shouldDraw || (sDebugDrawBounds && sDebugDrawInvisibleBounds)) {
 		validateTransforms();
 		validateContent();
 
-		mDrawColor.r = mTint.value().r * parentTint.r;
-		mDrawColor.g = mTint.value().g * parentTint.g;
-		mDrawColor.b = mTint.value().b * parentTint.b;
-		mDrawColor.a = mAlpha.value() * parentTint.a;
+		mDrawColor.r = mTint.value().r * parentDrawColor.r;
+		mDrawColor.g = mTint.value().g * parentDrawColor.g;
+		mDrawColor.b = mTint.value().b * parentDrawColor.b;
+		mDrawColor.a = mAlpha.value() * parentDrawColor.a;
 
 		gl::ScopedModelMatrix scopedModelMatrix;
 		gl::ScopedViewMatrix scopedViewMatrix;
@@ -343,10 +344,17 @@ void BaseView::draw() {
 }
 
 inline void BaseView::debugDrawOutline() {
+	static const Font labelFont = Font("Arial", 20);
+	static const vec2 labelPos = vec2(0, 0);
+	static const float crosshairRadius = 5.0f;
 	const float hue = (float)mViewId / (float)sNumInstances;
-	const auto color = ColorAf(ci::hsvToRgb(vec3(hue, 1.0f, 1.0f)), 0.66f);
-	gl::color(color);
-	gl::drawStrokedRect(Rectf(vec2(0), getSize()));
+	const ColorA color(ci::hsvToRgb(vec3(hue, 1.0f, 1.0f)), 0.9f);
+	gl::ScopedColor scopedColor(color);
+	gl::ScopedLineWidth lineWidth(1.0f);
+	gl::drawStrokedRect(getBounds(false).getOffset(-getPosition()));
+	gl::drawLine(vec2(-crosshairRadius, -crosshairRadius), vec2(crosshairRadius, crosshairRadius));
+	gl::drawLine(vec2(-crosshairRadius, crosshairRadius), vec2(crosshairRadius, -crosshairRadius));
+	gl::drawString(mName, labelPos, color, labelFont);
 }
 
 //==================================================
