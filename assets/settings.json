@@ -1,37 +1,40 @@
 {
-    "settings": {
-        "general": {
-            "consoleWindowEnabled": true,
-            "FPS": 60,
-            "appVersion": "alpha-1.0"
-        },
-        "display": {
-            "width": 1920,
-            "height": 1080,
-            "columns": 1,
-            "rows": 1
-        },
-        "graphics": {
-            "verticalSync": true,
-            "fullscreen": true,
-            "borderless": false
-        },
-        "debug": {
-            "debugMode": true,
-            "drawMinimap": true,
-            "drawTouches": false,
-            "minimizeParams": true,
-            "drawScreenLayout": false
-        },
-        "touch": {
-            "mouse": true,
-            "tuio": true,
-            "native": true
-        },
-        "analytics": {
-            "appName": "",
-            "trackingId": "",
-            "clientId": ""
-        }
-    }
+	"settings": {
+		"general": {
+			"console": true,
+			"version": "v1.0.0"
+		},
+		"display": {
+			"size": {"x": 1920, "y": 1080},
+			"columns": 1,
+			"rows": 1,
+			"bezel": {"x": 0, "y": 0}
+		},
+		"window": {
+			"fps": 60,
+			"vsync": true,
+			"fullscreen": true,
+			"borderless": false,
+			"size": {"x": 1280, "y": 720},
+			"cameraOffset": {"x": 0, "y": 0},
+			"clearColor": {"r": 0, "g": 0, "b": 0, "a": 1.0}
+		},
+		"touch": {
+			"mouse": true,
+			"tuio": true,
+			"native": false
+		},
+		"debug": {
+			"debugEnabled": true,
+			"showStats": false,
+			"showMinimap": false,
+			"showTouches": false,
+			"showScreenLayout": false,
+			"showCursor": true,
+			"minimizeParams": false,
+			"collapseParams": true,
+			"displayIdHotkeys": false,
+			"zoomToggleHotkey": true
+		}
+	}
 }

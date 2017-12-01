@@ -34,9 +34,15 @@ public:
 	inline ci::Anim<ci::ColorA> &	getStrokeColor() { return mStrokeColor; }
 	inline void						setStrokeColor(ci::ColorA value) { mStrokeColor = value; invalidate(false, true); }
 
+	//! Circle bounds extend -radius to +radius both for x and y
+	ci::Rectf getBounds(const bool scaled) override {
+		ci::Rectf bounds = BaseView::getBounds(scaled);
+		bounds.offset(-0.5f * bounds.getSize());
+		return bounds;
+	}
+
 protected:
 	virtual void draw() override;
-	virtual void debugDrawOutline() override;
 
 	static ci::gl::BatchRef		getSharedBatch();
 	static ci::gl::GlslProgRef	getSharedProg();

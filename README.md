@@ -99,7 +99,7 @@ void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 	SettingsManager::setInstance(myApp::MyAppSettingsManager::getInstance());
 	
 	// Initialize the settings manager with the cinder app settings and the settings json
-	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("appSettings.json"), [](SettingsManager * manager) {
+	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("settings.json"), [](SettingsManager * manager) {
 		// Optional: Override json defaults at runtime
 		manager->mFullscreen = false;
 		manager->mWindowSize = ivec2(1280, 720);
@@ -115,7 +115,7 @@ void BaseAppSampleApp::setup() {
 	getRootView()->setBackgroundColor(Color::gray(0.5f));
 
 	// Sample content
-	auto button = TouchViewRef(new TouchView());
+	auto button = make_shared<TouchView>();
 	button->setPosition(vec2(400, 300));
 	button->setSize(vec2(200, 100));
 	button->setBackgroundColor(Color(1, 0, 0));
@@ -205,7 +205,7 @@ void PathView::draw() {
 
 ## Notes
 
-Version 1.5.0
+Version 1.6.0
 
 Built for [Cinder v0.9.2 dev](https://github.com/cinder/Cinder/) and [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/v0.9.1). Samples require VS 2015 v140 toolset, but tested with VS 2013 v120 as well.
 

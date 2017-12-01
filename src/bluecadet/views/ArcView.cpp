@@ -60,13 +60,6 @@ void ArcView::draw() {
 	batch->draw();
 }
 
-void ArcView::debugDrawOutline() {
-	gl::ScopedModelMatrix scopedModelMatrix;
-	gl::ScopedViewMatrix scopedViewMatrix;
-	gl::translate(-getSize() * 0.5f);
-	BaseView::debugDrawOutline();
-}
-
 ci::gl::BatchRef ArcView::getSharedBatch() {
 	static ci::gl::BatchRef batch = nullptr;
 	if (!batch) {

@@ -19,7 +19,7 @@ public:
 	MiniMapView(const float mapScale = 0.05f);
 	virtual ~MiniMapView();
 
-	void setLayout(const int cols, const int rows, const ci::ivec2 & displaySize);
+	void setLayout(const int cols, const int rows, const ci::ivec2 & displaySize, const ci::ivec2 bezel);
 	void setViewport(const ci::Area & viewport);
 
 	//! Defaults to white
@@ -39,6 +39,7 @@ protected:
 	int mCols;
 	int mRows;
 	ci::ivec2 mDisplaySize;
+	ci::ivec2 mBezelDims;
 
 	ci::ivec2 mAppSize;
 	ci::ivec2 mScaledSize;
