@@ -44,6 +44,10 @@ public:
 	static ScaleMode	getDefaultScaleMode() { return sDefaultScaleMode; }
 	static void			setDefaultScaleMode(const ScaleMode scaleMode) { sDefaultScaleMode = scaleMode; }
 
+	//! Defaults to false. Can be set independently of the texture's top-down setting in case you have less control over that.
+	void  setTopDown(const bool value)	{ mTopDown = value; }
+	bool  getTopDown() const			{ return mTopDown; }
+
 private:
 
 	void draw() override;
@@ -55,6 +59,7 @@ private:
 	ci::vec2			mTextureScale;
 	ci::vec2			mTextureSize;
 	ScaleMode			mScaleMode;
+	bool				mTopDown;
 };
 
 }

@@ -13,7 +13,8 @@ ImageView::ScaleMode ImageView::sDefaultScaleMode = ImageView::ScaleMode::STRETC
 ImageView::ImageView() : BaseView(),
 mTexture(nullptr),
 mTextureScale(1.0f),
-mScaleMode(sDefaultScaleMode)
+mScaleMode(sDefaultScaleMode),
+mTopDown(false)
 {
 }
 
@@ -99,14 +100,15 @@ void ImageView::draw() {
 		)).fragment(CI_GLSL(150,
 			uniform sampler2D uTex0;
 			uniform vec2 uTexScale;
-			uniform int uPremult;
+			uniform int uTopDown;
 			in vec2 vTexCoord0;
 			in vec4 vColor;
 			out vec4 oColor;
 
 			void main(void) {
-				vec2 texCoord = vec2(vTexCoord0.x, 1.0 - vTexCoord0.y);
-				texCoord = (texCoord - vec2(0.5)) * uTexScale + vec2(0.5);
+				vec2 texCoord = vTexCoord0;
+				texCoord.y = uTopDown != 0 ? 1.0 - texCoord.y : texCoord.y; // flip y if necessary
+				texCoord = (texCoord - vec2(0.5)) * uTexScale + vec2(0.5); // scale around center
 
 				if (texCoord.x < 0 || texCoord.y < 0 || texCoord.x > 1.0 || texCoord.y > 1.0) {
 					discard;
@@ -123,6 +125,7 @@ void ImageView::draw() {
 	mTexture->bind(0);
 	shader->uniform("uTexScale", mTextureScale);
 	shader->uniform("uSize", mTextureSize);
+	shader->uniform("uTopDown", mTopDown ? 1 : 0);
 	batch->draw();
 }
 
