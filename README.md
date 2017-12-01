@@ -205,7 +205,7 @@ void PathView::draw() {
 
 ## Notes
 
-Version 1.5.0
+Version 1.6.0
 
 Built for [Cinder v0.9.2 dev](https://github.com/cinder/Cinder/) and [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/v0.9.1). Samples require VS 2015 v140 toolset, but tested with VS 2013 v120 as well.
 
