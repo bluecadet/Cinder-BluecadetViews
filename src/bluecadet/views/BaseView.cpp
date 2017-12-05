@@ -53,7 +53,8 @@ BaseView::BaseView() :
 	
 	mViewId(sNumInstances++),
 	mViewIdStr(to_string(mViewId)),
-	mName(mViewIdStr)
+	mName(mViewIdStr),
+	mDebugIncludeClassName(true)
 	{
 }
 
@@ -326,6 +327,17 @@ void BaseView::drawScene(const ColorA& parentDrawColor) {
 	}
 }
 
+const std::string BaseView::getClassName(const bool stripNameSpace) const {
+	string name = typeid(*this).name();
+	if (stripNameSpace) {
+		const auto idx = name.find_last_of(":");
+		if (idx != string::npos) {
+			name = name.substr(idx + 1);
+		}
+	}
+	return name;
+}
+
 void BaseView::draw() {
 	// override this method for custom drawing
 	const auto size = getSize();
@@ -354,7 +366,12 @@ inline void BaseView::debugDrawOutline() {
 	gl::drawStrokedRect(getBounds(false).getOffset(-getPosition()));
 	gl::drawLine(vec2(-crosshairRadius, -crosshairRadius), vec2(crosshairRadius, crosshairRadius));
 	gl::drawLine(vec2(-crosshairRadius, crosshairRadius), vec2(crosshairRadius, -crosshairRadius));
-	gl::drawString(mName, labelPos, color, labelFont);
+	
+	if (!mDebugIncludeClassName) {
+		gl::drawString(mName, labelPos, color, labelFont);
+	} else {
+		gl::drawString(mName + " (" + getClassName() + ")", labelPos, color, labelFont);
+	}
 }
 
 //==================================================

@@ -249,14 +249,6 @@ public:
 	bool								shouldDispatchContentInvalidation() const { return mShouldDispatchContentInvalidation; }
 	void								setShouldDispatchContentInvalidation(const bool value) { mShouldDispatchContentInvalidation = value; }
 
-	//! Unique ID per view.
-	const size_t						getViewId() const { return mViewId; }
-	const std::string &					getViewIdStr() const { return mViewIdStr; }
-
-	//! Custom name that can be assigned to view and used for debugging; Defaults to view id string.
-	const std::string &					getName() const { return mName; }
-	void								setName(const std::string & name) { mName = name; }
-
 
 	//==================================================
 	// Coordinate space conversions
@@ -314,6 +306,26 @@ public:
 		if (it == mUserInfo.end()) return defaultValue;
 		return boost::get<T>(it->second);
 	}
+		
+
+	//==================================================
+	// Debug
+	//
+
+	//! Unique ID per view.
+	const size_t						getViewId() const { return mViewId; }
+	const std::string &					getViewIdStr() const { return mViewIdStr; }
+
+	//! Custom name that can be assigned to view and used for debugging; Defaults to view id string.
+	const std::string &					getName() const { return mName; }
+	void								setName(const std::string & name) { mName = name; }
+
+	//! Retrieves this class' name via typeinfo()
+	const std::string					getClassName(const bool stripNameSpace = true) const;
+
+	//! Determines whether calling debugDrawOutline() should include the classname or not. Defaults to true.
+	void  setDebugIncludeClassName(const bool value)	{ mDebugIncludeClassName = value; }
+	bool  getDebugIncludeClassName() const				{ return mDebugIncludeClassName; }
 
 protected:
 
@@ -390,6 +402,7 @@ private:
 	const size_t							mViewId;
 	const std::string						mViewIdStr;
 	std::string								mName;
+	bool									mDebugIncludeClassName;
 	std::map<std::string, UserInfoTypes>	mUserInfo;
 
 
