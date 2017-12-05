@@ -116,6 +116,7 @@ void ImageView::draw() {
 
 				oColor = texture(uTex0, texCoord);
 				oColor.rgb /= oColor.a;
+				oColor *= vColor;
 			}
 		)));
 
