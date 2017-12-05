@@ -220,8 +220,8 @@ ci::params::InterfaceGlRef SettingsManager::getParams() {
 		static int boundIndex = 0;
 		params->addParam("View Bounds", {"None", "Visible", "All"}, [&](int i) {
 			boundIndex = i;
-			bluecadet::views::BaseView::sDebugDrawBounds = boundIndex >= 1;
-			bluecadet::views::BaseView::sDebugDrawInvisibleBounds = boundIndex >= 2;
+			bluecadet::views::BaseView::sDrawDebugInfo = boundIndex >= 1;
+			bluecadet::views::BaseView::sDrawDebugInfoWhenInvisible = boundIndex >= 2;
 		}, [&] { return boundIndex; }).key("b").group("App");
 
 		if (mMinimizeParams) {

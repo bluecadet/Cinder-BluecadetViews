@@ -94,7 +94,7 @@ public:
 	bool			mMouseEnabled = true;				//! Treat mouse events as touch events.
 
 	 // Debugging
-	bool			mDebugEnabled = false;				//! Enable/disable all of the below debug features (except for hotkeys)
+	bool			mDebugEnabled = true;				//! Enable/disable all of the below debug features (except for hotkeys)
 	bool			mShowTouches = false;				//! Visualizes all current touch data
 	bool			mShowScreenLayout = false;			//! Visualizes the current screen layout and bezels
 	bool			mShowCursor = false;				//! Show or hide the mouse cursor (toggle with C)
