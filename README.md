@@ -60,9 +60,28 @@ A basic, rectangular view with an optional size and background color that can co
 * Layout-caching minimizes re-calculation of layout while maintaining ability to call methods like `getSize()` at any time
 * *Windows only, requires [Cinder-BluecadetText](/bluecadet/Cinder-BluecadetText)*
 
+### MaskView
+
+* A `MaskView` can use any `BaseView` as a mask for its child views
+* `REVEAL` and `HIDE` masked content modes (essentially stencil or knockout)
+* Uses GL stencils, so doesn't support semi-transparency, but does allow for more custom shapes than GL scissor
+* Most view subclasses can be used individually and combined as masks
+
 ### View Samples
 
 ![](docs/media/view-types-sample.gif)
+
+### Misc Features
+
+| Multi-Screen Support | Virtual Touches & Stress Testing |
+|---|---|
+| ![](docs/media/debug-multi-screen.gif) | ![](docs/media/debug-touch-stress-test.gif) |
+| Bezel compensation, debug layout, mini-map, keyboard-based panning/zooming. | Built-in support to create virtual touches and stress test your app. Can also be used to simulate complex touch patterns like capacitive fiducials. |
+
+| Multi-Touch Simulation | Debug Info | Plugin Support |
+|---|---|--|
+| ![](docs/media/debug-multi-touch-sim.gif) | ![](docs/media/debug-view-info.gif) | ![](docs/media/debug-plugins.gif) |
+| Simulate multiple touches with your mouse cursor. | Display view bounds, position, transform origin, type and name or id. | Simulate, intercept and manipulate touches with custom plugins. |
 
 ## Getting Started
 
@@ -76,7 +95,8 @@ You can use the boilerplate below for your main application file:
 #include "cinder/gl/gl.h"
 
 #include "bluecadet/core/BaseApp.h"
-#include "bluecadet/views/TouchView.h"
+#include "bluecadet/vie
+ws/TouchView.h"
 
 using namespace ci;
 using namespace ci::app;
