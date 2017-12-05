@@ -97,9 +97,9 @@ public:
 	bool			mDebugEnabled = true;				//! Enable/disable all of the below debug features (except for hotkeys)
 	bool			mShowTouches = false;				//! Visualizes all current touch data
 	bool			mShowScreenLayout = false;			//! Visualizes the current screen layout and bezels
-	bool			mShowCursor = false;				//! Show or hide the mouse cursor (toggle with C)
-	bool			mShowMinimap = false;				//! Show or hide the mini-map (toggle with M)
-	bool			mShowStats = false;					//! Show or hide the frame-rate graph/plot (toggle with S)
+	bool			mShowCursor = true;					//! Show or hide the mouse cursor (toggle with C)
+	bool			mShowMinimap = true;				//! Show or hide the mini-map (toggle with M)
+	bool			mShowStats = true;					//! Show or hide the frame-rate graph/plot (toggle with S)
 	bool			mMinimizeParams = false;			//! Minimizes the params window (toggle with F1)
 	bool			mCollapseParams = false;			//! Collapses all the default parameter groups like "App"
 	bool			mZoomToggleHotkeyEnabled = true;	//! When true, will bind 0 to toggle zoom to 100%/fit

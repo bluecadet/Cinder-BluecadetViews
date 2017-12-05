@@ -73,10 +73,10 @@ public:
 	static bool				sContentInvalidationEnabled;
 
 	//! Defaults to false. Draws all views with debug color to illustrate the view hierarchy.
-	static bool				sDebugDrawBounds;
+	static bool				sDrawDebugInfo;
 
-	//! Defaults to false. When sDebugDrawBounds is set to true, this setting will also draw any invisible views
-	static bool				sDebugDrawInvisibleBounds;
+	//! Defaults to false. When sDrawDebugInfo is set to true, this setting will also draw any invisible views
+	static bool				sDrawDebugInfoWhenInvisible;
 
 	enum class BlendMode {
 		INHERIT,
@@ -323,7 +323,7 @@ public:
 	//! Retrieves this class' name via typeinfo()
 	const std::string					getClassName(const bool stripNameSpace = true) const;
 
-	//! Determines whether calling debugDrawOutline() should include the classname or not. Defaults to true.
+	//! Determines whether calling drawDebugInfo() should include the classname or not. Defaults to true.
 	void  setDebugIncludeClassName(const bool value)	{ mDebugIncludeClassName = value; }
 	bool  getDebugIncludeClassName() const				{ return mDebugIncludeClassName; }
 
@@ -333,7 +333,7 @@ protected:
 
 	inline virtual void	willDraw() {}							//! Called by drawScene before draw()
 	virtual void		draw();									//! Called by drawScene and allows for drawing content for this node. By default draws a rectangle with the current size and background color (only if x/y /bg-alpha > 0)
-	virtual void		debugDrawOutline();						//! Called in DEBUG if sDebugDrawBounds is set to true.
+	virtual void		drawDebugInfo();						//! Called in sDrawDebugInfo is set to true (Can be controller by SettingsManager params)
 	inline virtual void	drawChildren(const ci::ColorA & parentDrawColor); //! Called by drawScene() after draw() and before didDraw(). Implemented at bottom of class.
 	inline virtual void	didDraw() {}							//! Called by drawScene after draw()
 

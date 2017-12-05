@@ -18,8 +18,8 @@ namespace views {
 
 bool BaseView::sEventPropagationEnabled = true;
 bool BaseView::sContentInvalidationEnabled = true;
-bool BaseView::sDebugDrawBounds = false;
-bool BaseView::sDebugDrawInvisibleBounds = false;
+bool BaseView::sDrawDebugInfo = false;
+bool BaseView::sDrawDebugInfoWhenInvisible = false;
 
 //==================================================
 // Lifecycle
@@ -274,7 +274,7 @@ void BaseView::updateScene(const double deltaTime) {
 void BaseView::drawScene(const ColorA& parentDrawColor) {
 	const bool shouldDraw = mShouldForceInvisibleDraw || (!mIsHidden && mAlpha > 0.0f);
 
-	if (shouldDraw || (sDebugDrawBounds && sDebugDrawInvisibleBounds)) {
+	if (shouldDraw || (sDrawDebugInfo && sDrawDebugInfoWhenInvisible)) {
 		validateTransforms();
 		validateContent();
 
@@ -319,8 +319,8 @@ void BaseView::drawScene(const ColorA& parentDrawColor) {
 			}
 		}
 
-		if (sDebugDrawBounds) {
-			debugDrawOutline();
+		if (sDrawDebugInfo) {
+			drawDebugInfo();
 		}
 
 		didDraw();
@@ -355,15 +355,24 @@ void BaseView::draw() {
 	batch->draw();
 }
 
-inline void BaseView::debugDrawOutline() {
+inline void BaseView::drawDebugInfo() {
 	static const Font labelFont = Font("Arial", 20);
 	static const vec2 labelPos = vec2(0, 0);
-	static const float crosshairRadius = 5.0f;
+	static const float crosshairRadius = 4.0f;
+	static const float transformOriginRadius = 4.0f;
 	const float hue = (float)mViewId / (float)sNumInstances;
 	const ColorA color(ci::hsvToRgb(vec3(hue, 1.0f, 1.0f)), 0.9f);
 	gl::ScopedColor scopedColor(color);
 	gl::ScopedLineWidth lineWidth(1.0f);
+
+	// draw local bounds
 	gl::drawStrokedRect(getBounds(false).getOffset(-getPosition()));
+	
+	// draw transform origin
+	gl::drawLine(getTransformOrigin() + vec2(-transformOriginRadius, 0), getTransformOrigin() + vec2(transformOriginRadius, 0));
+	gl::drawLine(getTransformOrigin() + vec2(0, -transformOriginRadius), getTransformOrigin() + vec2(0, transformOriginRadius));
+
+	// draw origin
 	gl::drawLine(vec2(-crosshairRadius, -crosshairRadius), vec2(crosshairRadius, crosshairRadius));
 	gl::drawLine(vec2(-crosshairRadius, crosshairRadius), vec2(crosshairRadius, -crosshairRadius));
 	
