@@ -35,6 +35,13 @@ public:
 
 	inline ci::gl::TextureRef getTexture() const { return mTexture; }
 	inline void			setTexture(const ci::gl::TextureRef value, const bool resizeToTexture = true);
+	
+	//overloaded setup for applying custom texcoords
+	void					setTexture(const ci::gl::TextureRef value, const std::vector<ci::vec2> coords, const bool resizeToTexture = true);
+	
+	//for updating the texCoords after initialization
+	void					setTexCoords( const std::vector<ci::vec2> coords );
+	std::vector<ci::vec2>	getTexCoords() { return mTexCoords; }
 
 	//! Defaults to getDefaultScaleMode()
 	inline ScaleMode	getScaleMode() const { return mScaleMode; }
@@ -55,11 +62,20 @@ private:
 	
 	static ScaleMode	sDefaultScaleMode;
 
+	ci::gl::BatchRef	mBatch;
 	ci::gl::TextureRef	mTexture;
 	ci::vec2			mTextureScale;
 	ci::vec2			mTextureSize;
 	ScaleMode			mScaleMode;
 	bool				mTopDown;
+
+	//normalized texture coordinates, clockwise starting at upper left
+	std::vector<ci::vec2> mTexCoords;
+	std::vector<ci::vec2> mUserTexCoords; 
+	std::vector<ci::vec2> mDefaultTexCoords;
+	bool				mHasCustomTexCoords;
+	bool				mTexCoordsAreDirty;
+
 };
 
 }
