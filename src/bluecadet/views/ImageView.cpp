@@ -13,8 +13,7 @@ ImageView::ScaleMode ImageView::sDefaultScaleMode = ImageView::ScaleMode::STRETC
 ImageView::ImageView() : BaseView(),
 mTexture(nullptr),
 mTextureScale(1.0f),
-mScaleMode(sDefaultScaleMode),
-mTopDown(false)
+mScaleMode(sDefaultScaleMode)
 {
 }
 
@@ -73,60 +72,88 @@ void ImageView::validateContent() {
 }
 
 void ImageView::draw() {
-	if (!mTexture) return;
-	
 	BaseView::draw();
 
+	if (mTexture) {
+		drawTexture(mTexture, getDrawBlendMode(), mTextureScale, mTextureSize);
+	}
+}
+
+void ImageView::drawTexture(ci::gl::TextureRef texture, BlendMode blendMode, ci::vec2 scale, ci::vec2 size) {
+	int options = DrawOptions::NONE;
+
+	if (blendMode == BlendMode::PREMULT) {
+		options |= DrawOptions::PREMULTIPLY;
+	}
+
+	drawTexture(texture, (DrawOptions)options, scale, size);
+}
+
+void ImageView::drawTexture(ci::gl::TextureRef texture, DrawOptions options, ci::vec2 scale, ci::vec2 size) {
 	static gl::GlslProgRef shader = nullptr;
 	static gl::BatchRef batch = nullptr;
 
 	if (!shader) {
-		shader = gl::GlslProg::create(gl::GlslProg::Format()
-		.vertex(CI_GLSL(150,
-			uniform mat4 ciModelViewProjection;
-			uniform vec2 uSize;
-			in vec4 ciPosition;
-			in vec4 ciColor;
-			in vec2 ciTexCoord0;
-			out vec4 vColor;
-			out vec2 vTexCoord0;
+		shader = gl::GlslProg::create(
+			gl::GlslProg::Format()
+				.vertex(CI_GLSL(150,
+					uniform mat4 ciModelViewProjection;
+					uniform vec2 uSize;
+					in vec4 ciPosition;
+					in vec4 ciColor;
+					in vec2 ciTexCoord0;
+					out vec4 vColor;
+					out vec2 vTexCoord0;
 
-			void main(void) {
-				vColor = ciColor;
-				vTexCoord0 = ciTexCoord0;
-				vec4 pos = ciPosition * vec4(uSize, 0, 1);
-				gl_Position = ciModelViewProjection * pos;
-			}
-		)).fragment(CI_GLSL(150,
-			uniform sampler2D uTex0;
-			uniform vec2 uTexScale;
-			uniform int uTopDown;
-			in vec2 vTexCoord0;
-			in vec4 vColor;
-			out vec4 oColor;
+					void main(void) {
+						vColor = ciColor;
+						vTexCoord0 = ciTexCoord0;
+						vec4 pos = ciPosition * vec4(uSize, 0, 1);
+						gl_Position = ciModelViewProjection * pos;
+					}
+				)).fragment(CI_GLSL(150,
+					uniform sampler2D uTex0;
+					uniform vec2 uTexScale;
+					uniform int uOptions;
+					in vec2 vTexCoord0;
+					in vec4 vColor;
+					out vec4 oColor;
 
-			void main(void) {
-				vec2 texCoord = vTexCoord0;
-				texCoord.y = uTopDown != 0 ? 1.0 - texCoord.y : texCoord.y; // flip y if necessary
-				texCoord = (texCoord - vec2(0.5)) * uTexScale + vec2(0.5); // scale around center
+					void main(void) {
+						vec2 texCoord = vTexCoord0;
+						texCoord = (texCoord - vec2(0.5)) * uTexScale + vec2(0.5); // scale around center
 
-				if (texCoord.x < 0 || texCoord.y < 0 || texCoord.x > 1.0 || texCoord.y > 1.0) {
-					discard;
-				}
+						if (texCoord.x < 0 || texCoord.y < 0 || texCoord.x > 1.0 || texCoord.y > 1.0) {
+							discard;
+						}
 
-				oColor = texture(uTex0, texCoord);
-				oColor.rgb /= oColor.a;
-				oColor *= vColor;
-			}
-		)));
+						oColor = texture(uTex0, texCoord) * vColor;
+						
+						if ((uOptions & OPT_PREMULT) == OPT_PREMULT) {
+							oColor.rgb *= oColor.a;
+						}
+
+						if ((uOptions & OPT_DEMULT) == OPT_DEMULT) {
+							oColor.rgb /= oColor.a;
+						}
+					}
+				)
+			).define("OPT_PREMULT", to_string(DrawOptions::PREMULTIPLY))
+			.define("OPT_DEMULT", to_string(DrawOptions::DEMULTIPLY))
+		);
+
 
 		batch = gl::Batch::create(geom::Rect().rect(Rectf(0, 0, 1.0f, 1.0f)), shader);
 	}
 
-	mTexture->bind(0);
-	shader->uniform("uTexScale", mTextureScale);
-	shader->uniform("uSize", mTextureSize);
-	shader->uniform("uTopDown", mTopDown ? 1 : 0);
+	if (size.x < 0 || size.y < 0) {
+		size = texture->getSize();
+	}
+
+	gl::ScopedTextureBind textureBind(texture, 0);
+	shader->uniform("uTexScale", scale);
+	shader->uniform("uSize", size);
+	shader->uniform("uOptions", options);
 	batch->draw();
 }
 

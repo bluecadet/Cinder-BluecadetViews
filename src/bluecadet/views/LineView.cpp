@@ -22,6 +22,7 @@ inline void LineView::setup(const ci::vec2 & endPoint, const ci::ColorA & lineCo
 }
 
 void LineView::draw() {
+
 	//! This was introduced because of a bug that was causing gl::ScopedColor to override the parent views tint/alpha
 	ColorA correctedColor = mLineColor.value() * getDrawColor();
 	gl::ScopedColor color(correctedColor);

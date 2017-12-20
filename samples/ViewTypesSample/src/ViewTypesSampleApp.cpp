@@ -16,6 +16,7 @@
 #include "bluecadet/views/TouchView.h"
 #include "bluecadet/views/TextView.h"
 
+#include "cinder/Signals.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -50,6 +51,12 @@ void ViewTypesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 
 void ViewTypesSampleApp::setup() {
 	BaseApp::setup();
+
+	//auto button = make_shared<TouchView>();
+	////
+	//button->getSignalTapped().connect([=] (const bluecadet::touch::TouchEvent & event) {
+	//	CI_LOG_D("tapped");
+	//});
 
 	getRootView()->setBackgroundColor(Color::gray(0.5f));
 
@@ -229,10 +236,11 @@ void ViewTypesSampleApp::setup() {
 	// LineView
 	// 
 
-	auto lineView = make_shared<LineView>();
+	LineViewRef lineView = make_shared<LineView>();
 	lineView->setEndPoint(vec2(100, 100));
 	lineView->setLineColor(getNextColor());
 	lineView->setLineWidth(2.0f);
+
 	addViewSample(lineView, "LineView");
 
 	//==================================================

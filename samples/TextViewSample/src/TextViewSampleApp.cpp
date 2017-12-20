@@ -47,7 +47,10 @@ void TextViewSampleApp::setup() {
 	//mTextView->setHeight(400.0f); // this would cause any text beyond 400 px to be cut off vertically
 
 	// Background color is independent of text styles
-	mTextView->setBackgroundColor(ColorA(1, 0, 1, 0.75f));
+	//mTextView->setBackgroundColor(ColorA(1, 0, 1, 0.75f));
+
+	//mTextView->setBlendMode(BaseView::BlendMode::PREMULT);
+	mTextView->setAlpha(0.1f);
 
 	// Set all styles before setting your text
 	mTextView->setTextColor(Color(1.0f, 1.0f, 1.0f));

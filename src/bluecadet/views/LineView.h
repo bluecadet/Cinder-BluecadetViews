@@ -32,7 +32,7 @@ public:
 	inline void setLineColor(const ci::ColorA& value) { mLineColor = value; invalidate(false, true); }
 
 protected:
-	virtual void draw() override;
+	void draw() override;
 
 	ci::Anim<float>			mLineWidth;
 	ci::Anim<ci::ColorA>	mLineColor;

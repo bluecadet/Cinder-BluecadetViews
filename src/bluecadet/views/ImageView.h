@@ -28,6 +28,12 @@ public:
 		COVER
 	};
 
+	enum DrawOptions {
+		NONE = 0,
+		PREMULTIPLY = 1 << 1,
+		DEMULTIPLY = 1 << 2
+	};
+
 	ImageView();
 	virtual ~ImageView();
 
@@ -44,9 +50,8 @@ public:
 	static ScaleMode	getDefaultScaleMode() { return sDefaultScaleMode; }
 	static void			setDefaultScaleMode(const ScaleMode scaleMode) { sDefaultScaleMode = scaleMode; }
 
-	//! Defaults to false. Can be set independently of the texture's top-down setting in case you have less control over that.
-	void  setTopDown(const bool value)	{ mTopDown = value; }
-	bool  getTopDown() const			{ return mTopDown; }
+	static void drawTexture(ci::gl::TextureRef texture, BlendMode blendMode, ci::vec2 scale = ci::vec2(1.0f), ci::vec2 size = ci::vec2(-1.0f));
+	static void drawTexture(ci::gl::TextureRef texture, DrawOptions options = DrawOptions::NONE, ci::vec2 scale = ci::vec2(1.0f), ci::vec2 size = ci::vec2(-1.0f));
 
 private:
 
@@ -59,7 +64,6 @@ private:
 	ci::vec2			mTextureScale;
 	ci::vec2			mTextureSize;
 	ScaleMode			mScaleMode;
-	bool				mTopDown;
 };
 
 }

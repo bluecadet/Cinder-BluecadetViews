@@ -2,6 +2,8 @@
 
 #include "bluecadet/text/StyleManager.h"
 
+#include "ImageView.h"
+
 #if defined(CINDER_MSW)
 
 using namespace ci;
@@ -64,7 +66,7 @@ void TextView::draw() {
 	BaseView::draw();
 
 	if (mTexture) {
-		gl::draw(mTexture);
+		ImageView::drawTexture(mTexture, getDrawBlendMode());
 	}
 }
 

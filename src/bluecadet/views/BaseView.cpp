@@ -271,7 +271,7 @@ void BaseView::updateScene(const double deltaTime) {
 	}
 }
 
-void BaseView::drawScene(const ColorA& parentDrawColor) {
+void BaseView::drawScene(const ColorA & parentDrawColor) {
 	const bool shouldDraw = mShouldForceInvisibleDraw || (!mIsHidden && mAlpha > 0.0f);
 
 	if (shouldDraw || (sDrawDebugInfo && sDrawDebugInfoWhenInvisible)) {
@@ -291,8 +291,11 @@ void BaseView::drawScene(const ColorA& parentDrawColor) {
 
 		willDraw();
 
+		mDrawBlendMode = mBlendMode;
+
 		switch (mBlendMode) {
 			case BlendMode::INHERIT: {
+				mDrawBlendMode = mParent ? mParent->mDrawBlendMode : BlendMode::ALPHA;
 				draw();
 				drawChildren(mDrawColor);
 				break;
