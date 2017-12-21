@@ -20,6 +20,7 @@ class BlendModesSampleApp : public BaseApp {
 public:
 	static void prepareSettings(ci::app::App::Settings* settings);
 	void setup() override;
+	void draw() override;
 	void addView(std::string title, BaseViewRef view);
 	ci::gl::TextureRef loadTextureAsset(std::string relAssetPath);
 
@@ -28,7 +29,10 @@ public:
 };
 
 void BlendModesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
-	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("settings.json"), [](SettingsManager * manager) {
+	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("settings.json"), [=](SettingsManager * manager) {
+		manager->mFps = 400;
+		manager->mConsole = false;
+		manager->mVerticalSync = false;
 		manager->mMinimizeParams = true;
 		manager->mFullscreen = false;
 		manager->mDisplaySize = ivec2(1280, 720);
@@ -52,19 +56,17 @@ void BlendModesSampleApp::setup() {
 		addView("Basic View", view);
 	}
 
+	auto tex = loadTextureAsset("pattern_line_grid_white.png");
+
 	{
 		auto view = make_shared<ImageView>();
-		view->setTexture(loadTextureAsset("pattern_line_grid_white.png"));
-		view->setBlendMode(BaseView::BlendMode::PREMULT);
-		view->setAlpha(0.5f);
-		//view->setSize(defaultSize);
-		addView("White Image", view);
+		view->setTexture(tex);
+		addView("White Image ", view);
 	}
 
 	{
 		auto view = make_shared<ImageView>();
 		view->setTexture(loadTextureAsset("pattern_line_grid_black.png"));
-		//view->setSize(defaultSize);
 		addView("Black Image", view);
 	}
 
@@ -75,6 +77,10 @@ void BlendModesSampleApp::setup() {
 		view->setText("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
 		addView("White Text", view);
 	}
+}
+
+void BlendModesSampleApp::draw() {
+	BaseApp::draw();
 }
 
 void BlendModesSampleApp::addView(std::string title, BaseViewRef view) {
@@ -89,9 +95,14 @@ void BlendModesSampleApp::addView(std::string title, BaseViewRef view) {
 
 	// layout
 	if (mViewBounds.getSize().x + touchContainer->getWidth() <= getRootView()->getWidth()) {
-		touchContainer->setPosition(mViewBounds.getUpperRight());
+		if (mViewBounds.getHeight() == 0) {
+			touchContainer->setPosition(vec2(0));
+		} else {
+			touchContainer->setPosition(mViewBounds.getLowerRight() - vec2(0, touchContainer->getHeight()));
+		}
 	} else {
 		touchContainer->setPosition(mViewBounds.getLowerLeft());
+		mViewBounds.scale(vec2(0, 1.0f));
 	}
 
 	mViewBounds.include(touchContainer->getBounds());

@@ -81,9 +81,8 @@ void BaseApp::setup() {
 	mSimulatedTouchDriver.setup(Rectf(vec2(0), getWindowSize()), 60);
 
 	// Debugging
-	const float targetFps = (float)settings->mFps;
 	mStats->setBackgroundColor(ColorA(0, 0, 0, 0.1f));
-	mStats->addGraph("FPS", 0, targetFps, ColorA(1.0f, 0.0f, 0.0f, 0.75f), ColorA(0.0f, 1.0f, 0.25f, 0.75f));
+	mStats->addGraph("FPS", 0, getFrameRate(), ColorA(1.0f, 0.0f, 0.0f, 0.75f), ColorA(0.0f, 1.0f, 0.25f, 0.75f));
 }
 
 void BaseApp::update() {

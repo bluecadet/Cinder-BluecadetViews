@@ -150,7 +150,11 @@ void SettingsManager::applyToAppSettings(ci::app::App::Settings * settings) {
 #ifdef CINDER_MSW
 	settings->setConsoleWindowEnabled(mConsole);
 #endif
-	settings->setFrameRate((float)mFps);
+	if (mFps > 0) {
+		settings->setFrameRate(mFps);
+	} else {
+		settings->disableFrameRate();
+	}
 	settings->setWindowSize(mWindowSize);
 	settings->setBorderless(mBorderless);
 	settings->setFullScreen(mFullscreen);
