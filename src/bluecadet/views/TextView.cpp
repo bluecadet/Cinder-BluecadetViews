@@ -14,9 +14,7 @@ namespace bluecadet {
 namespace views {
 
 TextView::TextView(const ci::gl::Texture::Format & textureFormat) : BaseView(), text::StyledTextLayout(),
-mTextureFormat(textureFormat),
-mTexture(nullptr),
-mAutoRenderEnabled(true) {
+mTextureFormat(textureFormat) {
 }
 
 TextView::~TextView() {
