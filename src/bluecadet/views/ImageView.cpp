@@ -16,9 +16,9 @@ mTextureScale(1.0f),
 mScaleMode(sDefaultScaleMode),
 mTopDown(false),
 mHasCustomTexCoords(false),
-mTexCoordsAreDirty(true),
-mDefaultTexCoords( { vec2(0.0f, 0.0f), vec2(1.0f, 0.0f), vec2(1.0f, 1.0f), vec2(0.0f, 1.0f) } )
+mTexCoordsAreDirty(true)
 {
+	mDefaultTexCoords = { vec2(0.0f, 0.0f), vec2(1.0f, 0.0f), vec2(1.0f, 1.0f), vec2(0.0f, 1.0f) };
 	mTexCoords = mDefaultTexCoords;
 }
 
@@ -31,16 +31,16 @@ void ImageView::reset() {
 	setScaleMode(sDefaultScaleMode);
 }
 
-void ImageView::setTexture(ci::gl::TextureRef texture, std::vector<ci::vec2> coords, const bool resizeToTexture) {
-	setTexCoords(coords);
-	setTexture(texture, resizeToTexture);
-}
-
 void ImageView::setTexCoords(std::vector<ci::vec2> coords ) {
 	mUserTexCoords = coords;
 	mHasCustomTexCoords = true;
 	mTexCoordsAreDirty = true;
 	invalidate(false, true);
+}
+
+void ImageView::setTexture(ci::gl::TextureRef texture, std::vector<ci::vec2> coords, const bool resizeToTexture) {
+	setTexCoords(coords);
+	setTexture(texture, resizeToTexture);
 }
 
 void ImageView::setTexture(ci::gl::TextureRef texture, const bool resizeToTexture) {
@@ -146,7 +146,7 @@ void ImageView::validateContent() {
 		)));
 	}
 
-	// make the batch only if it hasn't been made and the shader is ready
+	// make the batch only if: it hasn't been made and the shader is ready,
 	//or if the tex coords need updating
 	if ( (!mBatch && shader) || mTexCoordsAreDirty ) {
 
