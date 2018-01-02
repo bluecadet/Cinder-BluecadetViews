@@ -2,6 +2,8 @@
 
 #include "bluecadet/text/StyleManager.h"
 
+#include "ImageView.h"
+
 #if defined(CINDER_MSW)
 
 using namespace ci;
@@ -55,8 +57,8 @@ void TextView::reset() {
 }
 
 void TextView::willDraw() {
-	if (needsToBeRendered(false) && mAutoRenderEnabled) {
-		renderContent(false, true, getBlendMode() == BlendMode::PREMULT);
+	if (mAutoRenderEnabled) {
+		renderContent(false, true, getBlendMode() == BlendMode::PREMULT, false);
 	}
 }
 
@@ -64,7 +66,59 @@ void TextView::draw() {
 	BaseView::draw();
 
 	if (mTexture) {
-		gl::draw(mTexture);
+		//gl::draw(mTexture);
+		//return;
+		
+		static gl::GlslProgRef shader = nullptr;
+		static gl::BatchRef batch = nullptr;
+
+		if (!shader) {
+			shader = gl::GlslProg::create(gl::GlslProg::Format()
+				.vertex(CI_GLSL(150,
+					uniform mat4 ciModelViewProjection;
+					uniform vec2 uSize;
+					in vec4 ciPosition;
+					in vec4 ciColor;
+					in vec2 ciTexCoord0;
+					out vec4 vColor;
+					out vec2 vTexCoord0;
+
+					void main(void) {
+						vColor = ciColor;
+						vTexCoord0 = ciTexCoord0;
+						vec4 pos = ciPosition * vec4(uSize, 0, 1);
+						gl_Position = ciModelViewProjection * pos;
+					}
+				)).fragment(CI_GLSL(150,
+					uniform sampler2D uTex0;
+					uniform int uDemultiply;
+					in vec2 vTexCoord0;
+					in vec4 vColor;
+					out vec4 oColor;
+
+					void main(void) {
+						oColor = texture(uTex0, vTexCoord0);
+
+						if (oColor.a == 0) {
+							discard;
+						}
+
+						if (uDemultiply == 1) {
+							// This compensates for GDI+ interpolation between text
+							// and transparent black background
+							oColor.rgb /= oColor.a;
+						}
+
+						oColor *= vColor;
+					}
+				)));
+			batch = gl::Batch::create(geom::Rect().rect(Rectf(0, 0, 1.0f, 1.0f)), shader);
+		}
+
+		gl::ScopedTextureBind textureBind(mTexture, 0);
+		shader->uniform("uSize", getSize());
+		shader->uniform("uDemultiply", mDemultiplyEnabled ? 1 : 0);
+		batch->draw();
 	}
 }
 

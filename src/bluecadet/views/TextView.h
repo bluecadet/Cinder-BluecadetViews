@@ -45,6 +45,17 @@ public:
 
 	bool	needsToBeRendered(bool surfaceOnly = false) const;
 
+	//! Use these methods to compensate for GDI+'s poor alpha blending.
+	//! Since GDI+ can't properly blend semi-transparent text pixels with
+	//! a colored, but transparent background, text will have a slightly
+	//! gray outline when scaled since the text is interpolated with a
+	//! transparent black background. Setting this value to true will
+	//! result in semi-transparent pixels having their rgb values divided
+	//! by their alpha to compensate for that behavior.
+	bool	getDemultiplyEnabled() const { return mDemultiplyEnabled; }
+	void	setDemultiplyEnabled(const bool value) { mDemultiplyEnabled = value; }
+
+
 	//! Renders content. If surfaceOnly is false this will render into a texture and has to be called on the main thread. Surfaces can be rendered on a worker thread.
 	void	renderContent(bool surfaceOnly = false, bool alpha = true, bool premultiplied = false, bool force = false);
 	void	resetRenderedContent();
@@ -61,7 +72,7 @@ public:
 	 inline const ci::vec2	getSize() override;
 
 	 //! The texture format used to create textures.
-	 void							setTextureFormat(const ci::gl::Texture::Format & value) { mTextureFormat = value; }
+	 void								setTextureFormat(const ci::gl::Texture::Format & value) { mTextureFormat = value; }
 	 const ci::gl::Texture::Format &	getTextureFormat() const { return mTextureFormat; }
 
 protected:
@@ -83,6 +94,7 @@ protected:
 	bool				mHasInvalidRenderedContent;
 	bool				mSmoothScalingEnabled = true;
 	bool				mAutoRenderEnabled = true;
+	bool				mDemultiplyEnabled = true;
 
 	ci::Surface				mSurface;
 	ci::gl::TextureRef		mTexture;

@@ -72,7 +72,7 @@ public:
 	std::string		mAppVersion = "";					//! Displays app version in the params
 
 	// Graphics
-	int				mFps = 60;
+	float			mFps = 60.0f;
 	bool			mFullscreen = true;
 	bool			mBorderless = false;
 	bool			mVerticalSync = true;

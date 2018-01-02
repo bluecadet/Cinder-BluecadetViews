@@ -22,10 +22,11 @@ class ImageView : public BaseView {
 public:
 
 	enum class ScaleMode {
-		NONE,
-		STRETCH,
-		FIT,
-		COVER
+		NONE,		//! Unscaled within bounds
+		STRETCH,	//! Stretched within bounds (default)
+		FIT,		//! Scaled to fit within bounds and preserve aspect ratio. Will not crop content.
+		COVER,		//! Scaled to fill bounds and preserve aspect ratio. Might crop content.
+		CUSTOM		//! Uses the current source area and dest rect.
 	};
 
 	ImageView();
@@ -33,20 +34,22 @@ public:
 
 	void reset() override;
 
-	inline ci::gl::TextureRef getTexture() const { return mTexture; }
 	inline void			setTexture(const ci::gl::TextureRef value, const bool resizeToTexture = true);
+	inline const ci::gl::TextureRef getTexture() const { return mTexture; }
 
-	//! Defaults to getDefaultScaleMode()
-	inline ScaleMode	getScaleMode() const { return mScaleMode; }
-	inline void			setScaleMode(const ScaleMode scaleMode) { mScaleMode = scaleMode; invalidate(false, true); }
-
-	//! Defaults to STRETCH
-	static ScaleMode	getDefaultScaleMode() { return sDefaultScaleMode; }
 	static void			setDefaultScaleMode(const ScaleMode scaleMode) { sDefaultScaleMode = scaleMode; }
+	static ScaleMode	getDefaultScaleMode() { return sDefaultScaleMode; }	//! Defaults to STRETCH
+	
+	inline void			setScaleMode(const ScaleMode scaleMode) { mScaleMode = scaleMode; invalidate(false, true); }
+	inline ScaleMode	getScaleMode() const { return mScaleMode; }	//! Defaults to getDefaultScaleMode()
 
-	//! Defaults to false. Can be set independently of the texture's top-down setting in case you have less control over that.
-	void  setTopDown(const bool value)	{ mTopDown = value; }
-	bool  getTopDown() const			{ return mTopDown; }
+	//! Configure a custom source area for the texture in texture pixel coordinate space. Will set the scale mode to CUSTOM.
+	inline void					setTextureSourceArea(const ci::Area & area) { mTextureSourceArea = area; mScaleMode = ScaleMode::CUSTOM; invalidate(false, true); };
+	inline const ci::Area &		getTextureSourceArea() const { return mTextureSourceArea; };
+
+	//! Configure a custom destination rect for the texture in local coordinate space. Will set the scale mode to CUSTOM.
+	inline void					setTextureDestRect(const ci::Rectf & rect) { mTextureDestRect = rect; mScaleMode = ScaleMode::CUSTOM; invalidate(false, true); };
+	inline const ci::Rectf &	getTextureDestRect() const { return mTextureDestRect; };
 
 private:
 
@@ -56,10 +59,10 @@ private:
 	static ScaleMode	sDefaultScaleMode;
 
 	ci::gl::TextureRef	mTexture;
-	ci::vec2			mTextureScale;
-	ci::vec2			mTextureSize;
+
 	ScaleMode			mScaleMode;
-	bool				mTopDown;
+	ci::Area			mTextureSourceArea;
+	ci::Rectf			mTextureDestRect;
 };
 
 }
