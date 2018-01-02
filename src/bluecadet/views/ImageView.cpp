@@ -14,8 +14,12 @@ ImageView::ImageView() : BaseView(),
 mTexture(nullptr),
 mTextureScale(1.0f),
 mScaleMode(sDefaultScaleMode),
-mTopDown(false)
+mTopDown(false),
+mHasCustomTexCoords(false),
+mTexCoordsAreDirty(true)
 {
+	mDefaultTexCoords = { vec2(0.0f, 0.0f), vec2(1.0f, 0.0f), vec2(1.0f, 1.0f), vec2(0.0f, 1.0f) };
+	mTexCoords = mDefaultTexCoords;
 }
 
 ImageView::~ImageView() {
@@ -25,6 +29,18 @@ void ImageView::reset() {
     BaseView::reset();
     setTexture(nullptr);
 	setScaleMode(sDefaultScaleMode);
+}
+
+void ImageView::setTexCoords(std::vector<ci::vec2> coords ) {
+	mUserTexCoords = coords;
+	mHasCustomTexCoords = true;
+	mTexCoordsAreDirty = true;
+	invalidate(false, true);
+}
+
+void ImageView::setTexture(ci::gl::TextureRef texture, std::vector<ci::vec2> coords, const bool resizeToTexture) {
+	setTexCoords(coords);
+	setTexture(texture, resizeToTexture);
 }
 
 void ImageView::setTexture(ci::gl::TextureRef texture, const bool resizeToTexture) {
@@ -41,6 +57,7 @@ void ImageView::setTexture(ci::gl::TextureRef texture, const bool resizeToTextur
 	}
 
 	invalidate(false, true);
+
 }
 
 void ImageView::validateContent() {
@@ -70,19 +87,26 @@ void ImageView::validateContent() {
 			break;
 		}
 	}
-}
 
-void ImageView::draw() {
-	if (!mTexture) return;
-	
-	BaseView::draw();
+	//use the appropriate tex coords 
+	if (!mHasCustomTexCoords) {
+		mTexCoords = mDefaultTexCoords;	
+	} else {
+		mTexCoords = mUserTexCoords;
+	}
 
+	//flip the tex coords if we're not using top down
+	if (!mTopDown) {
+		swap(mTexCoords[0], mTexCoords[3]);
+		swap(mTexCoords[1], mTexCoords[2]);
+	}
+
+	//setup static shader once for all instances
 	static gl::GlslProgRef shader = nullptr;
-	static gl::BatchRef batch = nullptr;
 
 	if (!shader) {
-		shader = gl::GlslProg::create(gl::GlslProg::Format()
-		.vertex(CI_GLSL(150,
+		shader = gl::GlslProg::create(gl::GlslProg::Format().vertex(CI_GLSL(150,
+
 			uniform mat4 ciModelViewProjection;
 			uniform vec2 uSize;
 			in vec4 ciPosition;
@@ -97,17 +121,17 @@ void ImageView::draw() {
 				vec4 pos = ciPosition * vec4(uSize, 0, 1);
 				gl_Position = ciModelViewProjection * pos;
 			}
+
 		)).fragment(CI_GLSL(150,
+
 			uniform sampler2D uTex0;
 			uniform vec2 uTexScale;
-			uniform int uTopDown;
 			in vec2 vTexCoord0;
 			in vec4 vColor;
 			out vec4 oColor;
 
 			void main(void) {
 				vec2 texCoord = vTexCoord0;
-				texCoord.y = uTopDown != 0 ? 1.0 - texCoord.y : texCoord.y; // flip y if necessary
 				texCoord = (texCoord - vec2(0.5)) * uTexScale + vec2(0.5); // scale around center
 
 				if (texCoord.x < 0 || texCoord.y < 0 || texCoord.x > 1.0 || texCoord.y > 1.0) {
@@ -118,16 +142,37 @@ void ImageView::draw() {
 				oColor.rgb /= oColor.a;
 				oColor *= vColor;
 			}
-		)));
 
-		batch = gl::Batch::create(geom::Rect().rect(Rectf(0, 0, 1.0f, 1.0f)), shader);
+		)));
 	}
 
+	// make the batch only if: it hasn't been made and the shader is ready,
+	//or if the tex coords need updating
+	if ( (!mBatch && shader) || mTexCoordsAreDirty ) {
+
+		auto rect = geom::Rect().rect(Rectf(0, 0, 1.0f, 1.0f))
+								.texCoords( mTexCoords[0],
+											mTexCoords[1],
+											mTexCoords[2],
+											mTexCoords[3] );
+		mTexCoordsAreDirty = false;
+
+		mBatch = gl::Batch::create(rect, shader);
+
+	}
+
+}
+
+void ImageView::draw() {
+
+	if (!mTexture || !mBatch) return;
+	
+	BaseView::draw();
+
 	mTexture->bind(0);
-	shader->uniform("uTexScale", mTextureScale);
-	shader->uniform("uSize", mTextureSize);
-	shader->uniform("uTopDown", mTopDown ? 1 : 0);
-	batch->draw();
+	mBatch->getGlslProg()->uniform("uTexScale", mTextureScale);
+	mBatch->getGlslProg()->uniform("uSize", mTextureSize);
+	mBatch->draw();
 }
 
 }
