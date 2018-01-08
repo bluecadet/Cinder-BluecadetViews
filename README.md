@@ -95,8 +95,7 @@ You can use the boilerplate below for your main application file:
 #include "cinder/gl/gl.h"
 
 #include "bluecadet/core/BaseApp.h"
-#include "bluecadet/vie
-ws/TouchView.h"
+#include "bluecadet/views/TouchView.h"
 
 using namespace ci;
 using namespace ci::app;
