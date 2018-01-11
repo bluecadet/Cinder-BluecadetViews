@@ -85,15 +85,30 @@ public:
 
 	//! Returns the total number of touches currently within the object
 	inline const int	getNumTouches() const					{ return (int)mTouchIds.size(); }
+	
+	//! Timestamp of the first active touch (based on app run time/getElapsedSeconds()). 0 if no active touches.
+	inline double	getInitialTouchTime() const						{ return mInitialTouchTime; };
+
+	inline const ci::vec2 &	getLocalTouchPos() const				{ return mLocalTouchPos; };			//! Position of the first touch within this view with 0,0 being at this view's origin. (0, 0) if no active touches.
+	inline const ci::vec2 &	getGlobalTouchPos() const				{ return mGlobalTouchPos; };		//! Position of the first touch in app coordinate space with 0,0 at the app's origin. (0, 0) if no active touches.
+	
+	inline const ci::vec2 & getPrevLocalTouchPos() const			{ return mPrevLocalTouchPos; };		//! The previous position of the first touch in local view space. (0, 0) if no active touches.
+	inline const ci::vec2 & getPrevGlobalTouchPos() const			{ return mPrevGlobalTouchPos; };	//! The previous position of the first touch in global app space. (0, 0) if no active touches.
+	
+	inline const ci::vec2 & getInitialLocalTouchPos() const			{ return mInitialLocalTouchPos; };	//! The initial position of the first touch in local view space. (0, 0) if no active touches.
+	inline const ci::vec2 & getInitialGlobalTouchPos() const		{ return mInitialGlobalTouchPos; };	//! The initial position of the first touch in local view space. (0, 0) if no active touches.
+	
+	inline const ci::vec2 & getInitialLocalPosWhenTouched() const	{ return mInitialLocalPosWhenTouched; };	//! The initial position of this view in its parent's coordinate space. (0, 0) if no active touches.
+	inline const ci::vec2 & getInitialGlobalPosWhenTouched() const	{ return mInitialGlobalPosWhenTouched; };	//! The initial position of this view in the app's coordinate space. (0, 0) if no active touches.
 
 	//! Set whether to process move events and whether to process whether this view is being dragged or tapped. Defaults to true.
 	inline bool		getMovingTouchesEnabled() const				{ return mMovingTouchesEnabled; }
 	inline void		setMovingTouchesEnabled(const bool value)	{ mMovingTouchesEnabled = value; }
 
 	//! Sets whether this view should be dragged by moving touches. Defaults to false.
-	inline bool		isDragEnabled() const					{ return mDragEnabledX || mDragEnabledY; };
-	inline bool		isDragEnabledX() const					{ return mDragEnabledX; };
-	inline bool		isDragEnabledY() const					{ return mDragEnabledY; };
+	inline bool		isDragEnabled() const						{ return mDragEnabledX || mDragEnabledY; };
+	inline bool		isDragEnabledX() const						{ return mDragEnabledX; };
+	inline bool		isDragEnabledY() const						{ return mDragEnabledY; };
 
 	inline void		setDragEnabled(const bool drag)						{ mDragEnabledX = mDragEnabledY = drag; };
 	inline 	void	setDragEnabled(const bool dragX, const bool dragY)	{ mDragEnabledX = dragX; mDragEnabledY = dragY; };
@@ -101,54 +116,37 @@ public:
 	inline void		setDragEnabledY(const bool drag)					{ mDragEnabledY = drag; };
 
 	//! True once a touch has moved the minimum drag threshold
-	inline bool		hasReachedDragThreshold() const			{ return mHasReachedDragThreshold; };
+	inline bool		hasReachedDragThreshold() const				{ return mHasReachedDragThreshold; };
 
 	//! True if this object has any moving touches, even if they are below the drag threshold
-	inline bool		hasMovingTouches() const				{ return mHasMovingTouches; };
-
-	
-	inline const ci::vec2 &	getLocalTouchPos() const			{ return mLocalTouchPos; };			//! Position of the first touch within this view with 0,0 being at this view's origin. (0, 0) if no active touches.
-	inline const ci::vec2 &	getGlobalTouchPos() const			{ return mGlobalTouchPos; };		//! Position of the first touch in app coordinate space with 0,0 at the app's origin. (0, 0) if no active touches.
-	inline const ci::vec2 & getPrevLocalTouchPos() const		{ return mPrevLocalTouchPos; };		//! The previous position of the first touch in local view space. (0, 0) if no active touches.
-	inline const ci::vec2 & getPrevGlobalTouchPos() const		{ return mPrevGlobalTouchPos; };	//! The previous position of the first touch in global app space. (0, 0) if no active touches.
-	inline const ci::vec2 & getInitialLocalTouchPos() const		{ return mInitialLocalTouchPos; };	//! The initial position of the first touch in local view space. (0, 0) if no active touches.
-	inline const ci::vec2 & getInitialGlobalTouchPos() const	{ return mInitialGlobalTouchPos; };	//! The initial position of the first touch in local view space. (0, 0) if no active touches.
-	inline const ci::vec2 & getInitialLocalPosWhenTouched() const	{ return mInitialLocalPosWhenTouched; };	//! The initial position of this view in its parent's coordinate space. (0, 0) if no active touches.
-	inline const ci::vec2 & getInitialGlobalPosWhenTouched() const	{ return mInitialGlobalPosWhenTouched; };	//! The initial position of this view in the app's coordinate space. (0, 0) if no active touches.
-	inline double	getInitialTouchTime() const					{ return mInitialTouchTime; };		//! Timestamp of the first active touch (based on app run time/getElapsedSeconds()). 0 if no active touches.
-
-	//! Previous touch position within this view with 0,0 being at this view's origin
-	const ci::vec2 &	getPrevLocalTouchPos() const { return mPrevLocalTouchPos; };
-
-	//! Previous touch position in app coordinate space with 0,0 at the app's origin
-	const ci::vec2 &	getPrevGlobalTouchPos() const { return mPrevGlobalTouchPos; };
+	inline bool		hasMovingTouches() const					{ return mHasMovingTouches; };
 
 	//! Maximum allowed distance to move a touch up to which it's considered a tap
-	inline float	getDragThreshold() const				{ return mDragThreshold; }
-	inline void		setDragThreshold(const float value)		{ mDragThreshold = value; }
+	inline float	getDragThreshold() const					{ return mDragThreshold; }
+	inline void		setDragThreshold(const float value)			{ mDragThreshold = value; }
 
 	//! Maximum time in seconds until which a touch is considered a tap (vs a long press)
-	inline double	getMaxTapDuration() const				{ return mMaxTapDuration; }
-	inline void		setMaxTapDuration(const double value)	{ mMaxTapDuration = value; }
+	inline double	getMaxTapDuration() const					{ return mMaxTapDuration; }
+	inline void		setMaxTapDuration(const double value)		{ mMaxTapDuration = value; }
 
 	//! When true, will allow a tap to trigger even if the touch up even occurs outside this touch object. Good for fast moving objects. Default is false.
 	inline bool		getAllowsTapReleaseOutside() const				{ return mAllowsTapReleaseOutside; }
 	inline void		setAllowsTapReleaseOutside(const bool value)	{ mAllowsTapReleaseOutside = value; }
 
 	//! The minimum alpha required for touches to be accepted (alpha has to be greater than the min). Defaults to sDefaultMinAlphaForTouches.
-	inline float	getMinAlphaForTouches() const					{ return mMinAlphaForTouches; }
-	inline void		setMinAlphaForTouches(const float value)		{ mMinAlphaForTouches = value; }
+	inline float	getMinAlphaForTouches() const				{ return mMinAlphaForTouches; }
+	inline void		setMinAlphaForTouches(const float value)	{ mMinAlphaForTouches = value; }
 
 	//! Custom path that determines touchable area if configured. If no path is set, size will be used for hit detection.
-	inline const ci::Path2d &	getTouchPath() const					{ return mTouchPath; }
-	inline void		setTouchPath(const ci::Path2d value)	{ mTouchPath = value; }
+	inline const ci::Path2d &	getTouchPath() const			{ return mTouchPath; }
+	inline void		setTouchPath(const ci::Path2d value)		{ mTouchPath = value; }
 	inline void		setTouchPath(const float radius, const ci::vec2 & offset = ci::vec2(0), const int numSegments = -1);
 
 	//! If set to true, will draw the touch path with a debug color
 	inline bool		getDebugDrawTouchPath() const				{ return mDebugDrawTouchPath; }
 	inline void		setDebugDrawTouchPath(const bool value)		{ mDebugDrawTouchPath = value; }
 
-	//! Returns true if this view is currently handling and owning the touch with touchId
+	//! Returns true if this view is currently handling and owning the touch with touchId. Mostly used by TouchManager and/or plugins.
 	inline bool		isHandlingTouch(const int touchId) const;
 
 protected:
