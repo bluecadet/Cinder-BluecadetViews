@@ -117,6 +117,12 @@ public:
 	inline const ci::vec2 & getInitialGlobalPosWhenTouched() const	{ return mInitialGlobalPosWhenTouched; };	//! The initial position of this view in the app's coordinate space. (0, 0) if no active touches.
 	inline double	getInitialTouchTime() const					{ return mInitialTouchTime; };		//! Timestamp of the first active touch (based on app run time/getElapsedSeconds()). 0 if no active touches.
 
+	//! Previous touch position within this view with 0,0 being at this view's origin
+	const ci::vec2 &	getPrevLocalTouchPos() const { return mPrevLocalTouchPos; };
+
+	//! Previous touch position in app coordinate space with 0,0 at the app's origin
+	const ci::vec2 &	getPrevGlobalTouchPos() const { return mPrevGlobalTouchPos; };
+
 	//! Maximum allowed distance to move a touch up to which it's considered a tap
 	inline float	getDragThreshold() const				{ return mDragThreshold; }
 	inline void		setDragThreshold(const float value)		{ mDragThreshold = value; }
