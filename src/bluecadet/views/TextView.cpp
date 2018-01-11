@@ -25,7 +25,7 @@ ci::gl::Texture::Format TextView::getDefaultTextureFormat() {
 	format.immutableStorage(true);
 	format.setMaxAnisotropy(4.0f);
 	format.enableMipmapping(true);
-	format.setMinFilter(GL_LINEAR);
+	format.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
 	format.setMagFilter(GL_LINEAR);
 	return format;
 }
