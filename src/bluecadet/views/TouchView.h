@@ -112,6 +112,12 @@ public:
 	//! Touch position in app coordinate space with 0,0 at the app's origin
 	const ci::vec2 &	getGlobalTouchPos() const			{ return mGlobalTouchPos; };
 
+	//! Previous touch position within this view with 0,0 being at this view's origin
+	const ci::vec2 &	getPrevLocalTouchPos() const { return mPrevLocalTouchPos; };
+
+	//! Previous touch position in app coordinate space with 0,0 at the app's origin
+	const ci::vec2 &	getPrevGlobalTouchPos() const { return mPrevGlobalTouchPos; };
+
 	//! Maximum allowed distance to move a touch up to which it's considered a tap
 	float			getDragThreshold() const				{ return mDragThreshold; }
 	void			setDragThreshold(const float value)		{ mDragThreshold = value; }

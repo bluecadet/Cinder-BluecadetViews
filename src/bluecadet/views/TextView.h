@@ -34,8 +34,8 @@ public:
 	static ci::gl::Texture::Format getDefaultTextureFormat();
 
 	//! Configures a TextView instance. Convenience method that groups a few calls together.
-	void setup(const std::wstring& text = L"", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = 0.0f);
-	void setup(const std::string& text = "", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = 0.0f);
+	void setup(const std::wstring& text = L"", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = -1.0f);
+	void setup(const std::string& text = "", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = -1.0f);
 
 	void	reset() override;
 
