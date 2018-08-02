@@ -113,6 +113,8 @@ void SettingsManager::parseJson(ci::JsonTree & json) {
 	setFieldFromJsonIfExists(&mBorderless, "settings.window.borderless");
 	setFieldFromJsonIfExists(&mWindowSize.x, "settings.window.size.x");
 	setFieldFromJsonIfExists(&mWindowSize.y, "settings.window.size.y");
+	setFieldFromJsonIfExists(&mWindowPos.x, "settings.window.position.x");
+	setFieldFromJsonIfExists(&mWindowPos.y, "settings.window.position.y");
 	setFieldFromJsonIfExists(&mCameraOffset.x, "settings.window.cameraOffset.x");
 	setFieldFromJsonIfExists(&mCameraOffset.y, "settings.window.cameraOffset.y");
 	setFieldFromJsonIfExists(&mClearColor.r, "settings.window.clearColor.r");
@@ -163,11 +165,13 @@ void SettingsManager::applyToAppSettings(ci::app::App::Settings * settings) {
 		settings->setMultiTouchEnabled(true);
 	}
 
-	// Keep window top-left within display bounds
-	if (settings->getWindowPos().x == 0 && settings->getWindowPos().y == 0) {
+	// Default window position to centered in display if no custom pos has been set
+	if (mWindowPos == ivec2(0)) {
 		ivec2 windowPos = (Display::getMainDisplay()->getSize() - settings->getWindowSize()) / 2;
 		windowPos = glm::max(windowPos, ivec2(0));
 		settings->setWindowPos(windowPos);
+	} else {
+		settings->setWindowPos(mWindowPos);
 	}
 }
 
