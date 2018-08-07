@@ -44,6 +44,9 @@ public:
 	//! Zooms to fit the display at col/row into the current application window.
 	void				zoomToDisplay(const int row, const int col);
 
+	//! Zooms around the current location
+	void				zoomAtCurrentLocation(const float scale);
+
 	//! Zooms around a location in window coordinate space
 	void				zoomAtLocation(const float scale, const ci::vec2 location);
 
