@@ -62,7 +62,7 @@ void ScreenCamera::zoomToFitWindow() {
 	updateViewport();
 }
 
-void ScreenCamera::zoomAtLocation(const float targetScale, const vec2 location) {
+void ScreenCamera::zoomAtCurrentLocation(const float targetScale) {
 	const vec2 currentScale = mPlaceholderView->getScale();
 	const vec2 deltaScale = vec2(targetScale) / currentScale;
 
@@ -73,6 +73,13 @@ void ScreenCamera::zoomAtLocation(const float targetScale, const vec2 location) 
 
 	mPlaceholderView->setScale(targetScale);
 	mPlaceholderView->setPosition(targetPos);
+
+	updateViewport();
+}
+
+void ScreenCamera::zoomAtLocation(const float targetScale, const vec2 location) {
+	mPlaceholderView->setScale(targetScale);
+	mPlaceholderView->setPosition(location);
 	updateViewport();
 }
 
@@ -114,7 +121,7 @@ void ScreenCamera::handleKeyDown(KeyEvent event) {
 			const bool zoomIn = (code == KeyEvent::KEY_KP_PLUS || code == KeyEvent::KEY_PLUS || code == KeyEvent::KEY_EQUALS);
 			const float deltaScale = (zoomIn ? zoomSpeed : 1.0f / zoomSpeed);
 			const float targetScale = mPlaceholderView->getScale().value().x * deltaScale;
-			zoomAtWindowCenter(targetScale);
+			zoomAtCurrentLocation(targetScale);
 			break;
 		}
 		case KeyEvent::KEY_UP:
@@ -151,7 +158,7 @@ void ScreenCamera::handleKeyDown(KeyEvent event) {
 			if (mZoomToggleHotkeyEnabled) {
 				// toggle zoom to fit window
 				if (mPlaceholderView->getScale().value().x != 1.0f) {
-					zoomAtWindowCenter(1.0f);
+					zoomAtCurrentLocation(1.0f);
 				} else {
 					zoomToFitWindow();
 				}
