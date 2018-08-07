@@ -166,7 +166,7 @@ void SettingsManager::applyToAppSettings(ci::app::App::Settings * settings) {
 	}
 
 	// Default window position to centered in display if no custom pos has been set
-	if (mWindowPos == ivec2(0)) {
+	if (mWindowPos == ivec2(-1)) {
 		ivec2 windowPos = (Display::getMainDisplay()->getSize() - settings->getWindowSize()) / 2;
 		windowPos = glm::max(windowPos, ivec2(0));
 		settings->setWindowPos(windowPos);

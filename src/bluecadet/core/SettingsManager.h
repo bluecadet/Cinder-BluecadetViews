@@ -85,7 +85,7 @@ public:
 
 	// Window
 	ci::ivec2		mWindowSize;						//! The window size on launch
-	ci::ivec2		mWindowPos;							//! The window position on launch
+	ci::ivec2		mWindowPos = ci::ivec2(-1, -1);		//! The window position on launch
 	ci::vec2		mCameraOffset;						//! The offset of the camera on launch
 	ci::ColorA		mClearColor = ci::ColorA::black();	//! The color used when clearing the screen before draw(). Defaults to opaque black.
 
