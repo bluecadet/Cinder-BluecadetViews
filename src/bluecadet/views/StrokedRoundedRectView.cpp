@@ -95,10 +95,12 @@ ci::gl::GlslProgRef StrokedRoundedRectView::getSharedProg() {
 
 					float fieldDistance = rectSdf(centerPos, halfSize, uCornerRadius - halfStrokeWidth);
 
-					vec4 fromColor = uStrokeColor;
+					vec4 fromColor = uBackgroundColor;
 					vec4 toColor = vec4(0.0);
 
 					if (halfStrokeWidth > 0.0) {
+						fromColor = uStrokeColor;
+
 						if (fieldDistance < 0.0) {
 							toColor = uBackgroundColor;
 						}
