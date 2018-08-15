@@ -94,7 +94,7 @@ void ViewTypesSampleApp::setup() {
 	strokedRoundedRectView->setStrokeColor(ColorA(getNextColor(), 0.75f));
 	strokedRoundedRectView->setStrokeWidth(5.0f);
 	strokedRoundedRectView->getTimeline()->apply(&strokedRoundedRectView->getStrokeWidth(), 20.0f, 1.5f, easeInOutQuad).loop(true).pingPong(true);
-	strokedRoundedRectView->getTimeline()->apply(&strokedRoundedRectView->getCornerRadius(), 40.0f, 2.5f, easeInOutQuad).loop(true).pingPong(true);
+	strokedRoundedRectView->getTimeline()->apply(&strokedRoundedRectView->getCornerRadius(), 50.0f, 2.5f, easeInOutQuad).loop(true).pingPong(true);
 	addViewSample(strokedRoundedRectView, "StrokedRoundedRectView");
 
 	//==================================================
