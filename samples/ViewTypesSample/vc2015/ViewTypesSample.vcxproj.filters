@@ -284,10 +284,16 @@
     <ClInclude Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.h">
       <Filter>Blocks\TUIO\src\cinder\tuio</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\..\src\bluecadet\views\StrokedRoundedRectView.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\views\StrokedRoundedRectView.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\views</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

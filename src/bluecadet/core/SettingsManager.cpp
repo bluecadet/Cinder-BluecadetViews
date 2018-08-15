@@ -143,9 +143,11 @@ void SettingsManager::parseJson(ci::JsonTree & json) {
 }
 
 void SettingsManager::applyToAppSettings(ci::app::App::Settings * settings) {
+	const float pixelScale = Display::getMainDisplay()->getContentScale();
+
 	// Default window size to main display size if no custom size has been determined
 	if (mWindowSize == ivec2(0)) {
-		mWindowSize = Display::getMainDisplay()->getSize();
+		mWindowSize = vec2(Display::getMainDisplay()->getSize()) * pixelScale;
 	}
 
 	// Apply pre-launch settings
@@ -167,11 +169,13 @@ void SettingsManager::applyToAppSettings(ci::app::App::Settings * settings) {
 
 	// Default window position to centered in display if no custom pos has been set
 	if (mWindowPos == ivec2(-1)) {
-		ivec2 windowPos = (Display::getMainDisplay()->getSize() - settings->getWindowSize()) / 2;
+		ivec2 windowSizeInPx = vec2(settings->getWindowSize()) * pixelScale;
+		ivec2 windowPos = (Display::getMainDisplay()->getSize() - windowSizeInPx) / 2;
 		windowPos = glm::max(windowPos, ivec2(0));
 		settings->setWindowPos(windowPos);
+
 	} else {
-		settings->setWindowPos(mWindowPos);
+		settings->setWindowPos(vec2(mWindowPos) * pixelScale);
 	}
 }
 

@@ -101,6 +101,7 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup>
+    <ClCompile Include="..\..\..\src\bluecadet\views\StrokedRoundedRectView.cpp" />
     <ClCompile Include="..\src\ViewTypesSampleApp.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\bluecadet\text\FontManager.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\bluecadet\text\StyledTextLayout.cpp" />
@@ -136,6 +137,7 @@
     <ClCompile Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\bluecadet\views\StrokedRoundedRectView.h" />
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\bluecadet\text\FontManager.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\bluecadet\text\StyledTextLayout.h" />

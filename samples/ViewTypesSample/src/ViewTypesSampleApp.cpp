@@ -13,6 +13,7 @@
 #include "bluecadet/views/LineView.h"
 #include "bluecadet/views/StrokedCircleView.h"
 #include "bluecadet/views/StrokedRectView.h"
+#include "bluecadet/views/StrokedRoundedRectView.h"
 #include "bluecadet/views/TouchView.h"
 #include "bluecadet/views/TextView.h"
 
@@ -37,6 +38,8 @@ public:
 };
 
 void ViewTypesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
+	settings->setHighDensityDisplayEnabled(true);
+
 	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("../assets/settings.json"), [](SettingsManager * manager) {
 		manager->mFullscreen = false;
 		manager->mWindowSize = ivec2(1280, 720);
@@ -80,6 +83,20 @@ void ViewTypesSampleApp::setup() {
 	strokedRectView->setStrokeWidth(5.0f);
 	strokedRectView->getTimeline()->apply(&strokedRectView->getStrokeWidth(), 20.0f, 1.5f, easeInOutQuad).loop(true).pingPong(true);
 	addViewSample(strokedRectView, "StrokedRectView");
+
+	//==================================================
+	// Stroked rounded rect view
+	// 
+
+	auto strokedRoundedRectView = make_shared<StrokedRoundedRectView>();
+	strokedRoundedRectView->setSize(vec2(100, 100));
+	strokedRoundedRectView->setBackgroundColor(getNextColor());
+	strokedRoundedRectView->setStrokeColor(ColorA(getNextColor(), 0.75f));
+	strokedRoundedRectView->setStrokeWidth(0);
+	strokedRoundedRectView->getTimeline()->apply(&strokedRoundedRectView->getSmoothness(), 8.0f, 3.5f, easeInOutQuad).loop(true).pingPong(true);
+	strokedRoundedRectView->getTimeline()->apply(&strokedRoundedRectView->getStrokeWidth(), 20.0f, 1.5f, easeInOutQuad).loop(true).pingPong(true);
+	strokedRoundedRectView->getTimeline()->apply(&strokedRoundedRectView->getCornerRadius(), 50.0f, 2.5f, easeInOutQuad).loop(true).pingPong(true);
+	addViewSample(strokedRoundedRectView, "StrokedRoundedRectView");
 
 	//==================================================
 	// EllipseView with variably smooth edges
@@ -276,8 +293,8 @@ void ViewTypesSampleApp::keyDown(ci::app::KeyEvent event) {
 void ViewTypesSampleApp::addViewSample(BaseViewRef view, std::string label) {
 
 	// hacky layout
-	static const int numCols = 5;
-	static const int numRows = 3;
+	static const int numCols = 4;
+	static const int numRows = 4;
 	static const vec2 cellPadding = vec2(10);
 	static const vec2 cellSize = (vec2(getWindowSize()) - vec2(numCols + 1, numRows + 1) * cellPadding) / vec2(numCols, numRows);
 	static vec2 cellPos = cellPadding;
@@ -312,9 +329,9 @@ void ViewTypesSampleApp::addViewSample(BaseViewRef view, std::string label) {
 
 ColorA ViewTypesSampleApp::getNextColor(float alpha) {
 	static float hue = 0;
-	static float numHues = 16;
+	static float numHues = 16.0f;
 	ColorA color = ColorA(hsvToRgb(vec3(hue, 0.75f, 1.0f)), alpha);
-	hue = glm::mod(hue + 0.25f + 1.0f / numHues, 1.0f);
+	hue = glm::mod(hue + 0.33f + 1.0f / numHues, 1.0f);
 	return color;
 }
 
