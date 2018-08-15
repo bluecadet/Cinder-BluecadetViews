@@ -77,7 +77,7 @@ ci::gl::GlslProgRef StrokedRoundedRectView::getSharedProg() {
 				uniform vec2 uSize;
 				uniform vec4 uStrokeColor;
 				uniform vec4 uBackgroundColor;
-				uniform float uSmoothness = 0.5;
+				uniform float uSmoothness = 1.0;
 				uniform float uStrokeWidth = 1.0;
 				uniform float uCornerRadius = 0.0;
 				out vec4 oColor;
@@ -106,7 +106,7 @@ ci::gl::GlslProgRef StrokedRoundedRectView::getSharedProg() {
 						fieldDistance = abs(fieldDistance) - halfStrokeWidth;
 					}
 
-					float blendAmount = smoothstep(-1.0, 1.0, fieldDistance);
+					float blendAmount = smoothstep(-uSmoothness, uSmoothness, fieldDistance);
 
 					oColor = mix(fromColor, toColor, blendAmount);
 					
