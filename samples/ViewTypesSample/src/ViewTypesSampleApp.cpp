@@ -292,8 +292,8 @@ void ViewTypesSampleApp::keyDown(ci::app::KeyEvent event) {
 void ViewTypesSampleApp::addViewSample(BaseViewRef view, std::string label) {
 
 	// hacky layout
-	static const int numCols = 5;
-	static const int numRows = 3;
+	static const int numCols = 4;
+	static const int numRows = 4;
 	static const vec2 cellPadding = vec2(10);
 	static const vec2 cellSize = (vec2(getWindowSize()) - vec2(numCols + 1, numRows + 1) * cellPadding) / vec2(numCols, numRows);
 	static vec2 cellPos = cellPadding;
