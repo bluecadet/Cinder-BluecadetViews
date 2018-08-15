@@ -56,6 +56,10 @@ protected:
 	//! Gets the stencil op for current type
 	inline GLenum getStencilFuncEnum() const;
 
+	//! Used to support nested stencils
+	static uint8_t sStencilIndex;
+	static const uint8_t sMaxNestedStencils = 0xFFu; // 8 bit stencil buffer
+
 	BaseViewRef mMask = nullptr;
 	MaskType mMaskType = MaskType::REVEAL;
 

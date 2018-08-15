@@ -30,7 +30,7 @@ using namespace bluecadet::touch;
 class ViewTypesSampleApp : public BaseApp {
 public:
 	static void prepareSettings(ci::app::App::Settings* settings);
-	
+
 	void setup() override;
 	void keyDown(ci::app::KeyEvent event) override;
 	void addViewSample(BaseViewRef view, std::string label);
@@ -249,6 +249,63 @@ void ViewTypesSampleApp::setup() {
 		maskView->setMask(mask);
 	}
 
+	{
+		// Nested Reveal
+		auto outerMaskView = make_shared<MaskView>();
+		outerMaskView->setSize(vec2(150));
+		outerMaskView->setMaskType(MaskView::MaskType::REVEAL);
+		outerMaskView->setBackgroundColor(getNextColor());
+		addViewSample(outerMaskView, "Nested MaskViews");
+
+		auto outerMask = make_shared<EllipseView>();
+		outerMask->setup(length(fboView->getSize()) * 0.5f, getNextColor());
+		outerMask->setPosition(fboView->getSize() * 0.5f);
+		outerMask->getTimeline()->apply(&outerMask->getScale(), vec2(0), 3.0f, easeInOutQuad).pingPong(true).loop(true);
+		outerMaskView->setMask(outerMask);
+
+		auto innerMaskViewA = make_shared<MaskView>();
+		innerMaskViewA->setSize(vec2(150));
+		innerMaskViewA->setMaskType(MaskView::MaskType::REVEAL);
+		innerMaskViewA->setBackgroundColor(getNextColor());
+		outerMaskView->addChild(innerMaskViewA);
+
+		auto innerTextA = make_shared<TextView>();
+		string textA = "";
+		for (int i = 0; i < 512; ++i) textA += "A ";
+		innerTextA->setup(textA, "", false, innerMaskViewA->getWidth());
+		innerMaskViewA->addChild(innerTextA);
+
+		auto innerMaskA = make_shared<StrokedRoundedRectView>();
+		innerMaskA->setSize(fboView->getSize() * 0.75f);
+		innerMaskA->setTransformOrigin(innerMaskA->getSize() * 0.5f);
+		innerMaskA->setPosition(fboView->getSize() * 0.5f);
+		innerMaskA->setBackgroundColor(getNextColor());
+		innerMaskA->setCornerRadius(30);
+		innerMaskA->getTimeline()->apply(&innerMaskA->getScale(), vec2(0), 3.0f, easeInOutQuad).pingPong(true).loop(true);
+		innerMaskViewA->setMask(innerMaskA);
+
+		auto innerMaskViewB = make_shared<MaskView>();
+		innerMaskViewB->setSize(vec2(150));
+		innerMaskViewB->setMaskType(MaskView::MaskType::REVEAL);
+		innerMaskViewB->setBackgroundColor(getNextColor());
+		outerMaskView->addChild(innerMaskViewB);
+
+		auto innerTextB = make_shared<TextView>();
+		string textB = "";
+		for (int i = 0; i < 512; ++i) textB += "B ";
+		innerTextB->setup(textB, "", false, innerMaskViewB->getWidth());
+		innerMaskViewB->addChild(innerTextB);
+
+		auto innerMaskB = make_shared<StrokedRoundedRectView>();
+		innerMaskB->setSize(fboView->getSize() * 0.25f);
+		innerMaskB->setTransformOrigin(innerMaskB->getSize() * 0.5f);
+		innerMaskB->setPosition(fboView->getSize() * 0.25f);
+		innerMaskB->setBackgroundColor(getNextColor());
+		innerMaskB->setCornerRadius(10);
+		innerMaskB->getTimeline()->apply(&innerMaskB->getRotation(), glm::angleAxis(glm::pi<float>(), vec3(0, 0, 1)), 3.0f, easeInOutQuad).pingPong(true).loop(true);
+		innerMaskViewB->setMask(innerMaskB);
+	}
+
 	//==================================================
 	// LineView
 	// 
@@ -278,15 +335,15 @@ void ViewTypesSampleApp::keyDown(ci::app::KeyEvent event) {
 	BaseApp::keyDown(event);
 
 	switch (event.getCode()) {
-	case KeyEvent::KEY_ESCAPE:
-		for (auto child : getRootView()->getChildren()) {
-			if (auto touchView = dynamic_pointer_cast<TouchView>(child)) {
-				touchView->cancelTouches();
+		case KeyEvent::KEY_ESCAPE:
+			for (auto child : getRootView()->getChildren()) {
+				if (auto touchView = dynamic_pointer_cast<TouchView>(child)) {
+					touchView->cancelTouches();
+				}
 			}
-		}
-		break;
-	default:
-		break;
+			break;
+		default:
+			break;
 	}
 }
 
