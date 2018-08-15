@@ -1,3 +1,4 @@
+#ifndef NOTOUCH
 
 #include "TouchView.h"
 #include "../touch/TouchManager.h"
@@ -246,3 +247,5 @@ void TouchView::setTouchPath(const float radius, const ci::vec2& offset, const i
 
 }
 }
+
+#endif
