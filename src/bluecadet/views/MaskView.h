@@ -53,11 +53,25 @@ protected:
 	//! Do nothing (will be called by draw().
 	void drawChildren(const ci::ColorA& parentTint) override {};
 
+	inline void pushStencilState();
+	inline void popStencilState();
+
+	inline void enableStencilDrawing(uint8_t index, GLenum stencilOp);
+	inline void enableScreenDrawing(uint8_t index, GLenum stencilFunc);
+
 	//! Gets the stencil op for current type
 	inline GLenum getStencilFuncEnum() const;
 
+	//! Used to support nested stencils
+	static uint8_t sStencilIndex;
+	static const uint8_t sMaxNestedStencils = 0xFFu; // 8 bit stencil buffer
+
 	BaseViewRef mMask = nullptr;
 	MaskType mMaskType = MaskType::REVEAL;
+
+	GLint mPushedStencilFunc = 0;
+	GLint mPushedStencilMask = 0;
+	GLint mPushedStencilRef = 0;
 
 };
 
