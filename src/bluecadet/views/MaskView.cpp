@@ -96,6 +96,16 @@ void MaskView::draw() {
 
 		if (sStencilIndex == 0) {
 			gl::clear(GL_STENCIL_BUFFER_BIT);
+
+		} else {
+			// re-enable all color masks to draw content
+
+			// now tell the stencil what type of stenciling it has
+			gl::stencilFunc(getStencilFuncEnum(), sStencilIndex, sStencilIndex);
+			gl::stencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+			// reset to original draw color
+			gl::color(getDrawColor());
 		}
 	}
 }
