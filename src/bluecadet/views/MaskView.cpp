@@ -39,10 +39,6 @@ void MaskView::draw() {
 	gl::ScopedState scopeStencil(GL_STENCIL_TEST, GL_TRUE);
 	pushStencilState();
 
-	if (sStencilIndex == 0) {
-		gl::clear(GL_STENCIL_BUFFER_BIT);
-	}
-
 	++sStencilIndex;
 
 	if (sStencilIndex == sMaxNestedStencils || sStencilIndex == 1) {
