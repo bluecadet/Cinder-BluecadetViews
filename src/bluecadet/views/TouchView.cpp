@@ -1,4 +1,4 @@
-#ifndef NOTOUCH
+#ifndef NO_TOUCH
 
 #include "TouchView.h"
 #include "../touch/TouchManager.h"

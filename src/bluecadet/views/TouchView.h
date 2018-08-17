@@ -1,5 +1,5 @@
 #pragma once
-#ifndef NOTOUCH
+#ifndef NO_TOUCH
 
 #include "cinder/app/App.h"
 #include "cinder/Timeline.h"

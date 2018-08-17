@@ -13,7 +13,7 @@
 #include "../views/MiniMapView.h"
 #include "../views/GraphView.h"
 
-#ifndef NOTOUCH
+#ifndef NO_TOUCH
 #include "../touch/TouchManager.h"
 #include "../touch/drivers/MouseDriver.h"
 #include "../touch/drivers/NativeTouchDriver.h"
@@ -54,7 +54,7 @@ public:
 	//! Debug view to render stats like fps in a graph.
 	views::GraphViewRef	getStats() const { return mStats; };
 
-#ifndef NOTOUCH
+#ifndef NO_TOUCH
 	//! The main touch driver running on TUIO. Automatically connected at app launch.
 	touch::drivers::TuioDriver &            getTouchDriver() { return mTuioDriver; }
 
@@ -79,7 +79,7 @@ private:
 	float									mDebugUiPadding;
 	bool									mIsLateSetupCompleted;
 
-#ifndef NOTOUCH
+#ifndef NO_TOUCH
 	touch::drivers::TuioDriver				mTuioDriver;
 	touch::drivers::MouseDriver				mMouseDriver;
 	touch::drivers::NativeTouchDriver		mNativeTouchDriver;

@@ -13,7 +13,7 @@ using namespace ci::app;
 using namespace std;
 using namespace bluecadet::views;
 
-#ifndef NOTOUCH
+#ifndef NO_TOUCH
 using namespace bluecadet::touch;
 using namespace bluecadet::touch::drivers;
 #endif
@@ -74,7 +74,7 @@ void BaseApp::setup() {
 	gl::enableVerticalSync(settings->mVerticalSync);
 	gl::enableAlphaBlending();
 
-#ifndef NOTOUCH
+#ifndef NO_TOUCH
 	// Set up touches
 	if (settings->mMouseEnabled) {
 		mMouseDriver.connect();
@@ -109,7 +109,7 @@ void BaseApp::update() {
 	// touch events to convert touches from window into app space
 	const auto appTransform = glm::inverse(ScreenCamera::getInstance()->getTransform());
 	const auto appSize = ScreenLayout::getInstance()->getAppSize();
-#ifndef NOTOUCH
+#ifndef NO_TOUCH
 	touch::TouchManager::getInstance()->update(mRootView, appSize, appTransform);
 #endif
 	mRootView->updateScene(deltaTime);
@@ -130,7 +130,7 @@ void BaseApp::draw(const bool clear) {
 		gl::multModelMatrix(ScreenCamera::getInstance()->getTransform());
 		mRootView->drawScene();
 
-#ifndef NOTOUCH
+#ifndef NO_TOUCH
 		// draw debug touches in app coordinate space
 		if (settings->mDebugEnabled && settings->mShowTouches) {
 			touch::TouchManager::getInstance()->debugDrawTouches();
@@ -213,7 +213,7 @@ void BaseApp::handleViewportChange(const ci::Area & viewport) {
 	SettingsManager::getInstance()->getParams()->setPosition(vec2(mDebugUiPadding));
 }
 
-#ifndef NOTOUCH
+#ifndef NO_TOUCH
 void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
 
 	mSimulatedTouchDriver.setTouchesPerSecond(touchesPerSecond);
