@@ -12,11 +12,14 @@
 #include "../views/BaseView.h"
 #include "../views/MiniMapView.h"
 #include "../views/GraphView.h"
+
+#ifndef NO_TOUCH
 #include "../touch/TouchManager.h"
 #include "../touch/drivers/MouseDriver.h"
 #include "../touch/drivers/NativeTouchDriver.h"
 #include "../touch/drivers/TuioDriver.h"
 #include "../touch/drivers/SimulatedTouchDriver.h"
+#endif
 
 namespace bluecadet {
 namespace core {
@@ -51,6 +54,7 @@ public:
 	//! Debug view to render stats like fps in a graph.
 	views::GraphViewRef	getStats() const { return mStats; };
 
+#ifndef NO_TOUCH
 	//! The main touch driver running on TUIO. Automatically connected at app launch.
 	touch::drivers::TuioDriver &            getTouchDriver() { return mTuioDriver; }
 
@@ -65,6 +69,7 @@ public:
 
 	//! Adds a set of params to control the touch simulator
 	void		addTouchSimulatorParams(float touchesPerSecond = 50.f);
+#endif
 
 private:
 	views::BaseViewRef						mRootView;
@@ -74,10 +79,13 @@ private:
 	float									mDebugUiPadding;
 	bool									mIsLateSetupCompleted;
 
+#ifndef NO_TOUCH
 	touch::drivers::TuioDriver				mTuioDriver;
 	touch::drivers::MouseDriver				mMouseDriver;
 	touch::drivers::NativeTouchDriver		mNativeTouchDriver;
 	touch::drivers::SimulatedTouchDriver	mSimulatedTouchDriver;
+#endif
+
 };
 
 }

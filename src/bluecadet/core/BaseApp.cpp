@@ -3,12 +3,20 @@
 #include "ScreenLayout.h"
 #include "ScreenCamera.h"
 
+// Needed for SetForegroundWindow
+#if defined(CINDER_MSW)
+#include <Windows.h>
+#endif
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 using namespace bluecadet::views;
+
+#ifndef NO_TOUCH
 using namespace bluecadet::touch;
 using namespace bluecadet::touch::drivers;
+#endif
 
 namespace bluecadet {
 namespace core {
@@ -66,6 +74,7 @@ void BaseApp::setup() {
 	gl::enableVerticalSync(settings->mVerticalSync);
 	gl::enableAlphaBlending();
 
+#ifndef NO_TOUCH
 	// Set up touches
 	if (settings->mMouseEnabled) {
 		mMouseDriver.connect();
@@ -79,6 +88,7 @@ void BaseApp::setup() {
 	}
 
 	mSimulatedTouchDriver.setup(Rectf(vec2(0), getWindowSize()), 60);
+#endif
 
 	// Debugging
 	mStats->setBackgroundColor(ColorA(0, 0, 0, 0.1f));
@@ -99,7 +109,9 @@ void BaseApp::update() {
 	// touch events to convert touches from window into app space
 	const auto appTransform = glm::inverse(ScreenCamera::getInstance()->getTransform());
 	const auto appSize = ScreenLayout::getInstance()->getAppSize();
+#ifndef NO_TOUCH
 	touch::TouchManager::getInstance()->update(mRootView, appSize, appTransform);
+#endif
 	mRootView->updateScene(deltaTime);
 
 	mStats->addValue("FPS", 1.0f / (float)deltaTime);
@@ -118,10 +130,12 @@ void BaseApp::draw(const bool clear) {
 		gl::multModelMatrix(ScreenCamera::getInstance()->getTransform());
 		mRootView->drawScene();
 
+#ifndef NO_TOUCH
 		// draw debug touches in app coordinate space
 		if (settings->mDebugEnabled && settings->mShowTouches) {
 			touch::TouchManager::getInstance()->debugDrawTouches();
 		}
+#endif
 	}
 
 	if (settings->mDebugEnabled) {
@@ -199,6 +213,7 @@ void BaseApp::handleViewportChange(const ci::Area & viewport) {
 	SettingsManager::getInstance()->getParams()->setPosition(vec2(mDebugUiPadding));
 }
 
+#ifndef NO_TOUCH
 void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
 
 	mSimulatedTouchDriver.setTouchesPerSecond(touchesPerSecond);
@@ -254,6 +269,7 @@ void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
 		params->setOptions(groupName, "opened=false");
 	}
 }
+#endif
 
 }
 }

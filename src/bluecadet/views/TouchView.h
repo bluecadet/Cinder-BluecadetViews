@@ -1,4 +1,6 @@
 #pragma once
+#ifndef NO_TOUCH
+
 #include "cinder/app/App.h"
 #include "cinder/Timeline.h"
 #include "cinder/Shape2d.h"
@@ -201,3 +203,5 @@ private:
 
 }
 }
+
+#endif
