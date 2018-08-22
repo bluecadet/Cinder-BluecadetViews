@@ -221,7 +221,7 @@ void SettingsManager::parseCommandLineArgs(const std::vector<std::string>& args)
 ci::params::InterfaceGlRef SettingsManager::getParams() {
 	static ci::params::InterfaceGlRef params = nullptr;
 	if (!params) {
-		params = ci::params::InterfaceGl::create("Settings", ci::ivec2(250, 250));
+		params = ci::params::InterfaceGl::create("Settings", toPixels(ci::ivec2(250, 250)));
 		params->addParam("Show Layout", &mShowScreenLayout).group("App").key("l");
 		params->addParam("Show Minimap", &mShowMinimap).group("App").key("m");
 		params->addParam("Show Stats", &mShowStats).group("App").key("s");
