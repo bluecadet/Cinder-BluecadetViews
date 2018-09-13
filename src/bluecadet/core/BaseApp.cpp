@@ -84,7 +84,11 @@ void BaseApp::setup() {
 		mTuioDriver.connect();
 	}
 	if (settings->mNativeTouchEnabled) {
-		mNativeTouchDriver.connect();
+		if (settings->mMultiNativeTouchScreenEnabled) {
+			mMultiNativeTouchDriver.connect();
+		} else {
+			mNativeTouchDriver.connect();
+		}
 	}
 
 	mSimulatedTouchDriver.setup(Rectf(vec2(0), getWindowSize()), 60);

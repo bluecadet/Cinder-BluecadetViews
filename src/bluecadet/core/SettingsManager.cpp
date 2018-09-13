@@ -51,6 +51,7 @@ void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path j
 	addCommandLineParser("mouse", [&](const string &value) { mMouseEnabled = value == "true"; });
 	addCommandLineParser("tuio", [&](const string &value) { mTuioTouchEnabled = value == "true"; });
 	addCommandLineParser("native", [&](const string &value) { mNativeTouchEnabled = value == "true"; });
+	addCommandLineParser("multiNativeTouchScreen", [&](const string &value) { mMultiNativeTouchScreenEnabled = value == "true"; });
 	addCommandLineParser("drawTouches", [&](const string &value) { mShowTouches = value == "true"; });
 	addCommandLineParser("draw_touches", [&](const string &value) { mShowTouches = value == "true"; });
 	addCommandLineParser("drawStats", [&](const string &value) { mShowStats = value == "true"; });
@@ -126,6 +127,7 @@ void SettingsManager::parseJson(ci::JsonTree & json) {
 	setFieldFromJsonIfExists(&mMouseEnabled, "settings.touch.mouse");
 	setFieldFromJsonIfExists(&mTuioTouchEnabled, "settings.touch.tuio");
 	setFieldFromJsonIfExists(&mNativeTouchEnabled, "settings.touch.native");
+	setFieldFromJsonIfExists(&mMultiNativeTouchScreenEnabled, "settings.touch.multiNativeTouchScreen");
 
 	// Debug
 	//setFieldFromJsonIfExists(&mDebugEnabled, "settings.debug.debugMode");
