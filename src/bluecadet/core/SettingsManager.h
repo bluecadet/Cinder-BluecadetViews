@@ -91,6 +91,7 @@ public:
 
 	// Touches
 	bool			mNativeTouchEnabled = false;		//! Native touch coming from the OS
+	bool			mSupportMultipleNativeTouchScreens = true;	//! Native touch with multi-touchscreen support
 	bool			mTuioTouchEnabled = true;			//! TUIO touch events; It's recommended to disable native touch when TUIO is enabled to prevent duplicate events.
 	bool			mMouseEnabled = true;				//! Treat mouse events as touch events.
 

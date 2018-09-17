@@ -22,7 +22,8 @@
 		"touch": {
 			"mouse": true,
 			"tuio": true,
-			"native": false
+			"native": false,
+			"supportMultipleNativeTouchScreens": true
 		},
 		"debug": {
 			"debugEnabled": true,

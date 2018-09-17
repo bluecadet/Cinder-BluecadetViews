@@ -17,6 +17,7 @@
 #include "../touch/TouchManager.h"
 #include "../touch/drivers/MouseDriver.h"
 #include "../touch/drivers/NativeTouchDriver.h"
+#include "../touch/drivers/MultiNativeTouchDriver.h"
 #include "../touch/drivers/TuioDriver.h"
 #include "../touch/drivers/SimulatedTouchDriver.h"
 #endif
@@ -83,6 +84,7 @@ private:
 	touch::drivers::TuioDriver				mTuioDriver;
 	touch::drivers::MouseDriver				mMouseDriver;
 	touch::drivers::NativeTouchDriver		mNativeTouchDriver;
+	touch::drivers::MultiNativeTouchDriver	mMultiNativeTouchDriver;
 	touch::drivers::SimulatedTouchDriver	mSimulatedTouchDriver;
 #endif
 
