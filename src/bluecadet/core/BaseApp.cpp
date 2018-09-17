@@ -84,7 +84,7 @@ void BaseApp::setup() {
 		mTuioDriver.connect();
 	}
 	if (settings->mNativeTouchEnabled) {
-		if (settings->mMultiNativeTouchScreenEnabled) {
+		if (settings->mSupportMultipleNativeTouchScreens) {
 			mMultiNativeTouchDriver.connect();
 		} else {
 			mNativeTouchDriver.connect();
