@@ -319,6 +319,11 @@ void BaseView::drawScene(const ColorA & parentDrawColor) {
 				draw();
 				drawChildren(mDrawColor);
 				break;
+			} case BlendMode::DISABLE: {
+				gl::ScopedBlend scopedBlend(false);
+				draw();
+				drawChildren(mDrawColor);
+				break;
 			}
 		}
 
