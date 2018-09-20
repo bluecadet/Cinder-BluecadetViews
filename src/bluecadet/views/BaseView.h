@@ -83,7 +83,8 @@ public:
 		ALPHA,
 		PREMULT,
 		ADD,
-		MULTIPLY
+		MULTIPLY,
+		DISABLE
 	};
 
 	//==================================================
