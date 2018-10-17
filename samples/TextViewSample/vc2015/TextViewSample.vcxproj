@@ -190,6 +190,7 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup>
+    <ClCompile Include="..\..\..\src\bluecadet\touch\drivers\MultiNativeTouchDriver.cpp" />
     <ClCompile Include="..\src\TextViewSampleApp.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\bluecadet\text\FontManager.cpp" />
     <ClCompile Include="..\..\..\..\Cinder-BluecadetText\src\bluecadet\text\StyledTextLayout.cpp" />
@@ -225,6 +226,7 @@
     <ClCompile Include="..\..\..\..\TUIO\src\cinder\tuio\Tuio.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\bluecadet\touch\drivers\MultiNativeTouchDriver.h" />
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\bluecadet\text\FontManager.h" />
     <ClInclude Include="..\..\..\..\Cinder-BluecadetText\src\bluecadet\text\StyledTextLayout.h" />
