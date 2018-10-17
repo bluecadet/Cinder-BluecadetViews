@@ -106,6 +106,8 @@ public:
 	bool			mCollapseParams = false;			//! Collapses all the default parameter groups like "App"
 	bool			mZoomToggleHotkeyEnabled = true;	//! When true, will bind 0 to toggle zoom to 100%/fit
 	bool			mDisplayIdHotkeysEnabled = false;	//! When true, will bind 1-9 to zoom directly to displays 1-9
+	bool			mTouchSimEnabled = false;			//! When true, will add touch simulator controls to params
+	float			mSimulatedTouchesPerSecond = 50.0f;	//! Used only if mEnableTouchSim is true
 
 protected:
 	static SettingsManagerRef sInstance;

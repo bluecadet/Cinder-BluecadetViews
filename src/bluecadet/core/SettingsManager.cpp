@@ -142,6 +142,9 @@ void SettingsManager::parseJson(ci::JsonTree & json) {
 	setFieldFromJsonIfExists(&mCollapseParams, "settings.debug.collapseParams");
 	setFieldFromJsonIfExists(&mZoomToggleHotkeyEnabled, "settings.debug.zoomToggleHotkey");
 	setFieldFromJsonIfExists(&mDisplayIdHotkeysEnabled, "settings.debug.displayIdHotkeys");
+	setFieldFromJsonIfExists(&mTouchSimEnabled, "settings.debug.touchSimulator.enabled");
+	setFieldFromJsonIfExists(&mSimulatedTouchesPerSecond, "settings.debug.touchSimulator.touchesPerSecond");
+
 }
 
 void SettingsManager::applyToAppSettings(ci::app::App::Settings * settings) {

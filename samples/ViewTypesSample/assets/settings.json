@@ -22,7 +22,8 @@
 		"touch": {
 			"mouse": true,
 			"tuio": true,
-			"native": false
+			"native": false,
+			"supportMultipleNativeTouchScreens": true
 		},
 		"debug": {
 			"debugEnabled": true,
@@ -34,7 +35,11 @@
 			"minimizeParams": false,
 			"collapseParams": true,
 			"displayIdHotkeys": false,
-			"zoomToggleHotkey": true
+			"zoomToggleHotkey": true,
+			"touchSimulator": {
+				"enabled": false,
+				"touchesPerSecond": 50.0
+			}
 		}
 	}
 }

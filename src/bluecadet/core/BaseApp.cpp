@@ -97,6 +97,11 @@ void BaseApp::setup() {
 	// Debugging
 	mStats->setBackgroundColor(ColorA(0, 0, 0, 0.1f));
 	mStats->addGraph("FPS", 0, getFrameRate(), ColorA(1.0f, 0.0f, 0.0f, 0.75f), ColorA(0.0f, 1.0f, 0.25f, 0.75f));
+
+	if (SettingsManager::getInstance()->mTouchSimEnabled) {
+		addTouchSimulatorParams(SettingsManager::getInstance()->mSimulatedTouchesPerSecond);
+	}
+
 }
 
 void BaseApp::update() {
