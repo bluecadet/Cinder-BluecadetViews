@@ -35,7 +35,11 @@
 			"minimizeParams": false,
 			"collapseParams": true,
 			"displayIdHotkeys": false,
-			"zoomToggleHotkey": true
+			"zoomToggleHotkey": true,
+			"touchSimulator": {
+				"enabled": false,
+				"touchesPerSecond": 50.0
+			}
 		}
 	}
 }
