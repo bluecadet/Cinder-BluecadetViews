@@ -30,4 +30,5 @@
 	
 	<includePath>src</includePath>
 </block>
+<template>templates/Bluecadet App/template.xml</template>
 </cinder>
