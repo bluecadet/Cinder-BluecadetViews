@@ -39,8 +39,7 @@ void _TBOX_PREFIX_App::prepareSettings(ci::app::App::Settings *settings) {
 
 void _TBOX_PREFIX_App::setup() {
 	BaseApp::setup();
-	BaseApp::addTouchSimulatorParams();
-
+	
 	// Optional: configure your root view
 	getRootView()->setBackgroundColor(Color::gray(0.5f));
 
