@@ -70,6 +70,14 @@ void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path j
 			mWindowSize = ivec2(stoi(wStr), stoi(hStr));
 		}
 	});
+	addCommandLineParser("pos", [&](const string &value) {
+		int commaIndex = (int)value.find(",");
+		if (commaIndex != string::npos) {
+			string wStr = value.substr(0, commaIndex);
+			string hStr = value.substr(commaIndex + 1, value.size() - commaIndex - 1);
+			mWindowPos = ivec2(stoi(wStr), stoi(hStr));
+		}
+	});
 	addCommandLineParser("bezel", [&](const string &value) {
 		int commaIndex = (int)value.find(",");
 		if (commaIndex != string::npos) {
@@ -114,8 +122,8 @@ void SettingsManager::parseJson(ci::JsonTree & json) {
 	setFieldFromJsonIfExists(&mBorderless, "settings.window.borderless");
 	setFieldFromJsonIfExists(&mWindowSize.x, "settings.window.size.x");
 	setFieldFromJsonIfExists(&mWindowSize.y, "settings.window.size.y");
-	setFieldFromJsonIfExists(&mWindowPos.x, "settings.window.position.x");
-	setFieldFromJsonIfExists(&mWindowPos.y, "settings.window.position.y");
+	setFieldFromJsonIfExists(&mWindowPos.x, "settings.window.pos.x");
+	setFieldFromJsonIfExists(&mWindowPos.y, "settings.window.pos.y");
 	setFieldFromJsonIfExists(&mCameraOffset.x, "settings.window.cameraOffset.x");
 	setFieldFromJsonIfExists(&mCameraOffset.y, "settings.window.cameraOffset.y");
 	setFieldFromJsonIfExists(&mClearColor.r, "settings.window.clearColor.r");
@@ -173,12 +181,11 @@ void SettingsManager::applyToAppSettings(ci::app::App::Settings * settings) {
 	}
 
 	// Default window position to centered in display if no custom pos has been set
-	if (mWindowPos == ivec2(-1)) {
+	if (mWindowPos == ivec2(INT_MIN)) {
 		ivec2 windowSizeInPx = vec2(settings->getWindowSize()) * pixelScale;
 		ivec2 windowPos = (Display::getMainDisplay()->getSize() - windowSizeInPx) / 2;
 		windowPos = glm::max(windowPos, ivec2(0));
 		settings->setWindowPos(windowPos);
-
 	} else {
 		settings->setWindowPos(vec2(mWindowPos) * pixelScale);
 	}

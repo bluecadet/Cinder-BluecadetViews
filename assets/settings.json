@@ -16,6 +16,7 @@
 			"fullscreen": true,
 			"borderless": false,
 			"size": {"x": 1280, "y": 720},
+			//"pos": {"x": -1, "y": -1}, 		//Window appears centered if no position specified
 			"cameraOffset": {"x": 0, "y": 0},
 			"clearColor": {"r": 0, "g": 0, "b": 0, "a": 1.0}
 		},
