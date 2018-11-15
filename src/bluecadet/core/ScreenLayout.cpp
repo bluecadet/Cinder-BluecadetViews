@@ -44,7 +44,7 @@ void ScreenLayout::updateLayout() {
 }
 
 Rectf ScreenLayout::getDisplayBounds(const int displayId) {
-	return getDisplayBounds(getColFromDisplayId(displayId), getRowFromDisplayId(displayId));
+	return getDisplayBounds(getRowFromDisplayId(displayId), getColFromDisplayId(displayId));
 }
 
 Rectf ScreenLayout::getDisplayBounds(const int row, const int col) {
