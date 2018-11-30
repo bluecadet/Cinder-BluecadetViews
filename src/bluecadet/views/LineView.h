@@ -3,6 +3,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
+#include "bluecadet/core/ScreenCamera.h"
 #include "BaseView.h"
 
 namespace bluecadet {
