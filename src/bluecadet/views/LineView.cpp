@@ -26,7 +26,8 @@ void LineView::draw() {
 	//! This was introduced because of a bug that was causing gl::ScopedColor to override the parent views tint/alpha
 	ColorA correctedColor = mLineColor.value() * getDrawColor();
 	gl::ScopedColor color(correctedColor);
-	gl::ScopedLineWidth lineWidth(mLineWidth);
+	float screenScale = bluecadet::core::ScreenCamera::getInstance()->getScale().x;
+	gl::ScopedLineWidth lineWidth(mLineWidth * screenScale);
 	gl::drawLine(vec2(0, 0), getEndPoint());
 }
 
