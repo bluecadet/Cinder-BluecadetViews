@@ -34,8 +34,8 @@ public:
 	static ci::gl::Texture::Format getDefaultTextureFormat();
 
 	//! Configures a TextView instance. Convenience method that groups a few calls together.
-	void setup(const std::wstring& text = L"", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = -1.0f);
-	void setup(const std::string& text = "", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = -1.0f);
+	void setup(const std::wstring& text = L"", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = -1.0f, const bluecadet::text::TokenParserMapRef customTokenParsers = nullptr);
+	void setup(const std::string& text = "", const std::string& styleKey = "", const bool parseText = true, const float maxWidth = -1.0f, const bluecadet::text::TokenParserMapRef customTokenParsers = nullptr);
 
 	void	reset() override;
 
@@ -69,11 +69,11 @@ public:
 
 	//! Returns the actual size of the text including padding.
 	//! In advanced use-cases this can differ from what was set in setSize(), e.g. if a special clip mode is set or size-trimming is enabled.
-	 inline const ci::vec2	getSize() override;
+	inline const ci::vec2	getSize() override;
 
-	 //! The texture format used to create textures.
-	 void								setTextureFormat(const ci::gl::Texture::Format & value) { mTextureFormat = value; }
-	 const ci::gl::Texture::Format &	getTextureFormat() const { return mTextureFormat; }
+	//! The texture format used to create textures.
+	void								setTextureFormat(const ci::gl::Texture::Format & value) { mTextureFormat = value; }
+	const ci::gl::Texture::Format &	getTextureFormat() const { return mTextureFormat; }
 
 protected:
 

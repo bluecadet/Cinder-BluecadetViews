@@ -1,14 +1,16 @@
 #include "TextView.h"
 
 #include "bluecadet/text/StyleManager.h"
-
 #include "ImageView.h"
+#include "cinder/Log.h"
 
 #if defined(CINDER_MSW)
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+
+using namespace bluecadet::text;
 
 namespace bluecadet {
 namespace views {
@@ -30,22 +32,26 @@ ci::gl::Texture::Format TextView::getDefaultTextureFormat() {
 	return format;
 }
 
-void TextView::setup(const std::wstring & text, const std::string & styleKey, const bool parseText, const float maxWidth) {
+void TextView::setup(const std::wstring & text, const std::string & styleKey, const bool parseText, const float maxWidth, const TokenParserMapRef customTokenParsers) {
 	setMaxWidth(maxWidth);
 
 	if (text.empty()) {
 		auto style = text::StyleManager::getInstance()->getStyle(styleKey);
 		setCurrentStyle(style);
 	} else if (parseText) {
-		setText(text, styleKey);
+		setText(text, styleKey, customTokenParsers);
 
 	} else {
+		if (customTokenParsers != nullptr) {
+			CI_LOG_W("Custom token parsers won't be used on plain text.");
+		}
+
 		setPlainText(text, styleKey);
 	}
 }
 
-void TextView::setup(const std::string & text, const std::string & styleKey, const bool parseText, const float maxWidth) {
-	setup(text::wideString(text), styleKey, parseText, maxWidth);
+void TextView::setup(const std::string & text, const std::string & styleKey, const bool parseText, const float maxWidth, const TokenParserMapRef customTokenParsers) {
+	setup(text::wideString(text), styleKey, parseText, maxWidth, customTokenParsers);
 }
 
 void TextView::reset() {
@@ -66,7 +72,7 @@ void TextView::draw() {
 	if (mTexture) {
 		//gl::draw(mTexture);
 		//return;
-		
+
 		static gl::GlslProgRef shader = nullptr;
 		static gl::BatchRef batch = nullptr;
 
@@ -74,42 +80,42 @@ void TextView::draw() {
 			shader = gl::GlslProg::create(gl::GlslProg::Format()
 				.vertex(CI_GLSL(150,
 					uniform mat4 ciModelViewProjection;
-					uniform vec2 uSize;
-					in vec4 ciPosition;
-					in vec4 ciColor;
-					in vec2 ciTexCoord0;
-					out vec4 vColor;
-					out vec2 vTexCoord0;
+			uniform vec2 uSize;
+			in vec4 ciPosition;
+			in vec4 ciColor;
+			in vec2 ciTexCoord0;
+			out vec4 vColor;
+			out vec2 vTexCoord0;
 
-					void main(void) {
-						vColor = ciColor;
-						vTexCoord0 = ciTexCoord0;
-						vec4 pos = ciPosition * vec4(uSize, 0, 1);
-						gl_Position = ciModelViewProjection * pos;
-					}
-				)).fragment(CI_GLSL(150,
-					uniform sampler2D uTex0;
-					uniform int uDemultiply;
-					in vec2 vTexCoord0;
-					in vec4 vColor;
-					out vec4 oColor;
+			void main(void) {
+				vColor = ciColor;
+				vTexCoord0 = ciTexCoord0;
+				vec4 pos = ciPosition * vec4(uSize, 0, 1);
+				gl_Position = ciModelViewProjection * pos;
+			}
+			)).fragment(CI_GLSL(150,
+				uniform sampler2D uTex0;
+			uniform int uDemultiply;
+			in vec2 vTexCoord0;
+			in vec4 vColor;
+			out vec4 oColor;
 
-					void main(void) {
-						oColor = texture(uTex0, vTexCoord0);
+			void main(void) {
+				oColor = texture(uTex0, vTexCoord0);
 
-						if (oColor.a == 0) {
-							discard;
-						}
+				if (oColor.a == 0) {
+					discard;
+				}
 
-						if (uDemultiply == 1) {
-							// This compensates for GDI+ interpolation between text
-							// and transparent black background
-							oColor.rgb /= oColor.a;
-						}
+				if (uDemultiply == 1) {
+					// This compensates for GDI+ interpolation between text
+					// and transparent black background
+					oColor.rgb /= oColor.a;
+				}
 
-						oColor *= vColor;
-					}
-				)));
+				oColor *= vColor;
+			}
+			)));
 			batch = gl::Batch::create(geom::Rect().rect(Rectf(0, 0, 1.0f, 1.0f)), shader);
 		}
 
