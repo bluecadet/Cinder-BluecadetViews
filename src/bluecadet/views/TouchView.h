@@ -78,7 +78,7 @@ public:
 	//! Getters/Setters
 
 	//! Set whether or not to accept new touches. Can be turned on/off.
-	inline void			setTouchEnabled(const bool state)		{ mTouchEnabled = state; };
+	inline void			setTouchEnabled(const bool state)		{ mTouchEnabled = state; if (!state) cancelTouches(); };
 	inline const bool	isTouchEnabled() const					{ return mTouchEnabled; }
 
 	//! Accepts more than one touch if true, otherwise max of one touch if false. Defaults to false.
