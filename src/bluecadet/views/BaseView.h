@@ -338,7 +338,7 @@ protected:
 	inline virtual void	drawChildren(const ci::ColorA & parentDrawColor); //! Called by drawScene() after draw() and before didDraw(). Implemented at bottom of class.
 	inline virtual void	didDraw() {}							//! Called by drawScene after draw()
 
-	inline virtual void didMoveToView(BaseView * parent) { invalidate(true, false); }		//! Called when moved to a parent
+	inline virtual void didMoveToView(BaseView * parent) {}		//! Called when moved to a parent
 	inline virtual void willMoveFromView(BaseView * parent) {}	//! Called when removed from a parent
 
 	const ci::ColorA & getDrawColor() const { return mDrawColor; }	//! The color used for drawing, which is a composite of the alpha and tint colors.
