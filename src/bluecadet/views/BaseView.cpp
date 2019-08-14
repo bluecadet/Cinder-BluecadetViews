@@ -129,6 +129,7 @@ void BaseView::addChild(BaseViewRef child, size_t index) {
 		mChildren.insert(it, child);
 	}
 
+	child->invalidate(true, false);
 	child->didMoveToView(this);
 }
 
@@ -143,6 +144,7 @@ void BaseView::removeChild(BaseViewRef child) {
 		return;
 	}
 
+	child->invalidate(true, false);
 	child->willMoveFromView(this);
 	child->mParent = nullptr;
 	mChildren.remove(child);
@@ -159,6 +161,7 @@ void BaseView::removeChild(BaseView* childPtr) {
 
 BaseViewList::iterator BaseView::removeChild(BaseViewList::iterator childIt) {
 	auto child = *childIt;
+  child->invalidate(true, false);
 	child->willMoveFromView(this);
 	child->mParent = nullptr;
 	return mChildren.erase(childIt);
