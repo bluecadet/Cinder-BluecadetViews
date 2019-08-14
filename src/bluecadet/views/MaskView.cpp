@@ -72,12 +72,12 @@ void MaskView::draw() {
 	popStencilState();
 }
 
-void MaskView::updateScene(double deltaTime) {
-	BaseView::updateScene(deltaTime);
+void MaskView::updateScene(const FrameInfo & info) {
+	BaseView::updateScene(info);
 
 	if (mMask) {
 		// Update the mask here since it's not actually a child
-		mMask->updateScene(deltaTime);
+		mMask->updateScene(info);
 	}
 }
 

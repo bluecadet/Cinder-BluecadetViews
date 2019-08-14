@@ -87,18 +87,21 @@ public:
 		DISABLE
 	};
 
+	struct FrameInfo {
+		double absoluteTime;
+		double deltaTime;
+		FrameInfo(double absoluteTime = ci::app::getElapsedSeconds(), double deltaTime = 0) : absoluteTime(absoluteTime), deltaTime(deltaTime) {}
+	};
+
 	//==================================================
 	// Scene graph modification
 	// 
 
 	//! Updates this view and all of its children. Call this method on root views that don't have a parent.
-	virtual void			updateScene(double deltaTime);
+	virtual void			updateScene(const FrameInfo & frameInfo = FrameInfo());
 
 	//! Applies tint color, alpha and matrices and then draws itself and all children. Validates transforms internally.
 	virtual void			drawScene(const ci::ColorA & parentDrawColor = ci::ColorA(1.0f, 1.0f, 1.0, 1.0f)) final;
-
-	//! Used for all internal animations
-	ci::TimelineRef			getTimeline();
 
 	//! Returns a shared pointer to this instance
 	inline BaseViewRef		getSharedViewPtr() { return shared_from_this(); }
@@ -116,6 +119,7 @@ public:
 	virtual void			removeChild(BaseView* childPtr);
 	virtual BaseViewList::iterator removeChild(BaseViewList::iterator childIt);
 	virtual void			removeAllChildren();
+	virtual void			removeSelf(); // Attempts to remove this view from its parent, if it has one.
 
 	//! Gets the child's index or -1 if not found; Mildly expensive with O(N) complexity
 	int						getChildIndex(BaseViewRef child);
@@ -167,6 +171,7 @@ public:
 	virtual const ci::vec2 &			getPositionConst() const { return mPosition.value(); }
 	virtual void						setPosition(const ci::vec2& position) { mPosition = position; invalidate(); }
 	virtual void						setPosition(const ci::vec3& position) { mPosition = ci::vec2(position.x, position.y); invalidate(); }
+	virtual void						setPosition(float x, float y) { mPosition = ci::vec2(x, y); invalidate(); }
 
 	//! Shorthand for combining position and size to center the view at `center`
 	virtual void						setCenter(const ci::vec2 center) { setPosition(center - 0.5f * getSize()); }
@@ -177,7 +182,8 @@ public:
 	//! Local scale relative to parent view
 	virtual ci::Anim<ci::vec2> &		getScale() { return mScale; }
 	virtual const ci::vec2 &			getScaleConst() const { return mScale.value(); }
-	virtual void						setScale(const float& scale) { mScale = ci::vec2(scale, scale);  invalidate(); }
+	virtual void						setScale(float scale) { mScale = ci::vec2(scale, scale);  invalidate(); }
+	virtual void						setScale(float scaleX, float scaleY) { mScale = ci::vec2(scaleX, scaleY);  invalidate(); }
 	virtual void						setScale(const ci::vec2& scale) { mScale = scale;  invalidate(); }
 	virtual void						setScale(const ci::vec3& scale) { mScale = ci::vec2(scale.x, scale.y);  invalidate(); }
 
@@ -201,6 +207,11 @@ public:
 	//! Size of this view. Defaults to 0, 0 and is not affected by children. Does not affect transforms (position, rotation, scale).
 	virtual const ci::vec2				getSize() { return mSize; }
 	virtual void						setSize(const ci::vec2& size) { mSize = size; invalidate(false, true); }
+	inline void							setSize(float width, float height) { setSize(ci::vec2(width, height)); }
+	inline void							setSize(float widthAndHeight) { setSize(ci::vec2(widthAndHeight, widthAndHeight)); }
+
+	//! Utility method that sets the size of this view to the most bottom/right extents of all child bounds.
+	void								resizeToFit();
 
 	//! Width of this view. Defaults to 0 and is not affected by children.
 	virtual float						getWidth() { return getSize().x; }
@@ -252,6 +263,16 @@ public:
 
 
 	//==================================================
+	// Timeline
+	// 
+
+	//! Used for all internal animations. By default, no timeline is created until this method is called.
+	inline ci::TimelineRef	getTimeline(bool stepToNow = true);
+
+	//! Optional method to set this view's timeline to a specific timeline. Can be used to share timelines across views.
+	inline void				setTimeline(ci::TimelineRef timeline) { mTimeline = timeline; }
+
+	//==================================================
 	// Coordinate space conversions
 	// 
 
@@ -275,7 +296,9 @@ public:
 
 	//! Converts a position from the root view's global space to the current view's local space.
 	const ci::vec2						convertGlobalToLocal(const ci::vec2& global) { ci::vec4 local = glm::inverse(getGlobalTransform()) * ci::vec4(global, 0, 1); return ci::vec2(local); }
-
+	
+	//! This will recalculate the transformation matrix based on the current position, scale and rotation. Gets called automatically before getTransforms(), getGlobalTransforms() or getGlobalPosition() is called.
+	inline void	validateTransforms(const bool force = false);
 
 	//==================================================
 	// User info
@@ -330,7 +353,7 @@ public:
 
 protected:
 
-	virtual void update(const double deltaTime) {};				//! Gets called before draw() and after any parent's update. Override this method to plug into the update loop.
+	virtual void		update(const FrameInfo & frameInfo) {};	//! Gets called before draw() and after any parent's update. Override this method to plug into the update loop.
 
 	inline virtual void	willDraw() {}							//! Called by drawScene before draw()
 	virtual void		draw();									//! Called by drawScene and allows for drawing content for this node. By default draws a rectangle with the current size and background color (only if x/y /bg-alpha > 0)
@@ -343,9 +366,9 @@ protected:
 
 	const ci::ColorA & getDrawColor() const { return mDrawColor; }	//! The color used for drawing, which is a composite of the alpha and tint colors.
 	BlendMode getDrawBlendMode() const { return mDrawBlendMode; };	//! The current applied blend mode. Useful if this view's blend mode is set to inherit. Updated on each render pass.
-
-	//! This will recalculate the transformation matrix based on the current position, scale and rotation. Gets called automatically before getTransforms(), getGlobalTransforms() or getGlobalPosition() is called.
-	inline void	validateTransforms(const bool force = false);
+	
+	//! Progresses the timeline
+	virtual void			advanceTimeline(ci::TimelineRef timeline, const FrameInfo & frameInfo);
 
 	//! Marks the transformation matrix (and all of its children's matrices) as invalid. This will cause the matrices to be re-calculated when necessary.
 	//! When content is true, marks the content as invalid and will dispatch a content updated event
@@ -371,6 +394,7 @@ private:
 	BaseViewList mChildren;
 
 	ci::TimelineRef mTimeline;
+
 	ci::Anim<float> mAlpha;
 	ci::Anim<ci::Color> mTint;
 	ci::Anim<ci::ColorA> mBackgroundColor;

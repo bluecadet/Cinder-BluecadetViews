@@ -45,7 +45,7 @@ AnimatedView::AnimatedView(bool showInitially) :
 AnimatedView::~AnimatedView() {
 }
 
-void AnimatedView::animateOn(const Options & options, CallbackFn callback, const bool isCallbackAsync) {
+void AnimatedView::animateOn(const Options & options, CallbackFn callback, bool isCallbackAsync) {
 	mIsInitialized = true; // override initial state
 
 	CallbackFn wrappedCallback = nullptr;
@@ -81,7 +81,7 @@ void AnimatedView::animateOn(const Options & options, CallbackFn callback, const
 
 		addAnimationOn(getTimeline(), options);
 
-		mCueOn = CallbackCueRef(new CallbackCue([=](bool completed) {
+		mCueOn = make_shared<CallbackCue>([=](bool completed) {
 			if (completed) {
 				mIsShowing = true;
 				didAnimateOn();
@@ -89,7 +89,7 @@ void AnimatedView::animateOn(const Options & options, CallbackFn callback, const
 			}
 			mCueOn = nullptr;
 
-		}, getTimeline()->getCurrentTime() + options.getDuration() + options.getDelay()));
+		}, getTimeline()->getCurrentTime() + options.getDuration() + options.getDelay());
 
 		getTimeline()->insert(mCueOn);
 
@@ -108,7 +108,7 @@ void AnimatedView::animateOn(const Options & options, CallbackFn callback, const
 	}
 }
 
-void AnimatedView::animateOff(const Options & options, CallbackFn callback, const bool isCallbackAsync) {
+void AnimatedView::animateOff(const Options & options, CallbackFn callback, bool isCallbackAsync) {
 	mIsInitialized = true; // override initial state
 
 	CallbackFn wrappedCallback = nullptr;
@@ -144,14 +144,14 @@ void AnimatedView::animateOff(const Options & options, CallbackFn callback, cons
 
 		addAnimationOff(getTimeline(), options);
 
-		mCueOff = CallbackCueRef(new CallbackCue([=](bool completed) {
+		mCueOff = make_shared<CallbackCue>([=](bool completed) {
 			if (completed) {
 				mIsShowing = false;
 				didAnimateOff();
 				mSignalDidAnimateOff.emit();
 			}
 			mCueOff = nullptr;
-		}, getTimeline()->getCurrentTime() + options.getDuration() + options.getDelay()));
+		}, getTimeline()->getCurrentTime() + options.getDuration() + options.getDelay());
 
 		getTimeline()->insert(mCueOff);
 
@@ -173,7 +173,7 @@ void AnimatedView::animateOff(const Options & options, CallbackFn callback, cons
 
 void AnimatedView::setToAnimatedOn() {
 	animateOn(Options().duration(0).easing(easeNone));
-	mShowInitially = false;
+	mShowInitially = true;
 }
 
 void AnimatedView::setToAnimatedOff() {
@@ -208,6 +208,12 @@ void AnimatedView::cancelAnimationOff() {
 		mCueOff->removeSelf();
 	}
 	mCueOff = nullptr;
+}
+
+void AnimatedView::cancelAnimations() {
+	cancelAnimationOn();
+	cancelAnimationOff();
+	BaseView::cancelAnimations();
 }
 
 }

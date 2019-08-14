@@ -48,14 +48,15 @@ BaseView::BaseView() :
 	mShouldPropagateEvents(sEventPropagationEnabled),
 	mShouldDispatchContentInvalidation(sContentInvalidationEnabled),
 
-	mTimeline(Timeline::create()),
 	mParent(nullptr),
-	
+
+	mTimeline(nullptr),
+
 	mViewId(sNumInstances++),
 	mViewIdStr(to_string(mViewId)),
 	mName(mViewIdStr),
 	mDebugIncludeClassName(true)
-	{
+{
 }
 
 BaseView::~BaseView() {
@@ -63,8 +64,9 @@ BaseView::~BaseView() {
 }
 
 void BaseView::reset() {
-	mPosition = vec2(0.0f, 0.0f);
-	mScale = vec2(1.0f, 1.0f);
+	mTransformOrigin = vec2(0);
+	mPosition = vec2(0);
+	mScale = vec2(1.0f);
 	mRotation = quat();
 	mTransform = mat4();
 	mGlobalTransform = mat4();
@@ -72,11 +74,17 @@ void BaseView::reset() {
 	mHasInvalidContent = true;
 	mShouldForceInvisibleDraw = false;
 	mShouldPropagateEvents = true;
+	mBlendMode = BlendMode::INHERIT;
 	mTint = Color(1.0f, 1.0f, 1.0f);
 	mDrawColor = ColorA(1.0f, 1.0f, 1.0f, 1.0f);
 	mBackgroundColor = ColorA(0, 0, 0, 0);
 	mSize = vec2(0, 0);
 	mAlpha = 1.0;
+	mIsHidden = false;
+	mShouldForceInvisibleDraw = false;
+	mTimeline->clear();
+	mTimeline->removeSelf();
+	mTimeline = nullptr;
 }
 
 
@@ -150,14 +158,21 @@ void BaseView::removeChild(BaseView* childPtr) {
 }
 
 BaseViewList::iterator BaseView::removeChild(BaseViewList::iterator childIt) {
-	(*childIt)->willMoveFromView(this);
-	(*childIt)->mParent = nullptr;
+	auto child = *childIt;
+	child->willMoveFromView(this);
+	child->mParent = nullptr;
 	return mChildren.erase(childIt);
 }
 
 void BaseView::removeAllChildren() {
 	for (BaseViewList::iterator it = mChildren.begin(); it != mChildren.end();) {
 		it = removeChild(it);
+	}
+}
+
+void BaseView::removeSelf() {
+	if (auto parent = mParent) {
+		parent->removeChild(this);
 	}
 }
 
@@ -251,23 +266,32 @@ void BaseView::setTransformOrigin(const vec2 & value, const bool compensateForOf
 	setPosition(mPosition.value() + centerOffset);
 }
 
+void BaseView::resizeToFit() {
+	// explicitly initialize w 0 VS otherwise seems
+	// to over-optimize this into rubbish
+	Rectf bounds(0, 0, 0, 0);
+	for (const auto child : mChildren) {
+		Rectf childBounds = child->getBounds(true);
+		bounds.include(childBounds);
+	}
+	setSize(bounds.getLowerRight());
+}
+
 //==================================================
 // Main loop
 // 
 
-void BaseView::updateScene(const double deltaTime) {
-	if (mTimeline && !mTimeline->empty()) {
-		mTimeline->stepTo(timeline().getCurrentTime());
-		invalidate();
-	}
-
+void BaseView::updateScene(const BaseView::FrameInfo & frameInfo) {
 	if (mHasInvalidContent && mShouldDispatchContentInvalidation) {
 		dispatchEvent(ViewEvent(ViewEvent::Type::CONTENT_INVALIDATED, getSharedViewPtr()));
 	}
 
-	update(deltaTime);
+	update(frameInfo);
+
+	advanceTimeline(mTimeline, frameInfo);
+
 	for (auto child : mChildren) {
-		child->updateScene(deltaTime);
+		child->updateScene(frameInfo);
 	}
 }
 
@@ -278,9 +302,11 @@ void BaseView::drawScene(const ColorA & parentDrawColor) {
 		validateTransforms();
 		validateContent();
 
-		mDrawColor.r = mTint.value().r * parentDrawColor.r;
-		mDrawColor.g = mTint.value().g * parentDrawColor.g;
-		mDrawColor.b = mTint.value().b * parentDrawColor.b;
+		const auto & tint = mTint.value();
+
+		mDrawColor.r = tint.r * parentDrawColor.r;
+		mDrawColor.g = tint.g * parentDrawColor.g;
+		mDrawColor.b = tint.b * parentDrawColor.b;
 		mDrawColor.a = mAlpha.value() * parentDrawColor.a;
 
 		gl::ScopedModelMatrix scopedModelMatrix;
@@ -406,14 +432,25 @@ void BaseView::cancelAnimations() {
 	mAlpha.stop();
 }
 
-TimelineRef BaseView::getTimeline() {
+inline TimelineRef BaseView::getTimeline(bool stepToNow) {
 	if (!mTimeline) {
 		mTimeline = Timeline::create();
+		mTimeline->setAutoRemove(false);
 	}
-	if (mTimeline) {
-		mTimeline->stepTo(timeline().getCurrentTime());
+	if (stepToNow) {
+		advanceTimeline(mTimeline, FrameInfo(timeline().getCurrentTime()));
 	}
 	return mTimeline;
+}
+
+inline void BaseView::advanceTimeline(ci::TimelineRef timeline, const BaseView::FrameInfo & frameInfo) {
+	if (!timeline) {
+		return;
+	}
+	if (timeline->getParent() == nullptr) {
+		timeline->stepTo((float)frameInfo.absoluteTime);
+		invalidate();
+	}
 }
 
 CueRef BaseView::dispatchAfter(std::function<void()> fn, float delay) {

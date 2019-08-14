@@ -48,7 +48,7 @@ protected:
 	void draw() override;
 
 	//! Updates itself and makes sure the mask is updated.
-	void updateScene(double deltaTime) override;
+	void updateScene(const FrameInfo & info) override;
 
 	//! Do nothing (will be called by draw().
 	void drawChildren(const ci::ColorA& parentTint) override {};
