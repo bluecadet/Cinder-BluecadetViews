@@ -8,15 +8,15 @@ namespace drivers {
 
 // <Windows 8 touch API>
 
-#define WM_POINTERENTER				0x0249
-#define WM_POINTERLEAVE				0x024A
-#define WM_POINTERUPDATE			0x0245
-#define WM_POINTERDOWN				0x0246
-#define WM_POINTERUP				0x0247
-#define WM_POINTERCAPTURECHANGED    0x024C
-#define POINTER_CANCELLED			0x1000
+#define WM_POINTERENTER 0x0249
+#define WM_POINTERLEAVE 0x024A
+#define WM_POINTERUPDATE 0x0245
+#define WM_POINTERDOWN 0x0246
+#define WM_POINTERUP 0x0247
+#define WM_POINTERCAPTURECHANGED 0x024C
+#define POINTER_CANCELLED 0x1000
 
-#define GET_POINTERID_WPARAM(wParam)	(LOWORD(wParam))
+#define GET_POINTERID_WPARAM(wParam) (LOWORD(wParam))
 
 typedef enum {
 	PT_POINTER = 0x00000001,
@@ -62,9 +62,7 @@ typedef enum {
 	POINTER_CHANGE_FIFTHBUTTON_UP,
 } POINTER_BUTTON_CHANGE_TYPE;
 
-typedef enum {
-	TOUCH_FLAG_NONE = 0x00000000
-} TOUCH_FLAGS;
+typedef enum { TOUCH_FLAG_NONE = 0x00000000 } TOUCH_FLAGS;
 
 typedef enum {
 	TOUCH_MASK_NONE = 0x00000000,
@@ -89,101 +87,100 @@ typedef enum {
 } PEN_MASK;
 
 typedef struct {
-	POINTER_INPUT_TYPE		pointerType;
-	UINT32					pointerId;
-	UINT32					frameId;
-	POINTER_FLAGS			pointerFlags;
-	HANDLE					sourceDevice;
-	HWND					hwndTarget;
-	POINT					ptPixelLocation;
-	POINT					ptHimetricLocation;
-	POINT					ptPixelLocationRaw;
-	POINT					ptHimetricLocationRaw;
-	DWORD					dwTime;
-	UINT32					historyCount;
-	INT32					InputData;
-	DWORD					dwKeyStates;
-	UINT64					PerformanceCount;
+	POINTER_INPUT_TYPE pointerType;
+	UINT32 pointerId;
+	UINT32 frameId;
+	POINTER_FLAGS pointerFlags;
+	HANDLE sourceDevice;
+	HWND hwndTarget;
+	POINT ptPixelLocation;
+	POINT ptHimetricLocation;
+	POINT ptPixelLocationRaw;
+	POINT ptHimetricLocationRaw;
+	DWORD dwTime;
+	UINT32 historyCount;
+	INT32 InputData;
+	DWORD dwKeyStates;
+	UINT64 PerformanceCount;
 	POINTER_BUTTON_CHANGE_TYPE ButtonChangeType;
 } POINTER_INFO;
 
 typedef struct {
-	POINTER_INFO			pointerInfo;
-	TOUCH_FLAGS				touchFlags;
-	TOUCH_MASK				touchMask;
-	RECT					rcContact;
-	RECT					rcContactRaw;
-	UINT32					orientation;
-	UINT32					pressure;
+	POINTER_INFO pointerInfo;
+	TOUCH_FLAGS touchFlags;
+	TOUCH_MASK touchMask;
+	RECT rcContact;
+	RECT rcContactRaw;
+	UINT32 orientation;
+	UINT32 pressure;
 } POINTER_TOUCH_INFO;
 
 typedef struct {
-	POINTER_INFO			pointerInfo;
-	PEN_FLAGS				penFlags;
-	PEN_MASK				penMask;
-	UINT32					pressure;
-	UINT32					rotation;
-	INT32					tiltX;
-	INT32					tiltY;
+	POINTER_INFO pointerInfo;
+	PEN_FLAGS penFlags;
+	PEN_MASK penMask;
+	UINT32 pressure;
+	UINT32 rotation;
+	INT32 tiltX;
+	INT32 tiltY;
 } POINTER_PEN_INFO;
 
-typedef BOOL(WINAPI *GET_POINTER_INFO)(UINT32 pointerId, POINTER_INFO *pointerInfo);
-typedef BOOL(WINAPI *GET_POINTER_TOUCH_INFO)(UINT32 pointerId, POINTER_TOUCH_INFO *pointerInfo);
-typedef BOOL(WINAPI *GET_POINTER_PEN_INFO)(UINT32 pointerId, POINTER_PEN_INFO *pointerInfo);
+typedef BOOL(WINAPI * GET_POINTER_INFO)(UINT32 pointerId, POINTER_INFO * pointerInfo);
+typedef BOOL(WINAPI * GET_POINTER_TOUCH_INFO)(UINT32 pointerId, POINTER_TOUCH_INFO * pointerInfo);
+typedef BOOL(WINAPI * GET_POINTER_PEN_INFO)(UINT32 pointerId, POINTER_PEN_INFO * pointerInfo);
 
 // </Windows 8 touch API>
 
-#define EXPORT_API __declspec(dllexport) 
+#define EXPORT_API __declspec(dllexport)
 
-extern "C"
-{
-	EXPORT_API void __stdcall initTouch();
+extern "C" {
+EXPORT_API void __stdcall initTouch();
 }
 
 LRESULT CALLBACK wndProc8(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 void decodeWin8Touches(UINT msg, WPARAM wParam, LPARAM lParam);
 
-ci::signals::Signal<void(ci::vec2, int)>  signalOnTouchAdded;
-ci::signals::Signal<void(ci::vec2, int)>  signalOnTouchUpdated;
-ci::signals::Signal<void(ci::vec2, int)>  signalOnTouchRemoved;
+ci::signals::Signal<void(ci::vec2, int)> signalOnTouchAdded;
+ci::signals::Signal<void(ci::vec2, int)> signalOnTouchUpdated;
+ci::signals::Signal<void(ci::vec2, int)> signalOnTouchRemoved;
 
-GET_POINTER_INFO			GetPointerInfo;
-GET_POINTER_TOUCH_INFO		GetPointerTouchInfo;
-GET_POINTER_PEN_INFO		GetPointerPenInfo;
+GET_POINTER_INFO GetPointerInfo;
+GET_POINTER_TOUCH_INFO GetPointerTouchInfo;
+GET_POINTER_PEN_INFO GetPointerPenInfo;
 
-HWND						_currentWindow;
-LONG_PTR					_oldWindowProc;
+HWND _currentWindow;
+LONG_PTR _oldWindowProc;
 
-extern "C"
-{
-	void __stdcall initTouch() {
-		_currentWindow = (HWND)ci::app::getWindow()->getNative();
-
-		HINSTANCE h = LoadLibrary(TEXT("user32.dll"));
-		GetPointerInfo = (GET_POINTER_INFO)GetProcAddress(h, "GetPointerInfo");
-		GetPointerTouchInfo = (GET_POINTER_TOUCH_INFO)GetProcAddress(h, "GetPointerTouchInfo");
-		GetPointerPenInfo = (GET_POINTER_PEN_INFO)GetProcAddress(h, "GetPointerPenInfo");
-
-		_oldWindowProc = SetWindowLongPtr(_currentWindow, GWLP_WNDPROC, (LONG_PTR)wndProc8);
+extern "C" {
+void __stdcall initTouch() {
+	static bool initialized = false;
+	if (initialized) {
+		return;
 	}
+	initialized = true;
+
+	_currentWindow = (HWND)ci::app::getWindow()->getNative();
+
+	HINSTANCE h = LoadLibrary(TEXT("user32.dll"));
+	GetPointerInfo = (GET_POINTER_INFO)GetProcAddress(h, "GetPointerInfo");
+	GetPointerTouchInfo = (GET_POINTER_TOUCH_INFO)GetProcAddress(h, "GetPointerTouchInfo");
+	GetPointerPenInfo = (GET_POINTER_PEN_INFO)GetProcAddress(h, "GetPointerPenInfo");
+
+	_oldWindowProc = SetWindowLongPtr(_currentWindow, GWLP_WNDPROC, (LONG_PTR)wndProc8);
+}
 }
 
 LRESULT CALLBACK wndProc8(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	switch (msg) {
-	case WM_TOUCH:
-		CloseTouchInputHandle((HTOUCHINPUT)lParam);
-		break;
-	case WM_POINTERENTER:
-	case WM_POINTERLEAVE:
-	case WM_POINTERDOWN:
-	case WM_POINTERUP:
-	case WM_POINTERUPDATE:
-	case WM_POINTERCAPTURECHANGED:
-		decodeWin8Touches(msg, wParam, lParam);
-		break;
-	default:
-		return CallWindowProc((WNDPROC)_oldWindowProc, hwnd, msg, wParam, lParam);
+		case WM_TOUCH: CloseTouchInputHandle((HTOUCHINPUT)lParam); break;
+		case WM_POINTERENTER:
+		case WM_POINTERLEAVE:
+		case WM_POINTERDOWN:
+		case WM_POINTERUP:
+		case WM_POINTERUPDATE:
+		case WM_POINTERCAPTURECHANGED: decodeWin8Touches(msg, wParam, lParam); break;
+		default: return CallWindowProc((WNDPROC)_oldWindowProc, hwnd, msg, wParam, lParam);
 	}
 	return 0;
 }
@@ -202,36 +199,35 @@ void decodeWin8Touches(UINT msg, WPARAM wParam, LPARAM lParam) {
 	ci::vec2 position(p.x, p.y);
 
 	switch (msg) {
-	case WM_TOUCH:
-		//CI_LOG_I("WM_TOUCH");
-		//not used
-		break;
-	case WM_POINTERENTER:
-		//CI_LOG_I("WM_POINTERENTER");
-		//redundant as followed by WM_POINTERDOWN with same coords
-		break;
-	case WM_POINTERLEAVE:
-		//CI_LOG_I("WM_POINTERLEAVE");
-		//redundant as follows WM_POINTERUP with same coords
-		break;
-	case WM_POINTERDOWN:
-		//CI_LOG_I("WM_POINTERDOWN");
-		signalOnTouchAdded.emit(position, pointerId);
-		break;
-	case WM_POINTERUP:
-		//CI_LOG_I("WM_POINTERUP");
-		signalOnTouchRemoved.emit(position, pointerId);
-		break;
-	case WM_POINTERUPDATE:
-		//CI_LOG_I("WM_POINTERUPDATE");
-		signalOnTouchUpdated.emit(position, pointerId);
-		break;
-	case WM_POINTERCAPTURECHANGED:
-		//CI_LOG_I("WM_POINTERCAPTURECHANGED");
-		//not used
-		break;
+		case WM_TOUCH:
+			// CI_LOG_I("WM_TOUCH");
+			// not used
+			break;
+		case WM_POINTERENTER:
+			// CI_LOG_I("WM_POINTERENTER");
+			// redundant as followed by WM_POINTERDOWN with same coords
+			break;
+		case WM_POINTERLEAVE:
+			// CI_LOG_I("WM_POINTERLEAVE");
+			// redundant as follows WM_POINTERUP with same coords
+			break;
+		case WM_POINTERDOWN:
+			// CI_LOG_I("WM_POINTERDOWN");
+			signalOnTouchAdded.emit(position, pointerId);
+			break;
+		case WM_POINTERUP:
+			// CI_LOG_I("WM_POINTERUP");
+			signalOnTouchRemoved.emit(position, pointerId);
+			break;
+		case WM_POINTERUPDATE:
+			// CI_LOG_I("WM_POINTERUPDATE");
+			signalOnTouchUpdated.emit(position, pointerId);
+			break;
+		case WM_POINTERCAPTURECHANGED:
+			// CI_LOG_I("WM_POINTERCAPTURECHANGED");
+			// not used
+			break;
 	}
-
 }
 
 MultiNativeTouchDriver::MultiNativeTouchDriver() {
@@ -239,26 +235,23 @@ MultiNativeTouchDriver::MultiNativeTouchDriver() {
 }
 
 void MultiNativeTouchDriver::connect() {
-	//set up touches from win 8 api
+	// set up touches from win 8 api
 	initTouch();
 
 	// Connect to the application window touch event signals
-	mTouchBeganConnection = signalOnTouchAdded.connect(std::bind(&MultiNativeTouchDriver::nativeTouchBegan, this, std::placeholders::_1, std::placeholders::_2));
-	mTouchMovedConnection = signalOnTouchUpdated.connect(std::bind(&MultiNativeTouchDriver::nativeTouchMoved, this, std::placeholders::_1, std::placeholders::_2));
-	mTouchEndConnection = signalOnTouchRemoved.connect(std::bind(&MultiNativeTouchDriver::nativeTouchEnded, this, std::placeholders::_1, std::placeholders::_2));
+	mTouchBeganConnection = signalOnTouchAdded.connect(
+		std::bind(&MultiNativeTouchDriver::nativeTouchBegan, this, std::placeholders::_1, std::placeholders::_2));
+	mTouchMovedConnection = signalOnTouchUpdated.connect(
+		std::bind(&MultiNativeTouchDriver::nativeTouchMoved, this, std::placeholders::_1, std::placeholders::_2));
+	mTouchEndConnection = signalOnTouchRemoved.connect(
+		std::bind(&MultiNativeTouchDriver::nativeTouchEnded, this, std::placeholders::_1, std::placeholders::_2));
 
 	// Shared pointer to the Touch Manager
 	mTouchManager = TouchManager::getInstance();
 }
 
 MultiNativeTouchDriver::~MultiNativeTouchDriver() {
-	// Disconnect from the mouse signals
-	mTouchBeganConnection.disconnect();
-	mTouchMovedConnection.disconnect();
-	mTouchEndConnection.disconnect();
-
-	// Remove the pointer to the touch manager
-	mTouchManager = nullptr;
+	disconnect();
 }
 
 void MultiNativeTouchDriver::disconnect() {
@@ -289,6 +282,6 @@ void MultiNativeTouchDriver::nativeTouchEnded(const ci::vec2 pos, const int id) 
 	}
 }
 
-}
-}
-}
+}  // namespace drivers
+}  // namespace touch
+}  // namespace bluecadet

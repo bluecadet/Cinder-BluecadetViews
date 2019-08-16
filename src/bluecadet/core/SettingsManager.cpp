@@ -3,7 +3,7 @@
 #include "../views/BaseView.h"
 
 #include <algorithm>
-#include <string>	
+#include <string>
 
 using namespace ci;
 using namespace ci::app;
@@ -14,152 +14,92 @@ namespace core {
 
 SettingsManagerRef SettingsManager::sInstance = nullptr;
 
-SettingsManager::SettingsManager() {
-}
+SettingsManager::SettingsManager() {}
 SettingsManager::~SettingsManager() {}
 
-void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path jsonPath, std::function<void(SettingsManager * manager)> callback) {
+void SettingsManager::setup(ci::app::App::Settings * appSettings, ci::fs::path jsonPath, bool autoCreateJson,
+							std::function<void(SettingsManager * manager)> callback) {
+	mJsonPath = jsonPath;
 
-	// If the path exists, load it
-	if (fs::exists(jsonPath)) {
-		CI_LOG_D("Loading settings from '" << jsonPath << "'");
-
-		try {
-			mSettingsJson = JsonTree(loadFile(jsonPath));
-			parseJson(mSettingsJson);
-
-		} catch (Exception e) {
-			CI_LOG_EXCEPTION("Could not parse json", e);
-		}
-	} else if (!jsonPath.empty()) {
-		CI_LOG_E("Settings file does not exist at '" << jsonPath << "'");
-	} else {
-		CI_LOG_D("No settings file specified. Using defaults.");
+	if (mJsonPath.empty()) {
+		CI_LOG_I("Setting json path to default: '" << getDefaulJsonPath() << "'");
+		mJsonPath = getDefaulJsonPath();
 	}
+
+	mapFields();
+
+	load(jsonPath, autoCreateJson);
 
 	if (callback) {
 		callback(this);
 	}
 
-	// Parse arguments from command line
-	addCommandLineParser("debug", [&](const string &value) { mDebugEnabled = value == "true"; });
-	addCommandLineParser("fullscreen", [&](const string &value) { mFullscreen = value == "true"; });
-	addCommandLineParser("borderless", [&](const string &value) { mBorderless = value == "true"; });
-	addCommandLineParser("vsync", [&](const string &value) { mVerticalSync = value == "true"; });
-	addCommandLineParser("console", [&](const string &value) { mConsole = value == "true"; });
-	addCommandLineParser("cursor", [&](const string &value) { mShowCursor = value == "true"; });
-	addCommandLineParser("mouse", [&](const string &value) { mMouseEnabled = value == "true"; });
-	addCommandLineParser("tuio", [&](const string &value) { mTuioTouchEnabled = value == "true"; });
-	addCommandLineParser("native", [&](const string &value) { mNativeTouchEnabled = value == "true"; });
-	addCommandLineParser("supportMultipleNativeTouchScreens", [&](const string &value) { mSupportMultipleNativeTouchScreens = value == "true"; });
-	addCommandLineParser("drawTouches", [&](const string &value) { mShowTouches = value == "true"; });
-	addCommandLineParser("draw_touches", [&](const string &value) { mShowTouches = value == "true"; });
-	addCommandLineParser("drawStats", [&](const string &value) { mShowStats = value == "true"; });
-	addCommandLineParser("draw_stats", [&](const string &value) { mShowStats = value == "true"; });
-	addCommandLineParser("minimizeParams", [&](const string &value) { mMinimizeParams = value == "true"; });
-	addCommandLineParser("minimize_params", [&](const string &value) { mMinimizeParams = value == "true"; });
-	addCommandLineParser("collapseParams", [&](const string &value) { mCollapseParams = value == "true"; });
-	addCommandLineParser("collapse_params", [&](const string &value) { mCollapseParams = value == "true"; });
-	addCommandLineParser("zoom_toggle_hotkey", [&](const string &value) { mZoomToggleHotkeyEnabled = value == "true"; });
-	addCommandLineParser("display_id_hotkey", [&](const string &value) { mDisplayIdHotkeysEnabled = value == "true"; });
-	addCommandLineParser("size", [&](const string &value) {
-		int commaIndex = (int)value.find(",");
-		if (commaIndex != string::npos) {
-			string wStr = value.substr(0, commaIndex);
-			string hStr = value.substr(commaIndex + 1, value.size() - commaIndex - 1);
-			mWindowSize = ivec2(stoi(wStr), stoi(hStr));
-		}
-	});
-	addCommandLineParser("pos", [&](const string &value) {
-		int commaIndex = (int)value.find(",");
-		if (commaIndex != string::npos) {
-			string wStr = value.substr(0, commaIndex);
-			string hStr = value.substr(commaIndex + 1, value.size() - commaIndex - 1);
-			mWindowPos = ivec2(stoi(wStr), stoi(hStr));
-		}
-	});
-	addCommandLineParser("bezel", [&](const string &value) {
-		int commaIndex = (int)value.find(",");
-		if (commaIndex != string::npos) {
-			string xStr = value.substr(0, commaIndex);
-			string yStr = value.substr(commaIndex + 1, value.size() - commaIndex - 1);
-			mBezelDims = ivec2(stoi(xStr), stoi(yStr));
-		}
-	});
-	addCommandLineParser("offset", [&](const string &value) {
-		int commaIndex = (int)value.find(",");
-		if (commaIndex != string::npos) {
-			string xStr = value.substr(0, commaIndex);
-			string yStr = value.substr(commaIndex + 1, value.size() - commaIndex - 1);
-			mCameraOffset = ivec2(stoi(xStr), stoi(yStr));
-		}
-	});
-
-	parseCommandLineArgs(appSettings->getCommandLineArgs());
+	setupCommandArgs();
+	parseCommandArgs(appSettings->getCommandLineArgs());
 	applyToAppSettings(appSettings);
 }
 
-void SettingsManager::parseJson(ci::JsonTree & json) {
+void SettingsManager::mapFields() {
 	// General
-	//setFieldFromJsonIfExists(&mConsole, "settings.general.consoleWindowEnabled");
-	setFieldFromJsonIfExists(&mConsole, "settings.general.console");
-	setFieldFromJsonIfExists(&mAppVersion, "settings.general.version");
+	mapField("settings.general.console", &mConsole).commandArgs({"console"});
+	mapField("settings.general.version", &mAppVersion);
 
 	// Display
-	setFieldFromJsonIfExists(&mDisplaySize.x, "settings.display.size.x");
-	setFieldFromJsonIfExists(&mDisplaySize.y, "settings.display.size.y");
-	setFieldFromJsonIfExists(&mDisplayColumns, "settings.display.columns");
-	setFieldFromJsonIfExists(&mDisplayRows, "settings.display.rows");
-	setFieldFromJsonIfExists(&mBezelDims.x, "settings.display.bezel.x");
-	setFieldFromJsonIfExists(&mBezelDims.y, "settings.display.bezel.y");
+	mapField("settings.display.index", &mDisplayIndex).commandArgs({"display", "display_index", "displayIndex"});
+	mapField("settings.display.size", &mDisplaySize);
+	mapField("settings.display.columns", &mDisplayColumns);
+	mapField("settings.display.rows", &mDisplayRows);
+	mapField("settings.display.bezel", &mBezelDims).commandArgs({"bezel", "display_bezel", "displayBezel"});
 
 	// Window
-	setFieldFromJsonIfExists(&mFps, "settings.window.fps");
-	setFieldFromJsonIfExists(&mFps, "settings.window.FPS");
-	//setFieldFromJsonIfExists(&mVerticalSync, "settings.window.verticalSync");
-	setFieldFromJsonIfExists(&mVerticalSync, "settings.window.vsync");
-	setFieldFromJsonIfExists(&mFullscreen, "settings.window.fullscreen");
-	setFieldFromJsonIfExists(&mBorderless, "settings.window.borderless");
-	setFieldFromJsonIfExists(&mWindowSize.x, "settings.window.size.x");
-	setFieldFromJsonIfExists(&mWindowSize.y, "settings.window.size.y");
-	setFieldFromJsonIfExists(&mWindowPos.x, "settings.window.pos.x");
-	setFieldFromJsonIfExists(&mWindowPos.y, "settings.window.pos.y");
-	setFieldFromJsonIfExists(&mCameraOffset.x, "settings.window.cameraOffset.x");
-	setFieldFromJsonIfExists(&mCameraOffset.y, "settings.window.cameraOffset.y");
-	setFieldFromJsonIfExists(&mClearColor.r, "settings.window.clearColor.r");
-	setFieldFromJsonIfExists(&mClearColor.g, "settings.window.clearColor.g");
-	setFieldFromJsonIfExists(&mClearColor.b, "settings.window.clearColor.b");
-	setFieldFromJsonIfExists(&mClearColor.a, "settings.window.clearColor.a");
+	mapField("settings.window.fps", &mFps).commandArgs({"fps"});
+	mapField("settings.window.vsync", &mVerticalSync).commandArgs({"vsync"});
+	mapField("settings.window.fullscreen", &mFullscreen).commandArgs({"fullscreen"});;
+	mapField("settings.window.borderless", &mBorderless).commandArgs({"borderless"});;
+	mapField("settings.window.pos", &mWindowPos).commandArgs({"pos", "window_pos", "windowPos"});
+	mapField("settings.window.size", &mWindowSize).commandArgs({"size", "window_size", "windowSize"});
+	mapField("settings.window.clearColor", &mClearColor);
+
+	// Camera
+	mapField("settings.camera.offset", &mCameraOffset).commandArgs({"offset", "camera_offset", "cameraOffset"});
+	mapField("settings.camera.zoom", &mCameraZoom).commandArgs({"zoom", "camera_zoom", "cameraZoom"});
 
 	// Touch
-	setFieldFromJsonIfExists(&mMouseEnabled, "settings.touch.mouse");
-	setFieldFromJsonIfExists(&mTuioTouchEnabled, "settings.touch.tuio");
-	setFieldFromJsonIfExists(&mNativeTouchEnabled, "settings.touch.native");
-	setFieldFromJsonIfExists(&mSupportMultipleNativeTouchScreens, "settings.touch.supportMultipleNativeTouchScreens");
+	mapField("settings.touch.mouse", &mMouseEnabled).commandArgs({"mouse"});
+	mapField("settings.touch.tuio", &mTuioTouchEnabled).commandArgs({"tuio"});
+	mapField("settings.touch.native", &mNativeTouchEnabled).commandArgs({"native", "touch"});
+	mapField("settings.touch.supportMultipleNativeTouchScreens", &mSupportMultipleNativeTouchScreens)
+		.commandArgs({"supportMultipleNativeTouchScreens", "support_multiple_native_touch_screens"});;
 
 	// Debug
-	//setFieldFromJsonIfExists(&mDebugEnabled, "settings.debug.debugMode");
-	setFieldFromJsonIfExists(&mDebugEnabled, "settings.debug.debugEnabled");
-	setFieldFromJsonIfExists(&mShowStats, "settings.debug.showStats");
-	setFieldFromJsonIfExists(&mShowMinimap, "settings.debug.showMinimap");
-	setFieldFromJsonIfExists(&mShowTouches, "settings.debug.showTouches");
-	setFieldFromJsonIfExists(&mShowScreenLayout, "settings.debug.showScreenLayout");
-	//setFieldFromJsonIfExists(&mShowCursor, "settings.debug.showMouse");
-	setFieldFromJsonIfExists(&mShowCursor, "settings.debug.showCursor");
-	setFieldFromJsonIfExists(&mMinimizeParams, "settings.debug.minimizeParams");
-	setFieldFromJsonIfExists(&mCollapseParams, "settings.debug.collapseParams");
-	setFieldFromJsonIfExists(&mZoomToggleHotkeyEnabled, "settings.debug.zoomToggleHotkey");
-	setFieldFromJsonIfExists(&mDisplayIdHotkeysEnabled, "settings.debug.displayIdHotkeys");
-	setFieldFromJsonIfExists(&mTouchSimEnabled, "settings.debug.touchSimulator.enabled");
-	setFieldFromJsonIfExists(&mSimulatedTouchesPerSecond, "settings.debug.touchSimulator.touchesPerSecond");
+	mapField("settings.debug.debugEnabled", &mDebugEnabled).commandArgs({"debug"});
+	mapField("settings.debug.showStats", &mShowStats).commandArgs({"stats"});
+	mapField("settings.debug.showMinimap", &mShowMinimap).commandArgs({"minimap"});
+	mapField("settings.debug.showTouches", &mShowTouches).commandArgs({"show_touches", "showTouches"});
+	mapField("settings.debug.showScreenLayout", &mShowScreenLayout).commandArgs({"show_layout", "showLayout"});
+	mapField("settings.debug.showCursor", &mShowCursor).commandArgs({"cursor", "show_cursor", "showCursor"});
+	mapField("settings.debug.minimizeParams", &mMinimizeParams).commandArgs({"minimize_params", "minimizeParams"});
+	mapField("settings.debug.collapseParams", &mCollapseParams).commandArgs({"collapse_params", "collapseParams"});
+	mapField("settings.debug.zoomToggleHotkey", &mZoomToggleHotkeyEnabled).commandArgs({"zoom_toggle_hotkey", "zoomToggleHotkey"});
+	mapField("settings.debug.displayIdHotkeys", &mDisplayIdHotkeysEnabled).commandArgs({"display_id_hotkey", "displayIdHotkey"});
+	mapField("settings.debug.touchSimulator.enabled", &mTouchSimEnabled).commandArgs({"touch_sim", "touchSim"});
+}
 
+void SettingsManager::setupCommandArgs() {
+	for (auto & mapping : mFieldMappings) {
+		for (auto & arg : mapping.second.commandArgNames) {
+			addCommandArg(arg, [&] (const std::string & arg) {
+				mapping.second.readCommandArg(arg);
+			});
+		}
+	}
 }
 
 void SettingsManager::applyToAppSettings(ci::app::App::Settings * settings) {
 	const float pixelScale = Display::getMainDisplay()->getContentScale();
 
 	// Default window size to main display size if no custom size has been determined
-	if (mWindowSize == ivec2(0)) {
+	if (mWindowSize == ivec2(INT_MIN)) {
 		mWindowSize = vec2(Display::getMainDisplay()->getSize()) * pixelScale;
 	}
 
@@ -167,17 +107,26 @@ void SettingsManager::applyToAppSettings(ci::app::App::Settings * settings) {
 #ifdef CINDER_MSW
 	settings->setConsoleWindowEnabled(mConsole);
 #endif
+
 	if (mFps > 0) {
 		settings->setFrameRate(mFps);
 	} else {
 		settings->disableFrameRate();
 	}
+
 	settings->setWindowSize(mWindowSize);
 	settings->setBorderless(mBorderless);
 	settings->setFullScreen(mFullscreen);
 
 	if (mNativeTouchEnabled) {
 		settings->setMultiTouchEnabled(true);
+	}
+
+	if (mDisplayIndex != 0) {
+		const auto displays = Display::getDisplays();
+		if (mDisplayIndex >= 0 && mDisplayIndex < displays.size()) {
+			settings->setDisplay(displays.at(mDisplayIndex));
+		}
 	}
 
 	// Default window position to centered in display if no custom pos has been set
@@ -191,21 +140,75 @@ void SettingsManager::applyToAppSettings(ci::app::App::Settings * settings) {
 	}
 }
 
-void SettingsManager::addCommandLineParser(const std::string& key, CommandLineArgParserFn callback) {
+void SettingsManager::addCommandArg(const std::string & key, CommandArgParserFn callback) {
 	string lowercaseKey = key;
 	std::transform(lowercaseKey.begin(), lowercaseKey.end(), lowercaseKey.begin(), ::tolower);
 
-	auto callbackListIt = mCommandLineArgsHandlers.find(lowercaseKey);
+	auto callbackListIt = mCommandArgsHandlers.find(lowercaseKey);
 
-	if (callbackListIt == mCommandLineArgsHandlers.end()) {
-		mCommandLineArgsHandlers[lowercaseKey] = vector<CommandLineArgParserFn>();
-		callbackListIt = mCommandLineArgsHandlers.find(lowercaseKey);
+	if (callbackListIt == mCommandArgsHandlers.end()) {
+		mCommandArgsHandlers[lowercaseKey] = vector<CommandArgParserFn>();
+		callbackListIt = mCommandArgsHandlers.find(lowercaseKey);
 	}
 
 	callbackListIt->second.push_back(callback);
 }
 
-void SettingsManager::parseCommandLineArgs(const std::vector<std::string>& args) {
+void SettingsManager::addCommandArgs(const std::set<std::string> & keys, CommandArgParserFn callback) {
+	for (const auto key : keys) {
+		addCommandArg(key, callback);
+	}
+}
+
+void SettingsManager::load(ci::fs::path jsonPath, bool autoCreateJson) {
+	if (jsonPath.empty()) {
+		jsonPath = mJsonPath;
+	}
+
+	if (jsonPath.empty()) {
+		CI_LOG_D("No settings file specified. Using defaults.");
+	} else if (!fs::exists(jsonPath)) {
+		if (autoCreateJson) {
+			CI_LOG_I("Creating settings json at '" << jsonPath << "'");
+			save(jsonPath);
+		} else {
+			CI_LOG_E("No settings file found at '" << jsonPath << "'");
+		}
+
+	} else {
+		CI_LOG_I("Loading settings from '" << jsonPath << "'");
+
+		try {
+			mJson = JsonTree(loadFile(jsonPath));
+			deserialize(mJson);
+
+		} catch (Exception e) {
+			CI_LOG_EXCEPTION("Could not parse json", e);
+		}
+	}
+}
+
+void SettingsManager::save(ci::fs::path jsonPath) {
+	if (jsonPath.empty()) {
+		jsonPath = mJsonPath;
+	}
+
+	if (!jsonPath.empty()) {
+		CI_LOG_I("Saving settings to '" << jsonPath << "'");
+
+		try {
+			auto json = serialize();
+			json.write(jsonPath, JsonTree::WriteOptions().indented(true));
+
+		} catch (Exception e) {
+			CI_LOG_EXCEPTION("Could not save json", e);
+		}
+	} else {
+		CI_LOG_D("No settings file specified. Using defaults.");
+	}
+}
+
+void SettingsManager::parseCommandArgs(const std::vector<std::string> & args) {
 	string allArgsStr;
 
 	for (auto arg : args) {
@@ -216,50 +219,128 @@ void SettingsManager::parseCommandLineArgs(const std::vector<std::string>& args)
 			std::transform(arg.begin(), arg.end(), arg.begin(), ::tolower);
 			std::string key = arg.substr(0, splitIndex);
 			std::string value = arg.substr(splitIndex + 1, arg.size() - splitIndex - 1);
-			auto callbackListIt = mCommandLineArgsHandlers.find(key);
-			if (callbackListIt == mCommandLineArgsHandlers.end()) continue;
+			auto callbackListIt = mCommandArgsHandlers.find(key);
+			if (callbackListIt == mCommandArgsHandlers.end()) continue;
 
 			for (auto callback : callbackListIt->second) {
 				callback(value);
 			}
 		}
 	}
-	
+
 	if (!allArgsStr.empty()) {
 		CI_LOG_I("Launching with command line args: '" + allArgsStr + "'");
 	}
 }
 
-ci::params::InterfaceGlRef SettingsManager::getParams() {
-	static ci::params::InterfaceGlRef params = nullptr;
-	if (!params) {
-		params = ci::params::InterfaceGl::create("Settings", toPixels(ci::ivec2(250, 250)));
-		params->addParam("Show Layout", &mShowScreenLayout).group("App").key("l");
-		params->addParam("Show Minimap", &mShowMinimap).group("App").key("m");
-		params->addParam("Show Stats", &mShowStats).group("App").key("s");
+void SettingsManager::deserialize(ci::JsonTree & json) {
+	for (const auto & fieldName : mFieldMappingNames) {
+		mergeField(fieldName, json);
+	}
+	mSignalSettingsLoaded.emit();
+}
 
-		params->addParam("Show Touches", &mShowTouches).group("App").key("t");
-		params->addParam("Show Cursor", &mShowCursor).updateFn([&] { mShowCursor ? ci::app::AppBase::get()->showCursor() : ci::app::AppBase::get()->hideCursor(); }).key("c").group("App");
-		
-		static int boundIndex = 0;
-		params->addParam("View Bounds", {"None", "Visible", "All"}, [&](int i) {
-			boundIndex = i;
-			bluecadet::views::BaseView::sDrawDebugInfo = boundIndex >= 1;
-			bluecadet::views::BaseView::sDrawDebugInfoWhenInvisible = boundIndex >= 2;
-		}, [&] { return boundIndex; }).key("b").group("App");
+ci::JsonTree SettingsManager::serialize() {
+	ci::JsonTree json;
 
-		if (mMinimizeParams) {
-			params->minimize();
+	for (auto & fieldMapping : mFieldMappings) {
+		auto fields = text::split<string, list<string>>(fieldMapping.first, '.');
+
+		// grab value and pop from fields
+		const string & key = fields.back();
+		JsonTree value = fieldMapping.second.toJson(key);
+		fields.pop_back();
+
+		ci::JsonTree * parent = &json;
+
+		// create parent hierarchy
+		while (!fields.empty()) {
+			const auto field = fields.front();
+
+			if (!parent->hasChild(field)) {
+				parent->addChild(JsonTree::makeObject(field));
+			}
+
+			parent = &(parent->getChild(field));
+
+			fields.pop_front();
 		}
 
-		params->addText("Version " + mAppVersion);
+		// add child
+		parent->addChild(value);
+	}
 
-		if (mCollapseParams) {
-			params->setOptions("App", "opened=false");
+	return json;
+}
+
+void SettingsManager::mergeField(const std::string & fieldName, const ci::JsonTree & json) {
+	try {
+		if (!hasJsonValue(fieldName)) {
+			CI_LOG_W("Could not find settings value for field name '" << fieldName << "' in json file");
+			return;
+		}
+		auto it = mFieldMappings.find(fieldName);
+		if (it == mFieldMappings.end()) {
+			CI_LOG_E("No mapping exists for field name '" << fieldName << "'");
+			return;
+		}
+
+		auto & mapping = it->second;
+
+		mapping.readJson(json);
+
+	} catch (cinder::Exception e) {
+		CI_LOG_EXCEPTION("Could not set '" << fieldName << "' in json file", e);
+	}
+}
+
+ci::params::InterfaceGlRef SettingsManager::createParams() {
+	auto params = ci::params::InterfaceGl::create("Settings", toPixels(ci::ivec2(250, 250)));
+	params->addParam("Show Layout", &mShowScreenLayout).group("App").key("l");
+	params->addParam("Show Minimap", &mShowMinimap).group("App").key("m");
+	params->addParam("Show Stats", &mShowStats).group("App").key("s");
+
+	params->addParam("Show Touches", &mShowTouches).group("App").key("t");
+	params->addParam("Show Cursor", &mShowCursor)
+		.updateFn([&] { mShowCursor ? ci::app::AppBase::get()->showCursor() : ci::app::AppBase::get()->hideCursor(); })
+		.key("c")
+		.group("App");
+
+	static int boundIndex = 0;
+	params
+		->addParam("View Bounds", {"None", "Visible", "All"},
+				   [&](int i) {
+					   boundIndex = i;
+					   bluecadet::views::BaseView::sDrawDebugInfo = boundIndex >= 1;
+					   bluecadet::views::BaseView::sDrawDebugInfoWhenInvisible = boundIndex >= 2;
+				   },
+				   [&] { return boundIndex; })
+		.key("b")
+		.group("App");
+
+	if (mMinimizeParams) {
+		params->minimize();
+	}
+
+	params->addSeparator();
+	params->addButton("Load", [=]() { load(); });
+	params->addButton("Save", [=]() { save(); });
+	params->addText("Version " + mAppVersion);
+
+	for (const auto & fieldName : mFieldMappingNames) {
+		auto it = mFieldMappings.find(fieldName);
+		if (it != mFieldMappings.end()) {
+			auto & fieldMapping = it->second;
+			fieldMapping.attachToParams(params);
 		}
 	}
+
+	if (mCollapseParams) {
+		params->setOptions("App", "opened=false");
+	}
+
 	return params;
 }
 
-}
-}
+}  // namespace core
+}  // namespace bluecadet

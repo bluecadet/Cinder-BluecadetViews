@@ -50,7 +50,7 @@ public:
 	}
 
 protected:
-	void update(const double deltaTime) override;
+	void update(const FrameInfo & info) override;
 	void draw() override;
 
 	static ci::gl::BatchRef		getSharedBatch();

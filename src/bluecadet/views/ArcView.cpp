@@ -30,7 +30,7 @@ void ArcView::cancelAnimations() {
 	mEndAngle.stop();
 }
 
-void ArcView::update(const double deltaTime) {
+void ArcView::update(const FrameInfo & info) {
 	const auto & size = getSize();
 	const float diameter = 2.0f * mOuterRadius;
 	if (size.x != diameter || size.y != diameter) {

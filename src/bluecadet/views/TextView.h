@@ -72,7 +72,7 @@ public:
 	inline const ci::vec2	getSize() override;
 
 	//! The texture format used to create textures.
-	void								setTextureFormat(const ci::gl::Texture::Format & value) { mTextureFormat = value; }
+	void							setTextureFormat(const ci::gl::Texture::Format & value) { mTextureFormat = value; }
 	const ci::gl::Texture::Format &	getTextureFormat() const { return mTextureFormat; }
 
 protected:
