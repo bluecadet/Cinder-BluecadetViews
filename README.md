@@ -67,6 +67,10 @@ A basic, rectangular view with an optional size and background color that can co
 * Uses GL stencils, so doesn't support semi-transparency, but does allow for more custom shapes than GL scissor
 * Most view subclasses can be used individually and combined as masks
 
+### SettingsManager
+
+The SettingsManager provides an easy means to map JSON settings to app parameters, override them via command line parameters for development and load/save them to/from JSON via InterfaceGl params.
+
 ### View Samples
 
 ![](docs/media/view-types-sample.gif)
@@ -118,27 +122,22 @@ void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 	SettingsManager::setInstance(myApp::MyAppSettingsManager::getInstance());
 	
 	// Initialize the settings manager with the cinder app settings and the settings json
-	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("settings.json"), [](SettingsManager * manager) {
-		// Optional: Override json defaults at runtime
-		manager->mFullscreen = false;
-		manager->mWindowSize = ivec2(1280, 720);
-	});
+	SettingsManager::getInstance()->setup(settings);
 }
 
 void BaseAppSampleApp::setup() {
 
 	BaseApp::setup();
-	BaseApp::addTouchSimulatorParams();
 
 	// Optional: configure your root view
 	getRootView()->setBackgroundColor(Color::gray(0.5f));
 
 	// Sample content
 	auto button = make_shared<TouchView>();
-	button->setPosition(vec2(400, 300));
-	button->setSize(vec2(200, 100));
+	button->setPosition(400.f, 300.f);
+	button->setSize(200.f, 100.f);
 	button->setBackgroundColor(Color(1, 0, 0));
-	button->getSignalTapped().connect([=](bluecadet::touch::TouchEvent e) { CI_LOG_I("Button tapped"); });
+	button->getSignalTapped().connect([=](...) { CI_LOG_I("Button tapped"); });
 	getRootView()->addChild(button);
 }
 
@@ -179,7 +178,7 @@ public:
 	~PathView() {}
 
 protected:
-	void update(const double deltaTime) override;
+	void update(const FrameInfo & frame) override;
 	void draw() override;
 
 	ci::Path2d mPath;
@@ -195,19 +194,22 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-void PathView::update(const double deltaTime) {
+void PathView::update(const FrameInfo & frame) {
 	// update your view on each frame if you'd like
-	// no need to call base view implementation
+	// no need to call base view implementation.
+	// FrameInfo contains the time since the previous
+	// update call (deltaTime) and the time the app
+	// has been running (absoluteTime).
 }
 void PathView::draw() {
-	// no need to call base view implementation
+	// no need to call base-view implementation
 	// unless you want to draw a solid rect of
 	// getSize() and getBackgroundColor()
 	// bluecadet::views::BaseView::draw();
 	
 	// you could set the color to the current background color
 	// but by default getTint() and getAlpha() are used
-	// gl::color(getBackgroundColor());
+	// gl::ScopedColor color(getBackgroundColor());
 	
 	// this will draw the path using the current color, which
 	// defaults to getDrawColor() (combination of tint and alpha)
@@ -224,7 +226,7 @@ void PathView::draw() {
 
 ## Notes
 
-Version 1.6.0
+Version 1.7.0
 
 Built for [Cinder v0.9.2 dev](https://github.com/cinder/Cinder/) and [Cinder v0.9.1](https://github.com/cinder/Cinder/tree/v0.9.1). Samples require VS 2015 v140 toolset, but tested with VS 2013 v120 as well.
 
