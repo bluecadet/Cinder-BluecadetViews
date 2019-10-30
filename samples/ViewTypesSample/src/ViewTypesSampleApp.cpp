@@ -13,9 +13,11 @@
 #include "bluecadet/views/LineView.h"
 #include "bluecadet/views/StrokedCircleView.h"
 #include "bluecadet/views/StrokedRectView.h"
+#include "bluecadet/views/StrokedRoundedRectView.h"
 #include "bluecadet/views/TouchView.h"
 #include "bluecadet/views/TextView.h"
 
+#include "cinder/Signals.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -28,7 +30,7 @@ using namespace bluecadet::touch;
 class ViewTypesSampleApp : public BaseApp {
 public:
 	static void prepareSettings(ci::app::App::Settings* settings);
-	
+
 	void setup() override;
 	void keyDown(ci::app::KeyEvent event) override;
 	void addViewSample(BaseViewRef view, std::string label);
@@ -36,19 +38,30 @@ public:
 };
 
 void ViewTypesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
-	SettingsManager::getInstance()->setup(settings, "", [](SettingsManager * manager) {
+	settings->setHighDensityDisplayEnabled(true);
+
+	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("../assets/settings.json"), [](SettingsManager * manager) {
 		manager->mFullscreen = false;
 		manager->mWindowSize = ivec2(1280, 720);
-		manager->mConsoleWindowEnabled = false;
-		manager->mDrawMinimap = true;
-		manager->mDrawStats = true;
-		manager->mDrawTouches = true;
+		manager->mDisplaySize = ivec2(1280, 720);
+		manager->mConsole = false;
+		manager->mShowMinimap = true;
+		manager->mShowStats = true;
+		manager->mShowTouches = true;
 		manager->mMinimizeParams = true;
 	});
 }
 
 void ViewTypesSampleApp::setup() {
 	BaseApp::setup();
+
+	//auto button = make_shared<TouchView>();
+	////
+	//button->getSignalTapped().connect([=] (const bluecadet::touch::TouchEvent & event) {
+	//	CI_LOG_D("tapped");
+	//});
+
+	getRootView()->setBackgroundColor(Color::gray(0.5f));
 
 	//==================================================
 	// Most basic view
@@ -70,6 +83,20 @@ void ViewTypesSampleApp::setup() {
 	strokedRectView->setStrokeWidth(5.0f);
 	strokedRectView->getTimeline()->apply(&strokedRectView->getStrokeWidth(), 20.0f, 1.5f, easeInOutQuad).loop(true).pingPong(true);
 	addViewSample(strokedRectView, "StrokedRectView");
+
+	//==================================================
+	// Stroked rounded rect view
+	// 
+
+	auto strokedRoundedRectView = make_shared<StrokedRoundedRectView>();
+	strokedRoundedRectView->setSize(vec2(100, 100));
+	strokedRoundedRectView->setBackgroundColor(getNextColor());
+	strokedRoundedRectView->setStrokeColor(ColorA(getNextColor(), 0.75f));
+	strokedRoundedRectView->setStrokeWidth(0);
+	strokedRoundedRectView->getTimeline()->apply(&strokedRoundedRectView->getSmoothness(), 8.0f, 3.5f, easeInOutQuad).loop(true).pingPong(true);
+	strokedRoundedRectView->getTimeline()->apply(&strokedRoundedRectView->getStrokeWidth(), 20.0f, 1.5f, easeInOutQuad).loop(true).pingPong(true);
+	strokedRoundedRectView->getTimeline()->apply(&strokedRoundedRectView->getCornerRadius(), 50.0f, 2.5f, easeInOutQuad).loop(true).pingPong(true);
+	addViewSample(strokedRoundedRectView, "StrokedRoundedRectView");
 
 	//==================================================
 	// EllipseView with variably smooth edges
@@ -175,8 +202,6 @@ void ViewTypesSampleApp::setup() {
 		addViewSample(dragView, "TouchView with y drag");
 	}
 
-	getRootView()->setBackgroundColor(Color::gray(0.5f));
-
 	//==================================================
 	// FBO
 	// 
@@ -224,14 +249,72 @@ void ViewTypesSampleApp::setup() {
 		maskView->setMask(mask);
 	}
 
+	{
+		// Nested Reveal
+		auto outerMaskView = make_shared<MaskView>();
+		outerMaskView->setSize(vec2(150));
+		outerMaskView->setMaskType(MaskView::MaskType::REVEAL);
+		outerMaskView->setBackgroundColor(getNextColor());
+		addViewSample(outerMaskView, "Nested MaskViews");
+
+		auto outerMask = make_shared<EllipseView>();
+		outerMask->setup(length(fboView->getSize()) * 0.5f, getNextColor());
+		outerMask->setPosition(fboView->getSize() * 0.5f);
+		outerMask->getTimeline()->apply(&outerMask->getScale(), vec2(0), 3.0f, easeInOutQuad).pingPong(true).loop(true);
+		outerMaskView->setMask(outerMask);
+
+		auto innerMaskViewA = make_shared<MaskView>();
+		innerMaskViewA->setSize(vec2(150));
+		innerMaskViewA->setMaskType(MaskView::MaskType::REVEAL);
+		innerMaskViewA->setBackgroundColor(getNextColor());
+		outerMaskView->addChild(innerMaskViewA);
+
+		auto innerTextA = make_shared<TextView>();
+		string textA = "";
+		for (int i = 0; i < 512; ++i) textA += "A ";
+		innerTextA->setup(textA, "", false, innerMaskViewA->getWidth());
+		innerMaskViewA->addChild(innerTextA);
+
+		auto innerMaskA = make_shared<StrokedRoundedRectView>();
+		innerMaskA->setSize(fboView->getSize() * 0.75f);
+		innerMaskA->setTransformOrigin(innerMaskA->getSize() * 0.5f);
+		innerMaskA->setPosition(fboView->getSize() * 0.5f);
+		innerMaskA->setBackgroundColor(getNextColor());
+		innerMaskA->setCornerRadius(30);
+		innerMaskA->getTimeline()->apply(&innerMaskA->getScale(), vec2(0), 3.0f, easeInOutQuad).pingPong(true).loop(true);
+		innerMaskViewA->setMask(innerMaskA);
+
+		auto innerMaskViewB = make_shared<MaskView>();
+		innerMaskViewB->setSize(vec2(150));
+		innerMaskViewB->setMaskType(MaskView::MaskType::REVEAL);
+		innerMaskViewB->setBackgroundColor(getNextColor());
+		outerMaskView->addChild(innerMaskViewB);
+
+		auto innerTextB = make_shared<TextView>();
+		string textB = "";
+		for (int i = 0; i < 512; ++i) textB += "B ";
+		innerTextB->setup(textB, "", false, innerMaskViewB->getWidth());
+		innerMaskViewB->addChild(innerTextB);
+
+		auto innerMaskB = make_shared<StrokedRoundedRectView>();
+		innerMaskB->setSize(fboView->getSize() * 0.25f);
+		innerMaskB->setTransformOrigin(innerMaskB->getSize() * 0.5f);
+		innerMaskB->setPosition(fboView->getSize() * 0.25f);
+		innerMaskB->setBackgroundColor(getNextColor());
+		innerMaskB->setCornerRadius(10);
+		innerMaskB->getTimeline()->apply(&innerMaskB->getRotation(), glm::angleAxis(glm::pi<float>(), vec3(0, 0, 1)), 3.0f, easeInOutQuad).pingPong(true).loop(true);
+		innerMaskViewB->setMask(innerMaskB);
+	}
+
 	//==================================================
 	// LineView
 	// 
 
-	auto lineView = make_shared<LineView>();
+	LineViewRef lineView = make_shared<LineView>();
 	lineView->setEndPoint(vec2(100, 100));
 	lineView->setLineColor(getNextColor());
 	lineView->setLineWidth(2.0f);
+
 	addViewSample(lineView, "LineView");
 
 	//==================================================
@@ -252,23 +335,23 @@ void ViewTypesSampleApp::keyDown(ci::app::KeyEvent event) {
 	BaseApp::keyDown(event);
 
 	switch (event.getCode()) {
-	case KeyEvent::KEY_ESCAPE:
-		for (auto child : getRootView()->getChildren()) {
-			if (auto touchView = dynamic_pointer_cast<TouchView>(child)) {
-				touchView->cancelTouches();
+		case KeyEvent::KEY_ESCAPE:
+			for (auto child : getRootView()->getChildren()) {
+				if (auto touchView = dynamic_pointer_cast<TouchView>(child)) {
+					touchView->cancelTouches();
+				}
 			}
-		}
-		break;
-	default:
-		break;
+			break;
+		default:
+			break;
 	}
 }
 
 void ViewTypesSampleApp::addViewSample(BaseViewRef view, std::string label) {
 
 	// hacky layout
-	static const int numCols = 5;
-	static const int numRows = 3;
+	static const int numCols = 4;
+	static const int numRows = 4;
 	static const vec2 cellPadding = vec2(10);
 	static const vec2 cellSize = (vec2(getWindowSize()) - vec2(numCols + 1, numRows + 1) * cellPadding) / vec2(numCols, numRows);
 	static vec2 cellPos = cellPadding;
@@ -303,9 +386,9 @@ void ViewTypesSampleApp::addViewSample(BaseViewRef view, std::string label) {
 
 ColorA ViewTypesSampleApp::getNextColor(float alpha) {
 	static float hue = 0;
-	static float numHues = 16;
+	static float numHues = 16.0f;
 	ColorA color = ColorA(hsvToRgb(vec3(hue, 0.75f, 1.0f)), alpha);
-	hue = glm::mod(hue + 0.25f + 1.0f / numHues, 1.0f);
+	hue = glm::mod(hue + 0.33f + 1.0f / numHues, 1.0f);
 	return color;
 }
 

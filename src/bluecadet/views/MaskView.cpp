@@ -9,6 +9,8 @@ using namespace std;
 namespace bluecadet {
 namespace views {
 
+uint8_t MaskView::sStencilIndex = 0u;
+
 MaskView::MaskView() {
 	static bool checkedForStencil = false;
 	if (!checkedForStencil && getWindow()) {
@@ -32,48 +34,91 @@ void MaskView::draw() {
 	}
 
 	// stencil code based on https://github.com/cinder/Cinder/blob/master/samples/_opengl/StencilReflection/src/StencilReflectionApp.cpp
+	// nested stencil code based on https://stackoverflow.com/questions/13742556/best-approach-to-draw-clipped-ui-elements-in-opengl
 
-	// enable stencil test to be able to give the stencil buffers values
 	gl::ScopedState scopeStencil(GL_STENCIL_TEST, GL_TRUE);
-	gl::stencilFunc(GL_ALWAYS, 1, 0xFF);
-	gl::stencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-	gl::stencilMask(0xFF);
-	gl::depthMask(GL_FALSE);
-	gl::clear(GL_STENCIL_BUFFER_BIT);
+	pushStencilState();
 
-	// set all color channels to false to prevent mask from drawing to screen
-	gl::colorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	++sStencilIndex;
 
-	// draw the stencil here since it's not actually a child
+	if (sStencilIndex == sMaxNestedStencils || sStencilIndex == 1) {
+		if (sStencilIndex != 1) {
+			CI_LOG_W("Max amount of nested MaskViews reached. The maxmimum is " + to_string(sMaxNestedStencils));
+			sStencilIndex = 1;
+		}
+		gl::clear(GL_STENCIL_BUFFER_BIT);
+	}
+
+	// draw mask to stencil
+	enableStencilDrawing(sStencilIndex, GL_INCR);
 	mMask->drawScene(ColorA::black());
 
-	// re-enable all color masks to draw content
-	gl::colorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	// draw views to screen
+	enableScreenDrawing(sStencilIndex, getStencilFuncEnum());
+	BaseView::draw();
+	BaseView::drawChildren(getDrawColor());
 
+	// erase mask from stencil
+	enableStencilDrawing(sStencilIndex, GL_DECR);
+	mMask->drawScene(ColorA::black());
+
+	// restore state
+	if (--sStencilIndex == 0) {
+		gl::clear(GL_STENCIL_BUFFER_BIT);
+	}
+
+	enableScreenDrawing(sStencilIndex, getStencilFuncEnum());
+
+	popStencilState();
+}
+
+void MaskView::updateScene(const FrameInfo & info) {
+	BaseView::updateScene(info);
+
+	if (mMask) {
+		// Update the mask here since it's not actually a child
+		mMask->updateScene(info);
+	}
+}
+
+inline void MaskView::pushStencilState() {
+	glGetIntegerv(GL_STENCIL_FUNC, &mPushedStencilFunc);
+	glGetIntegerv(GL_STENCIL_REF, &mPushedStencilRef);
+	glGetIntegerv(GL_STENCIL_VALUE_MASK, &mPushedStencilMask);
+}
+
+inline void MaskView::popStencilState() {
+	gl::stencilFunc(mPushedStencilFunc, mPushedStencilRef, mPushedStencilMask);
+	mPushedStencilFunc = 0;
+	mPushedStencilRef = 0;
+	mPushedStencilMask = 0;
+}
+
+inline void MaskView::enableStencilDrawing(uint8_t index, GLenum stencilOp) {
+	// enable stencil test to be able to give the stencil buffers values
+	gl::stencilFunc(GL_ALWAYS, index, index);
+	gl::stencilOp(stencilOp, stencilOp, stencilOp);
+
+	// disable drawing to screen
+	gl::colorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	gl::depthMask(GL_FALSE);
+}
+
+inline void MaskView::enableScreenDrawing(uint8_t index, GLenum stencilFunc) {
 	// now tell the stencil what type of stenciling it has
-	gl::stencilFunc(getStencilFuncEnum(), 1, 0xFF);
-	gl::stencilMask(0x00);
+	gl::stencilFunc(stencilFunc, index, index);
+	gl::stencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+	// enable drawing to screen
+	gl::colorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	gl::depthMask(GL_TRUE);
 
 	// reset to original draw color
 	gl::color(getDrawColor());
-
-	// draw into that stenciled area
-	BaseView::draw();
-	BaseView::drawChildren(getDrawColor());
-}
-
-void MaskView::updateScene(double deltaTime) {
-	BaseView::updateScene(deltaTime);
-
-	if (mMask) {
-		// Update the mask here since it's not actually a child
-		mMask->updateScene(deltaTime);
-	}
 }
 
 inline GLenum MaskView::getStencilFuncEnum() const {
-	return mMaskType == MaskType::REVEAL ? GL_EQUAL : GL_NOTEQUAL;
+	return mMaskType == MaskType::REVEAL ? GL_LEQUAL : GL_GREATER;
 }
 
 }

@@ -48,15 +48,6 @@ void StrokedCircleView::draw() {
 	batch->draw();
 }
 
-void StrokedCircleView::debugDrawOutline() {
-	gl::ScopedModelMatrix scopedModelMatrix;
-	gl::ScopedViewMatrix scopedViewMatrix;
-
-	gl::translate(-getSize() * 0.5f);
-
-	BaseView::debugDrawOutline();
-}
-
 ci::gl::BatchRef StrokedCircleView::getSharedBatch() {
 	static ci::gl::BatchRef batch = nullptr;
 	if (!batch) {
@@ -122,14 +113,17 @@ ci::gl::GlslProgRef StrokedCircleView::getSharedProg() {
 					if (uSmoothness > 0 && radius > radiusB) {
 						// interpolate smooth edge
 						float quota = (radiusA - radius) / uSmoothness;
-						oColor.a *= smoothstep(0.0f, 1.0f, quota);
+						float smoothQuota = smoothstep(0.0f, 1.0f, quota);
+						oColor = mix(vec4(0), oColor, smoothstep(0.0f, 1.0f, smoothQuota));
 
 					} else if (uSmoothness > 0 && radius < radiusC) {
 						// interpolate smooth edge
 						float quota = (radiusC - radius) / uSmoothness;
 						float smoothQuota = smoothstep(1.0f, 0.0f, quota);
-						oColor = mix(uBackgroundColor, uStrokeColor, smoothQuota);
+						oColor = mix(uBackgroundColor, oColor, smoothQuota);
 					}
+
+					oColor.rgb /= oColor.a;
 
 					if (oColor.a <= 0) {
 						discard;

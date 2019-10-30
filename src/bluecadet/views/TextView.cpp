@@ -1,6 +1,8 @@
 #include "TextView.h"
 
 #include "bluecadet/text/StyleManager.h"
+#include "ImageView.h"
+#include "cinder/Log.h"
 
 #if defined(CINDER_MSW)
 
@@ -8,81 +10,48 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+using namespace bluecadet::text;
+
 namespace bluecadet {
 namespace views {
 
-TextView::TextView() : BaseView(), bluecadet::text::StyledTextLayout(),
-mTextureFormat(getDefaultTextureFormat()),
-mTexture(nullptr),
-mAutoRenderEnabled(true),
-mPremultiplied(false)
-{
+TextView::TextView(const ci::gl::Texture::Format & textureFormat) : BaseView(), text::StyledTextLayout(),
+mTextureFormat(textureFormat) {
 }
 
 TextView::~TextView() {
 }
 
-TextViewRef TextView::create(const std::string& text, const std::string& styleKey, const bool parseText, const float maxWidth) {
-	auto textView = make_shared<TextView>();
-	textView->setup(text, styleKey, parseText, maxWidth);
-	return textView;
-}
-
-TextViewRef TextView::create(const std::wstring& text, const std::string& styleKey, const bool parseText, const float maxWidth) {
-	auto textView = make_shared<TextView>();
-	textView->setup(text, styleKey, parseText, maxWidth);
-	return textView;
-}
-
-const ci::gl::Texture::Format & TextView::getDefaultTextureFormat() {
-	static gl::Texture::Format format;
-	static bool initialized = false;
-
-	if (!initialized) {
-		format.immutableStorage(true);
-		format.setMaxAnisotropy(4.0f);
-		format.enableMipmapping(false);
-		format.setMaxMipmapLevel(0);
-		format.setMinFilter(GL_LINEAR);
-		format.setMagFilter(GL_LINEAR);
-		initialized = true;
-	}
-
+ci::gl::Texture::Format TextView::getDefaultTextureFormat() {
+	gl::Texture::Format format;
+	format.immutableStorage(true);
+	format.setMaxAnisotropy(4.0f);
+	format.enableMipmapping(true);
+	format.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
+	format.setMagFilter(GL_LINEAR);
 	return format;
 }
 
-const ci::gl::Texture::Format & TextView::getMipMapTextureFormat() {
-	static gl::Texture::Format format;
-	static bool initialized = false;
-
-	if (!initialized) {
-		format.immutableStorage(true);
-		format.setMaxAnisotropy(4.0f);
-		format.enableMipmapping(true);
-		format.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
-		format.setMagFilter(GL_LINEAR);
-		initialized = true;
-	}
-
-	return format;
-}
-
-void TextView::setup(const std::wstring& text, const std::string& styleKey, const bool parseText, const float maxWidth) {
+void TextView::setup(const std::wstring & text, const std::string & styleKey, const bool parseText, const float maxWidth, const TokenParserMapRef customTokenParsers) {
 	setMaxWidth(maxWidth);
 
 	if (text.empty()) {
-		auto style = text::StyleManager::getInstance()->getStyle(styleKey);
+		auto style = text::StyleManager::get()->getStyle(styleKey);
 		setCurrentStyle(style);
 	} else if (parseText) {
-		setText(text, styleKey);
+		setText(text, styleKey, customTokenParsers);
 
 	} else {
+		if (customTokenParsers != nullptr) {
+			CI_LOG_W("Custom token parsers won't be used on plain text.");
+		}
+
 		setPlainText(text, styleKey);
 	}
 }
 
-void TextView::setup(const std::string& text, const std::string& styleKey, const bool parseText, const float maxWidth) {
-	setup(text::wideString(text), styleKey, parseText, maxWidth);
+void TextView::setup(const std::string & text, const std::string & styleKey, const bool parseText, const float maxWidth, const TokenParserMapRef customTokenParsers) {
+	setup(text::wideString(text), styleKey, parseText, maxWidth, customTokenParsers);
 }
 
 void TextView::reset() {
@@ -92,15 +61,68 @@ void TextView::reset() {
 }
 
 void TextView::willDraw() {
-	if (needsToBeRendered(false) && mAutoRenderEnabled) {
-		renderContent(false, true, mPremultiplied);
+	if (mAutoRenderEnabled) {
+		renderContent(false, true, getBlendMode() == BlendMode::PREMULT, false);
 	}
 }
 
 void TextView::draw() {
 	BaseView::draw();
+
 	if (mTexture) {
-		gl::draw(mTexture);
+		//gl::draw(mTexture);
+		//return;
+
+		static gl::GlslProgRef shader = nullptr;
+		static gl::BatchRef batch = nullptr;
+
+		if (!shader) {
+			shader = gl::GlslProg::create(gl::GlslProg::Format()
+				.vertex(CI_GLSL(150,
+					uniform mat4 ciModelViewProjection;
+			uniform vec2 uSize;
+			in vec4 ciPosition;
+			in vec4 ciColor;
+			in vec2 ciTexCoord0;
+			out vec4 vColor;
+			out vec2 vTexCoord0;
+
+			void main(void) {
+				vColor = ciColor;
+				vTexCoord0 = ciTexCoord0;
+				vec4 pos = ciPosition * vec4(uSize, 0, 1);
+				gl_Position = ciModelViewProjection * pos;
+			}
+			)).fragment(CI_GLSL(150,
+				uniform sampler2D uTex0;
+			uniform int uDemultiply;
+			in vec2 vTexCoord0;
+			in vec4 vColor;
+			out vec4 oColor;
+
+			void main(void) {
+				oColor = texture(uTex0, vTexCoord0);
+
+				if (oColor.a == 0) {
+					discard;
+				}
+
+				if (uDemultiply == 1) {
+					// This compensates for GDI+ interpolation between text
+					// and transparent black background
+					oColor.rgb /= oColor.a;
+				}
+
+				oColor *= vColor;
+			}
+			)));
+			batch = gl::Batch::create(geom::Rect().rect(Rectf(0, 0, 1.0f, 1.0f)), shader);
+		}
+
+		gl::ScopedTextureBind textureBind(mTexture, 0);
+		shader->uniform("uSize", getSize());
+		shader->uniform("uDemultiply", mDemultiplyEnabled ? 1 : 0);
+		batch->draw();
 	}
 }
 
@@ -117,7 +139,7 @@ void TextView::renderContent(bool surfaceOnly, bool alpha, bool premultiplied, b
 	}
 
 	if (mHasInvalidRenderedContent || hasChanges() || (mSurface.getSize() != getTextSize()) || (mTexture && mSurface.getSize() != mTexture->getSize())) {
-		mSurface = renderToSurface(alpha, premultiplied);
+		mSurface = renderToSurface(alpha, premultiplied, getBackgroundColor().value());
 	}
 
 	if (surfaceOnly) {
@@ -143,19 +165,26 @@ void TextView::resetRenderedContent() {
 	mSurface = ci::Surface();
 }
 
-void TextView::setSize(const ci::vec2& size) {
+void TextView::setSize(const ci::vec2 & size) {
 	invalidate();
 	setMaxSize(size);
 }
 
-inline void TextView::setWidth(const float width){
+inline void TextView::setWidth(const float width) {
 	invalidate();
 	setMaxWidth(width);
 }
 
-inline void TextView::setHeight(const float height){
+inline void TextView::setHeight(const float height) {
 	invalidate();
 	setMaxHeight(height);
+}
+
+void TextView::setBlendMode(const BlendMode blendMode) {
+	if (blendMode != getBlendMode()) {
+		invalidate(false, true);
+	}
+	BaseView::setBlendMode(blendMode);
 }
 
 const ci::vec2 TextView::getSize() {

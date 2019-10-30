@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<template name="Bluecadet App" parent="org.libcinder.apptemplates.basicopengl">
+	<requires>com.bluecadet.cinder.views</requires>
+	<source replaceContents="true" replaceName="true">src/_TBOX_PREFIX_App.cpp</source>
+	<file>src/.clang-format</file>
+</template>
+</cinder>

@@ -18,8 +18,8 @@ namespace views {
 
 bool BaseView::sEventPropagationEnabled = true;
 bool BaseView::sContentInvalidationEnabled = true;
-bool BaseView::sDebugDrawBounds = false;
-bool BaseView::sDebugDrawInvisibleBounds = false;
+bool BaseView::sDrawDebugInfo = false;
+bool BaseView::sDrawDebugInfoWhenInvisible = false;
 
 //==================================================
 // Lifecycle
@@ -48,12 +48,15 @@ BaseView::BaseView() :
 	mShouldPropagateEvents(sEventPropagationEnabled),
 	mShouldDispatchContentInvalidation(sContentInvalidationEnabled),
 
-	mTimeline(Timeline::create()),
 	mParent(nullptr),
-	
+
+	mTimeline(nullptr),
+
 	mViewId(sNumInstances++),
-	mViewIdStr(to_string(mViewId))
-	{
+	mViewIdStr(to_string(mViewId)),
+	mName(mViewIdStr),
+	mDebugIncludeClassName(true)
+{
 }
 
 BaseView::~BaseView() {
@@ -61,8 +64,9 @@ BaseView::~BaseView() {
 }
 
 void BaseView::reset() {
-	mPosition = vec2(0.0f, 0.0f);
-	mScale = vec2(1.0f, 1.0f);
+	mTransformOrigin = vec2(0);
+	mPosition = vec2(0);
+	mScale = vec2(1.0f);
 	mRotation = quat();
 	mTransform = mat4();
 	mGlobalTransform = mat4();
@@ -70,11 +74,17 @@ void BaseView::reset() {
 	mHasInvalidContent = true;
 	mShouldForceInvisibleDraw = false;
 	mShouldPropagateEvents = true;
+	mBlendMode = BlendMode::INHERIT;
 	mTint = Color(1.0f, 1.0f, 1.0f);
 	mDrawColor = ColorA(1.0f, 1.0f, 1.0f, 1.0f);
 	mBackgroundColor = ColorA(0, 0, 0, 0);
 	mSize = vec2(0, 0);
 	mAlpha = 1.0;
+	mIsHidden = false;
+	mShouldForceInvisibleDraw = false;
+	mTimeline->clear();
+	mTimeline->removeSelf();
+	mTimeline = nullptr;
 }
 
 
@@ -119,6 +129,7 @@ void BaseView::addChild(BaseViewRef child, size_t index) {
 		mChildren.insert(it, child);
 	}
 
+	child->invalidate(true, false);
 	child->didMoveToView(this);
 }
 
@@ -133,6 +144,7 @@ void BaseView::removeChild(BaseViewRef child) {
 		return;
 	}
 
+	child->invalidate(true, false);
 	child->willMoveFromView(this);
 	child->mParent = nullptr;
 	mChildren.remove(child);
@@ -148,14 +160,22 @@ void BaseView::removeChild(BaseView* childPtr) {
 }
 
 BaseViewList::iterator BaseView::removeChild(BaseViewList::iterator childIt) {
-	(*childIt)->willMoveFromView(this);
-	(*childIt)->mParent = nullptr;
+	auto child = *childIt;
+  child->invalidate(true, false);
+	child->willMoveFromView(this);
+	child->mParent = nullptr;
 	return mChildren.erase(childIt);
 }
 
 void BaseView::removeAllChildren() {
 	for (BaseViewList::iterator it = mChildren.begin(); it != mChildren.end();) {
 		it = removeChild(it);
+	}
+}
+
+void BaseView::removeSelf() {
+	if (auto parent = mParent) {
+		parent->removeChild(this);
 	}
 }
 
@@ -249,37 +269,48 @@ void BaseView::setTransformOrigin(const vec2 & value, const bool compensateForOf
 	setPosition(mPosition.value() + centerOffset);
 }
 
+void BaseView::resizeToFit() {
+	// explicitly initialize w 0 VS otherwise seems
+	// to over-optimize this into rubbish
+	Rectf bounds(0, 0, 0, 0);
+	for (const auto child : mChildren) {
+		Rectf childBounds = child->getBounds(true);
+		bounds.include(childBounds);
+	}
+	setSize(bounds.getLowerRight());
+}
+
 //==================================================
 // Main loop
 // 
 
-void BaseView::updateScene(const double deltaTime) {
-	if (mTimeline && !mTimeline->empty()) {
-		mTimeline->stepTo(timeline().getCurrentTime());
-		invalidate();
-	}
-
+void BaseView::updateScene(const BaseView::FrameInfo & frameInfo) {
 	if (mHasInvalidContent && mShouldDispatchContentInvalidation) {
 		dispatchEvent(ViewEvent(ViewEvent::Type::CONTENT_INVALIDATED, getSharedViewPtr()));
 	}
 
-	update(deltaTime);
+	update(frameInfo);
+
+	advanceTimeline(mTimeline, frameInfo);
+
 	for (auto child : mChildren) {
-		child->updateScene(deltaTime);
+		child->updateScene(frameInfo);
 	}
 }
 
-void BaseView::drawScene(const ColorA& parentTint) {
+void BaseView::drawScene(const ColorA & parentDrawColor) {
 	const bool shouldDraw = mShouldForceInvisibleDraw || (!mIsHidden && mAlpha > 0.0f);
 
-	if (shouldDraw || (sDebugDrawBounds && sDebugDrawInvisibleBounds)) {
+	if (shouldDraw || (sDrawDebugInfo && sDrawDebugInfoWhenInvisible)) {
 		validateTransforms();
 		validateContent();
 
-		mDrawColor.r = mTint.value().r * parentTint.r;
-		mDrawColor.g = mTint.value().g * parentTint.g;
-		mDrawColor.b = mTint.value().b * parentTint.b;
-		mDrawColor.a = mAlpha.value() * parentTint.a;
+		const auto & tint = mTint.value();
+
+		mDrawColor.r = tint.r * parentDrawColor.r;
+		mDrawColor.g = tint.g * parentDrawColor.g;
+		mDrawColor.b = tint.b * parentDrawColor.b;
+		mDrawColor.a = mAlpha.value() * parentDrawColor.a;
 
 		gl::ScopedModelMatrix scopedModelMatrix;
 		gl::ScopedViewMatrix scopedViewMatrix;
@@ -289,8 +320,11 @@ void BaseView::drawScene(const ColorA& parentTint) {
 
 		willDraw();
 
+		mDrawBlendMode = mBlendMode;
+
 		switch (mBlendMode) {
 			case BlendMode::INHERIT: {
+				mDrawBlendMode = mParent ? mParent->mDrawBlendMode : BlendMode::ALPHA;
 				draw();
 				drawChildren(mDrawColor);
 				break;
@@ -314,15 +348,31 @@ void BaseView::drawScene(const ColorA& parentTint) {
 				draw();
 				drawChildren(mDrawColor);
 				break;
+			} case BlendMode::DISABLE: {
+				gl::ScopedBlend scopedBlend(false);
+				draw();
+				drawChildren(mDrawColor);
+				break;
 			}
 		}
 
-		if (sDebugDrawBounds) {
-			debugDrawOutline();
+		if (sDrawDebugInfo) {
+			drawDebugInfo();
 		}
 
 		didDraw();
 	}
+}
+
+const std::string BaseView::getClassName(const bool stripNameSpace) const {
+	string name = typeid(*this).name();
+	if (stripNameSpace) {
+		const auto idx = name.find_last_of(":");
+		if (idx != string::npos) {
+			name = name.substr(idx + 1);
+		}
+	}
+	return name;
 }
 
 void BaseView::draw() {
@@ -342,11 +392,33 @@ void BaseView::draw() {
 	batch->draw();
 }
 
-inline void BaseView::debugDrawOutline() {
+inline void BaseView::drawDebugInfo() {
+	static const Font labelFont = Font("Arial", 20);
+	static const gl::TextureFontRef textureFont = gl::TextureFont::create(labelFont);
+	static const vec2 labelPos = vec2(0, 0);
+	static const float crosshairRadius = 4.0f;
+	static const float transformOriginRadius = 4.0f;
 	const float hue = (float)mViewId / (float)sNumInstances;
-	const auto color = ColorAf(ci::hsvToRgb(vec3(hue, 1.0f, 1.0f)), 0.66f);
-	gl::color(color);
-	gl::drawStrokedRect(Rectf(vec2(0), getSize()));
+	const ColorA color(ci::hsvToRgb(vec3(hue, 1.0f, 1.0f)), 0.9f);
+	gl::ScopedColor scopedColor(color);
+	gl::ScopedLineWidth lineWidth(1.0f);
+
+	// draw local bounds
+	gl::drawStrokedRect(getBounds(false).getOffset(-getPosition()));
+	
+	// draw transform origin
+	gl::drawLine(getTransformOrigin() + vec2(-transformOriginRadius, 0), getTransformOrigin() + vec2(transformOriginRadius, 0));
+	gl::drawLine(getTransformOrigin() + vec2(0, -transformOriginRadius), getTransformOrigin() + vec2(0, transformOriginRadius));
+
+	// draw origin
+	gl::drawLine(vec2(-crosshairRadius, -crosshairRadius), vec2(crosshairRadius, crosshairRadius));
+	gl::drawLine(vec2(-crosshairRadius, crosshairRadius), vec2(crosshairRadius, -crosshairRadius));
+
+	if (!mDebugIncludeClassName) {
+		textureFont->drawString(mName, labelPos);
+	} else {
+		textureFont->drawString(mName + " (" + getClassName() + ")", labelPos);
+	}
 }
 
 //==================================================
@@ -364,14 +436,25 @@ void BaseView::cancelAnimations() {
 	mAlpha.stop();
 }
 
-TimelineRef BaseView::getTimeline() {
+inline TimelineRef BaseView::getTimeline(bool stepToNow) {
 	if (!mTimeline) {
 		mTimeline = Timeline::create();
+		mTimeline->setAutoRemove(false);
 	}
-	if (mTimeline) {
-		mTimeline->stepTo(timeline().getCurrentTime());
+	if (stepToNow) {
+		advanceTimeline(mTimeline, FrameInfo(timeline().getCurrentTime()));
 	}
 	return mTimeline;
+}
+
+inline void BaseView::advanceTimeline(ci::TimelineRef timeline, const BaseView::FrameInfo & frameInfo) {
+	if (!timeline) {
+		return;
+	}
+	if (timeline->getParent() == nullptr) {
+		timeline->stepTo((float)frameInfo.absoluteTime);
+		invalidate();
+	}
 }
 
 CueRef BaseView::dispatchAfter(std::function<void()> fn, float delay) {

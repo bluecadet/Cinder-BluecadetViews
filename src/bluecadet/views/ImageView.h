@@ -22,36 +22,47 @@ class ImageView : public BaseView {
 public:
 
 	enum class ScaleMode {
-		NONE,
-		STRETCH,
-		FIT,
-		COVER
+		NONE,		//! Unscaled within bounds
+		STRETCH,	//! Stretched within bounds (default)
+		FIT,		//! Scaled to fit within bounds and preserve aspect ratio. Will not crop content.
+		COVER,		//! Scaled to fill bounds and preserve aspect ratio. Might crop content.
+		CUSTOM		//! Uses the current source area and dest rect.
 	};
 
 	ImageView();
 	virtual ~ImageView();
 
 	void reset() override;
-    virtual void clearTexture();
 
-	virtual void setup(const ci::gl::TextureRef texture, const ci::vec2& size = ci::vec2(0), const ScaleMode scaleMode = ScaleMode::COVER);
-
-	virtual void setSize(const ci::vec2& size) override;
-
-	inline ci::gl::TextureRef getTexture() const { return mTexture; }
 	inline void			setTexture(const ci::gl::TextureRef value, const bool resizeToTexture = true);
+	inline const ci::gl::TextureRef getTexture() const { return mTexture; }
 
-	inline ScaleMode	getScaleMode() const { return mScaleMode; }
-	inline void			setScaleMode(const ScaleMode scaleMode) { mScaleMode = scaleMode; }
+	static void			setDefaultScaleMode(const ScaleMode scaleMode) { sDefaultScaleMode = scaleMode; }
+	static ScaleMode	getDefaultScaleMode() { return sDefaultScaleMode; }	//! Defaults to STRETCH
+	
+	inline void			setScaleMode(const ScaleMode scaleMode) { mScaleMode = scaleMode; invalidate(false, true); }
+	inline ScaleMode	getScaleMode() const { return mScaleMode; }	//! Defaults to getDefaultScaleMode()
+
+	//! Configure a custom source area for the texture in texture pixel coordinate space. Will set the scale mode to CUSTOM.
+	inline void					setTextureSourceArea(const ci::Area & area) { mTextureSourceArea = area; mScaleMode = ScaleMode::CUSTOM; invalidate(false, true); };
+	inline const ci::Area &		getTextureSourceArea() const { return mTextureSourceArea; };
+
+	//! Configure a custom destination rect for the texture in local coordinate space. Will set the scale mode to CUSTOM.
+	inline void					setTextureDestRect(const ci::Rectf & rect) { mTextureDestRect = rect; mScaleMode = ScaleMode::CUSTOM; invalidate(false, true); };
+	inline const ci::Rectf &	getTextureDestRect() const { return mTextureDestRect; };
 
 private:
 
-	virtual void draw() override;
+	void draw() override;
+	void validateContent() override;
+	
+	static ScaleMode	sDefaultScaleMode;
 
 	ci::gl::TextureRef	mTexture;
-	ci::Rectf			mDrawingDestRect;
-	ci::Area			mDrawingArea;
+
 	ScaleMode			mScaleMode;
+	ci::Area			mTextureSourceArea;
+	ci::Rectf			mTextureDestRect;
 };
 
 }

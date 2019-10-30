@@ -8,9 +8,13 @@ using namespace std;
 namespace bluecadet {
 namespace views {
 
+ImageView::ScaleMode ImageView::sDefaultScaleMode = ImageView::ScaleMode::STRETCH;
+
 ImageView::ImageView() : BaseView(),
 mTexture(nullptr),
-mScaleMode(ScaleMode::NONE)
+mScaleMode(sDefaultScaleMode),
+mTextureSourceArea(0, 0, 0, 0),
+mTextureDestRect(0, 0, 0, 0)
 {
 }
 
@@ -19,37 +23,19 @@ ImageView::~ImageView() {
 
 void ImageView::reset() {
     BaseView::reset();
-    clearTexture();
+    setTexture(nullptr);
+	setScaleMode(sDefaultScaleMode);
+	mTextureSourceArea = Area();
+	mTextureDestRect = Rectf();
 }
 
-void ImageView::clearTexture() {
-    mTexture = nullptr;
-    mDrawingDestRect = Rectf();
-    mDrawingArea = Area();
-	mScaleMode = ScaleMode::NONE;
-}
-
-void ImageView::setup(const gl::TextureRef texture, const ci::vec2 &size, const ScaleMode scaleMode) {
-	const bool resizeToTexture = size.x == 0 && size.y == 0;
-
-	setScaleMode(scaleMode);
-	
-	setTexture(texture, resizeToTexture);
-
-	if (!resizeToTexture) {
-		setSize(size);
-	}
-}
-
-void ImageView::setTexture(ci::gl::TextureRef texture, const bool resizeToTexture) {
+inline void ImageView::setTexture(ci::gl::TextureRef texture, const bool resizeToTexture) {
 	mTexture = texture;
 
 	if (resizeToTexture) {
 		if (mTexture) {
-			// apply texture size
 			setSize(vec2(mTexture->getSize()));
 		} else {
-			// reset to 0
 			setSize(vec2());
 		}
 	}
@@ -57,37 +43,43 @@ void ImageView::setTexture(ci::gl::TextureRef texture, const bool resizeToTextur
 	invalidate(false, true);
 }
 
-void ImageView::setSize(const ci::vec2& size) {
-	BaseView::setSize(size);
+void ImageView::validateContent() {
+	BaseView::validateContent();
 
-	mDrawingDestRect = Rectf(vec2(0), size);
+	if (!mTexture) {
+		mTextureDestRect = Rectf();
+		mTextureSourceArea = Area();
+		return;
+	}
 
-	if (mTexture) {
-		// Aspect fill drawing area
-		mDrawingArea = Area(mDrawingDestRect.getCenteredFit(mTexture->getBounds(), true));
-	} else {
-		mDrawingArea = Area();
+	switch (mScaleMode) {
+		case ScaleMode::NONE:
+			mTextureDestRect = Rectf(vec2(), getSize());
+			mTextureSourceArea = Area(mTextureDestRect);
+			break;
+		case ScaleMode::STRETCH:
+			mTextureDestRect = Rectf(vec2(), getSize());
+			mTextureSourceArea = Area(mTexture->getBounds());
+			break;
+		case ScaleMode::FIT:
+			mTextureDestRect = Rectf(mTexture->getBounds()).getCenteredFit(Rectf(vec2(), getSize()), true);
+			mTextureSourceArea = Area(mTexture->getBounds());
+			break;
+		case ScaleMode::COVER:
+			mTextureDestRect = Rectf(vec2(), getSize());
+			mTextureSourceArea = Area(mTextureDestRect.getCenteredFit(mTexture->getBounds(), true));
+			break;
+		case ScaleMode::CUSTOM:
+			// do nothing
+			break;
 	}
 }
 
 void ImageView::draw() {
-	if (!mTexture) return;
-	
 	BaseView::draw();
-	
-	switch (mScaleMode) {
-		case ScaleMode::NONE:
-			gl::draw(mTexture);
-			break;
-		case ScaleMode::STRETCH:
-			gl::draw(mTexture, mDrawingDestRect);
-			break;
-		case ScaleMode::FIT:
-			gl::draw(mTexture, Rectf(mTexture->getBounds()).getCenteredFit(mDrawingDestRect, true));
-			break;
-		case ScaleMode::COVER:
-			gl::draw(mTexture, mDrawingArea, mDrawingDestRect);
-			break;
+
+	if (mTexture) {
+		gl::draw(mTexture, mTextureSourceArea, mTextureDestRect);
 	}
 }
 

@@ -22,8 +22,12 @@ AnimatedView::CallbackCue::CallbackCue(CallbackFn callback, float time) :
 
 AnimatedView::CallbackCue::~CallbackCue() {
 	if (!isComplete()) {
-		mSignalCallback.emit(false); // failure
+		mSignalCallback.emit(false); // canceled
 	}
+}
+
+inline void AnimatedView::CallbackCue::addCallback(CallbackFn callback) {
+	mConnections += mSignalCallback.connect(callback);
 }
 
 //==================================================
@@ -41,16 +45,30 @@ AnimatedView::AnimatedView(bool showInitially) :
 AnimatedView::~AnimatedView() {
 }
 
-void AnimatedView::animateOn(const Options & options, CallbackFn callback) {
+void AnimatedView::animateOn(const Options & options, CallbackFn callback, bool isCallbackAsync) {
 	mIsInitialized = true; // override initial state
+
+	CallbackFn wrappedCallback = nullptr;
+	
+	if (callback) {
+		if (isCallbackAsync) {
+			wrappedCallback = [=] (bool completed) {
+				App::get()->dispatchAsync([=] {
+					if (callback) {
+						callback(completed);
+					}
+				});
+			};
+		} else {
+			wrappedCallback = callback;
+		}
+	}
 
 	if (mIsShowing && mShouldShow) {
 		// already showing; dispatch on next frame
-		App::get()->dispatchAsync([=] {
-			if (callback) {
-				callback(true);
-			}
-		});
+		if (wrappedCallback) {
+			wrappedCallback(true);
+		}
 		return;
 	}
 
@@ -63,7 +81,7 @@ void AnimatedView::animateOn(const Options & options, CallbackFn callback) {
 
 		addAnimationOn(getTimeline(), options);
 
-		mCueOn = CallbackCueRef(new CallbackCue([=](bool completed) {
+		mCueOn = make_shared<CallbackCue>([=](bool completed) {
 			if (completed) {
 				mIsShowing = true;
 				didAnimateOn();
@@ -71,7 +89,7 @@ void AnimatedView::animateOn(const Options & options, CallbackFn callback) {
 			}
 			mCueOn = nullptr;
 
-		}, getTimeline()->getCurrentTime() + options.getDuration() + options.getDelay()));
+		}, getTimeline()->getCurrentTime() + options.getDuration() + options.getDelay());
 
 		getTimeline()->insert(mCueOn);
 
@@ -79,27 +97,41 @@ void AnimatedView::animateOn(const Options & options, CallbackFn callback) {
 		mSignalWillAnimateOn.emit();
 	}
 
-	if (callback) {
+	if (wrappedCallback) {
 		if (mCueOn) {
 			// add callback (multiple callbacks are possible)
-			mCueOn->getSignalCallback().connect(callback);
+			mCueOn->getSignalCallback().connect(wrappedCallback);
 		} else {
 			// this can happen if willAnimateOn cancels the animation
-			callback(false);
+			wrappedCallback(false);
 		}
 	}
 }
 
-void AnimatedView::animateOff(const Options & options, CallbackFn callback) {
+void AnimatedView::animateOff(const Options & options, CallbackFn callback, bool isCallbackAsync) {
 	mIsInitialized = true; // override initial state
+
+	CallbackFn wrappedCallback = nullptr;
+
+	if (callback) {
+		if (isCallbackAsync) {
+			wrappedCallback = [=] (bool completed) {
+				App::get()->dispatchAsync([=] {
+					if (callback) {
+						callback(completed);
+					}
+				});
+			};
+		} else {
+			wrappedCallback = callback;
+		}
+	}
 
 	if (!mIsShowing && !mShouldShow) {
 		// already hidden; dispatch on next frame
-		App::get()->dispatchAsync([=] {
-			if (callback) {
-				callback(true);
-			}
-		});
+		if (wrappedCallback) {
+			wrappedCallback(true);
+		}
 		return;
 	}
 
@@ -112,14 +144,14 @@ void AnimatedView::animateOff(const Options & options, CallbackFn callback) {
 
 		addAnimationOff(getTimeline(), options);
 
-		mCueOff = CallbackCueRef(new CallbackCue([=](bool completed) {
+		mCueOff = make_shared<CallbackCue>([=](bool completed) {
 			if (completed) {
 				mIsShowing = false;
 				didAnimateOff();
 				mSignalDidAnimateOff.emit();
 			}
 			mCueOff = nullptr;
-		}, getTimeline()->getCurrentTime() + options.getDuration() + options.getDelay()));
+		}, getTimeline()->getCurrentTime() + options.getDuration() + options.getDelay());
 
 		getTimeline()->insert(mCueOff);
 
@@ -127,21 +159,21 @@ void AnimatedView::animateOff(const Options & options, CallbackFn callback) {
 		mSignalWillAnimateOff.emit();
 	}
 
-	if (callback) {
+	if (wrappedCallback) {
 		if (mCueOff) {
 			// add callback (multiple callbacks are possible)
-			mCueOff->getSignalCallback().connect(callback);
+			mCueOff->getSignalCallback().connect(wrappedCallback);
 
 		} else {
 			// this can happen if willAnimateOff cancels the animation
-			callback(false);
+			wrappedCallback(false);
 		}
 	}
 }
 
 void AnimatedView::setToAnimatedOn() {
 	animateOn(Options().duration(0).easing(easeNone));
-	mShowInitially = false;
+	mShowInitially = true;
 }
 
 void AnimatedView::setToAnimatedOff() {
@@ -176,6 +208,12 @@ void AnimatedView::cancelAnimationOff() {
 		mCueOff->removeSelf();
 	}
 	mCueOff = nullptr;
+}
+
+void AnimatedView::cancelAnimations() {
+	cancelAnimationOn();
+	cancelAnimationOff();
+	BaseView::cancelAnimations();
 }
 
 }

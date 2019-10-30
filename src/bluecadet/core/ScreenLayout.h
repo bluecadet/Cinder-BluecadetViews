@@ -24,15 +24,14 @@ public:
 	~ScreenLayout();
 
 
-	static ScreenLayoutRef getInstance() {
-		static ScreenLayoutRef instance = nullptr;
-		if (!instance) instance = ScreenLayoutRef(new ScreenLayout());
+	static ScreenLayoutRef get() {
+		static auto instance = std::make_shared<ScreenLayout>();
 		return instance;
 	}
 
 
 	//! Must be called before calling draw. Adds a key-up event listener.
-	void			setup(const ci::ivec2& dislaySize = ci::app::getWindowSize(), const int numRows = 1, const int numColumns = 1);
+	void			setup(const ci::ivec2& dislaySize = ci::app::getWindowSize(), const int numRows = 1, const int numColumns = 1, const ci::ivec2 bezel = ci::ivec2(0,0));
 
 	//! Draws the current screen layout, transformed appropriately to match the position and scale of rootView
 	void			draw();
@@ -51,8 +50,8 @@ public:
 	void			setDisplayHeight(const int height) { mDisplaySize.y = height; updateLayout(); };
 
 	//! The size of a single display in the display matrix
-	ci::ivec2		getDisplaySize() const { return mDisplaySize; }
-	void			setDisplaySize(const ci::ivec2 value) { mDisplaySize = value; }
+	const ci::ivec2	&	getDisplaySize() const { return mDisplaySize; }
+	void				setDisplaySize(const ci::ivec2 value) { mDisplaySize = value; }
 
 	//! The number of rows of displays in the display matrix.
 	int				getNumRows() const { return mNumRows; };
@@ -62,6 +61,9 @@ public:
 	int				getNumColumns() const { return mNumColumns; };
 	void			setNumColumns(const int numColumns) { mNumColumns = numColumns; updateLayout(); };
 
+	//! The amount of bezel correction added between displays
+	const ci::ivec2	&	getBezelDims() const { return mBezelDims; };
+	void				setBezelDims(const ci::ivec2 bezel) { mBezelDims = bezel; updateLayout(); };
 
 
 	//! Helper to retrieve a display id from a row/col. Ids start at 0 and increment in right-to-left, top-to-bottom sequence.
@@ -82,7 +84,7 @@ public:
 
 
 	//! The total app size when scaled at 100%
-	const ci::ivec2&	getAppSize() const { return mAppSize; };
+	const ci::ivec2 &	getAppSize() const { return mAppSize; };
 
 	//! Overall app width when scaled at 100%
 	int				getAppWidth() const { return getAppSize().x; }
@@ -104,6 +106,7 @@ protected:
 
 	int					mNumRows;
 	int					mNumColumns;
+	ci::ivec2			mBezelDims;
 
 	ci::ivec2			mDisplaySize;
 	ci::ivec2			mAppSize;

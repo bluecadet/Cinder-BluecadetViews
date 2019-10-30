@@ -3,6 +3,8 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
+#include "cinder/Tween.h"
+
 #include "BaseView.h"
 
 namespace bluecadet {
@@ -35,7 +37,6 @@ public:
 
 	//! AnimatedView options
 	struct Options {
-
 		Options clone() const			{ return Options(*this); }
 
 		Options & duration(float v)		{ mDuration = v; return *this; }
@@ -51,6 +52,38 @@ public:
 
 		float getEndTime() const		{ return mDuration + mDelay; }
 
+		/*template <typename T>
+		typename ci::Tween<T>::Options & applyTo(typename ci::Tween<T>::Options & tweenOptions) const {
+			return tweenOptions.easeFn(mEasing).delay(mDelay);
+		};*/
+
+		template <typename T>
+		inline typename ci::Tween<T>::Options & apply(ci::TimelineRef timeline,
+											   typename ci::Anim<T> * target,
+											   T startValue,
+											   T endValue) const {
+			return timeline->apply(target, startValue, endValue, mDuration, mEasing).delay(mDelay);
+		};
+		template <typename T>
+		inline typename ci::Tween<T>::Options & apply(ci::TimelineRef timeline,
+											   typename ci::Anim<T> * target,
+											   T endValue) const {
+			return timeline->apply(target, endValue, mDuration, mEasing).delay(mDelay);
+		};
+		template <typename T>
+		inline typename ci::Tween<T>::Options & appendTo(ci::TimelineRef timeline,
+											   typename ci::Anim<T> * target,
+											   T startValue,
+											   T endValue) const {
+			return timeline->appendTo(target, startValue, endValue, mDuration, mEasing).delay(mDelay);
+		};
+		template <typename T>
+		inline typename ci::Tween<T>::Options & appendTo(ci::TimelineRef timeline,
+											   typename ci::Anim<T> * target,
+											   T endValue) const {
+			return timeline->appendTo(target, endValue, mDuration, mEasing).delay(mDelay);
+		};
+
 	private:
 		float mDuration = 0.33f;
 		float mDelay = 0;
@@ -65,7 +98,7 @@ public:
 		~CallbackCue();
 
 		//! Adds a single callback to the list
-		inline void addCallback(CallbackFn callback) { mConnections += mSignalCallback.connect(callback); }
+		inline void addCallback(CallbackFn callback);
 
 		//! Removes callbacks without triggering them
 		inline void removeAllCallbacks() { mConnections.clear(); }
@@ -88,17 +121,16 @@ public:
 
 
 	//! Animate this view on.
-	void animateOn(const Options & options, CallbackFn callback = nullptr);
+	void animateOn(const Options & options, CallbackFn callback = nullptr, bool isCallbackAsync = true);
 	
 	//! Animate this view off.
-	void animateOff(const Options & options, CallbackFn callback = nullptr);
+	void animateOff(const Options & options, CallbackFn callback = nullptr, bool isCallbackAsync = true);
 
 	//! Shortcut to animateOn() with default options.
-	void animateOn(CallbackFn callback = nullptr) { animateOn(mDefaultOptions, callback); };
+	void animateOn(CallbackFn callback = nullptr, bool isCallbackAsync = true) { animateOn(mDefaultOptions, callback, isCallbackAsync); };
 
 	//! Shortcut to animateOff() with default options.
-	void animateOff(CallbackFn callback = nullptr) { animateOff(mDefaultOptions, callback); };
-
+	void animateOff(CallbackFn callback = nullptr, bool isCallbackAsync = true) { animateOff(mDefaultOptions, callback, isCallbackAsync); };
 
 	//! Same as animating on with a duration of 0.
 	void setToAnimatedOn();
@@ -122,6 +154,9 @@ public:
 
 	//! Cancels the current off animation
 	void cancelAnimationOff();
+
+	//! Cancels all animations (on/off/others).
+	void cancelAnimations() override;
 
 	//! Signals triggered at beginning off animations
 	VoidSignal & getSignalWillAnimateOn() { return mSignalWillAnimateOn; }
@@ -177,6 +212,5 @@ private:
 	VoidSignal mSignalDidAnimateOff;
 
 };
-
 }
 }

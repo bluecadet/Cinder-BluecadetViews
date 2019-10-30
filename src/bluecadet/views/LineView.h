@@ -3,6 +3,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
+#include "bluecadet/core/ScreenCamera.h"
 #include "BaseView.h"
 
 namespace bluecadet {
@@ -32,7 +33,7 @@ public:
 	inline void setLineColor(const ci::ColorA& value) { mLineColor = value; invalidate(false, true); }
 
 protected:
-	virtual void draw() override;
+	void draw() override;
 
 	ci::Anim<float>			mLineWidth;
 	ci::Anim<ci::ColorA>	mLineColor;

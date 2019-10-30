@@ -9,17 +9,13 @@ namespace views {
 
 StatsView::StatsView() : StatsView(ci::Font("Arial", 16.0f)) {}
 
-StatsView::StatsView(ci::Font font) : BaseView(),
-mFont(font)
-{
+StatsView::StatsView(ci::Font font) : BaseView(), mFont(font) {
 	mTextureFont = gl::TextureFont::create(mFont);
 }
 
-StatsView::~StatsView() {
-}
+StatsView::~StatsView() {}
 
-void StatsView::addStat(const std::string& name, StatsFn fn)
-{
+void StatsView::addStat(const std::string & name, std::function<std::string()> fn) {
 	auto it = mStatFunctions.find(name);
 	if (it != mStatFunctions.end()) {
 		cout << "StatsView: Replacing existing stat with name " << name << endl;
@@ -29,8 +25,7 @@ void StatsView::addStat(const std::string& name, StatsFn fn)
 	setSize(vec2(512, getRowHeight() * (float)mStatFunctions.size()));
 }
 
-void StatsView::removeStat(const std::string& name)
-{
+void StatsView::removeStat(const std::string & name) {
 	const auto statsIt = mStatFunctions.find(name);
 	if (statsIt == mStatFunctions.end()) {
 		cout << "StatsView: Can't find stat with name " << name << endl;
@@ -44,12 +39,12 @@ void StatsView::draw() {
 	const float rowHeight = getRowHeight();
 	vec2 pos(0, mTextureFont->getAscent());
 
-	for (const auto& it : mStatFunctions) {
+	for (const auto & it : mStatFunctions) {
 		const string str = it.first + ": " + it.second();
 		mTextureFont->drawString(str, pos);
 		pos.y += rowHeight;
 	}
 }
 
-}
-}
+}  // namespace views
+}  // namespace bluecadet

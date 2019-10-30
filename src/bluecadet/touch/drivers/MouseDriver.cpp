@@ -43,7 +43,7 @@ void MouseDriver::connect() {
 
 	mUpdateConnection = App::get()->getSignalUpdate().connect(-1, bind(&MouseDriver::handleUpdate, this));
 
-	mTouchManager = TouchManager::getInstance();
+	mTouchManager = TouchManager::get();
 }
 
 void MouseDriver::disconnect() {

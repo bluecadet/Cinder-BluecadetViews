@@ -11,7 +11,8 @@ FboView::FboView() : BaseView(),
 mFbo(nullptr),
 mForceRedraw(false),
 mDrawsToScreen(true),
-mResolution(1.0f)
+mResolution(1.0f),
+mClearColor(ci::ColorA(0, 0, 0, 0))
 {
 	gl::Texture2d::Format fboTexFormat;
 	fboTexFormat.enableMipmapping(true);
@@ -68,7 +69,7 @@ inline void FboView::validateContent(){
 		gl::ScopedViewport scopedViewport(mFbo->getSize());
 		gl::ScopedFramebuffer scopedFbo(mFbo);
 		
-		gl::clear(ColorA(0, 0, 0, 0));
+		gl::clear(mClearColor);
 		gl::scale(vec3(mResolution, mResolution, 1.0f));
 
 		if (getBlendMode() == BlendMode::PREMULT) {

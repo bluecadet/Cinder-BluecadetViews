@@ -73,17 +73,24 @@ public:
 	static bool				sContentInvalidationEnabled;
 
 	//! Defaults to false. Draws all views with debug color to illustrate the view hierarchy.
-	static bool				sDebugDrawBounds;
+	static bool				sDrawDebugInfo;
 
-	//! Defaults to false. When sDebugDrawBounds is set to true, this setting will also draw any invisible views
-	static bool				sDebugDrawInvisibleBounds;
+	//! Defaults to false. When sDrawDebugInfo is set to true, this setting will also draw any invisible views
+	static bool				sDrawDebugInfoWhenInvisible;
 
 	enum class BlendMode {
 		INHERIT,
 		ALPHA,
 		PREMULT,
 		ADD,
-		MULTIPLY
+		MULTIPLY,
+		DISABLE
+	};
+
+	struct FrameInfo {
+		double absoluteTime;
+		double deltaTime;
+		FrameInfo(double absoluteTime = ci::app::getElapsedSeconds(), double deltaTime = 0) : absoluteTime(absoluteTime), deltaTime(deltaTime) {}
 	};
 
 	//==================================================
@@ -91,13 +98,10 @@ public:
 	// 
 
 	//! Updates this view and all of its children. Call this method on root views that don't have a parent.
-	virtual void			updateScene(double deltaTime);
+	virtual void			updateScene(const FrameInfo & frameInfo = FrameInfo());
 
 	//! Applies tint color, alpha and matrices and then draws itself and all children. Validates transforms internally.
-	virtual void			drawScene(const ci::ColorA& parentTint = ci::ColorA(1.0f, 1.0f, 1.0, 1.0f)) final;
-
-	//! Used for all internal animations
-	ci::TimelineRef			getTimeline();
+	virtual void			drawScene(const ci::ColorA & parentDrawColor = ci::ColorA(1.0f, 1.0f, 1.0, 1.0f)) final;
 
 	//! Returns a shared pointer to this instance
 	inline BaseViewRef		getSharedViewPtr() { return shared_from_this(); }
@@ -115,6 +119,7 @@ public:
 	virtual void			removeChild(BaseView* childPtr);
 	virtual BaseViewList::iterator removeChild(BaseViewList::iterator childIt);
 	virtual void			removeAllChildren();
+	virtual void			removeSelf(); // Attempts to remove this view from its parent, if it has one.
 
 	//! Gets the child's index or -1 if not found; Mildly expensive with O(N) complexity
 	int						getChildIndex(BaseViewRef child);
@@ -162,9 +167,11 @@ public:
 	virtual const size_t				getNumChildren() const { return mChildren.size(); }
 
 	//! Local position relative to parent view
-	virtual ci::Anim<ci::vec2>&			getPosition() { return mPosition; }
+	virtual ci::Anim<ci::vec2> &		getPosition() { return mPosition; }
+	virtual const ci::vec2 &			getPositionConst() const { return mPosition.value(); }
 	virtual void						setPosition(const ci::vec2& position) { mPosition = position; invalidate(); }
 	virtual void						setPosition(const ci::vec3& position) { mPosition = ci::vec2(position.x, position.y); invalidate(); }
+	virtual void						setPosition(float x, float y) { mPosition = ci::vec2(x, y); invalidate(); }
 
 	//! Shorthand for combining position and size to center the view at `center`
 	virtual void						setCenter(const ci::vec2 center) { setPosition(center - 0.5f * getSize()); }
@@ -173,13 +180,16 @@ public:
 	virtual ci::vec2					getCenter() { return getPosition().value() + 0.5f * getSize(); }
 
 	//! Local scale relative to parent view
-	virtual ci::Anim<ci::vec2>&			getScale() { return mScale; }
-	virtual void						setScale(const float& scale) { mScale = ci::vec2(scale, scale);  invalidate(); }
+	virtual ci::Anim<ci::vec2> &		getScale() { return mScale; }
+	virtual const ci::vec2 &			getScaleConst() const { return mScale.value(); }
+	virtual void						setScale(float scale) { mScale = ci::vec2(scale, scale);  invalidate(); }
+	virtual void						setScale(float scaleX, float scaleY) { mScale = ci::vec2(scaleX, scaleY);  invalidate(); }
 	virtual void						setScale(const ci::vec2& scale) { mScale = scale;  invalidate(); }
 	virtual void						setScale(const ci::vec3& scale) { mScale = ci::vec2(scale.x, scale.y);  invalidate(); }
 
 	//! Local rotation relative to parent view. Changing this value invalidates transforms.
-	virtual ci::Anim<ci::quat>&			getRotation() { return mRotation; }
+	virtual ci::Anim<ci::quat> &		getRotation() { return mRotation; }
+	virtual const ci::quat &			getRotationConst() { return mRotation.value(); }
 	virtual float						getRotationZ() const { return glm::roll(mRotation.value()); }
 	virtual void						setRotation(const float radians) { mRotation = glm::angleAxis(radians, ci::vec3(0, 0, 1)); invalidate(); }
 	virtual void						setRotation(const ci::quat& rotation) { mRotation = rotation; invalidate(); }
@@ -197,6 +207,11 @@ public:
 	//! Size of this view. Defaults to 0, 0 and is not affected by children. Does not affect transforms (position, rotation, scale).
 	virtual const ci::vec2				getSize() { return mSize; }
 	virtual void						setSize(const ci::vec2& size) { mSize = size; invalidate(false, true); }
+	inline void							setSize(float width, float height) { setSize(ci::vec2(width, height)); }
+	inline void							setSize(float widthAndHeight) { setSize(ci::vec2(widthAndHeight, widthAndHeight)); }
+
+	//! Utility method that sets the size of this view to the most bottom/right extents of all child bounds.
+	void								resizeToFit();
 
 	//! Width of this view. Defaults to 0 and is not affected by children.
 	virtual float						getWidth() { return getSize().x; }
@@ -205,6 +220,9 @@ public:
 	//! Height of this view. Defaults to 0 and is not affected by children.
 	virtual float						getHeight() { return getSize().y; }
 	virtual void						setHeight(const float height) { ci::vec2 s = getSize(); setSize(ci::vec2(s.x, height)); }
+
+	//! Combined size and position in parent coordinate space. Set scaled to true to multiply size by scale. Does not include rotation.
+	virtual ci::Rectf					getBounds(const bool scaled = false) { return ci::Rectf(getPositionConst(), getPositionConst() + (scaled ? getScaleConst() * getSize() : getSize())); }
 
 	//! The fill color used when drawing the bounding rect when a size greater than 0, 0 is given.
 	virtual ci::Anim<ci::ColorA>&		getBackgroundColor() { return mBackgroundColor; }
@@ -221,11 +239,11 @@ public:
 	virtual void						setAlpha(const float alpha) { mAlpha = alpha; }
 
 	//! Returns a constant reference of getAlpha(). Allows for const access.
-	virtual const ci::Anim<float>&		getAlphaConst() const { return mAlpha; }
+	virtual float						getAlphaConst() const { return mAlpha; }
 	
 	//! Defaults to inherit (doesn't change the blend mode).
 	BlendMode							getBlendMode() const { return mBlendMode; }
-	void								setBlendMode(const BlendMode value) { mBlendMode = value; }
+	virtual void						setBlendMode(const BlendMode value) { mBlendMode = value; }
 
 	//! Disables drawing; Update calls are not affected; Defaults to false
 	virtual bool						isHidden() const { return mIsHidden; }
@@ -243,10 +261,16 @@ public:
 	bool								shouldDispatchContentInvalidation() const { return mShouldDispatchContentInvalidation; }
 	void								setShouldDispatchContentInvalidation(const bool value) { mShouldDispatchContentInvalidation = value; }
 
-	//! Unique ID per view.
-	const size_t						getViewId() const { return mViewId; }
-	const std::string &					getViewIdStr() const { return mViewIdStr; }
 
+	//==================================================
+	// Timeline
+	// 
+
+	//! Used for all internal animations. By default, no timeline is created until this method is called.
+	inline ci::TimelineRef	getTimeline(bool stepToNow = true);
+
+	//! Optional method to set this view's timeline to a specific timeline. Can be used to share timelines across views.
+	inline void				setTimeline(ci::TimelineRef timeline) { mTimeline = timeline; }
 
 	//==================================================
 	// Coordinate space conversions
@@ -272,7 +296,9 @@ public:
 
 	//! Converts a position from the root view's global space to the current view's local space.
 	const ci::vec2						convertGlobalToLocal(const ci::vec2& global) { ci::vec4 local = glm::inverse(getGlobalTransform()) * ci::vec4(global, 0, 1); return ci::vec2(local); }
-
+	
+	//! This will recalculate the transformation matrix based on the current position, scale and rotation. Gets called automatically before getTransforms(), getGlobalTransforms() or getGlobalPosition() is called.
+	inline void	validateTransforms(const bool force = false);
 
 	//==================================================
 	// User info
@@ -304,24 +330,45 @@ public:
 		if (it == mUserInfo.end()) return defaultValue;
 		return boost::get<T>(it->second);
 	}
+		
+
+	//==================================================
+	// Debug
+	//
+
+	//! Unique ID per view.
+	const size_t						getViewId() const { return mViewId; }
+	const std::string &					getViewIdStr() const { return mViewIdStr; }
+
+	//! Custom name that can be assigned to view and used for debugging; Defaults to view id string.
+	const std::string &					getName() const { return mName; }
+	void								setName(const std::string & name) { mName = name; }
+
+	//! Retrieves this class' name via typeinfo()
+	const std::string					getClassName(const bool stripNameSpace = true) const;
+
+	//! Determines whether calling drawDebugInfo() should include the classname or not. Defaults to true.
+	void  setDebugIncludeClassName(const bool value)	{ mDebugIncludeClassName = value; }
+	bool  getDebugIncludeClassName() const				{ return mDebugIncludeClassName; }
 
 protected:
 
-	virtual void update(const double deltaTime) {};				//! Gets called before draw() and after any parent's update. Override this method to plug into the update loop.
+	virtual void		update(const FrameInfo & frameInfo) {};	//! Gets called before draw() and after any parent's update. Override this method to plug into the update loop.
 
 	inline virtual void	willDraw() {}							//! Called by drawScene before draw()
 	virtual void		draw();									//! Called by drawScene and allows for drawing content for this node. By default draws a rectangle with the current size and background color (only if x/y /bg-alpha > 0)
-	virtual void		debugDrawOutline();						//! Called in DEBUG if sDebugDrawBounds is set to true.
-	inline virtual void	drawChildren(const ci::ColorA& parentTint); //! Called by drawScene() after draw() and before didDraw(). Implemented at bottom of class.
+	virtual void		drawDebugInfo();						//! Called in sDrawDebugInfo is set to true (Can be controller by SettingsManager params)
+	inline virtual void	drawChildren(const ci::ColorA & parentDrawColor); //! Called by drawScene() after draw() and before didDraw(). Implemented at bottom of class.
 	inline virtual void	didDraw() {}							//! Called by drawScene after draw()
 
-	inline virtual void didMoveToView(BaseView* parent) {}		//! Called when moved to a parent
-	inline virtual void willMoveFromView(BaseView* parent) {}	//! Called when removed from a parent
+	inline virtual void didMoveToView(BaseView * parent) {}		//! Called when moved to a parent
+	inline virtual void willMoveFromView(BaseView * parent) {}	//! Called when removed from a parent
 
-	const ci::ColorA& getDrawColor() const { return mDrawColor; }	//! The color used for drawing, which is a composite of the alpha and tint colors.
-
-	//! This will recalculate the transformation matrix based on the current position, scale and rotation. Gets called automatically before getTransforms(), getGlobalTransforms() or getGlobalPosition() is called.
-	inline void	validateTransforms(const bool force = false);
+	const ci::ColorA & getDrawColor() const { return mDrawColor; }	//! The color used for drawing, which is a composite of the alpha and tint colors.
+	BlendMode getDrawBlendMode() const { return mDrawBlendMode; };	//! The current applied blend mode. Useful if this view's blend mode is set to inherit. Updated on each render pass.
+	
+	//! Progresses the timeline
+	virtual void			advanceTimeline(ci::TimelineRef timeline, const FrameInfo & frameInfo);
 
 	//! Marks the transformation matrix (and all of its children's matrices) as invalid. This will cause the matrices to be re-calculated when necessary.
 	//! When content is true, marks the content as invalid and will dispatch a content updated event
@@ -347,6 +394,7 @@ private:
 	BaseViewList mChildren;
 
 	ci::TimelineRef mTimeline;
+
 	ci::Anim<float> mAlpha;
 	ci::Anim<ci::Color> mTint;
 	ci::Anim<ci::ColorA> mBackgroundColor;
@@ -355,6 +403,7 @@ private:
 	bool mIsHidden;
 	bool mShouldForceInvisibleDraw;
 	BlendMode mBlendMode;
+	BlendMode mDrawBlendMode;
 
 	ci::ColorA mDrawColor;	//! Combines mAlpha and mTint for faster draw
 
@@ -379,6 +428,8 @@ private:
 	// Misc
 	const size_t							mViewId;
 	const std::string						mViewIdStr;
+	std::string								mName;
+	bool									mDebugIncludeClassName;
 	std::map<std::string, UserInfoTypes>	mUserInfo;
 
 
@@ -390,9 +441,9 @@ private:
 // Inline implementations to improve speed on frequently used methods
 // 
 
-void BaseView::drawChildren(const ci::ColorA& parentTint) {
+void BaseView::drawChildren(const ci::ColorA& parentDrawColor) {
 	for (auto child : mChildren) {
-		child->drawScene(parentTint);
+		child->drawScene(parentDrawColor);
 	}
 }
 
@@ -415,7 +466,7 @@ void BaseView::validateTransforms(const bool force) {
 }
 
 inline void BaseView::invalidate(const bool transforms, const bool content) {
-	if (transforms) {
+	if (transforms && !mHasInvalidTransforms) {
 		mHasInvalidTransforms = true;
 		for (auto child : mChildren) {
 			child->invalidate(true, false);

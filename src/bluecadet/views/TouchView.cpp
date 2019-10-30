@@ -1,3 +1,4 @@
+#ifndef NO_TOUCH
 
 #include "TouchView.h"
 #include "../touch/TouchManager.h"
@@ -184,7 +185,7 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 }
 
 void TouchView::cancelTouches() {
-	std::shared_ptr<touch::TouchManager> touchManager = touch::TouchManager::getInstance();
+	std::shared_ptr<touch::TouchManager> touchManager = touch::TouchManager::get();
 	touchManager->cancelTouch(getSharedTouchViewPtr());
 	resetTouchState();
 }
@@ -220,7 +221,7 @@ bool TouchView::containsPoint(const vec2 &point) {
 }
 
 bool TouchView::canAcceptTouch(const bluecadet::touch::Touch & touch) const {
-	return (mMultiTouchEnabled || mTouchIds.empty()) && (getAlphaConst().value() > mMinAlphaForTouches);
+	return (mMultiTouchEnabled || mTouchIds.empty()) && (getAlphaConst() > mMinAlphaForTouches);
 }
 
 bool TouchView::isHandlingTouch(const int touchId) const {
@@ -246,3 +247,5 @@ void TouchView::setTouchPath(const float radius, const ci::vec2& offset, const i
 
 }
 }
+
+#endif

@@ -57,6 +57,10 @@ public:
 	float			getResolution() const { return mResolution; }
 	void			setFboScale(const float value);
 
+	//! Sets the color to be used when clearing the fbo before rendering content
+	void			setClearColor(const ci::ColorA & clearColor) { if (mClearColor != clearColor) { mClearColor = clearColor; invalidate(false, true); } }
+	ci::ColorA		getClearColor() const { return mClearColor; }
+
 protected:
 
 	virtual ci::gl::FboRef	createFbo(const ci::ivec2 & size, const ci::gl::Fbo::Format & format);
@@ -78,6 +82,8 @@ protected:
 
 	ci::gl::Fbo::Format		mFboFormat;
 	ci::gl::FboRef			mFbo; //! Careful, if fbo is invalidated this could be NULL!
+
+	ci::ColorA				mClearColor;
 
 };
 
