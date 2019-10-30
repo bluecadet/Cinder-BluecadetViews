@@ -29,7 +29,7 @@ public:
 };
 
 void BlendModesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
-	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("settings.json"), [=](SettingsManager * manager) {
+	SettingsManager::get()->setup(settings, ci::app::getAssetPath("settings.json"), true, [=](SettingsManager * manager) {
 		manager->mFps = 400;
 		manager->mConsole = false;
 		manager->mVerticalSync = false;

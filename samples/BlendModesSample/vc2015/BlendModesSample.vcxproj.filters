@@ -287,6 +287,9 @@
     <ClCompile Include="..\..\..\src\bluecadet\touch\drivers\MultiNativeTouchDriver.cpp">
       <Filter>Blocks\BluecadetViews\src\bluecadet\touch\drivers</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\bluecadet\core\ValueMapping.cpp">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
@@ -294,6 +297,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\bluecadet\touch\drivers\MultiNativeTouchDriver.h">
       <Filter>Blocks\BluecadetViews\src\bluecadet\touch\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\bluecadet\core\ValueMapping.h">
+      <Filter>Blocks\BluecadetViews\src\bluecadet\core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

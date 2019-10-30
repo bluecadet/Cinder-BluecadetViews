@@ -22,7 +22,7 @@ public:
 };
 
 void TextViewSampleApp::prepareSettings(ci::app::App::Settings* settings) {
-	SettingsManager::getInstance()->setup(settings, "", [](SettingsManager * manager) {
+	SettingsManager::get()->setup(settings, "", true, [](SettingsManager * manager) {
 		manager->mFullscreen = false;
 		manager->mWindowSize = ivec2(1280, 720);
 	});
@@ -33,11 +33,11 @@ void TextViewSampleApp::setup() {
 	BaseApp::setup();
 
 	// Get the params out of the way
-	SettingsManager::getInstance()->getParams()->minimize();
+	SettingsManager::get()->getParams()->minimize();
 
 	// Optional: configure the size and background of your root view
 	getRootView()->setBackgroundColor(Color::gray(0.0f));
-	getRootView()->setSize(ScreenLayout::getInstance()->getAppSize());
+	getRootView()->setSize(ScreenLayout::get()->getAppSize());
 
 	// Sample content
 	mTextView = TextViewRef(new TextView());
@@ -59,8 +59,7 @@ void TextViewSampleApp::setup() {
 
 	TokenParserMapRef customTokenParsers = make_shared<TokenParserMap>();
 	(*customTokenParsers)[L"<em>"] = [](StringType token, const int options, std::vector<StyledText> &segments, std::stack<Style> &styles) {
-		Style style = Style(styles.top()).color(ColorA(1.0f, 0.0f, 0.0f, 1.0f));
-		styles.push(style);
+		styles.emplace(Style(styles.top()).color(ColorA(1.0f, 0.0f, 0.0f, 1.0f)));
 	};
 
 	// All styles will be applied to text now

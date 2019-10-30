@@ -40,7 +40,7 @@ public:
 void ViewTypesSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 	settings->setHighDensityDisplayEnabled(true);
 
-	SettingsManager::getInstance()->setup(settings, ci::app::getAssetPath("../assets/settings.json"), [](SettingsManager * manager) {
+	SettingsManager::get()->setup(settings, ci::app::getAssetPath("../assets/settings.json"), true, [](SettingsManager * manager) {
 		manager->mFullscreen = false;
 		manager->mWindowSize = ivec2(1280, 720);
 		manager->mDisplaySize = ivec2(1280, 720);
