@@ -39,7 +39,8 @@ public:
 	//
 
 	//! Shared singleton instance
-	static TouchManagerRef getInstance();
+	static TouchManagerRef get();
+	TouchManager();
 	virtual ~TouchManager();
 
 	void					update(views::BaseViewRef rootView, const ci::vec2 & appSize, const ci::mat4 & appTransform = ci::mat4());
@@ -89,9 +90,6 @@ public:
 
 
 protected:
-	//! Private to make the TouchManager a singleton
-	TouchManager();
-
 
 	//==================================================
 	// Internal Helpers

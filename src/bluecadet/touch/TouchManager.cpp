@@ -2,6 +2,7 @@
 #include "boost/lexical_cast.hpp"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/TextureFont.h"
 
 namespace bluecadet {
 namespace touch {
@@ -24,11 +25,8 @@ TouchManager::TouchManager() :
 TouchManager::~TouchManager() {
 }
 
-TouchManagerRef TouchManager::getInstance() {
-	static TouchManagerRef instance = nullptr;
-	if (!instance) {
-		instance = TouchManagerRef(new TouchManager());
-	}
+TouchManagerRef TouchManager::get() {
+	static auto instance = std::make_shared<TouchManager>();
 	return instance;
 }
 
@@ -295,6 +293,7 @@ TouchView * TouchManager::getTopViewForTouch(const Touch & touch, BaseViewRef vi
 void TouchManager::debugDrawTouch(const Touch & touch, const bool isVirtual) {
 	static const ColorA labelColor = ColorA(1, 1, 1, 0.75f);
 	static const Font labelFont = Font("Arial", 16.0f);
+	static const gl::TextureFontRef textureFont = gl::TextureFont::create(labelFont);
 	static const float innerRadius = 12.0f;
 	static const float outerRadius = 16.0f;
 
@@ -369,9 +368,11 @@ void TouchManager::debugDrawTouch(const Touch & touch, const bool isVirtual) {
 	const auto fbo = isVirtual ? fboVirtual : fboNormal;
 	const auto color = isVirtual ? circleColorVirtual : circleColorNormal;
 
-	gl::ScopedColor scopedColor(color);
+	gl::ScopedColor scpopedFboColor(color);
 	gl::draw(fbo->getColorTexture(), circleDestRect);
-	gl::drawString(labelText, labelOffset, labelColor, labelFont);
+
+	gl::ScopedColor scopedLabelColor(labelColor);
+	textureFont->drawString(labelText, labelOffset);
 }
 
 void TouchManager::debugDrawTouches() {

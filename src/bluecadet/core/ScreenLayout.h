@@ -24,9 +24,8 @@ public:
 	~ScreenLayout();
 
 
-	static ScreenLayoutRef getInstance() {
-		static ScreenLayoutRef instance = nullptr;
-		if (!instance) instance = ScreenLayoutRef(new ScreenLayout());
+	static ScreenLayoutRef get() {
+		static auto instance = std::make_shared<ScreenLayout>();
 		return instance;
 	}
 

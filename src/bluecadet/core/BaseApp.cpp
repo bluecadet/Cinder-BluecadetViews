@@ -33,10 +33,10 @@ BaseApp::BaseApp()
 BaseApp::~BaseApp() {}
 
 void BaseApp::setup() {
-	SettingsManager::getInstance()->getSignalSettingsLoaded().connect(bind(&BaseApp::handleSettingsLoaded, this));
-	ScreenLayout::getInstance()->getAppSizeChangedSignal().connect(
+	SettingsManager::get()->getSignalSettingsLoaded().connect(bind(&BaseApp::handleSettingsLoaded, this));
+	ScreenLayout::get()->getAppSizeChangedSignal().connect(
 		bind(&BaseApp::handleAppSizeChange, this, placeholders::_1));
-	ScreenCamera::getInstance()->getViewportChangedSignal().connect(
+	ScreenCamera::get()->getViewportChangedSignal().connect(
 		bind(&BaseApp::handleViewportChange, this, placeholders::_1));
 
 	handleSettingsLoaded();
@@ -53,10 +53,10 @@ void BaseApp::setup() {
 
 	// Debugging
 	mStats->setBackgroundColor(ColorA(0, 0, 0, 0.1f));
-	mStats->addGraph("FPS", 0, getFrameRate(), ColorA(1.0f, 0.0f, 0.0f, 0.75f), ColorA(0.0f, 1.0f, 0.25f, 0.75f));
+	mStats->addGraph("FPS", 0, getFrameRate(), ColorA(0, 1.0f, 0, 1.0f));
 
-	if (SettingsManager::getInstance()->mTouchSimEnabled) {
-		addTouchSimulatorParams(SettingsManager::getInstance()->mSimulatedTouchesPerSecond);
+	if (SettingsManager::get()->mTouchSimEnabled) {
+		addTouchSimulatorParams(SettingsManager::get()->mSimulatedTouchesPerSecond);
 	}
 }
 
@@ -75,11 +75,11 @@ void BaseApp::update() {
 
 	// get the screen layout's transform and apply it to all
 	// touch events to convert touches from window into app space
-	const auto appTransform = glm::inverse(ScreenCamera::getInstance()->getTransform());
-	const auto appSize = ScreenLayout::getInstance()->getAppSize();
+	const auto appTransform = glm::inverse(ScreenCamera::get()->getTransform());
+	const auto appSize = ScreenLayout::get()->getAppSize();
 
 #ifndef NO_TOUCH
-	touch::TouchManager::getInstance()->update(mRootView, appSize, appTransform);
+	touch::TouchManager::get()->update(mRootView, appSize, appTransform);
 #endif
 
 	mRootView->updateScene(frameInfo);
@@ -88,7 +88,7 @@ void BaseApp::update() {
 }
 
 void BaseApp::draw(const bool clear) {
-	auto settings = SettingsManager::getInstance();
+	auto settings = SettingsManager::get();
 
 	if (clear) {
 		gl::clear(settings->mClearColor);
@@ -97,13 +97,13 @@ void BaseApp::draw(const bool clear) {
 	{
 		gl::ScopedModelMatrix scopedMatrix;
 		// apply screen layout transform to root view
-		gl::multModelMatrix(ScreenCamera::getInstance()->getTransform());
+		gl::multModelMatrix(ScreenCamera::get()->getTransform());
 		mRootView->drawScene();
 
 #ifndef NO_TOUCH
 		// draw debug touches in app coordinate space
 		if (settings->mDebugEnabled && settings->mShowTouches) {
-			touch::TouchManager::getInstance()->debugDrawTouches();
+			touch::TouchManager::get()->debugDrawTouches();
 		}
 #endif
 	}
@@ -112,8 +112,8 @@ void BaseApp::draw(const bool clear) {
 		// draw params and debug layers in window coordinate space
 		if (settings->mShowScreenLayout) {
 			gl::ScopedModelMatrix scopedMatrix;
-			gl::multModelMatrix(ScreenCamera::getInstance()->getTransform());
-			ScreenLayout::getInstance()->draw();
+			gl::multModelMatrix(ScreenCamera::get()->getTransform());
+			ScreenLayout::get()->draw();
 		}
 		if (settings->mShowMinimap) {
 			mMiniMap->drawScene();
@@ -136,29 +136,29 @@ void BaseApp::keyDown(KeyEvent event) {
 	switch (event.getCode()) {
 		case KeyEvent::KEY_q: quit(); break;
 		case KeyEvent::KEY_c:
-			SettingsManager::getInstance()->mShowCursor = !SettingsManager::getInstance()->mShowCursor;
-			SettingsManager::getInstance()->mShowCursor ? showCursor() : hideCursor();
+			SettingsManager::get()->mShowCursor = !SettingsManager::get()->mShowCursor;
+			SettingsManager::get()->mShowCursor ? showCursor() : hideCursor();
 			break;
 		case KeyEvent::KEY_f:
-			SettingsManager::getInstance()->mFullscreen = !isFullScreen();
-			setFullScreen(SettingsManager::getInstance()->mFullscreen);
-			ScreenCamera::getInstance()->zoomToFitWindow();
+			SettingsManager::get()->mFullscreen = !isFullScreen();
+			setFullScreen(SettingsManager::get()->mFullscreen);
+			ScreenCamera::get()->zoomToFitWindow();
 			break;
 		case KeyEvent::KEY_F1:
-			if (!SettingsManager::getInstance()->getParams()->isVisible()) {
-				SettingsManager::getInstance()->getParams()->show();
-				SettingsManager::getInstance()->getParams()->maximize();
+			if (!SettingsManager::get()->getParams()->isVisible()) {
+				SettingsManager::get()->getParams()->show();
+				SettingsManager::get()->getParams()->maximize();
 
-			} else if (SettingsManager::getInstance()->getParams()->isMaximized()) {
+			} else if (SettingsManager::get()->getParams()->isMaximized()) {
 				if (event.isShiftDown()) {
-					SettingsManager::getInstance()->getParams()->hide();
+					SettingsManager::get()->getParams()->hide();
 				} else {
-					SettingsManager::getInstance()->getParams()->minimize();
+					SettingsManager::get()->getParams()->minimize();
 				}
 
 			} else {
-				SettingsManager::getInstance()->getParams()->show();
-				SettingsManager::getInstance()->getParams()->maximize();
+				SettingsManager::get()->getParams()->show();
+				SettingsManager::get()->getParams()->maximize();
 			}
 			break;
 	}
@@ -186,20 +186,20 @@ void BaseApp::findAssetDir(const std::string & subPath, bool stopAtFirst) {
 
 void BaseApp::handleAppSizeChange(const ci::ivec2 & appSize) {
 	mRootView->setSize(vec2(appSize));
-	mMiniMap->setLayout(ScreenLayout::getInstance()->getNumColumns(), ScreenLayout::getInstance()->getNumRows(),
-						ScreenLayout::getInstance()->getDisplaySize(), ScreenLayout::getInstance()->getBezelDims());
+	mMiniMap->setLayout(ScreenLayout::get()->getNumColumns(), ScreenLayout::get()->getNumRows(),
+						ScreenLayout::get()->getDisplaySize(), ScreenLayout::get()->getBezelDims());
 }
 
 void BaseApp::handleViewportChange(const ci::Area & viewport) {
 	mMiniMap->setViewport(viewport);
 	mMiniMap->setPosition(vec2(getWindowSize()) - mMiniMap->getSize() - vec2(mDebugUiPadding));
 	mStats->setPosition(vec2(mDebugUiPadding, (float)getWindowHeight() - mStats->getHeight() - mDebugUiPadding));
-	SettingsManager::getInstance()->getParams()->setPosition(vec2(mDebugUiPadding));
+	SettingsManager::get()->getParams()->setPosition(vec2(mDebugUiPadding));
 }
 void BaseApp::handleSettingsLoaded() {
-	auto settings = SettingsManager::getInstance();
-	auto layout = ScreenLayout::getInstance();
-	auto camera = ScreenCamera::getInstance();
+	auto settings = SettingsManager::get();
+	auto layout = ScreenLayout::get();
+	auto camera = ScreenCamera::get();
 
 	if (settings->mDisplaySize.x <= 0) settings->mDisplaySize.x = getWindowWidth();
 	if (settings->mDisplaySize.y <= 0) settings->mDisplaySize.y = getWindowHeight();
@@ -267,23 +267,21 @@ void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
 	mSimulatedTouchDriver.setTouchesPerSecond(touchesPerSecond);
 
 	const string groupName = "Touch Sim";
-	auto params = SettingsManager::getInstance()->getParams();
+	auto params = SettingsManager::get()->getParams();
 
 	params
 		->addParam<bool>(
 			"Enabled",
 			[&](bool v) {
 				if (!mSimulatedTouchDriver.isRunning()) {
-					SettingsManager::getInstance()->mShowTouches = true;
 					mSimulatedTouchDriver.setBounds(Rectf(vec2(0), getWindowSize()));
 					mSimulatedTouchDriver.start();
 				} else {
-					SettingsManager::getInstance()->mShowTouches = false;
 					mSimulatedTouchDriver.stop();
 				}
 			},
-			[&] { return SettingsManager::getInstance()->mShowTouches && mSimulatedTouchDriver.isRunning(); })
-		.group(groupName);
+			[&] { return SettingsManager::get()->mShowTouches && mSimulatedTouchDriver.isRunning(); })
+		.group(groupName).key("d");
 
 	static int stressTestMode = 0;
 	static vector<string> stressTestModes = {"Tap & Drag", "Slow Drag", "Tap"};
@@ -313,11 +311,11 @@ void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
 
 	params
 		->addParam<bool>("Show Missed Touches",
-						 [&](bool v) { TouchManager::getInstance()->setDiscardMissedTouches(!v); },
-						 [&]() { return !TouchManager::getInstance()->getDiscardMissedTouches(); })
+						 [&](bool v) { TouchManager::get()->setDiscardMissedTouches(!v); },
+						 [&]() { return !TouchManager::get()->getDiscardMissedTouches(); })
 		.group(groupName);
 
-	if (SettingsManager::getInstance()->mCollapseParams) {
+	if (SettingsManager::get()->mCollapseParams) {
 		params->setOptions(groupName, "opened=false");
 	}
 }

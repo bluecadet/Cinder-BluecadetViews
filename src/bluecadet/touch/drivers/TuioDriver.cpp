@@ -14,7 +14,7 @@ TuioDriver::TuioDriver() :
 	mWindowPos(getWindowPos()),
 	mDisplaySize(getWindow()->getDisplay()->getSize()),
 	mTuio(getWindow(), &mOscReceiver),
-    mTouchManager(touch::TouchManager::getInstance())
+    mTouchManager(touch::TouchManager::get())
 {
 }
 

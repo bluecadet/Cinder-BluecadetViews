@@ -17,7 +17,7 @@ void NativeTouchDriver::connect() {
 	mTouchEndConnection = getWindow()->getSignalTouchesEnded().connect(std::bind(&NativeTouchDriver::nativeTouchEnded, this, std::placeholders::_1));
 
 	// Shared pointer to the Touch Manager
-	mTouchManager = TouchManager::getInstance();
+	mTouchManager = TouchManager::get();
 }
 
 NativeTouchDriver::~NativeTouchDriver() {

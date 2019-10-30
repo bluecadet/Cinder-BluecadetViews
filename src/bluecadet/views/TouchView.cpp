@@ -185,7 +185,7 @@ void TouchView::processTouchEnded(const touch::TouchEvent& touchEvent) {
 }
 
 void TouchView::cancelTouches() {
-	std::shared_ptr<touch::TouchManager> touchManager = touch::TouchManager::getInstance();
+	std::shared_ptr<touch::TouchManager> touchManager = touch::TouchManager::get();
 	touchManager->cancelTouch(getSharedTouchViewPtr());
 	resetTouchState();
 }
