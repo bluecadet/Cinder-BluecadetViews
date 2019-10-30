@@ -64,6 +64,7 @@ struct ValueMapping {
 						 const std::string & options = "");
 
 	ValueMapping & param(ParamInitFn fn);
+	ValueMapping & hideParam(bool hide = true);
 
 
 	ValueMapping & commandArg(const std::string & name);
@@ -87,6 +88,7 @@ struct ValueMapping {
 	std::string paramGroup;
 	std::string paramKey;
 	std::string paramOptions;
+	bool paramHidden = false;
 	ParamInitFn paramFn = nullptr;  // If this is set, param name, group and key
 									// will be ignored
 
@@ -118,6 +120,9 @@ inline void ValueMapping::initParam(ci::params::InterfaceGlRef params) {
 	}
 	if (!paramKey.empty()) {
 		options.key(paramKey);
+	}
+	if (paramHidden) {
+		options.setVisible(!paramHidden);
 	}
 }
 

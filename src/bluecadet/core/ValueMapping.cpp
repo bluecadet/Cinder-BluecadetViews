@@ -9,25 +9,30 @@ using namespace std;
 namespace bluecadet {
 namespace core {
 
-ValueMapping & ValueMapping::param(const std::string & name, const std::string & group, const std::string & key, const std::string & options) {
-	paramName = name;
-	paramGroup = group;
-	paramKey = key;
+ValueMapping & ValueMapping::param(const std::string & name, const std::string & group, const std::string & key,
+								   const std::string & options) {
+	paramName	= name;
+	paramGroup   = group;
+	paramKey	 = key;
 	paramOptions = options;
 	return *this;
 }
 
-ValueMapping& ValueMapping::param(ParamInitFn fn) {
+ValueMapping & ValueMapping::param(ParamInitFn fn) {
 	paramFn = fn;
 	return *this;
 }
+ValueMapping & ValueMapping::hideParam(bool hide) {
+	paramHidden = hide;
+	return *this;
+}
 
-ValueMapping& ValueMapping::commandArg(const std::string & name) {
+ValueMapping & ValueMapping::commandArg(const std::string & name) {
 	commandArgNames.insert(name);
 	return *this;
 }
 
-ValueMapping& ValueMapping::commandArgs(const std::set<std::string> & names) {
+ValueMapping & ValueMapping::commandArgs(const std::set<std::string> & names) {
 	commandArgNames.insert(names.begin(), names.end());
 	return *this;
 }
@@ -44,21 +49,21 @@ JsonTree ValueMapping::toJson(const std::string & key) const {
 			case Type::ValueColor: return JsonTree(key, text::colorToHexStr(getValue<ColorA>(), "#"));
 			case Type::ValueVec2: {
 				const auto value = getValue<vec2>();
-				JsonTree json = JsonTree::makeObject(key);
+				JsonTree json	= JsonTree::makeObject(key);
 				json.addChild(JsonTree("x", value.x));
 				json.addChild(JsonTree("y", value.y));
 				return json;
 			}
 			case Type::ValueIVec2: {
 				const auto value = getValue<ivec2>();
-				JsonTree json = JsonTree::makeObject(key);
+				JsonTree json	= JsonTree::makeObject(key);
 				json.addChild(JsonTree("x", value.x));
 				json.addChild(JsonTree("y", value.y));
 				return json;
 			}
 			case Type::ValueVec3: {
 				const auto value = getValue<vec3>();
-				JsonTree json = JsonTree::makeObject(key);
+				JsonTree json	= JsonTree::makeObject(key);
 				json.addChild(JsonTree("x", value.x));
 				json.addChild(JsonTree("y", value.y));
 				json.addChild(JsonTree("z", value.z));
@@ -66,7 +71,7 @@ JsonTree ValueMapping::toJson(const std::string & key) const {
 			}
 			case Type::ValueIVec3: {
 				const auto value = getValue<ivec3>();
-				JsonTree json = JsonTree::makeObject(key);
+				JsonTree json	= JsonTree::makeObject(key);
 				json.addChild(JsonTree("x", value.x));
 				json.addChild(JsonTree("y", value.y));
 				json.addChild(JsonTree("z", value.z));
@@ -94,13 +99,15 @@ void ValueMapping::readJson(const ci::JsonTree & json) {
 				setValue(vec2(json.getValueForKey<float>(field + ".x"), json.getValueForKey<float>(field + ".y")));
 				break;
 			case Type::ValueVec3:
-				setValue(vec3(json.getValueForKey<float>(field + ".x"), json.getValueForKey<float>(field + ".y"), json.getValueForKey<float>(field + ".z")));
+				setValue(vec3(json.getValueForKey<float>(field + ".x"), json.getValueForKey<float>(field + ".y"),
+							  json.getValueForKey<float>(field + ".z")));
 				break;
 			case Type::ValueIVec2:
 				setValue(ivec2(json.getValueForKey<int>(field + ".x"), json.getValueForKey<int>(field + ".y")));
 				break;
 			case Type::ValueIVec3:
-				setValue(ivec3(json.getValueForKey<int>(field + ".x"), json.getValueForKey<int>(field + ".y"), json.getValueForKey<int>(field + ".z")));
+				setValue(ivec3(json.getValueForKey<int>(field + ".x"), json.getValueForKey<int>(field + ".y"),
+							   json.getValueForKey<int>(field + ".z")));
 				break;
 			default: CI_LOG_E("Unsupported type for field '" << field << "'"); break;
 		}
@@ -108,7 +115,7 @@ void ValueMapping::readJson(const ci::JsonTree & json) {
 		CI_LOG_EXCEPTION("Could not read json field '" << field << "'", e);
 	}
 }
-void ValueMapping::readCommandArg(const std::string& argValue) {
+void ValueMapping::readCommandArg(const std::string & argValue) {
 	try {
 		switch (type) {
 			case Type::ValueBool: setValue(argValue == "true"); break;
@@ -129,7 +136,7 @@ void ValueMapping::readCommandArg(const std::string& argValue) {
 	}
 }
 void ValueMapping::attachToParams(ci::params::InterfaceGlRef params) {
-	if (paramName.empty()) {
+	if (paramName.empty() || paramHidden) {
 		return;
 	}
 
@@ -143,8 +150,8 @@ void ValueMapping::attachToParams(ci::params::InterfaceGlRef params) {
 		case Type::ValueColor: initParam<ColorA>(params); break;
 		case Type::ValueVec2: initParam<vec3>(params); break;
 		case Type::ValueVec3: initParam<vec3>(params); break;
-		//case Type::ValueIVec2: initParam<ivec2>(params); break;
-		//case Type::ValueIVec3: initParam<ivec3>(params); break;
+		// case Type::ValueIVec2: initParam<ivec2>(params); break;
+		// case Type::ValueIVec3: initParam<ivec3>(params); break;
 		default: CI_LOG_E("Params are not supported for field '" << field << "'"); break;
 	}
 
@@ -163,7 +170,7 @@ ci::vec2 ValueMapping::strToVec2(const std::string & str) {
 	return result;
 }
 
-ci::ivec2 ValueMapping::strToIVec2(const std::string& str) {
+ci::ivec2 ValueMapping::strToIVec2(const std::string & str) {
 	ci::ivec2 result;
 	auto segments = text::split(str, ',');
 	if (segments.size() == 2) {
@@ -192,7 +199,7 @@ ci::vec3 ValueMapping::strToVec3(const std::string & str) {
 	return result;
 }
 
-ci::ivec3 ValueMapping::strToIVec3(const std::string& str) {
+ci::ivec3 ValueMapping::strToIVec3(const std::string & str) {
 	ci::ivec3 result;
 	auto segments = text::split(str, ',');
 	if (segments.size() == 3) {
