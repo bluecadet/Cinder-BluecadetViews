@@ -394,6 +394,7 @@ void BaseView::draw() {
 
 inline void BaseView::drawDebugInfo() {
 	static const Font labelFont = Font("Arial", 20);
+	static const gl::TextureFontRef textureFont = gl::TextureFont::create(labelFont);
 	static const vec2 labelPos = vec2(0, 0);
 	static const float crosshairRadius = 4.0f;
 	static const float transformOriginRadius = 4.0f;
@@ -412,11 +413,11 @@ inline void BaseView::drawDebugInfo() {
 	// draw origin
 	gl::drawLine(vec2(-crosshairRadius, -crosshairRadius), vec2(crosshairRadius, crosshairRadius));
 	gl::drawLine(vec2(-crosshairRadius, crosshairRadius), vec2(crosshairRadius, -crosshairRadius));
-	
+
 	if (!mDebugIncludeClassName) {
-		gl::drawString(mName, labelPos, color, labelFont);
+		textureFont->drawString(mName, labelPos);
 	} else {
-		gl::drawString(mName + " (" + getClassName() + ")", labelPos, color, labelFont);
+		textureFont->drawString(mName + " (" + getClassName() + ")", labelPos);
 	}
 }
 

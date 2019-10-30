@@ -28,7 +28,7 @@ public:
 	static void setInstance(SettingsManagerRef instance) { sInstance = instance; }
 
 	// Singleton; Instance can be changed by calling setInstance() (e.g. to use subclasses)
-	static SettingsManagerRef getInstance() {
+	static SettingsManagerRef get() {
 		if (!sInstance) {
 			sInstance = std::make_shared<SettingsManager>();
 		}

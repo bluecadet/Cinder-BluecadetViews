@@ -1,5 +1,7 @@
 #include "SimulatedTouchDriver.h"
+
 #include "cinder/Rand.h"
+#include "cinder/Log.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -12,18 +14,26 @@ namespace drivers {
 SimulatedTouchDriver::SimulatedTouchDriver() :
 	mBounds(Rectf()),
 	mTimeline(nullptr),
-	mSimLoopCue(nullptr),
 	mIsRunning(false),
 	mTouchesPerSecond(0),
 	mMinTouchDuration(0),
 	mMaxTouchDuration(1.0f),
 	mMinDragDistance(0),
 	mMaxDragDistance(200.0f),
-	touchCounter(10000)
+	mTouchCounter(10000),
+	mTouchesToSpawn(0),
+	mPrevUpdateTime(0)
 {
 }
 
 SimulatedTouchDriver::~SimulatedTouchDriver() {
+	stop();
+	if (mConnection.isEnabled()) {
+		mConnection.disable();
+	}
+	if (mTimeline) {
+		mTimeline->clear();
+	}
 }
 
 void SimulatedTouchDriver::setup(ci::Rectf bounds, float touchesPerSecond) {
@@ -34,33 +44,29 @@ void SimulatedTouchDriver::setup(ci::Rectf bounds, float touchesPerSecond) {
 }
 
 void SimulatedTouchDriver::update() {
-	if (mTimeline) {
-		mTimeline->stepTo((float)getElapsedSeconds());
+
+	const double currTime = getElapsedSeconds();
+	const double deltaTime = min(currTime - mPrevUpdateTime, 15.0 / (double)getFrameRate());
+	mPrevUpdateTime = currTime;
+
+	if (mIsRunning) {
+		mTouchesToSpawn += mTouchesPerSecond * deltaTime;
 	}
 
-	/*if (!mIsRunning && mTimeline && !mTimeline->empty()) {
-		cout << "SimulatedTouchDriver: Waiting for " << to_string(mTimeline->getNumItems()) << " timeline items to finish..." << endl;
-	}*/
+	if (mTimeline) {
+		mTimeline->stepTo((float)currTime);
+	}
 
-	if (!mIsRunning && (!mTimeline || mTimeline->empty())) {
+	if (!mIsRunning && mTouchesToSpawn == 0) {
 		// stop updates once all timeline items have finished
 		mConnection.disable();
+		return;
 	}
-}
-
-void SimulatedTouchDriver::touchSimulationLoop() {
-	if (mSimLoopCue) {
-		mTimeline->remove(mSimLoopCue);
-		mSimLoopCue = nullptr;
-	}
-    
-	const float loopDelay = 1.0f;
-	const float touchStartTime = mTimeline->getCurrentTime();
 
 	// generate touches
-	for (int i = 0; i < mTouchesPerSecond; ++i) {
+	while (mTouchesToSpawn >= 1.0f) {
 
-		const int touchId = touchCounter++;
+		const int touchId = mTouchCounter++;
 		mSimulatedTouches.insert(make_pair(touchId, SimulatedTouch(touchId)));
 		SimulatedTouch & touch = mSimulatedTouches[touchId];
 
@@ -71,20 +77,16 @@ void SimulatedTouchDriver::touchSimulationLoop() {
 		const vec2 endPos = touch.relPosition.value() + randVec2() * distance;
 
 		mTimeline->apply(&touch.relPosition, endPos, duration, easeInOutQuad).startFn([&] {
-			TouchManager::getInstance()->addTouch(touch.id, touch.relPosition.value(), TouchType::Simulator, TouchPhase::Began);
+			TouchManager::get()->addTouch(touch.id, touch.relPosition.value(), TouchType::Simulator, TouchPhase::Began);
 		}).updateFn([&] {
-			TouchManager::getInstance()->addTouch(touch.id, touch.relPosition.value(), TouchType::Simulator, TouchPhase::Moved);
+			TouchManager::get()->addTouch(touch.id, touch.relPosition.value(), TouchType::Simulator, TouchPhase::Moved);
 		}).finishFn([&] {
-			TouchManager::getInstance()->addTouch(touch.id, touch.relPosition.value(), TouchType::Simulator, TouchPhase::Ended);
-			auto it = mSimulatedTouches.find(touch.id);
-			if (it != mSimulatedTouches.end()) {
-				mSimulatedTouches.erase(it);
-			}
-		}).delay(loopDelay * (float)i / (float)mTouchesPerSecond);
-	}
+			TouchManager::get()->addTouch(touch.id, touch.relPosition.value(), TouchType::Simulator, TouchPhase::Ended);
+			mSimulatedTouches.erase(touch.id);
+		});
 
-	// recurse
-	mSimLoopCue = mTimeline->add(std::bind(&SimulatedTouchDriver::touchSimulationLoop, this), touchStartTime + loopDelay);
+		mTouchesToSpawn -= 1.0f;
+	}
 }
 
 void SimulatedTouchDriver::start() {
@@ -93,23 +95,15 @@ void SimulatedTouchDriver::start() {
 	}
 
 	mIsRunning = true;
+	mPrevUpdateTime = getElapsedSeconds();
 
 	if (!mConnection.isEnabled()) {
 		mConnection.enable();
-	}
-
-	if (!mSimLoopCue) {
-		touchSimulationLoop();
 	}
 }
 
 void SimulatedTouchDriver::stop() {
 	mIsRunning = false;
-
-	if (mTimeline && mSimLoopCue) {
-		mTimeline->remove(mSimLoopCue);
-		mSimLoopCue = nullptr;
-	}
 }
 
 bool SimulatedTouchDriver::isRunning() const {

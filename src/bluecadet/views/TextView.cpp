@@ -36,7 +36,7 @@ void TextView::setup(const std::wstring & text, const std::string & styleKey, co
 	setMaxWidth(maxWidth);
 
 	if (text.empty()) {
-		auto style = text::StyleManager::getInstance()->getStyle(styleKey);
+		auto style = text::StyleManager::get()->getStyle(styleKey);
 		setCurrentStyle(style);
 	} else if (parseText) {
 		setText(text, styleKey, customTokenParsers);

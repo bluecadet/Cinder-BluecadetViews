@@ -50,22 +50,23 @@ private:
 	};
 
 	void update();
-	void touchSimulationLoop(); //! Called regularly when connected
 
 	bool mIsRunning;
 
-	ci::Rectf mBounds;
 	float mTouchesPerSecond;
+	float mTouchesToSpawn;
+	double mPrevUpdateTime;
+	int mTouchCounter;
+
+	ci::Rectf mBounds;
+
 	float mMinTouchDuration;
 	float mMaxTouchDuration;
 	float mMinDragDistance;
 	float mMaxDragDistance;
 
-	int touchCounter;
-	ci::signals::Connection	mConnection;
 	ci::TimelineRef	mTimeline;
-	ci::CueRef mSimLoopCue;
-
+	ci::signals::Connection	mConnection;
 	std::map<int, SimulatedTouch> mSimulatedTouches;
 };
 

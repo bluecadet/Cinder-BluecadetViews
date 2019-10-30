@@ -247,7 +247,7 @@ void MultiNativeTouchDriver::connect() {
 		std::bind(&MultiNativeTouchDriver::nativeTouchEnded, this, std::placeholders::_1, std::placeholders::_2));
 
 	// Shared pointer to the Touch Manager
-	mTouchManager = TouchManager::getInstance();
+	mTouchManager = TouchManager::get();
 }
 
 MultiNativeTouchDriver::~MultiNativeTouchDriver() {

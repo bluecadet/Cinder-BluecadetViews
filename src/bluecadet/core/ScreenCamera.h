@@ -23,9 +23,8 @@ public:
 	~ScreenCamera();
 
 
-	static ScreenCameraRef getInstance() {
-		static ScreenCameraRef instance = nullptr;
-		if (!instance) instance = ScreenCameraRef(new ScreenCamera());
+	static ScreenCameraRef get() {
+		static auto instance = std::make_shared<ScreenCamera>();
 		return instance;
 	}
 
