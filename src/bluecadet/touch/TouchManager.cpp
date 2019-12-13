@@ -1,8 +1,10 @@
 #include "TouchManager.h"
 #include "boost/lexical_cast.hpp"
+
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/TextureFont.h"
+#include "cinder/Log.h"
 
 namespace bluecadet {
 namespace touch {
@@ -79,6 +81,12 @@ void TouchManager::addTouch(Touch & touch) {
 }
 
 void TouchManager::mainThreadTouchesBegan(const Touch & touch, views::BaseViewRef rootView) {
+
+	// ignore rare touches with duplicate IDs
+	if (mTouchesById.find(touch.id) != mTouchesById.end()) {
+		CI_LOG_W("Duplicate touch detected for ID '" << touch.id << "'");
+		return;
+	}
 
 	// only store virtual touches, but don't process further
 	if (touch.isVirtual) {
