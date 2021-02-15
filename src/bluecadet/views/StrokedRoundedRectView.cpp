@@ -20,6 +20,15 @@ void StrokedRoundedRectView::cancelAnimations() {
 	mStrokeWidth.stop();
 }
 
+void StrokedRoundedRectView::setCornerRadii(float topLeft, float topRight, float bottomRight, float bottomLeft) {
+	mTopLeftRadius = topLeft;
+	mTopRightRadius = topRight;
+	mBottomRightRadius = bottomRight;
+	mBottomLeftRadius = bottomLeft;
+	useUniformCorners(false);
+	invalidate(false, true);
+}
+
 void StrokedRoundedRectView::draw() {
 	const auto & strokeColor = mStrokeColor.value() * getDrawColor();
 	const auto & bgColor = getBackgroundColor().value() * getDrawColor();
@@ -36,9 +45,13 @@ void StrokedRoundedRectView::draw() {
 	prog->uniform("uSmoothness", mSmoothness);
 	prog->uniform("uStrokeWidth", mStrokeWidth);
 	prog->uniform("uStrokeColor", strokeColor);
-	prog->uniform("uCornerRadius", mCornerRadius);
 	prog->uniform("uSize", size);
-
+	prog->uniform("uCornerRadius", mCornerRadius);
+	prog->uniform("uUseUniformCorners", mUniformCorners ? 1 : 0);
+	prog->uniform("uTopLeftRadius", mTopLeftRadius);
+	prog->uniform("uTopRightRadius", mTopRightRadius);
+	prog->uniform("uBottomRightRadius", mBottomRightRadius);
+	prog->uniform("uBottomLeftRadius", mBottomLeftRadius);
 	batch->draw();
 }
 
@@ -50,6 +63,8 @@ ci::gl::BatchRef StrokedRoundedRectView::getSharedBatch() {
 	}
 	return batch;
 }
+
+
 
 ci::gl::GlslProgRef StrokedRoundedRectView::getSharedProg() {
 	static ci::gl::GlslProgRef prog = nullptr;
@@ -80,6 +95,13 @@ ci::gl::GlslProgRef StrokedRoundedRectView::getSharedProg() {
 				uniform float uSmoothness = 1.0;
 				uniform float uStrokeWidth = 1.0;
 				uniform float uCornerRadius = 0.0;
+
+				uniform int uUseUniformCorners = 1;
+				uniform float uTopLeftRadius = 0.0;
+				uniform float uTopRightRadius = 0.0;
+				uniform float uBottomRightRadius = 0.0;
+				uniform float uBottomLeftRadius = 0.0;
+
 				out vec4 oColor;
 
 				float rectSdf(vec2 p, vec2 b, float r) {
@@ -93,7 +115,28 @@ ci::gl::GlslProgRef StrokedRoundedRectView::getSharedProg() {
 					vec2 halfSize = uSize / 2.0 - vec2(halfStrokeWidth);
 					vec2 centerPos = (vPosition.xy - uSize.xy * 0.5);
 
-					float fieldDistance = rectSdf(centerPos, halfSize, uCornerRadius - halfStrokeWidth);
+					float cornerRad;
+					if (uUseUniformCorners) {
+						cornerRad = uCornerRadius;
+					} else {
+						if (vPosition.y > halfSize.y) {
+							//Bottom
+							if (vPosition.x < halfSize.x) {
+								cornerRad = uBottomLeftRadius;
+							} else {
+								cornerRad = uBottomRightRadius;
+							}
+						} else {
+							//Top
+							if (vPosition.x < halfSize.x) {
+								cornerRad = uTopLeftRadius;
+							} else {
+								cornerRad = uTopRightRadius;
+							}
+						}
+					}
+
+					float fieldDistance = rectSdf(centerPos, halfSize, cornerRad - halfStrokeWidth);
 
 					vec4 fromColor = uBackgroundColor;
 					vec4 toColor = vec4(0.0);
