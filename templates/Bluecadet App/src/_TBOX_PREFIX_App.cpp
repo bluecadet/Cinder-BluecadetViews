@@ -27,9 +27,10 @@ void _TBOX_PREFIX_App::prepareSettings(ci::app::App::Settings *settings) {
 	// SettingsManager::setInstance(myApp::MyAppSettingsManager::getInstance());
 
 	// Initialize the settings manager with the cinder app settings and the settings json
-	SettingsManager::getInstance()->setup(
+	SettingsManager::get()->setup(
 		settings,
 		ci::app::getAssetPath("settings.json"),
+		true,
 		[](SettingsManager *manager) {
 			// Optional: Override json defaults at runtime
 			manager->mFullscreen = false;
