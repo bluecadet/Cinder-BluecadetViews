@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+	<template name="Bluecadet App" parent="org.libcinder.apptemplates.basicopengl">
+		<supports os="msw" />
+		<platform os="msw">
+			<resource type="ICON" id="1">resources/cinder_app_icon.ico</resource>
+		</platform>
+		
+		<requires>com.bluecadet.cinder.analytics</requires>
+		<requires>com.bluecadet.cinder.views</requires>
+		<requires>com.bluecadet.cinder.utils</requires>
+		
+		<file>.clang-format</file>
+		<file>.gitignore</file>
+		<file>ProjectConfig.props</file>
+		
+		<includePath>src</includePath>
+		
+		<source replaceContents="true" replaceName="true">src/_TBOX_PREFIX_App.cpp</source>
+		<source replaceContents="true" replaceName="true">src/bluecadet/_TBOX_PREFIX_Settings.cpp</source>
+		<header replaceContents="true" replaceName="true" virtualPath="Source Files">src/bluecadet/_TBOX_PREFIX_Settings.h</header>
+	</template>
+</cinder>

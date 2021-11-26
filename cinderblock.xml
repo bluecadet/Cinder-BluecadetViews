@@ -1,34 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <cinder>
-<block
-	name="BluecadetViews"
-	id="com.bluecadet.cinder.views"
-	git="git@github.com:bluecadet/Cinder-BluecadetViews.git"
-	author="Bluecadet"
-	summary="Scene graph with nested transforms, events, touch/mouse delegation and app boilerplates."
-	license="MIT"
-	version="1.7.0"
-	url="https://github.com/bluecadet/Cinder-BluecadetViews"
-	>
+	<block name="BluecadetViews" id="com.bluecadet.cinder.views" git="git@github.com:bluecadet/Cinder-BluecadetViews.git" author="Bluecadet" summary="Scene graph with nested transforms, events, touch/mouse delegation and app boilerplates." license="MIT" version="1.7.0" url="https://github.com/bluecadet/Cinder-BluecadetViews">
 
-	<requires>org.libcinder.tuio</requires>
-	<requires>com.bluecadet.cinder.text</requires>
+		<requires>org.libcinder.tuio</requires>
+		<requires>com.bluecadet.cinder.text</requires>
 
-	<asset>assets/settings.json</asset>
+		<asset>assets/settings.json</asset>
 
-	<headerPattern>src/*.h</headerPattern>
-	<sourcePattern>src/*.cpp</sourcePattern>
-	
-	<headerPattern>src/bluecadet/core/*.h</headerPattern>
-	<sourcePattern>src/bluecadet/core/*.cpp</sourcePattern>
-	<headerPattern>src/bluecadet/views/*.h</headerPattern>
-	<sourcePattern>src/bluecadet/views/*.cpp</sourcePattern>
-	<headerPattern>src/bluecadet/touch/*.h</headerPattern>
-	<sourcePattern>src/bluecadet/touch/*.cpp</sourcePattern>
-	<headerPattern>src/bluecadet/touch/drivers/*.h</headerPattern>
-	<sourcePattern>src/bluecadet/touch/drivers/*.cpp</sourcePattern>
-	
-	<includePath>src</includePath>
-</block>
-<template>templates/Bluecadet App/template.xml</template>
+		<headerPattern>src/*.h</headerPattern>
+		<sourcePattern>src/*.cpp</sourcePattern>
+
+		<headerPattern>src/bluecadet/core/*.h</headerPattern>
+		<sourcePattern>src/bluecadet/core/*.cpp</sourcePattern>
+		<headerPattern>src/bluecadet/views/*.h</headerPattern>
+		<sourcePattern>src/bluecadet/views/*.cpp</sourcePattern>
+		<headerPattern>src/bluecadet/touch/*.h</headerPattern>
+		<sourcePattern>src/bluecadet/touch/*.cpp</sourcePattern>
+		<headerPattern>src/bluecadet/touch/drivers/*.h</headerPattern>
+		<sourcePattern>src/bluecadet/touch/drivers/*.cpp</sourcePattern>
+
+		<includePath>src</includePath>
+	</block>
+	<template>templates/BluecadetApp/template.xml</template>
 </cinder>

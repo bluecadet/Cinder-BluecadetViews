@@ -119,10 +119,10 @@ public:
 
 void BaseAppSampleApp::prepareSettings(ci::app::App::Settings* settings) {
 	// Optional: Override the shared settings manager instance with your subclass
-	SettingsManager::setInstance(myApp::MyAppSettingsManager::getInstance());
+	SettingsManager::setInstance(myApp::MyAppSettingsManager::get());
 	
 	// Initialize the settings manager with the cinder app settings and the settings json
-	SettingsManager::getInstance()->setup(settings);
+	SettingsManager::get()->setup(settings);
 }
 
 void BaseAppSampleApp::setup() {
@@ -155,6 +155,35 @@ void BaseAppSampleApp::draw() {
 CINDER_APP(BaseAppSampleApp, RendererGl(RendererGl::Options().msaa(4)), BaseAppSampleApp::prepareSettings);
 
 ```
+
+## Tinderbox Template
+
+To make setup easier, this block includes a template called `Bluecadet App`. When you open TinderBox to create a new project, select `Bluecadet App` from the `Template` dropdown at the first step:
+
+![docs/media/tinderbox-template.png](docs/media/tinderbox-template.png)
+
+This will create a base app class and a settings manager for you. The default namespace for the settings manager is `bluecadet`, which you're free to change.
+
+For maximum compatibility, you should include the `OSC` and `TUIO` blocks via *copy* and not as *relative*:
+
+![docs/media/tinderbox-includes.png](docs/media/tinderbox-includes.png)
+
+Due to a TinderBox bug, your `SettingsManager` subclass header will be located in `Header Files` in your VS project. You can simply drag it to `Source Files`.
+
+### Cinder Path
+
+To support maximum compatibility across machines, we encourage you to use the provided `ProjectConfig.props` property sheet included in the template (at `templates/BluecadetApp/ProjectConfig.props`) to define your Cinder path on each computer independently.
+
+To use it, open your Visual Studio project:
+1. Open the Property Manager view via *Views > Other Windows > Property Manager*
+2. Select *Add Existing Property Sheet*	
+3. Add the `ProjectConfig.props` file that should be in your app's root directory now (assuming you used the *Bluecadete App* template to create the project)
+4. Try to build your project (it should fail)
+5. Double-click the build error that says `Cinder path is not configured correctly ('C:\Users\...'). Please enter your Cinder path in 'C:\Users\...\UserConfig.props'.`
+6. Enter your relative or absolute path to the Cinder root directory in `<CinderDir>...</CinderDir>`
+7. Rebuild
+
+For your convenience, the template includes a `.gitignore` file that will automatically be copied to your project directory to ignore the auto-generated `UserConfig.props` file, which is machine-specific.
 
 ## Custom Subviews
 

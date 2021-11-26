@@ -1,0 +1,29 @@
+﻿# Visual Studio generated .clang-format file
+
+BasedOnStyle: Google
+UseTab: ForIndentation
+IndentWidth: 1
+TabWidth: 1
+AccessModifierOffset: -1
+ColumnLimit: 120
+DerivePointerAlignment: false
+PointerAlignment: Middle
+
+AlignAfterOpenBracket: Align
+KeepEmptyLinesAtTheStartOfBlocks: true
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: InlineOnly
+AlwaysBreakTemplateDeclarations: false
+
+IndentPPDirectives: None
+ReflowComments: true
+AlignTrailingComments: true
+AlignAfterOpenBracket: Align
+SortIncludes: true
+MaxEmptyLinesToKeep: 2
+PenaltyBreakAssignment: 500
+PenaltyReturnTypeOnItsOwnLine: 200
+
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: false

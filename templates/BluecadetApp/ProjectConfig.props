@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" InitialTargets="CreateUserConfig; AddCinderDir">
+  <ImportGroup Label="PropertySheets" />
+  <ItemDefinitionGroup />
+
+  <PropertyGroup Label="FileReferences">
+    <!-- Default Cinder path relative to this file; Override in custom props file -->
+    <CinderDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..'))</CinderDir>
+    <UserFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\UserConfig.props'))</UserFile>
+  </PropertyGroup>
+
+  <!-- Create user config XML if it doesn't exist -->
+  <Target Name="CreateUserConfig" Condition="!Exists($(UserFile))">
+    <ItemGroup>
+      <Line Include="line01"><Text>&lt;Project&gt;</Text></Line>
+      <Line Include="line02"><Text>  &lt;PropertyGroup&gt;</Text></Line>
+      <Line Include="line03"><Text>    &lt;CinderDir&gt;$(CinderDir)&lt;/CinderDir&gt;</Text></Line>
+      <Line Include="line04"><Text>  &lt;/PropertyGroup&gt;</Text></Line>
+      <Line Include="line05"><Text>&lt;/Project&gt;</Text></Line>
+      <LineText Include="%(Line.Text)" />
+    </ItemGroup>
+    <Message Importance="high" Text="Generating user config at $(UserFile)" />
+    <WriteLinesToFile File="$(UserFile)" Lines="@(LineText)" Overwrite="true"/>
+  </Target>
+
+  <!-- Load user config; This should redefine CinderDir -->
+  <Import Project="$(UserFile)" Condition="Exists($(UserFile))" />
+
+  <!-- Load user config and add to project settings -->
+  <Target Name="AddCinderDir">
+    <!-- Print error if CinderDir can't be found -->
+    <Error Condition="!Exists('$(CinderDir)\src\cinder')" File="$(UserFile)"
+      Text="Cinder path is not configured correctly ('$(CinderDir)'). Please enter your Cinder path in '$(UserFile)'." />
+
+    <!-- Add Cinder path to IncludePath and LibraryPath if it exists -->
+    <PropertyGroup>
+      <IncludePath>$(CinderDir)\include;$(IncludePath)</IncludePath>
+      <LibraryPath>"$(CinderDir)\lib\msw\$(PlatformTarget)";"$(CinderDir)\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)";$(LibraryPath)</LibraryPath>
+    </PropertyGroup>
+  </Target>
+  
+</Project>
