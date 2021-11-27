@@ -82,6 +82,7 @@ private:
 	views::BaseViewRef mRootView;
 	views::MiniMapViewRef mMiniMap;
 	views::GraphViewRef mStats;
+	ci::log::LoggerRef mLogger;
 	double mLastUpdateTime;
 	float mDebugUiPadding;
 	bool mIsLateSetupCompleted;

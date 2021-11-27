@@ -4,7 +4,6 @@
 *.sln.docstates
 
 # Build results
-
 **/vc201[35]/**/[Dd]ebug/
 **/vc201[35]/**/[Rr]elease/
 **/vc201[35]/**/[Pp]roduction/
@@ -14,6 +13,9 @@
 **/vc201[35]/**/build/
 **/vc201[35]/**/[Bb]in/
 **/vc201[35]/**/[Oo]bj/
+
+# VS
+.vs/
 
 # Xcode (https://github.com/github/gitignore/blob/master/Global/Xcode.gitignore)
 

@@ -16,6 +16,7 @@
 			"fullscreen": true,
 			"borderless": false,
 			"size": {"x": 1280, "y": 720},
+			"pos": {"x": 64, "y": 64},
 			"cameraOffset": {"x": 0, "y": 0},
 			"clearColor": {"r": 0, "g": 0, "b": 0, "a": 1.0}
 		},
@@ -27,6 +28,7 @@
 		},
 		"debug": {
 			"debugEnabled": true,
+			"logToStdOut": true,
 			"showStats": false,
 			"showMinimap": false,
 			"showTouches": false,
