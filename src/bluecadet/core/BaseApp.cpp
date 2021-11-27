@@ -1,4 +1,5 @@
 #include "BaseApp.h"
+
 #include "ScreenCamera.h"
 #include "ScreenLayout.h"
 #include "SettingsManager.h"
@@ -22,22 +23,22 @@ namespace bluecadet {
 namespace core {
 
 BaseApp::BaseApp()
-	: ci::app::App(),
-	  mLastUpdateTime(0),
-	  mDebugUiPadding(16.0f),
-	  mRootView(new BaseView()),
-	  mMiniMap(new MiniMapView(0.025f)),
-	  mStats(new GraphView(ivec2(128, 48))),
-	  mIsLateSetupCompleted(false) {}
+    : ci::app::App(),
+      mLastUpdateTime(0),
+      mDebugUiPadding(16.0f),
+      mRootView(new BaseView()),
+      mMiniMap(new MiniMapView(0.025f)),
+      mStats(new GraphView(ivec2(128, 48))),
+      mIsLateSetupCompleted(false) {
+}
 
-BaseApp::~BaseApp() {}
+BaseApp::~BaseApp() {
+}
 
 void BaseApp::setup() {
 	SettingsManager::get()->getSignalSettingsLoaded().connect(bind(&BaseApp::handleSettingsLoaded, this));
-	ScreenLayout::get()->getAppSizeChangedSignal().connect(
-		bind(&BaseApp::handleAppSizeChange, this, placeholders::_1));
-	ScreenCamera::get()->getViewportChangedSignal().connect(
-		bind(&BaseApp::handleViewportChange, this, placeholders::_1));
+	ScreenLayout::get()->getAppSizeChangedSignal().connect(bind(&BaseApp::handleAppSizeChange, this, placeholders::_1));
+	ScreenCamera::get()->getViewportChangedSignal().connect(bind(&BaseApp::handleViewportChange, this, placeholders::_1));
 
 	handleSettingsLoaded();
 
@@ -46,9 +47,12 @@ void BaseApp::setup() {
 #endif
 
 #if defined(CINDER_MSW)
-	// Move window to foreground so that console output doesn't obstruct it
 	HWND nativeWindow = (HWND)getWindow()->getNative();
+	// This ensures that this app can be run in windowed mode when launched from PM2
+	::ShowWindow(nativeWindow, SW_SHOW);
+	// Move window to foreground so that console output doesn't obstruct it
 	::SetForegroundWindow(nativeWindow);
+	::SetFocus(nativeWindow);
 #endif
 
 	// Debugging
@@ -66,9 +70,9 @@ void BaseApp::update() {
 		mIsLateSetupCompleted = true;
 	}
 
-	
+
 	const double absoluteTime = getElapsedSeconds();
-	const double deltaTime = mLastUpdateTime == 0 ? 0 : absoluteTime - mLastUpdateTime;
+	const double deltaTime    = mLastUpdateTime == 0 ? 0 : absoluteTime - mLastUpdateTime;
 
 	BaseView::FrameInfo frameInfo(absoluteTime, deltaTime);
 	mLastUpdateTime = absoluteTime;
@@ -76,7 +80,7 @@ void BaseApp::update() {
 	// get the screen layout's transform and apply it to all
 	// touch events to convert touches from window into app space
 	const auto appTransform = glm::inverse(ScreenCamera::get()->getTransform());
-	const auto appSize = ScreenLayout::get()->getAppSize();
+	const auto appSize      = ScreenLayout::get()->getAppSize();
 
 #ifndef NO_TOUCH
 	touch::TouchManager::get()->update(mRootView, appSize, appTransform);
@@ -166,12 +170,12 @@ void BaseApp::keyDown(KeyEvent event) {
 
 void BaseApp::findAssetDir(const std::string & subPath, bool stopAtFirst) {
 	fs::path basePath = getAppPath();
-	
+
 	while (basePath.has_parent_path()) {
 		basePath = basePath.parent_path();
 
 		auto possiblePath = basePath;
-		possiblePath = possiblePath.append(subPath);
+		possiblePath      = possiblePath.append(subPath);
 
 		if (fs::exists(possiblePath)) {
 			CI_LOG_I("Adding asset dir '" << possiblePath << "'");
@@ -187,7 +191,7 @@ void BaseApp::findAssetDir(const std::string & subPath, bool stopAtFirst) {
 void BaseApp::handleAppSizeChange(const ci::ivec2 & appSize) {
 	mRootView->setSize(vec2(appSize));
 	mMiniMap->setLayout(ScreenLayout::get()->getNumColumns(), ScreenLayout::get()->getNumRows(),
-						ScreenLayout::get()->getDisplaySize(), ScreenLayout::get()->getBezelDims());
+	                    ScreenLayout::get()->getDisplaySize(), ScreenLayout::get()->getBezelDims());
 }
 
 void BaseApp::handleViewportChange(const ci::Area & viewport) {
@@ -198,8 +202,8 @@ void BaseApp::handleViewportChange(const ci::Area & viewport) {
 }
 void BaseApp::handleSettingsLoaded() {
 	auto settings = SettingsManager::get();
-	auto layout = ScreenLayout::get();
-	auto camera = ScreenCamera::get();
+	auto layout   = ScreenLayout::get();
+	auto camera   = ScreenCamera::get();
 
 	if (settings->mDisplaySize.x <= 0) settings->mDisplaySize.x = getWindowWidth();
 	if (settings->mDisplaySize.y <= 0) settings->mDisplaySize.y = getWindowHeight();
@@ -212,8 +216,8 @@ void BaseApp::handleSettingsLoaded() {
 	camera->zoomToFitWindow();
 
 	if (settings->mCameraOffset != vec2(0)) {
-		vec2 globalOffset = settings->mCameraOffset;
-		vec2 localOffset = globalOffset * camera->getScale();
+		vec2 globalOffset  = settings->mCameraOffset;
+		vec2 localOffset   = globalOffset * camera->getScale();
 		vec2 currentOffset = camera->getTranslation();
 		camera->setTranslation(currentOffset + localOffset);
 	}
@@ -267,53 +271,55 @@ void BaseApp::addTouchSimulatorParams(float touchesPerSecond) {
 	mSimulatedTouchDriver.setTouchesPerSecond(touchesPerSecond);
 
 	const string groupName = "Touch Sim";
-	auto params = SettingsManager::get()->getParams();
+	auto params            = SettingsManager::get()->getParams();
 
 	params
-		->addParam<bool>(
-			"Enabled",
-			[&](bool v) {
-				if (!mSimulatedTouchDriver.isRunning()) {
-					mSimulatedTouchDriver.setBounds(Rectf(vec2(0), getWindowSize()));
-					mSimulatedTouchDriver.start();
-				} else {
-					mSimulatedTouchDriver.stop();
-				}
-			},
-			[&] { return SettingsManager::get()->mShowTouches && mSimulatedTouchDriver.isRunning(); })
-		.group(groupName).key("d");
+	    ->addParam<bool>(
+	        "Enabled",
+	        [&](bool v) {
+		        if (!mSimulatedTouchDriver.isRunning()) {
+			        mSimulatedTouchDriver.setBounds(Rectf(vec2(0), getWindowSize()));
+			        mSimulatedTouchDriver.start();
+		        } else {
+			        mSimulatedTouchDriver.stop();
+		        }
+	        },
+	        [&] { return SettingsManager::get()->mShowTouches && mSimulatedTouchDriver.isRunning(); })
+	    .group(groupName)
+	    .key("d");
 
-	static int stressTestMode = 0;
+	static int stressTestMode             = 0;
 	static vector<string> stressTestModes = {"Tap & Drag", "Slow Drag", "Tap"};
 
 	params->addParam("Mode", stressTestModes, &stressTestMode)
-		.updateFn([&] {
-			if (stressTestMode == 0) {
-				mSimulatedTouchDriver.setMinTouchDuration(0);
-				mSimulatedTouchDriver.setMaxTouchDuration(1.f);
-				mSimulatedTouchDriver.setMaxDragDistance(200.f);
-			} else if (stressTestMode == 1) {
-				mSimulatedTouchDriver.setMinTouchDuration(4.f);
-				mSimulatedTouchDriver.setMaxTouchDuration(8.f);
-				mSimulatedTouchDriver.setMaxDragDistance(200.f);
-			} else if (stressTestMode == 2) {
-				mSimulatedTouchDriver.setMinTouchDuration(0);
-				mSimulatedTouchDriver.setMaxTouchDuration(0.1f);
-				mSimulatedTouchDriver.setMaxDragDistance(0.f);
-			}
-		})
-		.group(groupName);
+	    .updateFn([&] {
+		    if (stressTestMode == 0) {
+			    mSimulatedTouchDriver.setMinTouchDuration(0);
+			    mSimulatedTouchDriver.setMaxTouchDuration(1.f);
+			    mSimulatedTouchDriver.setMaxDragDistance(200.f);
+		    } else if (stressTestMode == 1) {
+			    mSimulatedTouchDriver.setMinTouchDuration(4.f);
+			    mSimulatedTouchDriver.setMaxTouchDuration(8.f);
+			    mSimulatedTouchDriver.setMaxDragDistance(200.f);
+		    } else if (stressTestMode == 2) {
+			    mSimulatedTouchDriver.setMinTouchDuration(0);
+			    mSimulatedTouchDriver.setMaxTouchDuration(0.1f);
+			    mSimulatedTouchDriver.setMaxDragDistance(0.f);
+		    }
+	    })
+	    .group(groupName);
 
 	params
-		->addParam<float>("Touches/s", [&](float v) { mSimulatedTouchDriver.setTouchesPerSecond(v); },
-						  [&]() { return mSimulatedTouchDriver.getTouchesPerSecond(); })
-		.group(groupName);
+	    ->addParam<float>(
+	        "Touches/s", [&](float v) { mSimulatedTouchDriver.setTouchesPerSecond(v); },
+	        [&]() { return mSimulatedTouchDriver.getTouchesPerSecond(); })
+	    .group(groupName);
 
 	params
-		->addParam<bool>("Show Missed Touches",
-						 [&](bool v) { TouchManager::get()->setDiscardMissedTouches(!v); },
-						 [&]() { return !TouchManager::get()->getDiscardMissedTouches(); })
-		.group(groupName);
+	    ->addParam<bool>(
+	        "Show Missed Touches", [&](bool v) { TouchManager::get()->setDiscardMissedTouches(!v); },
+	        [&]() { return !TouchManager::get()->getDiscardMissedTouches(); })
+	    .group(groupName);
 
 	if (SettingsManager::get()->mCollapseParams) {
 		params->setOptions(groupName, "opened=false");
