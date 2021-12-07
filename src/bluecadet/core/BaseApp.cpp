@@ -84,7 +84,7 @@ namespace bluecadet {
 
 			if (SettingsManager::get()->mLogToStdOut) {
 				mLogger = make_shared<StdOutLogger>();
-				ci::log::LogManager::instance()->addLogger(mLogger);
+				ci::log::LogManager::instance()->resetLogger(mLogger);
 			} else {
 				mLogger = ci::log::LogManager::instance()->getLoggers<ci::log::LoggerConsole>().at(0);
 			}
