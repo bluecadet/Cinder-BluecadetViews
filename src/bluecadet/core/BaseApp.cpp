@@ -22,7 +22,7 @@ using namespace bluecadet::touch::drivers;
 //! Prints all messages to std::cout/std::cerr instead of ci::app::console()
 class StdOutLogger : public ci::log::Logger {
 public:
-	StdOutLogger(bool timestampEnabled = true) : Logger() { setTimestampEnabled(timestampEnabled); };
+	StdOutLogger(bool timestampEnabled = false) : Logger() { setTimestampEnabled(timestampEnabled); };
 	void write(const ci::log::Metadata & meta, const std::string & text) override {
 		std::ostream * stream = &std::cout;
 		switch (meta.mLevel) {
