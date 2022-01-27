@@ -1,7 +1,7 @@
 {
 	"settings": {
 		"general": {
-			"console": true,
+			"console": false,
 			"version": "v1.0.0"
 		},
 		"display": {

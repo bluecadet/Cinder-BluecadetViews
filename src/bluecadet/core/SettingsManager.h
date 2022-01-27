@@ -101,41 +101,41 @@ namespace bluecadet {
 			// Default Properties
 
 			// General
-			bool mConsole           = true;     // Use external console window
-			std::string mAppVersion = "1.0.0";  // Displays app version in the params
+			bool mConsole			= false;	// Use external console window. Setting this to true will prevent stdout/stderr logging from working.
+			std::string mAppVersion = "1.0.0";	// Displays app version in the params
 
-												// Graphics
+			// Graphics
 			float mFps         = 60.0f;
 			bool mFullscreen   = true;
 			bool mBorderless   = false;
 			bool mVerticalSync = true;
 
 			// Display
-			int mDisplayIndex = 0;  // The index of the display to launch this app on. Reverts to main display if out of bounds.
+			int mDisplayIndex		= 0;			// The index of the display to launch this app on. Reverts to main display if out of bounds.
 			ci::ivec2 mDisplaySize = ci::ivec2(-1);  // The size of one display. Defaults to getWindowSize()
 			ci::ivec2 mBezelDims   = ci::ivec2(0);   // The amount of bezel correction to add in both X and Y
 			int mDisplayColumns    = 1;              // The number of display columns in a display matrix. Used by ScreenLayout.
 			int mDisplayRows       = 1;              // The number of display rows in a display matrix. Used by ScreenLayout.
 
-													 // Window
+			// Window
 			ci::ivec2 mWindowSize  = ci::ivec2(INT_MIN);   // The window size on launch
 			ci::ivec2 mWindowPos   = ci::ivec2(INT_MIN);   // The window position on launch
 			ci::ColorA mClearColor = ci::ColorA::black();  // The color used when clearing the screen before draw()
 
-														   // Camera
+			// Camera
 			ci::vec2 mCameraOffset = ci::ivec2(0);  // The offset of the camera on launch
 			float mCameraZoom      = 1.0f;          // The zoom of the camera at launch
 
-													// Touches
+			// Touches
 			bool mMouseEnabled                      = true;   // Treat mouse events as touch events.
 			bool mNativeTouchEnabled                = true;   // Native touch coming from the OS
 			bool mSupportMultipleNativeTouchScreens = true;   // Native touch with multi-touchscreen support
 			bool mTuioTouchEnabled                  = false;  // TUIO touch events; It's recommended to disable native touch
 															  // when TUIO is enabled to prevent duplicate events.
 
-															  // Debugging
+			// Debugging
 			bool mDebugEnabled               = true;   // Enable/disable all of the below debug features (except for hotkeys)
-			bool mLogToStdOut                = true;   // Logs to std::cout and std::cerr if enabled
+			bool mLogToStdOut                = true;   // Logs to std::cout and std::cerr if enabled. Only works if mConsole is false.
 			bool mShowTouches                = false;  // Visualizes all current touch data
 			bool mShowScreenLayout           = false;  // Visualizes the current screen layout and bezels
 			bool mShowCursor                 = true;   // Show or hide the mouse cursor (toggle with C)

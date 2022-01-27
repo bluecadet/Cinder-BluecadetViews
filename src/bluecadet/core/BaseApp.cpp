@@ -83,10 +83,10 @@ namespace bluecadet {
 			}
 
 			if (SettingsManager::get()->mLogToStdOut) {
-				mLogger = make_shared<StdOutLogger>();
-				ci::log::LogManager::instance()->resetLogger(mLogger);
-			} else {
-				mLogger = ci::log::LogManager::instance()->getLoggers<ci::log::LoggerConsole>().at(0);
+				ci::log::LogManager::instance()->addLogger(make_shared<StdOutLogger>());
+				if (SettingsManager::get()->mConsole) {
+					CI_LOG_W("Logging to console and to stdout at the same time is not supported. You can only set one of these to true. Console will override stdout.");
+				}
 			}
 		}
 
