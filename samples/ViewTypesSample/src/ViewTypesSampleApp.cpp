@@ -98,6 +98,13 @@ void ViewTypesSampleApp::setup() {
 	strokedRoundedRectView->getTimeline()->apply(&strokedRoundedRectView->getCornerRadius(), 50.0f, 2.5f, easeInOutQuad).loop(true).pingPong(true);
 	addViewSample(strokedRoundedRectView, "StrokedRoundedRectView");
 
+	// Uncomment the following lines to tween corners individually
+	//strokedRoundedRectView->useUniformCorners(false);
+	//strokedRoundedRectView->getTimeline()->apply(&strokedRoundedRectView->getTopLeftCornerRadius(), 0.0f, 2.5f, easeInOutQuad).loop(true).pingPong(true);
+	//strokedRoundedRectView->getTimeline()->apply(&strokedRoundedRectView->getTopRightCornerRadius(), 15.0f, 2.5f, easeInOutQuad).loop(true).pingPong(true);
+	//strokedRoundedRectView->getTimeline()->apply(&strokedRoundedRectView->getBottomRightCornerRadius(), 35.0f, 2.5f, easeInOutQuad).loop(true).pingPong(true);
+	//strokedRoundedRectView->getTimeline()->apply(&strokedRoundedRectView->getBottomLeftCornerRadius(), 50.0f, 2.5f, easeInOutQuad).loop(true).pingPong(true);
+
 	//==================================================
 	// EllipseView with variably smooth edges
 	// 
